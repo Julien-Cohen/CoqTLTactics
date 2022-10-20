@@ -15,49 +15,21 @@ Require Import core.Model.
 Require Import core.utils.CpdtTactics.
 (* Base types *)
 
-Inductive Class : Set :=
-    BuildClass :
-      (* id *) nat ->
-      (* name *) string -> Class.
+Record Class := { class_id : nat ; class_name : string }.
 
-Inductive Attribute : Set :=
-    BuildAttribute :
-      (* id *) nat ->
-      (* derived *) bool ->
-      (* name *) string -> Attribute.
+Record Attribute := { attr_id : nat ; derived : bool ; attr_name : string }.
 
-Inductive ClassAttributes : Set :=
-    BuildClassAttributes:
-      Class ->
-      list Attribute -> ClassAttributes.
+Record ClassAttributes := { in_class : Class ; attrs : list Attribute }.
 
-Inductive AttributeType : Set :=
-    BuildAttributeType:
-      Attribute ->
-      Class -> AttributeType.
+Record AttributeType := { for_attribute : Attribute ; type : Class }.
 
 (* Accessors *)
 
-Definition getClassId (c : Class) : nat :=
-  match c with BuildClass id _ => id end.
-
-Definition getClassName (c : Class) : string :=
-  match c with BuildClass _ n => n end.
-
-Definition getAttributeId (a : Attribute) : nat :=
-  match a with BuildAttribute id _ _ => id end.
-
-Definition getAttributeName (a : Attribute) : string :=
-  match a with BuildAttribute _ _ n => n end.
-
-Definition getAttributeDerived (a : Attribute) : bool :=
-  match a with BuildAttribute _ n _ => n end.
-
 Definition beq_Class (c1 : Class) (c2 : Class) : bool :=
-  beq_nat (getClassId c1) (getClassId c2) && beq_string (getClassName c1) (getClassName c2).
+  beq_nat (class_id c1) (class_id c2) && beq_string (class_name c1) (class_name c2).
 
 Definition beq_Attribute (a1 : Attribute) (a2 : Attribute) : bool :=
-  beq_nat (getAttributeId a1) (getAttributeId a2) && eqb (getAttributeDerived a1) (getAttributeDerived a2) && beq_string (getAttributeName a1) (getAttributeName a2).
+  beq_nat (attr_id a1) (attr_id a2) && eqb (derived a1) (derived a2) && beq_string (attr_name a1) (attr_name a2).
 
 Lemma lem_beq_Class_id:
  forall (a1 a2: Class),
@@ -66,7 +38,7 @@ Proof.
 intros.
 unfold beq_Class in H.
 unfold "&&" in H.
-destruct (getClassId a1 =? getClassId a2) eqn: ca1.
+destruct (class_id a1 =? class_id a2) eqn: ca1.
 - apply (lem_beq_string_eq2) in H.
   apply (beq_nat_true) in ca1.
   destruct a1,a2.
@@ -83,8 +55,8 @@ Proof.
 intros.
 unfold beq_Attribute in H.
 unfold "&&" in H.
-destruct (getAttributeId a1 =? getAttributeId a2) eqn: ca1.
-- destruct (eqb (getAttributeDerived a1) (getAttributeDerived a2)) eqn: ca2.
+destruct (attr_id a1 =? attr_id a2) eqn: ca1.
+- destruct (eqb (derived a1) (derived a2)) eqn: ca2.
   + apply (lem_beq_string_eq2) in H.
     apply (beq_nat_true) in ca1.
     apply (eqb_prop) in ca2.
@@ -172,14 +144,14 @@ Definition ClassMetamodel_instanceOfReference (cmr: ClassMetamodel_Reference) (c
 
 Definition ClassMetamodel_getObjectFromEAttributeValues (t : ClassMetamodel_Class) : (ClassMetamodel_getEAttributeTypesByClass t) -> ClassMetamodel_Object :=
   match t with
-  | ClassClass => (fun (p: nat * string) => (ClassMetamodel_BuildObject ClassClass (BuildClass (fst p) (snd p))))
-  | AttributeClass => (fun (p: nat * bool * string) => (ClassMetamodel_BuildObject AttributeClass (BuildAttribute (fst (fst p)) (snd (fst p)) (snd p))))
+  | ClassClass => (fun (p: nat * string) => (ClassMetamodel_BuildObject ClassClass (Build_Class (fst p) (snd p))))
+  | AttributeClass => (fun (p: nat * bool * string) => (ClassMetamodel_BuildObject AttributeClass (Build_Attribute (fst (fst p)) (snd (fst p)) (snd p))))
   end.
 
 Definition ClassMetamodel_getLinkFromERoleValues (t : ClassMetamodel_Reference) : (ClassMetamodel_getERoleTypesByReference t) -> ClassMetamodel_Link :=
   match t with
-  | ClassAttributesReference => (fun (p: Class * list Attribute) => (ClassMetamodel_BuildLink ClassAttributesReference (BuildClassAttributes (fst p) (snd p))))
-  | AttributeTypeReference => (fun (p: Attribute * Class) => (ClassMetamodel_BuildLink AttributeTypeReference (BuildAttributeType (fst p) (snd p))))
+  | ClassAttributesReference => (fun (p: Class * list Attribute) => (ClassMetamodel_BuildLink ClassAttributesReference (Build_ClassAttributes (fst p) (snd p))))
+  | AttributeTypeReference => (fun (p: Attribute * Class) => (ClassMetamodel_BuildLink AttributeTypeReference (Build_AttributeType (fst p) (snd p))))
   end.
 
 Definition ClassMetamodel_toClass (t : ClassMetamodel_Class) (c : ClassMetamodel_Object) : option (ClassMetamodel_getTypeByClass t).
@@ -232,14 +204,14 @@ Definition ClassMetamodel_toLink (t: ClassMetamodel_Reference) (e: ClassMetamode
 
 Definition ClassMetamodel_getId (c : ClassMetamodel_Object) : nat :=
   match c with
-  | (ClassMetamodel_BuildObject ClassClass c) => getClassId c
-  | (ClassMetamodel_BuildObject AttributeClass a) => getAttributeId a
+  | (ClassMetamodel_BuildObject ClassClass c) => class_id c
+  | (ClassMetamodel_BuildObject AttributeClass a) => attr_id a
   end.
 
 Definition ClassMetamodel_getName (c : ClassMetamodel_Object) : string :=
   match c with
-  | (ClassMetamodel_BuildObject ClassClass c) => getClassName c
-  | (ClassMetamodel_BuildObject AttributeClass a) => getAttributeName a
+  | (ClassMetamodel_BuildObject ClassClass c) => class_name c
+  | (ClassMetamodel_BuildObject AttributeClass a) => attr_name a
   end.
 
 (*Definition allClasses (m : ClassModel) : list Class :=
@@ -274,7 +246,7 @@ Qed.*)
 
 Fixpoint ClassMetamodel_getClassAttributesOnLinks (c : Class) (l : list ClassMetamodel_Link) : option (list Attribute) :=
   match l with
-  | (ClassMetamodel_BuildLink ClassAttributesReference (BuildClassAttributes cl a)) :: l1 => if beq_Class cl c then Some a else ClassMetamodel_getClassAttributesOnLinks c l1
+  | (ClassMetamodel_BuildLink ClassAttributesReference (Build_ClassAttributes cl a)) :: l1 => if beq_Class cl c then Some a else ClassMetamodel_getClassAttributesOnLinks c l1
   | _ :: l1 => ClassMetamodel_getClassAttributesOnLinks c l1
   | nil => None
   end.
@@ -290,7 +262,7 @@ Definition getClassAttributesObjects (c : Class) (m : Model ClassMetamodel_Objec
 
 Fixpoint ClassMetamodel_getAttributeTypeOnLinks (a : Attribute) (l : list ClassMetamodel_Link) : option Class :=
   match l with
-  | (ClassMetamodel_BuildLink AttributeTypeReference (BuildAttributeType att c)) :: l1 => if beq_Attribute att a then Some c else ClassMetamodel_getAttributeTypeOnLinks a l1
+  | (ClassMetamodel_BuildLink AttributeTypeReference (Build_AttributeType att c)) :: l1 => if beq_Attribute att a then Some c else ClassMetamodel_getAttributeTypeOnLinks a l1
   | _ :: l1 => ClassMetamodel_getAttributeTypeOnLinks a l1
   | nil => None
   end.
@@ -308,8 +280,8 @@ Definition getAttributeTypeObject (a : Attribute) (m : Model ClassMetamodel_Obje
 
 Definition ClassMetamodel_defaultInstanceOfClass (c: ClassMetamodel_Class) : (ClassMetamodel_getTypeByClass c) :=
   match c with
-  | ClassClass => (BuildClass 0 "")
-  | AttributeClass => (BuildAttribute 0 false "")
+  | ClassClass => (Build_Class 0 "")
+  | AttributeClass => (Build_Attribute 0 false "")
   end.
 
 (* Typeclass Instance *)

@@ -31,7 +31,7 @@ forall (cm : ClassModel) (rm : RelationalModel),
     In (ClassMetamodel_toObject ClassClass c1) (allModelElements cm) -> 
     In (ClassMetamodel_toObject ClassClass c2) (allModelElements cm) -> 
     c1 <> c2 -> 
-    getClassName c1 <> getClassName c2) ->
+    class_name c1 <> class_name c2) ->
 (* postcondition *)  
 (forall (t1: Table) (t2: Table), 
     In (RelationalMetamodel_toObject TableClass t1) (allModelElements rm) -> 
@@ -82,13 +82,13 @@ Proof.
                 -- contradiction. 
                 -- contradiction.
                 -- contradiction.
-            * (*[c] [a]*) destruct c2. destruct b.
+            * (*[c] [a]*) destruct c2. destruct derived.
                 -- contradiction.
                 -- simpl in H5. destruct H5. inversion H5. contradiction. 
-            * (*[a] [c]*) destruct c1. destruct b.
+            * (*[a] [c]*) destruct c1. destruct derived.
                 -- contradiction.
                 -- simpl in H4. destruct H4. inversion H4. contradiction.
-            * (*[a] [a]*) destruct c1. destruct b.
+            * (*[a] [a]*) destruct c1. destruct derived.
                 -- contradiction.
                 -- simpl in H4. destruct H4. inversion H4. contradiction.
         + (* [x] [y;y';_] *)

@@ -36,7 +36,7 @@ forall (cm : ClassModel) (rm : RelationalModel),
         In at1 ats ->
         In at2 ats ->
         at1 <> at2 ->
-        getAttributeName at1 <> getAttributeName at2) ->
+        attr_name at1 <> attr_name at2) ->
     (* postcondition *)
     (forall (co1: Column) (co2: Column) (ta: Table) (cos: list Column),
         In (RelationalMetamodel_toObject ColumnClass co1) (allModelElements rm) ->
@@ -91,7 +91,7 @@ Proof.
             assert (return l=return l). {reflexivity. }
             specialize (H0 (H1 H11) (H2 H12) (H3 H13) H14).
             destruct c2, c3.
-            destruct b, b0.
+            destruct derived, derived0.
             ++ simpl in H8, H9, H10. contradiction.
             ++ simpl in H8, H9, H10. contradiction.
             ++ simpl in H8, H9, H10. contradiction.
@@ -117,7 +117,7 @@ Proof.
                ** contradiction.
                ** contradiction.
         -- admit.
-    * destruct c4. destruct b. 
+    * destruct c4. destruct derived. 
       -- simpl in H10. contradiction. 
       -- simpl in H10. destruct H10. inversion H10. contradiction.
   + do 2 destruct c, c0, c1, c2; contradiction.

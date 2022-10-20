@@ -120,7 +120,7 @@ Proof.
                 **** contradiction H6.
            *** contradiction H2.
       * (* [Attribute] *) destruct c0.
-        destruct b.
+        destruct derived.
         -- (* derived *) 
            rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
            do 2 destruct H2.

@@ -23,13 +23,13 @@ Theorem Attribute_name_preservation:
         (* postcondition *)  
         forall (a: Attribute),
         In (ClassMetamodel_toObject AttributeClass a) (allModelElements cm) ->
-        getAttributeDerived a = false ->
+        derived a = false ->
         exists (c: Column),
             In (RelationalMetamodel_toObject ColumnClass c) (allModelElements rm) /\
-            getColumnName c = getAttributeName a.
+            getColumnName c = attr_name a.
 Proof.
     intros.
-    exists (BuildColumn (getAttributeId a) (getAttributeName a)).
+    exists (BuildColumn (attr_id a) (attr_name a)).
     split.
     - rewrite H.
       rewrite (tr_execute_in_elements Class2Relational).
