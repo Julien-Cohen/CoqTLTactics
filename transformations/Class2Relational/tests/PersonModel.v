@@ -11,18 +11,18 @@ Require Import transformations.Class2Relational.ClassMetamodel.
       Attribute id=2 derived=true name='sibling' type='Person'
 *)
 
-Definition PersonModel : Model ClassMetamodel_Object ClassMetamodel_Link :=
+Definition PersonModel : Model ClassMetamodel.Object ClassMetamodel.Link :=
   (Build_Model
      (* elements *)
-     (     (ClassMetamodel_BuildObject ClassClass (Build_Class 0 "Person")) 
-        :: (ClassMetamodel_BuildObject AttributeClass (Build_Attribute 1 false "parent")) 
-        :: (ClassMetamodel_BuildObject AttributeClass (Build_Attribute 2 true "sibling")) 
+     (     (ClassMetamodel.BuildObject ClassClass (Build_Class 0 "Person")) 
+        :: (ClassMetamodel.BuildObject AttributeClass (Build_Attribute 1 false "parent")) 
+        :: (ClassMetamodel.BuildObject AttributeClass (Build_Attribute 2 true "sibling")) 
         :: nil)
 
      (* links *)
-     (     (ClassMetamodel_BuildLink ClassAttributesReference (Build_ClassAttributes (Build_Class 0 "Person") ((Build_Attribute 1 false "parent")::nil))) 
-        :: (ClassMetamodel_BuildLink AttributeTypeReference (Build_AttributeType (Build_Attribute 1 false "parent") (Build_Class 0 "Person"))) 
-        :: (ClassMetamodel_BuildLink ClassAttributesReference (Build_ClassAttributes (Build_Class 0 "Person") ((Build_Attribute 2 true "sibling")::nil))) 
-        :: (ClassMetamodel_BuildLink AttributeTypeReference (Build_AttributeType (Build_Attribute 2 true "sibling") (Build_Class 0 "Person"))) 
+     (     (ClassMetamodel.BuildLink ClassAttributesReference (Build_ClassAttributes (Build_Class 0 "Person") ((Build_Attribute 1 false "parent")::nil))) 
+        :: (ClassMetamodel.BuildLink AttributeTypeReference (Build_AttributeType (Build_Attribute 1 false "parent") (Build_Class 0 "Person"))) 
+        :: (ClassMetamodel.BuildLink ClassAttributesReference (Build_ClassAttributes (Build_Class 0 "Person") ((Build_Attribute 2 true "sibling")::nil))) 
+        :: (ClassMetamodel.BuildLink AttributeTypeReference (Build_AttributeType (Build_Attribute 2 true "sibling") (Build_Class 0 "Person"))) 
         :: nil)
   ).

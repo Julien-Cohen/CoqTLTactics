@@ -61,7 +61,7 @@ Definition Class2Relational :=
             (fun tls i m c t =>
               attrs <- getClassAttributes c m;
               cols <- resolveAll tls m "col" ColumnClass 
-                (singletons (map (ClassMetamodel_toObject AttributeClass) attrs));
+                (singletons (map (ClassMetamodel.toObject AttributeClass) attrs));
               return BuildTableColumns t cols))
         ];
       buildRule "Attribute2Column"
@@ -73,7 +73,7 @@ Definition Class2Relational :=
             (makeLink [AttributeClass] ColumnClass ColumnReferenceReference
               (fun tls i m a c =>
                 cl <- getAttributeType a m;
-                tb <- resolve tls m "tab" TableClass [ClassMetamodel_toObject ClassClass cl];
+                tb <- resolve tls m "tab" TableClass [ClassMetamodel.toObject ClassClass cl];
                 return BuildColumnReference c tb))
         ]
     ].

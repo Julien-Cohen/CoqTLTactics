@@ -37,18 +37,18 @@ Require Import transformations.Class2Relational.tests.PersonModel.
 *)
 
 Compute 
-  (Model_beq beq_RelationalMetamodel_Object beq_RelationalMetamodel_Link 
+  (Model_beq beq_Object beq_Link 
     (execute Class2Relational PersonModel) 
     {|
-       Model.modelElements := RelationalMetamodel_BuildObject TableClass
+       Model.modelElements := BuildObject TableClass
                                 (BuildTable 0 "Person")
-                              :: RelationalMetamodel_BuildObject ColumnClass
+                              :: BuildObject ColumnClass
                                    (BuildColumn 1 "parent") :: nil;
-       Model.modelLinks := RelationalMetamodel_BuildLink
+       Model.modelLinks := BuildLink
                              TableColumnsReference
                              (BuildTableColumns (BuildTable 0 "Person")
                                 (BuildColumn 1 "parent" :: nil))
-                           :: RelationalMetamodel_BuildLink
+                           :: BuildLink
                                 ColumnReferenceReference
                                 (BuildColumnReference
                                    (BuildColumn 1 "parent")

@@ -29,9 +29,9 @@ forall (cm : ClassModel) (rm : RelationalModel),
     rm = execute Class2Relational cm ->
     (* precondition *)
     (forall (at1: Attribute) (at2: Attribute) (cl: Class) (ats: list Attribute),
-        In (ClassMetamodel_toObject AttributeClass at1) (allModelElements cm) ->
-        In (ClassMetamodel_toObject AttributeClass at2) (allModelElements cm) ->
-        In (ClassMetamodel_toObject ClassClass cl) (allModelElements cm) ->
+        In (ClassMetamodel.toObject AttributeClass at1) (allModelElements cm) ->
+        In (ClassMetamodel.toObject AttributeClass at2) (allModelElements cm) ->
+        In (ClassMetamodel.toObject ClassClass cl) (allModelElements cm) ->
         getClassAttributes cl cm = Some ats ->
         In at1 ats ->
         In at2 ats ->
@@ -39,9 +39,9 @@ forall (cm : ClassModel) (rm : RelationalModel),
         attr_name at1 <> attr_name at2) ->
     (* postcondition *)
     (forall (co1: Column) (co2: Column) (ta: Table) (cos: list Column),
-        In (RelationalMetamodel_toObject ColumnClass co1) (allModelElements rm) ->
-        In (RelationalMetamodel_toObject ColumnClass co2) (allModelElements rm) ->
-        In (RelationalMetamodel_toObject TableClass ta) (allModelElements rm) ->
+        In (RelationalMetamodel.toObject ColumnClass co1) (allModelElements rm) ->
+        In (RelationalMetamodel.toObject ColumnClass co2) (allModelElements rm) ->
+        In (RelationalMetamodel.toObject TableClass ta) (allModelElements rm) ->
         getTableColumns ta rm = Some cos ->
         In co1 cos ->
         In co2 cos ->
@@ -63,34 +63,34 @@ Proof.
     - (* [x::_] [y::_] [z::_] *) 
       destruct x, x0, x1.
       + (* [x] [y] [z] *)
-        do 2 destruct c, c0, c1.
-        * destruct c2. simpl in H8. destruct H8. inversion H8. contradiction.
-        * destruct c2. simpl in H8. destruct H8. inversion H8. contradiction.
-        * destruct c2. simpl in H8. destruct H8. inversion H8. contradiction.
-        * destruct c2. simpl in H8. destruct H8. inversion H8. contradiction.
-        * destruct c3. simpl in H9. destruct H9. inversion H9. contradiction.
-        * destruct c3. simpl in H9. destruct H9. inversion H9. contradiction.
+        destruct o, o0, o1.  destruct c, c0, c1.
+        * destruct g0. simpl in H8. destruct H8. inversion H8. contradiction.
+        * destruct g0. simpl in H8. destruct H8. inversion H8. contradiction.
+        * destruct g0. simpl in H8. destruct H8. inversion H8. contradiction.
+        * destruct g0. simpl in H8. destruct H8. inversion H8. contradiction.
+        * destruct g1. simpl in H9. destruct H9. inversion H9. contradiction.
+        * destruct g1. simpl in H9. destruct H9. inversion H9. contradiction.
         * (* [a] [a] [c] *)
-          specialize (H0 c2 c3 c4).
-          remember (getClassAttributes c4 cm).
+          specialize (H0 g g0 g1).
+          remember (getClassAttributes g1 cm).
           destruct o.
           --specialize (H0 l).
             apply allTuples_incl in H1.
             apply allTuples_incl in H2.
             apply allTuples_incl in H3.
             unfold incl in H1, H2, H3.
-            specialize (H1 (ClassMetamodel_toObject AttributeClass c2)).
-            specialize (H2 (ClassMetamodel_toObject AttributeClass c3)).
-            specialize (H3 (ClassMetamodel_toObject ClassClass c4)).
-            assert (In (ClassMetamodel_toObject AttributeClass c2) [ClassMetamodel_toObject AttributeClass c2]).
+            specialize (H1 (ClassMetamodel.toObject AttributeClass g)).
+            specialize (H2 (ClassMetamodel.toObject AttributeClass g0)).
+            specialize (H3 (ClassMetamodel.toObject ClassClass g1)).
+            assert (In (ClassMetamodel.toObject AttributeClass g) [ClassMetamodel.toObject AttributeClass g]).
             { left. reflexivity. }
-            assert (In (ClassMetamodel_toObject AttributeClass c3) [ClassMetamodel_toObject AttributeClass c3]).
+            assert (In (ClassMetamodel.toObject AttributeClass g0) [ClassMetamodel.toObject AttributeClass g0]).
             { left. reflexivity. }
-            assert (In (ClassMetamodel_toObject ClassClass c4) [ClassMetamodel_toObject ClassClass c4]).
+            assert (In (ClassMetamodel.toObject ClassClass g1) [ClassMetamodel.toObject ClassClass g1]).
             { left. reflexivity. }
             assert (return l=return l). {reflexivity. }
             specialize (H0 (H1 H11) (H2 H12) (H3 H13) H14).
-            destruct c2, c3.
+            destruct g, g0.
             destruct derived, derived0.
             ++ simpl in H8, H9, H10. contradiction.
             ++ simpl in H8, H9, H10. contradiction.
@@ -117,17 +117,17 @@ Proof.
                ** contradiction.
                ** contradiction.
         -- admit.
-    * destruct c4. destruct derived. 
+    * destruct g1. destruct derived. 
       -- simpl in H10. contradiction. 
       -- simpl in H10. destruct H10. inversion H10. contradiction.
-  + do 2 destruct c, c0, c1, c2; contradiction.
-  + do 2 destruct c, c0, c1, c2; contradiction.
-  + do 2 destruct c, c0, c1, c2; contradiction.
-  + do 2 destruct c, c0, c1, c2; contradiction.
-  + do 2 destruct c, c0, c1, c2; contradiction.
-  + do 2 destruct c, c0, c1, c2; contradiction.
-  + do 2 destruct c, c0, c1, c2; contradiction.
-Admitted.
+  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction.
+  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction.
+  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction.
+  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction.
+  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction.
+  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction.
+  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction. 
+ Admitted.
 
 
  

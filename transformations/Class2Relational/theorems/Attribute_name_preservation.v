@@ -22,10 +22,10 @@ Theorem Attribute_name_preservation:
         rm = execute Class2Relational cm ->
         (* postcondition *)  
         forall (a: Attribute),
-        In (ClassMetamodel_toObject AttributeClass a) (allModelElements cm) ->
+        In (ClassMetamodel.toObject AttributeClass a) (allModelElements cm) ->
         derived a = false ->
         exists (c: Column),
-            In (RelationalMetamodel_toObject ColumnClass c) (allModelElements rm) /\
+            In (RelationalMetamodel.toObject ColumnClass c) (allModelElements rm) /\
             getColumnName c = attr_name a.
 Proof.
     intros.
@@ -33,7 +33,7 @@ Proof.
     split.
     - rewrite H.
       rewrite (tr_execute_in_elements Class2Relational).
-      exists ([ClassMetamodel_toObject AttributeClass a]).
+      exists ([ClassMetamodel.toObject AttributeClass a]).
       split.
       + apply allTuples_incl_length.
         * unfold incl.

@@ -25,7 +25,7 @@ forall
   (eng : @TransformationEngine C2RConfiguration CoqTLSyntax)
   (meng: ModelingTransformationEngine Class2RelationalConfiguration eng) 
   (cm : ClassModel) (c: Class) tls o,
-  (@resolve _ _ _ _ meng tls cm "tab" TableClass [ClassMetamodel_toObject ClassClass c] 1) = Some o ->
+  (@resolve _ _ _ _ meng tls cm "tab" TableClass [ClassMetamodel.toObject ClassClass c] 1) = Some o ->
   (exists (tl : TraceLink.TraceLink), In tl tls).
 Proof.
 intros.
