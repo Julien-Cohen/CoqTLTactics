@@ -26,10 +26,10 @@ Theorem Attribute_name_preservation:
         derived a = false ->
         exists (c: Column),
             In (RelationalMetamodel.toObject ColumnClass c) (allModelElements rm) /\
-            getColumnName c = attr_name a.
+            column_name c = attr_name a.
 Proof.
     intros.
-    exists (BuildColumn (attr_id a) (attr_name a)).
+    exists (Build_Column (attr_id a) (attr_name a)).
     split.
     - rewrite H.
       rewrite (tr_execute_in_elements Class2Relational).

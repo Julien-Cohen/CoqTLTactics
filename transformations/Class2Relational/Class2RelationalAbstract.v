@@ -56,24 +56,24 @@ Definition Class2Relational :=
         (makeIterator [ClassClass] (fun m c => 1))
         [buildOutputPatternElement "tab"
           (makeElement [ClassClass] TableClass
-            (fun i m c => BuildTable (class_id c) (class_name c)))
+            (fun i m c => Build_Table (class_id c) (class_name c)))
             (makeLink [ClassClass] TableClass TableColumnsReference
             (fun tls i m c t =>
               attrs <- getClassAttributes c m;
               cols <- resolveAll tls m "col" ColumnClass 
                 (singletons (map (ClassMetamodel.toObject AttributeClass) attrs));
-              return BuildTableColumns t cols))
+              return Build_TableColumns t cols))
         ];
       buildRule "Attribute2Column"
         (makeGuard [AttributeClass] (fun m a => negb (derived a)))
         (makeIterator [AttributeClass] (fun m a => 1))
         [buildOutputPatternElement "col"
           (makeElement [AttributeClass] ColumnClass
-            (fun i m a => BuildColumn (attr_id a) (attr_name a)))
+            (fun i m a => Build_Column (attr_id a) (attr_name a)))
             (makeLink [AttributeClass] ColumnClass ColumnReferenceReference
               (fun tls i m a c =>
                 cl <- getAttributeType a m;
                 tb <- resolve tls m "tab" TableClass [ClassMetamodel.toObject ClassClass cl];
-                return BuildColumnReference c tb))
+                return Build_ColumnReference c tb))
         ]
     ].

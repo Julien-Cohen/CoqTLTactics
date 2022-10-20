@@ -41,15 +41,15 @@ Compute
     (execute Class2Relational PersonModel) 
     {|
        Model.modelElements := BuildObject TableClass
-                                (BuildTable 0 "Person")
+                                (Build_Table 0 "Person")
                               :: BuildObject ColumnClass
-                                   (BuildColumn 1 "parent") :: nil;
+                                   (Build_Column 1 "parent") :: nil;
        Model.modelLinks := BuildLink
                              TableColumnsReference
-                             (BuildTableColumns (BuildTable 0 "Person")
-                                (BuildColumn 1 "parent" :: nil))
+                             (Build_TableColumns (Build_Table 0 "Person")
+                                (Build_Column 1 "parent" :: nil))
                            :: BuildLink
                                 ColumnReferenceReference
-                                (BuildColumnReference
-                                   (BuildColumn 1 "parent")
-                                   (BuildTable 0 "Person")) :: nil |}).
+                                (Build_ColumnReference
+                                   (Build_Column 1 "parent")
+                                   (Build_Table 0 "Person")) :: nil |}).

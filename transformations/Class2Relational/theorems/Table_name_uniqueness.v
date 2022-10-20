@@ -37,7 +37,7 @@ forall (cm : ClassModel) (rm : RelationalModel),
     In (RelationalMetamodel.toObject TableClass t1) (allModelElements rm) -> 
     In (RelationalMetamodel.toObject TableClass t2) (allModelElements rm) -> 
     t1 <> t2 -> 
-    getTableName t1 <> getTableName t2).
+    table_name t1 <> table_name t2).
 Proof.
     intros.
     rewrite H in H1, H2.

@@ -14,57 +14,34 @@ Require Import Coq.Logic.Eqdep_dec.
 
 (* Base types *)
 
-Inductive
-  Table : Set :=
-  BuildTable :
-    nat ->
-    string -> Table.
+Record Table := { table_id : nat ; table_name : string }.
 
-Inductive
-  Column : Set :=
-  BuildColumn :
-    nat ->
-    string -> Column.
+Record Column := { column_id : nat ; column_name : string } .
 
-Inductive  
-  TableColumns : Set :=
-  BuildTableColumns :  Table -> list Column -> TableColumns.
+Record TableColumns := { tab :  Table ; cols : list Column }.
 
-Inductive  
-  ColumnReference : Set :=
-  BuildColumnReference : Column -> Table -> ColumnReference.
+Record ColumnReference := { cr : Column ; ct : Table }.
 
 Definition maybeBuildColumnReference (c: Column) (t: option Table) : option ColumnReference :=
   match c, t with
-  | c', Some t' => Some (BuildColumnReference c' t')
+  | c', Some t' => Some (Build_ColumnReference c' t')
   | _, _ => None
   end.  
 
 Definition maybeBuildTableColumns (t: Table) (c: option (list Column)) : option TableColumns :=
   match t, c with
-  | t', Some c' => Some (BuildTableColumns t' c')
+  | t', Some c' => Some (Build_TableColumns t' c')
   | _, _ => None
   end.  
 
 (* Accessors *)
 
-Definition getTableId (t : Table) : nat :=
-  match t with BuildTable id _ => id end.
-
-Definition getTableName (t : Table) : string :=
-  match t with BuildTable _ n => n end.
-
-Definition getColumnId (c : Column) : nat :=
-  match c with BuildColumn id _ => id end.
-
-Definition getColumnName (c : Column) : string :=
-  match c with BuildColumn _ n => n end.
   
 Definition beq_Table (t1 : Table) (t2: Table) : bool :=
-  beq_nat (getTableId t1) (getTableId t2) && beq_string (getTableName t1) (getTableName t2).
+  beq_nat (table_id t1) (table_id t2) && beq_string (table_name t1) (table_name t2).
 
 Definition beq_Column (c1 : Column) (c2 : Column) : bool :=
-  beq_nat (getColumnId c1) (getColumnId c2) && beq_string (getColumnName c1) (getColumnName c2).
+  beq_nat (column_id c1) (column_id c2) && beq_string (column_name c1) (column_name c2).
 
 Lemma lem_beq_Table_id:
  forall (a1 a2: Table),
@@ -73,7 +50,7 @@ Proof.
 intros.
 unfold beq_Table in H.
 unfold "&&" in H.
-destruct (getTableId a1 =? getTableId a2) eqn: ca1.
+destruct (table_id a1 =? table_id a2) eqn: ca1.
 - apply (lem_beq_string_eq2) in H.
   apply (beq_nat_true) in ca1.
   destruct a1,a2.
@@ -91,9 +68,9 @@ intros.
 destruct a.
 unfold beq_Table.
 simpl.
-assert (true = PeanoNat.Nat.eqb n n). { apply beq_nat_refl. }
+assert (true = PeanoNat.Nat.eqb table_id0 table_id0). { apply beq_nat_refl. }
 rewrite <- H.
-assert (beq_string s s = true). { apply lem_beq_string_id. }
+assert (beq_string table_name0 table_name0 = true). { apply lem_beq_string_id. }
 rewrite H0.
 simpl.
 auto.
@@ -107,8 +84,8 @@ intros.
 destruct c.
 unfold beq_Column.
 simpl.
-assert (beq_nat n n = true). {symmetry. apply beq_nat_refl. }
-assert (beq_string s s = true). {apply lem_beq_string_id. }
+assert (beq_nat column_id0 column_id0 = true). {symmetry. apply beq_nat_refl. }
+assert (beq_string column_name0 column_name0 = true). {apply lem_beq_string_id. }
 rewrite H,H0.
 simpl.
 auto.
@@ -122,7 +99,7 @@ Proof.
 intros.
 unfold beq_Column in H.
 unfold "&&" in H.
-destruct (getColumnId a1 =? getColumnId a2) eqn: ca1.
+destruct (column_id a1 =? column_id a2) eqn: ca1.
 - apply (lem_beq_string_eq2) in H.
   apply (beq_nat_true) in ca1.
   destruct a1,a2.
@@ -201,8 +178,8 @@ Definition ClassAttributeTypes (c: Classes): Set :=
 
 Definition ClassElement (t : Classes) : (ClassAttributeTypes t) -> Object :=
   match t with
-  | TableClass => (fun (p: nat * string) => (BuildObject TableClass (BuildTable (fst p) (snd p))))
-  | ColumnClass => (fun (p: nat * string) => (BuildObject ColumnClass (BuildColumn (fst p) (snd p))))
+  | TableClass => (fun (p: nat * string) => (BuildObject TableClass (Build_Table (fst p) (snd p))))
+  | ColumnClass => (fun (p: nat * string) => (BuildObject ColumnClass (Build_Column (fst p) (snd p))))
   end.
 
 Definition ReferenceRoleTypes (c:References): Set :=
@@ -213,8 +190,8 @@ Definition ReferenceRoleTypes (c:References): Set :=
 
 Definition Build_ReferenceLink (t : References) : (ReferenceRoleTypes t) -> Link :=
   match t with
-  | TableColumnsReference => (fun (p: Table * list Column) => (BuildLink TableColumnsReference (BuildTableColumns (fst p) (snd p))))
-  | ColumnReferenceReference => (fun (p: Column * Table) => (BuildLink ColumnReferenceReference (BuildColumnReference (fst p) (snd p))))
+  | TableColumnsReference => (fun (p: Table * list Column) => (BuildLink TableColumnsReference (Build_TableColumns (fst p) (snd p))))
+  | ColumnReferenceReference => (fun (p: Column * Table) => (BuildLink ColumnReferenceReference (Build_ColumnReference (fst p) (snd p))))
   end.
 
 Definition toRelationalMetamodel_Class (t : Classes) (c : Object) : option (getTypeByClass t) :=
@@ -275,14 +252,14 @@ Definition toLink (t: References) (e: getTypeByReference t) : Link :=
 
 Definition getId (r : Object) : nat :=
   match r with
-  | (BuildObject TableClass c) => getTableId c
-  | (BuildObject ColumnClass a) => getColumnId a
+  | (BuildObject TableClass c) => table_id c
+  | (BuildObject ColumnClass a) => column_id a
   end.
 
 Definition getName (r : Object) : string :=
   match r with
-  | (BuildObject TableClass c) => getTableName c
-  | (BuildObject ColumnClass a) => getColumnName a
+  | (BuildObject TableClass c) => table_name c
+  | (BuildObject ColumnClass a) => column_name a
   end.
 
 (*Definition allTables (m : RelationalModel) : list Table :=
@@ -293,7 +270,7 @@ Definition allColumns (m : RelationalModel) : list Column :=
 
 Fixpoint getTableColumnsOnLinks (t : Table) (l : list Link) : option (list Column) :=
   match l with
-  | (BuildLink TableColumnsReference (BuildTableColumns tab c)) :: l1 => if beq_Table tab t then Some c else getTableColumnsOnLinks t l1
+  | (BuildLink TableColumnsReference (Build_TableColumns tab c)) :: l1 => if beq_Table tab t then Some c else getTableColumnsOnLinks t l1
   | _ :: l1 => getTableColumnsOnLinks t l1
   | nil => None
   end.
@@ -303,7 +280,7 @@ getTableColumnsOnLinks t (allModelLinks m).
 
 Fixpoint getColumnReferenceOnLinks (c : Column) (l : list Link) : option Table :=
   match l with
-  | (BuildLink ColumnReferenceReference (BuildColumnReference col t)) :: l1 => if beq_Column col c then Some t else getColumnReferenceOnLinks c l1
+  | (BuildLink ColumnReferenceReference (Build_ColumnReference col t)) :: l1 => if beq_Column col c then Some t else getColumnReferenceOnLinks c l1
   | _ :: l1 => getColumnReferenceOnLinks c l1
   | nil => None
   end.
@@ -312,8 +289,8 @@ Definition getColumnReference (c : Column) (m : Model Object Link) : option Tabl
 
 Definition bottomRelationalMetamodel_Class (c: Classes) : (getTypeByClass c) :=
   match c with
-  | TableClass => (BuildTable 0 "")
-  | ColumnClass => (BuildColumn 0 "")
+  | TableClass => (Build_Table 0 "")
+  | ColumnClass => (Build_Column 0 "")
   end.
 
 Lemma rel_invert : 

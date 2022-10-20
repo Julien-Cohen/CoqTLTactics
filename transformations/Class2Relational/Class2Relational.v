@@ -58,7 +58,7 @@ Definition Class2Relational' :=
     from [ClassClass]
     where (fun m a => true)
     to [elem [ClassClass] TableClass "tab"
-        (fun i m c => BuildTable (class_id c) (class_name c))
+        (fun i m c => Build_Table (class_id c) (class_name c))
         [link [ClassClass] TableClass TableColumnsReference
           (fun tls i m c t =>
             maybeBuildTableColumns t
@@ -69,7 +69,7 @@ Definition Class2Relational' :=
     from [AttributeClass]
     where (fun m a => negb (derived a))
     to [elem [AttributeClass] ColumnClass "col"
-        (fun i m a => BuildColumn (attr_id a) (attr_name a))
+        (fun i m a => Build_Column (attr_id a) (attr_name a))
         [link [AttributeClass] ColumnClass ColumnReferenceReference
           (fun tls i m a c =>
             maybeBuildColumnReference c

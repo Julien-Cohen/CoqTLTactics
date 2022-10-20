@@ -46,7 +46,7 @@ forall (cm : ClassModel) (rm : RelationalModel),
         In co1 cos ->
         In co2 cos ->
         co1 <> co2 ->
-        getColumnName co1 <> getColumnName co2).
+        column_name co1 <> column_name co2).
 Proof.
     intros.
     rewrite H in H1, H2, H3.
@@ -105,7 +105,7 @@ Proof.
                   unfold not.
                   intros.
                   inversion H15.
-                  unfold getColumnName in H15.
+                  unfold column_name in H15.
                   rewrite H15 in H0.
                   simpl in H0.
                   admit.
