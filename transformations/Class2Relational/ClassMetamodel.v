@@ -106,12 +106,14 @@ Definition getERoleTypesByReference (c: References): Set :=
 (* Generic types *)
 
 Inductive Object : Set :=
-| BuildObject : forall (c:Classes), (getTypeByClass c) -> Object.
+  ClassObject : Class -> Object
+| AttributeObject : Attribute -> Object.
+
 
 Definition beq_Object (c1 : Object) (c2 : Object) : bool :=
   match c1, c2 with
-  | BuildObject ClassClass o1, BuildObject ClassClass o2 => beq_Class o1 o2
-  | BuildObject AttributeClass o1, BuildObject AttributeClass o2 => beq_Attribute o1 o2
+  | ClassObject o1, ClassObject o2 => beq_Class o1 o2
+  | AttributeObject o1, AttributeObject o2 => beq_Attribute o1 o2
   | _, _ => false
   end.
 
@@ -129,7 +131,8 @@ Proof. repeat decide equality. Defined.
 
 Definition getClass (c : Object) : Classes :=
    match c with
-  | (BuildObject c _) => c
+   | ClassObject _ => ClassClass
+   | AttributeObject _ => AttributeClass
    end.
 
 Definition getReference (c : Link) : References :=
@@ -145,8 +148,8 @@ Definition instanceOfReference (cmr: References) (c : Link): bool :=
 
 Definition getObjectFromEAttributeValues (t : Classes) : (getEAttributeTypesByClass t) -> Object :=
   match t with
-  | ClassClass => (fun (p: nat * string) => (BuildObject ClassClass (Build_Class (fst p) (snd p))))
-  | AttributeClass => (fun (p: nat * bool * string) => (BuildObject AttributeClass (Build_Attribute (fst (fst p)) (snd (fst p)) (snd p))))
+  | ClassClass => (fun (p: nat * string) => (ClassObject (Build_Class (fst p) (snd p))))
+  | AttributeClass => (fun (p: nat * bool * string) => (AttributeObject (Build_Attribute (fst (fst p)) (snd (fst p)) (snd p))))
   end.
 
 Definition getLinkFromERoleValues (t : References) : (getERoleTypesByReference t) -> Link :=
@@ -157,11 +160,11 @@ Definition getLinkFromERoleValues (t : References) : (getERoleTypesByReference t
 
 Definition toClass (t : Classes) (c : Object) : option (getTypeByClass t).
 Proof.
-  destruct c.
-  destruct (eqClass_dec c t).
-  - rewrite e in g.
-    exact (Some g).
-  - exact None.
+  destruct t ; destruct c ; simpl.
+  exact (Some c).
+  exact None.
+  exact None.
+  exact (Some a).
 Defined.
 
 
@@ -191,28 +194,31 @@ Defined.
 
 (* Generic functions *)
 
-Definition toObjectFromClass (c :Class) : Object :=
-  (BuildObject ClassClass c).
+(*Definition toObjectFromClass (c :Class) : Object :=
+  (BuildObject ClassClass c).*)
 
-Definition toObjectFromAttribute (a :Attribute) : Object :=
-  (BuildObject AttributeClass a).
+(*Definition toObjectFromAttribute (a :Attribute) : Object :=
+  (BuildObject AttributeClass a).*)
 
-Definition toObject (t: Classes) (e: getTypeByClass t) : Object :=
-  (BuildObject t e).
+Definition toObject (t: Classes) (e: getTypeByClass t) : Object. 
+  destruct t ; simpl in e.
+  exact (ClassObject e).
+  exact (AttributeObject e).
+Defined. 
 
 Definition toLink (t: References) (e: getTypeByReference t) : Link :=
   (BuildLink t e).
 
 Definition getId (c : Object) : nat :=
   match c with
-  | (BuildObject ClassClass c) => class_id c
-  | (BuildObject AttributeClass a) => attr_id a
+  | ClassObject c => class_id c
+  | AttributeObject a => attr_id a
   end.
 
 Definition getName (c : Object) : string :=
   match c with
-  | (BuildObject ClassClass c) => class_name c
-  | (BuildObject AttributeClass a) => attr_name a
+  | ClassObject c => class_name c
+  | AttributeObject a => attr_name a
   end.
 
 (*Definition allClasses (m : ClassModel) : list Class :=
@@ -257,7 +263,7 @@ Definition getClassAttributes (c : Class) (m : Model Object Link) : option (list
 
 Definition getClassAttributesObjects (c : Class) (m : Model Object Link) : option (list Object) :=
   match getClassAttributes c m with
-  | Some l => Some (map toObjectFromAttribute l)
+  | Some l => Some (map AttributeObject l)
   | _ => None
   end.
 
@@ -329,13 +335,9 @@ Definition ClassModel : Set := Model Object Link.
 
 (* Useful lemmas *)
 Lemma Class_invert : 
-  forall (clec_arg: Classes) (t1 t2: getTypeByClass clec_arg), BuildObject clec_arg t1 = BuildObject clec_arg t2 -> t1 = t2.
+  forall (clec_arg: Classes) (t1 t2: getTypeByClass clec_arg), toObject clec_arg t1 = toObject clec_arg t2 -> t1 = t2.
 Proof.
-  intros.
-  inversion H.
-  apply inj_pair2_eq_dec in H1.
-  exact H1.
-  apply eqClass_dec.
+  intros. destruct clec_arg ; simpl in * ; congruence.
 Qed.
 
 Lemma Object_dec: 
@@ -346,8 +348,8 @@ Proof.
   intros.
   destruct a.
   destruct c.
-  + left. crush.
-  + right. crush.
+  + left. reflexivity. 
+  + right. reflexivity.
 Qed.
 
 Lemma Class_Object_cast:
@@ -355,12 +357,7 @@ Lemma Class_Object_cast:
     toClass ClassClass a = return c ->
       toObject ClassClass c = a.
 Proof.
-  intros.
-  unfold toClass in H.
-  destruct a.
-  unfold instanceOfClass in H.
-  simpl in H.
-  destruct (eqClass_dec c0 ClassClass); crush.
+  intros ; destruct a ; simpl in * ; congruence.
 Qed.
 
 Lemma Attribute_Object_cast:
@@ -368,12 +365,7 @@ Lemma Attribute_Object_cast:
     toClass AttributeClass a = return c ->
       toObject AttributeClass c = a.
 Proof.
-  intros.
-  unfold toClass in H.
-  destruct a.
-  unfold instanceOfClass in H.
-  simpl in H.
-  destruct (eqClass_dec c0 AttributeClass); crush.
+  intros ; destruct a ; simpl in * ; congruence.
 Qed.
 
 Lemma Class_dec :
@@ -394,18 +386,11 @@ Proof.
 Qed.
 
 Lemma eq_dec : forall (x y : Object), {x = y} + {x <> y}.
-  intros.
-  destruct x as [[] x], y as [[] y]; try (right; discriminate).
-  - destruct (Class_dec x y) as [H | H].
+  intros ; destruct x, y ; try (right; discriminate).
+  - destruct (Class_dec c c0).
     + left. congruence.
-    + right. contradict H.
-      inversion H.
-      apply Eqdep.EqdepTheory.inj_pair2 in H1.
-      assumption.
-  - destruct (Attribute_dec x y) as [H | H].
+    + right. congruence. 
+  - destruct (Attribute_dec a a0).
     + left. congruence.
-    + right. contradict H.
-      inversion H.
-      apply Eqdep.EqdepTheory.inj_pair2 in H1.
-      assumption.
+    + right. congruence.
 Qed.

@@ -63,34 +63,34 @@ Proof.
     - (* [x::_] [y::_] [z::_] *) 
       destruct x, x0, x1.
       + (* [x] [y] [z] *)
-        destruct o, o0, o1.  destruct c, c0, c1.
-        * destruct g0. simpl in H8. destruct H8. inversion H8. contradiction.
-        * destruct g0. simpl in H8. destruct H8. inversion H8. contradiction.
-        * destruct g0. simpl in H8. destruct H8. inversion H8. contradiction.
-        * destruct g0. simpl in H8. destruct H8. inversion H8. contradiction.
-        * destruct g1. simpl in H9. destruct H9. inversion H9. contradiction.
-        * destruct g1. simpl in H9. destruct H9. inversion H9. contradiction.
+        destruct o, o0, o1.  (*destruct c, c0, c1.*)
+        * (*destruct g0.*) simpl in H8. destruct H8. inversion H8. contradiction.
+        * (*destruct g0.*) simpl in H8. destruct H8. inversion H8. contradiction.
+        * (*destruct g0.*) simpl in H8. destruct H8. inversion H8. contradiction.
+        * (*destruct g0.*) simpl in H8. destruct H8. inversion H8. contradiction.
+        * (*destruct g1.*) simpl in H9. destruct H9. inversion H9. contradiction.
+        * (*destruct g1.*) simpl in H9. destruct H9. inversion H9. contradiction.
         * (* [a] [a] [c] *)
-          specialize (H0 g g0 g1).
-          remember (getClassAttributes g1 cm).
+          specialize (H0 a a0 c).
+          remember (getClassAttributes c cm).
           destruct o.
           --specialize (H0 l).
             apply allTuples_incl in H1.
             apply allTuples_incl in H2.
             apply allTuples_incl in H3.
             unfold incl in H1, H2, H3.
-            specialize (H1 (ClassMetamodel.toObject AttributeClass g)).
-            specialize (H2 (ClassMetamodel.toObject AttributeClass g0)).
-            specialize (H3 (ClassMetamodel.toObject ClassClass g1)).
-            assert (In (ClassMetamodel.toObject AttributeClass g) [ClassMetamodel.toObject AttributeClass g]).
+            specialize (H1 (ClassMetamodel.toObject AttributeClass a)).
+            specialize (H2 (ClassMetamodel.toObject AttributeClass a0)).
+            specialize (H3 (ClassMetamodel.toObject ClassClass c)).
+            assert (In (ClassMetamodel.toObject AttributeClass a) [ClassMetamodel.toObject AttributeClass a]).
             { left. reflexivity. }
-            assert (In (ClassMetamodel.toObject AttributeClass g0) [ClassMetamodel.toObject AttributeClass g0]).
+            assert (In (ClassMetamodel.toObject AttributeClass a0) [ClassMetamodel.toObject AttributeClass a0]).
             { left. reflexivity. }
-            assert (In (ClassMetamodel.toObject ClassClass g1) [ClassMetamodel.toObject ClassClass g1]).
+            assert (In (ClassMetamodel.toObject ClassClass c) [ClassMetamodel.toObject ClassClass c]).
             { left. reflexivity. }
             assert (return l=return l). {reflexivity. }
             specialize (H0 (H1 H11) (H2 H12) (H3 H13) H14).
-            destruct g, g0.
+            destruct a, a0.
             destruct derived, derived0.
             ++ simpl in H8, H9, H10. contradiction.
             ++ simpl in H8, H9, H10. contradiction.
@@ -117,16 +117,17 @@ Proof.
                ** contradiction.
                ** contradiction.
         -- admit.
-    * destruct g1. destruct derived. 
+    * destruct a1. destruct derived. 
       -- simpl in H10. contradiction. 
       -- simpl in H10. destruct H10. inversion H10. contradiction.
-  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction.
-  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction.
-  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction.
-  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction.
-  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction.
-  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction.
-  + destruct o, o0, o1, o2. destruct c, c0, c1, c2; contradiction. 
+  + destruct o, o0, o1, o2 ; contradiction.
+  + destruct o, o0, o1, o2 ; contradiction.
+  + destruct o, o0, o1, o2 ; contradiction.
+  + destruct o, o0, o1, o2 ; contradiction.
+  + destruct o, o0, o1, o2 ; contradiction.
+  + destruct o, o0, o1, o2 ; contradiction.
+  + destruct o, o0, o1, o2 ; contradiction.
+  
  Admitted.
 
 

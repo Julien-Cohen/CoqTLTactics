@@ -49,17 +49,17 @@ Proof.
     - (* [x::_] [] *) contradiction H5.
     - (* [x::_] [y::_] *) destruct x, x0.
         + (* [x] [y] *) 
-          destruct o, o0. destruct c, c0.
+          destruct o, o0. 
 
-            * (*[c] [c]*) specialize (H0 g g0).
+            * (*[c] [c]*) specialize (H0 c c0).
                 apply allTuples_incl in H1.
                 apply allTuples_incl in H2.
                 unfold incl in H1, H2.
-                specialize (H1 (ClassMetamodel.toObject ClassClass g)).
-                specialize (H2 (ClassMetamodel.toObject ClassClass g0)).
-                assert (In (ClassMetamodel.toObject ClassClass g) [ClassMetamodel.toObject ClassClass g]). 
+                specialize (H1 (ClassMetamodel.toObject ClassClass c)).
+                specialize (H2 (ClassMetamodel.toObject ClassClass c0)).
+                assert (In (ClassMetamodel.toObject ClassClass c) [ClassMetamodel.toObject ClassClass c]). 
                 { left. reflexivity. }
-                assert (In (ClassMetamodel.toObject ClassClass g0) [ClassMetamodel.toObject ClassClass g0]). 
+                assert (In (ClassMetamodel.toObject ClassClass c0) [ClassMetamodel.toObject ClassClass c0]). 
                 { left. reflexivity. }
                 specialize (H0 (H1 H6)).
                 specialize (H0 (H2 H7)).
@@ -72,7 +72,7 @@ Proof.
                    apply H0.
                    rewrite <- H4 in H3.
                    rewrite <- H5 in H3.
-                   destruct g, g0.
+                   destruct c, c0.
                    simpl in H3.
                    unfold not.
                    intros.
@@ -84,29 +84,29 @@ Proof.
                 -- contradiction. 
                 -- contradiction.
                 -- contradiction.
-            * (*[c] [a]*) destruct g0. destruct derived.
+            * (*[c] [a]*) destruct a. destruct derived.
                 -- contradiction.
                 -- simpl in H5. destruct H5. inversion H5. contradiction. 
-            * (*[a] [c]*) destruct g . destruct derived.
+            * (*[a] [c]*) destruct a . destruct derived.
                 -- contradiction.
                 -- simpl in H4. destruct H4. inversion H4. contradiction.
-            * (*[a] [a]*) destruct g. destruct derived.
+            * (*[a] [a]*) destruct a. destruct derived.
                 -- contradiction.
                 -- simpl in H4. destruct H4. inversion H4. contradiction.
         + (* [x] [y;y';_] *)
-            destruct o, o0 ; destruct c, c0.
+            destruct o, o0. 
             * contradiction.
             * contradiction.
             * contradiction.
             * contradiction.
         + (* [x;x';_] [y] *)
-            destruct o, o0 ; destruct c, c0.
+            destruct o, o0. 
             * contradiction.
             * contradiction.
             * contradiction.
             * contradiction.
         + (* [x;x';_] [y;y';_] *)
-            destruct o, o0 ; destruct c, c0.
+            destruct o, o0.
             * contradiction.
             * contradiction.
             * contradiction.

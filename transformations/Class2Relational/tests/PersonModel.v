@@ -14,9 +14,9 @@ Require Import transformations.Class2Relational.ClassMetamodel.
 Definition PersonModel : Model ClassMetamodel.Object ClassMetamodel.Link :=
   (Build_Model
      (* elements *)
-     (     (ClassMetamodel.BuildObject ClassClass (Build_Class 0 "Person")) 
-        :: (ClassMetamodel.BuildObject AttributeClass (Build_Attribute 1 false "parent")) 
-        :: (ClassMetamodel.BuildObject AttributeClass (Build_Attribute 2 true "sibling")) 
+     (     (ClassObject (Build_Class 0 "Person")) 
+        :: (AttributeObject (Build_Attribute 1 false "parent")) 
+        :: (AttributeObject (Build_Attribute 2 true "sibling")) 
         :: nil)
 
      (* links *)

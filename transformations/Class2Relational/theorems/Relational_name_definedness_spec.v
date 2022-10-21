@@ -86,7 +86,7 @@ Proof.
       specialize (H1 c).
       assert (In c [c]). { left. reflexivity. }
       specialize (H0 (H1 H3)).
-      do 2 destruct c. (* Case analysis on source element type *)
+      destruct c. (* Case analysis on source element type *)
       * (* [Class] *) 
         rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
         do 2 destruct H2.
@@ -119,7 +119,7 @@ Proof.
                      inversion H7.
                 **** contradiction H6.
            *** contradiction H2.
-      * (* [Attribute] *) destruct g.
+      * (* [Attribute] *) destruct a.
         destruct derived.
         -- (* derived *) 
            rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
@@ -169,8 +169,9 @@ Proof.
                         apply H0.
                    **** contradiction H6.
                *** contradiction H2.
-    + (* Other patterns *) do 2 destruct c.
-      * destruct c0. 
+    + (* Other patterns *) destruct c.
+        
+      * (* [Class] *) 
         rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
         do 2 destruct H2.
         rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
@@ -186,7 +187,7 @@ Proof.
           simpl in H4.
           inversion H4.
           contradiction H2.
-      * destruct c0. 
+      *  
         rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
         do 2 destruct H2.
         rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
