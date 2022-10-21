@@ -40,15 +40,15 @@ Compute
   (Model_beq beq_Object beq_Link 
     (execute Class2Relational PersonModel) 
     {|
-       Model.modelElements := BuildObject TableClass
+       Model.modelElements := RelationalMetamodel.toObject TableClass
                                 (Build_Table 0 "Person")
-                              :: BuildObject ColumnClass
+                              :: RelationalMetamodel.toObject ColumnClass
                                    (Build_Column 1 "parent") :: nil;
-       Model.modelLinks := BuildLink
+       Model.modelLinks := RelationalMetamodel.toLink
                              TableColumnsReference
                              (Build_TableColumns (Build_Table 0 "Person")
                                 (Build_Column 1 "parent" :: nil))
-                           :: BuildLink
+                           :: RelationalMetamodel.toLink
                                 ColumnReferenceReference
                                 (Build_ColumnReference
                                    (Build_Column 1 "parent")
