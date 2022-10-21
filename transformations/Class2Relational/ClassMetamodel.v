@@ -118,7 +118,8 @@ Definition beq_Object (c1 : Object) (c2 : Object) : bool :=
   end.
 
 Inductive Link : Set :=
-| BuildLink : forall (c:References), (getTypeByReference c) -> Link.
+   | ClassAttributeLink : ClassAttributes -> Link
+   | AttributeTypeLink : AttributeType -> Link.
 
 
 (* Reflective functions *)
@@ -137,7 +138,8 @@ Definition getClass (c : Object) : Classes :=
 
 Definition getReference (c : Link) : References :=
    match c with
-  | (BuildLink c _) => c
+   | ClassAttributeLink _ => ClassAttributesReference
+   | AttributeTypeLink _ => AttributeTypeReference
    end.
 
 Definition instanceOfClass (cmc: Classes) (c : Object): bool :=
@@ -154,8 +156,8 @@ Definition getObjectFromEAttributeValues (t : Classes) : (getEAttributeTypesByCl
 
 Definition getLinkFromERoleValues (t : References) : (getERoleTypesByReference t) -> Link :=
   match t with
-  | ClassAttributesReference => (fun (p: Class * list Attribute) => (BuildLink ClassAttributesReference (Build_ClassAttributes (fst p) (snd p))))
-  | AttributeTypeReference => (fun (p: Attribute * Class) => (BuildLink AttributeTypeReference (Build_AttributeType (fst p) (snd p))))
+  | ClassAttributesReference => (fun (p: Class * list Attribute) => (ClassAttributeLink (Build_ClassAttributes (fst p) (snd p))))
+  | AttributeTypeReference => (fun (p: Attribute * Class) => (AttributeTypeLink (Build_AttributeType (fst p) (snd p))))
   end.
 
 Definition toClass (t : Classes) (c : Object) : option (getTypeByClass t).
@@ -185,20 +187,15 @@ match c with
 
 Definition toReference (t : References) (c : Link) : option (getTypeByReference t).
 Proof.
-  destruct c.
-  destruct (eqReference_dec t c).
-  - rewrite <- e in g.
-    exact (Some g).
-  - exact None.
+  destruct t ; destruct c ; simpl.
+  exact (Some c).
+  exact None.
+  exact None.
+  exact (Some a).
 Defined.
 
 (* Generic functions *)
 
-(*Definition toObjectFromClass (c :Class) : Object :=
-  (BuildObject ClassClass c).*)
-
-(*Definition toObjectFromAttribute (a :Attribute) : Object :=
-  (BuildObject AttributeClass a).*)
 
 Definition toObject (t: Classes) (e: getTypeByClass t) : Object. 
   destruct t ; simpl in e.
@@ -206,8 +203,12 @@ Definition toObject (t: Classes) (e: getTypeByClass t) : Object.
   exact (AttributeObject e).
 Defined. 
 
-Definition toLink (t: References) (e: getTypeByReference t) : Link :=
-  (BuildLink t e).
+Definition toLink (t: References) (e: getTypeByReference t) : Link. 
+  destruct t ; simpl in e.
+  exact (ClassAttributeLink e).
+  exact (AttributeTypeLink e).
+Defined.
+
 
 Definition getId (c : Object) : nat :=
   match c with
@@ -253,7 +254,7 @@ Qed.*)
 
 Fixpoint getClassAttributesOnLinks (c : Class) (l : list Link) : option (list Attribute) :=
   match l with
-  | (BuildLink ClassAttributesReference (Build_ClassAttributes cl a)) :: l1 => if beq_Class cl c then Some a else getClassAttributesOnLinks c l1
+  | (ClassAttributeLink (Build_ClassAttributes cl a)) :: l1 => if beq_Class cl c then Some a else getClassAttributesOnLinks c l1
   | _ :: l1 => getClassAttributesOnLinks c l1
   | nil => None
   end.
@@ -269,7 +270,7 @@ Definition getClassAttributesObjects (c : Class) (m : Model Object Link) : optio
 
 Fixpoint getAttributeTypeOnLinks (a : Attribute) (l : list Link) : option Class :=
   match l with
-  | (BuildLink AttributeTypeReference (Build_AttributeType att c)) :: l1 => if beq_Attribute att a then Some c else getAttributeTypeOnLinks a l1
+  | (AttributeTypeLink (Build_AttributeType att c)) :: l1 => if beq_Attribute att a then Some c else getAttributeTypeOnLinks a l1
   | _ :: l1 => getAttributeTypeOnLinks a l1
   | nil => None
   end.

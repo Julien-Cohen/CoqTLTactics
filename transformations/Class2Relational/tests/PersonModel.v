@@ -20,9 +20,9 @@ Definition PersonModel : Model ClassMetamodel.Object ClassMetamodel.Link :=
         :: nil)
 
      (* links *)
-     (     (ClassMetamodel.BuildLink ClassAttributesReference (Build_ClassAttributes (Build_Class 0 "Person") ((Build_Attribute 1 false "parent")::nil))) 
-        :: (ClassMetamodel.BuildLink AttributeTypeReference (Build_AttributeType (Build_Attribute 1 false "parent") (Build_Class 0 "Person"))) 
-        :: (ClassMetamodel.BuildLink ClassAttributesReference (Build_ClassAttributes (Build_Class 0 "Person") ((Build_Attribute 2 true "sibling")::nil))) 
-        :: (ClassMetamodel.BuildLink AttributeTypeReference (Build_AttributeType (Build_Attribute 2 true "sibling") (Build_Class 0 "Person"))) 
+     (     (ClassAttributeLink (Build_ClassAttributes (Build_Class 0 "Person") ((Build_Attribute 1 false "parent")::nil))) 
+        :: (AttributeTypeLink (Build_AttributeType (Build_Attribute 1 false "parent") (Build_Class 0 "Person"))) 
+        :: (ClassAttributeLink (Build_ClassAttributes (Build_Class 0 "Person") ((Build_Attribute 2 true "sibling")::nil))) 
+        :: (AttributeTypeLink (Build_AttributeType (Build_Attribute 2 true "sibling") (Build_Class 0 "Person"))) 
         :: nil)
   ).
