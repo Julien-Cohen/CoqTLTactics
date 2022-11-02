@@ -8,11 +8,7 @@ Require Import core.modeling.ConcreteSyntax.
 Require Import core.Certification.
 Require Import core.Syntax.
 Require Import core.utils.Utils.
-Require Import transformations.Families2Persons.Families.
-Require Import transformations.Families2Persons.Persons.
 Require Import transformations.Families2Persons.Families2Persons.
-Require Import transformations.Families2Persons.tests.sampleFamilies.
-
 
 Theorem tr_FamiliesToPersons :
     forall (sm : FamiliesModel) (te : PersonsMetamodel_Object), 

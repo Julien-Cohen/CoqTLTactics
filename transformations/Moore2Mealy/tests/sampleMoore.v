@@ -10,6 +10,9 @@ Require Import String.
 Require Import transformations.Moore2Mealy.Moore.
 Open Scope string_scope.
 
+(* S0("1") --"1"-> S1("0")  
+	 	   <-"0"--
+	*)
 
 Definition InputModel : Model MooreMetamodel_Object MooreMetamodel_Link :=
 	(Build_Model
@@ -20,9 +23,9 @@ Definition InputModel : Model MooreMetamodel_Object MooreMetamodel_Link :=
 		(Build_MooreMetamodel_Object TransitionClass (BuildTransition  "1")) :: 
 		nil)
 		(
-		(Build_MooreMetamodel_Link TransitionSourceReference (BuildTransitionSource (BuildTransition  "0") (BuildState  "S0" "1"))) ::
-		(Build_MooreMetamodel_Link TransitionTargetReference (BuildTransitionTarget (BuildTransition  "0") (BuildState  "S1" "0"))) ::
-		(Build_MooreMetamodel_Link TransitionSourceReference (BuildTransitionSource (BuildTransition  "1") (BuildState  "S1" "0"))) ::
-		(Build_MooreMetamodel_Link TransitionTargetReference (BuildTransitionTarget (BuildTransition  "1") (BuildState  "S0" "1"))) ::
+		(Build_MooreMetamodel_Link TransitionSourceReference (BuildTransitionSource (BuildTransition  "0") (BuildState  "S1" "0"))) ::
+		(Build_MooreMetamodel_Link TransitionTargetReference (BuildTransitionTarget (BuildTransition  "0") (BuildState  "S0" "1"))) ::
+		(Build_MooreMetamodel_Link TransitionSourceReference (BuildTransitionSource (BuildTransition  "1") (BuildState  "S0" "1"))) ::
+		(Build_MooreMetamodel_Link TransitionTargetReference (BuildTransitionTarget (BuildTransition  "1") (BuildState  "S1" "0"))) ::
 		nil)
 	).

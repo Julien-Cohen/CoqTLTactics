@@ -11,8 +11,8 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
-Require Import Families2Persons.Families.
-Require Import Families2Persons.Persons.
+Require Export Families2Persons.Families.
+Require Export Families2Persons.Persons.
 
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.

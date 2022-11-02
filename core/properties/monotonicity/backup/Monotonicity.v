@@ -13,7 +13,7 @@ Require Import FunctionalExtensionality.
 
 
 (*************************************************************)
-(** * Monotonicity on model elements                         *)
+(** * Monotonicity Lifting on model elements                 *)
 (*************************************************************)
 
 Definition SourceModel_elem_incl {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
