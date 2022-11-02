@@ -45,7 +45,6 @@ Proof.
   simpl in H.
   inversion H.
 Qed.
-Require Import core.properties.monotonicity.monotonicity.
 
 (*Theorem ifDistrThenMon (tr: Transformation) :
   Distributivity tr -> Monotonicity tr.

@@ -35,6 +35,8 @@ core/modeling/ModelingEngine.v
 core/modeling/Parser.v
 core/modeling/ModelingSemantics.v
 
+# Engine variants
+
 #core/modeling/twophases/TwoPhaseEngine.v
 #core/modeling/twophases/TwoPhaseSemantics.v
 #core/modeling/twophases/TwoPhaseCertification.v
@@ -44,6 +46,8 @@ core/modeling/ModelingSemantics.v
 
 #core/modeling/byrule/ByRuleSemantics.v
 #core/modeling/byrule/Certification_ByRuleSemantics.v\
+
+# User transformations
 
 transformations/Class2Relational/ClassMetamodel.v
 transformations/Class2Relational/RelationalMetamodel.v
@@ -82,12 +86,12 @@ transformations/Moore2Mealy/tests/sampleMoore.v
 transformations/Moore2Mealy/MooreSemantics.v
 transformations/Moore2Mealy/MealySemantics.v
 
-# Proofs
+# Engine proofs
 
 ### prop - mono
 core/properties/monotonicity/Moore2Mealy_monotonicity_witness.v
 core/properties/monotonicity/sampleMoore_monotonicity.v
-core/properties/monotonicity/monotonicity.v
+# core/properties/monotonicity/Monotonicity.v
 
 ### prop - injective
 core/properties/injectivity/sampleMoore_injectivity.v
@@ -112,13 +116,9 @@ core/properties/surjectivity/surjectivity.v
 ### prop - additivity
 core/properties/additivity/AdditivityRule.v
 
-
 ### prop - distributiveity
 core/properties/distributivity/sampleMoore_distributivity.v
 core/properties/distributivity/distributivity.v
-
-
-
 
 ### prop - lifting 
 #core/properties/Lifting.v
@@ -135,11 +135,18 @@ core/Certification.v
 #core/modeling/properties/ModelingAdditivityRule.v
 #core/modeling/properties/ModelingAdditivityRuleExt.v
 
-### user proofs
-#transformations/Class2Relational/theorems/All_classes_instantiate_impl.v
-#transformations/Class2Relational/theorems/All_classes_match_impl.v
-#transformations/Class2Relational/theorems/Relational_name_definedness_spec.v
-#transformations/Class2Relational/theorems/Table_name_uniqueness.v
-#transformations/Class2Relational/theorems/Attribute_name_preservation.v
-#transformations/Class2Relational/theorems/Column_name_uniqueness.v
-#transformations/Class2Relational/theorems/Relational_resolve_spec.v
+# User proofs
+
+transformations/Class2Relational/theorems/All_classes_instantiate_impl.v
+transformations/Class2Relational/theorems/All_classes_match_impl.v
+transformations/Class2Relational/theorems/Attribute_name_preservation.v
+#transformations/Class2Relational/theorems/C2R_monotonicity.v
+#transformations/Class2Relational/theorems/Column_name_uniqueness.v #Admitted
+transformations/Class2Relational/theorems/Relational_name_definedness_spec.v
+transformations/Class2Relational/theorems/Relational_resolve_spec.v
+#transformations/Class2Relational/theorems/Relational_resolve.v
+transformations/Class2Relational/theorems/Table_name_uniqueness.v
+
+transformations/Families2Persons/theorems/sampleTheorems.v
+
+transformations/Moore2Mealy/theorems/moore2mealy.v

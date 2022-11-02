@@ -6,7 +6,7 @@ Require Import core.Semantics.
 Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
-Require Import core.Properties.
+Require Import core.properties.monotonicity.Monotonicity.
 
 Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.

@@ -8,7 +8,7 @@ Require Import List.
 Require Import core.utils.Utils.
 Require Import core.Semantics.
 Require Import core.Certification.
-Require Import core.modeling.Metamodel.
+Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
 Require Import transformations.Class2Relational.Class2Relational.

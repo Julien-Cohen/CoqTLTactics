@@ -18,8 +18,6 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
-Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_witness.
-Require Import core.properties.monotonicity.sampleMoore_monotonicity.
 
 (*************************************************************)
 (** * Monotonicity of CoqTL                                  *)
@@ -37,6 +35,9 @@ Definition Monotonicity
 forall sm1 sm2,
     SourceModel_elem_incl sm1 sm2 ->
     TargetModel_elem_incl (execute tr sm1) (execute tr sm2).  
+
+Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_witness.
+Require Import core.properties.monotonicity.sampleMoore_monotonicity.
 
 Lemma Moore2Mealy_non_mono_contrapos:
 exists sm1 sm2 : SourceModel,
