@@ -23,6 +23,8 @@ Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
 
+From transformations.Class2Relational Require Tactics.
+
 Theorem Column_name_uniqueness:
 forall (cm : ClassModel) (rm : RelationalModel), 
     (* transformation *)
@@ -52,25 +54,12 @@ Proof.
     rewrite H in H1, H2, H3.
     rewrite (tr_execute_in_elements Class2Relational) in H1, H2, H3.
     do 2 destruct H1, H2, H3.
-    destruct x, x0, x1.
-    - contradiction.
-    - contradiction.
-    - contradiction.
-    - contradiction.
-    - contradiction.
-    - contradiction.
-    - contradiction.
-    - (* [x::_] [y::_] [z::_] *) 
-      destruct x, x0, x1.
-      + (* [x] [y] [z] *)
-        destruct o, o0, o1.  (*destruct c, c0, c1.*)
-        * (*destruct g0.*) simpl in H8. destruct H8. inversion H8. contradiction.
-        * (*destruct g0.*) simpl in H8. destruct H8. inversion H8. contradiction.
-        * (*destruct g0.*) simpl in H8. destruct H8. inversion H8. contradiction.
-        * (*destruct g0.*) simpl in H8. destruct H8. inversion H8. contradiction.
-        * (*destruct g1.*) simpl in H9. destruct H9. inversion H9. contradiction.
-        * (*destruct g1.*) simpl in H9. destruct H9. inversion H9. contradiction.
-        * (* [a] [a] [c] *)
+    repeat Tactics.show_singleton.
+    
+    simpl RelationalMetamodel.toObject in *.
+    simpl ClassMetamodel.toObject in *.
+    repeat Tactics.show_origin. 
+
           specialize (H0 a a0 c).
           remember (getClassAttributes c cm).
           destruct o.
@@ -79,8 +68,8 @@ Proof.
             apply allTuples_incl in H2.
             apply allTuples_incl in H3.
             unfold incl in H1, H2, H3.
-            specialize (H1 (ClassMetamodel.toObject AttributeClass a)).
-            specialize (H2 (ClassMetamodel.toObject AttributeClass a0)).
+            specialize (H1 (ClassMetamodel.toObject AttributeClass a0)).
+            specialize (H2 (ClassMetamodel.toObject AttributeClass a)).
             specialize (H3 (ClassMetamodel.toObject ClassClass c)).
             assert (In (ClassMetamodel.toObject AttributeClass a) [ClassMetamodel.toObject AttributeClass a]).
             { left. reflexivity. }
@@ -89,7 +78,7 @@ Proof.
             assert (In (ClassMetamodel.toObject ClassClass c) [ClassMetamodel.toObject ClassClass c]).
             { left. reflexivity. }
             assert (return l=return l). {reflexivity. }
-            specialize (H0 (H1 H11) (H2 H12) (H3 H13) H14).
+            specialize (H0 (H2 H11) (H1 H12) (H3 H13) H14).
             destruct a, a0.
             destruct derived, derived0.
             ++ simpl in H8, H9, H10. contradiction.
@@ -117,17 +106,7 @@ Proof.
                ** contradiction.
                ** contradiction.
         -- admit.
-    * destruct a1. destruct derived. 
-      -- simpl in H10. contradiction. 
-      -- simpl in H10. destruct H10. inversion H10. contradiction.
-  + destruct o, o0, o1, o2 ; contradiction.
-  + destruct o, o0, o1, o2 ; contradiction.
-  + destruct o, o0, o1, o2 ; contradiction.
-  + destruct o, o0, o1, o2 ; contradiction.
-  + destruct o, o0, o1, o2 ; contradiction.
-  + destruct o, o0, o1, o2 ; contradiction.
-  + destruct o, o0, o1, o2 ; contradiction.
-  
+    
  Admitted.
 
 
