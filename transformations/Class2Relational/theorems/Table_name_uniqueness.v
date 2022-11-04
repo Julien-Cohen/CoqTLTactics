@@ -43,11 +43,11 @@ forall (cm : ClassModel) (rm : RelationalModel),
     t1 <> t2 -> 
     table_name t1 <> table_name t2).
 Proof.
-    intros.
+    intros cm rm E PRE t1 t2 IN1 IN2 D.
     subst rm.
-    rewrite (tr_execute_in_elements Class2Relational) in H1, H2.
-    destruct H1 as (? & (H1 & H11)).
-    destruct H2 as (? & (H2 & H22)).
+    rewrite (tr_execute_in_elements Class2Relational) in IN1, IN2.
+    destruct IN1 as (? & (H1 & H11)).
+    destruct IN2 as (? & (H2 & H22)).
 
     repeat Tactics.show_singleton.
 
@@ -57,7 +57,7 @@ Proof.
     repeat Tactics.show_origin.
 
 
-                specialize (H0 c0 c).
+                specialize (PRE c0 c).
                 apply allTuples_incl in H1.
                 apply allTuples_incl in H2.
                 unfold incl in H1, H2.
@@ -67,16 +67,16 @@ Proof.
                 { left. reflexivity. }
                 assert (I2 : In (ClassObject c0) [ClassObject c0]). 
                 { left. reflexivity. }
-                specialize (H0 (H2 I2)).
-                specialize (H0 (H1 I1)).
+                specialize (PRE (H2 I2)).
+                specialize (PRE (H1 I1)).
                 clear I1 I2 H1 H2.
                 simpl in H11, H22.
                 destruct H11 ; [ | contradiction].
                 destruct H22 ; [ | contradiction].
-                apply rel_invert in H1 ;
+                apply rel_invert in H0 ;
                 apply rel_invert in H ; subst ; simpl in *.
-                apply not_eq_sym ; apply H0.
-                contradict H3.
+                apply not_eq_sym ; apply PRE.
+                contradict D.
                 subst ; reflexivity.
 
 Qed.
