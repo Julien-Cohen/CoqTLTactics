@@ -30,85 +30,93 @@ forall (cm : ClassModel) (rm : RelationalModel),
     (* transformation *)
     rm = execute Class2Relational cm ->
     (* precondition *)
-    (forall (at1: Attribute) (at2: Attribute) (cl: Class) (ats: list Attribute),
+    (forall (at1: Attribute) (at2: Attribute) (cl: Class) (*(ats: list Attribute)*),
         In (ClassMetamodel.toObject AttributeClass at1) (allModelElements cm) ->
         In (ClassMetamodel.toObject AttributeClass at2) (allModelElements cm) ->
         In (ClassMetamodel.toObject ClassClass cl) (allModelElements cm) ->
-        getClassAttributes cl cm = Some ats ->
+(*        getClassAttributes cl cm = Some ats ->
         In at1 ats ->
-        In at2 ats ->
+        In at2 ats ->*)
         at1 <> at2 ->
         attr_name at1 <> attr_name at2) ->
     (* postcondition *)
-    (forall (co1: Column) (co2: Column) (ta: Table) (cos: list Column),
+    (forall (co1: Column) (co2: Column) (ta: Table) (*(cos: list Column)*),
         In (RelationalMetamodel.toObject ColumnClass co1) (allModelElements rm) ->
         In (RelationalMetamodel.toObject ColumnClass co2) (allModelElements rm) ->
         In (RelationalMetamodel.toObject TableClass ta) (allModelElements rm) ->
-        getTableColumns ta rm = Some cos ->
+(*        getTableColumns ta rm = Some cos ->
         In co1 cos ->
-        In co2 cos ->
+        In co2 cos ->*)
         co1 <> co2 ->
         column_name co1 <> column_name co2).
 Proof.
-    intros.
-    rewrite H in H1, H2, H3.
-    rewrite (tr_execute_in_elements Class2Relational) in H1, H2, H3.
-    do 2 destruct H1, H2, H3.
+    intros cm rm E PRE co1 co2 ta IN1 IN2 IN3 D.
+    subst rm.
+
+    rewrite (tr_execute_in_elements Class2Relational) in IN1, IN2, IN3.
+    destruct IN1 as (? & (H1 & H11)).
+    destruct IN2 as (? & (H2 & H22)).
+    destruct IN3 as (? & (H3 & H33)).
+
+
     repeat Tactics.show_singleton.
     
     simpl RelationalMetamodel.toObject in *.
     simpl ClassMetamodel.toObject in *.
     repeat Tactics.show_origin. 
 
-          specialize (H0 a a0 c).
-          remember (getClassAttributes c cm).
-          destruct o.
-          --specialize (H0 l).
+          specialize (PRE a a0 c).
+ 
             apply allTuples_incl in H1.
             apply allTuples_incl in H2.
             apply allTuples_incl in H3.
             unfold incl in H1, H2, H3.
-            specialize (H1 (ClassMetamodel.toObject AttributeClass a0)).
-            specialize (H2 (ClassMetamodel.toObject AttributeClass a)).
-            specialize (H3 (ClassMetamodel.toObject ClassClass c)).
-            assert (In (ClassMetamodel.toObject AttributeClass a) [ClassMetamodel.toObject AttributeClass a]).
-            { left. reflexivity. }
-            assert (In (ClassMetamodel.toObject AttributeClass a0) [ClassMetamodel.toObject AttributeClass a0]).
-            { left. reflexivity. }
-            assert (In (ClassMetamodel.toObject ClassClass c) [ClassMetamodel.toObject ClassClass c]).
-            { left. reflexivity. }
-            assert (return l=return l). {reflexivity. }
-            specialize (H0 (H2 H11) (H1 H12) (H3 H13) H14).
-            destruct a, a0.
-            destruct derived, derived0.
-            ++ simpl in H8, H9, H10. contradiction.
-            ++ simpl in H8, H9, H10. contradiction.
-            ++ simpl in H8, H9, H10. contradiction.
-            ++ simpl in H8, H9, H10. 
-               destruct H8, H9, H10.
-               ** apply rel_invert in H8.
-                  apply rel_invert in H9.
-                  apply rel_invert in H10.
-                  rewrite <- H8.
-                  rewrite <- H9.
-                  unfold not.
-                  intros.
-                  inversion H15.
-                  unfold column_name in H15.
-                  rewrite H15 in H0.
-                  simpl in H0.
-                  admit.
-               ** contradiction.
-               ** contradiction.
-               ** contradiction.
-               ** contradiction.
-               ** contradiction.
-               ** contradiction.
-               ** contradiction.
-        -- admit.
-    
- Admitted.
+            specialize (H1 (AttributeObject a)).
+            specialize (H2 (AttributeObject a0)).
+            specialize (H3 (ClassObject c)).
 
+
+            assert (I4 : In (AttributeObject a) (allModelElements cm)).
+            { apply H1. simpl. auto. }
+
+            clear H1.
+
+            assert (I5 : In (AttributeObject a0) (allModelElements cm)).       
+            { apply H2. simpl. auto. }
+
+            clear H2.
+
+            assert (I6 : In (ClassObject c) (allModelElements cm)).
+            { apply H3. simpl. auto. }
+
+            clear H3.
+
+
+
+            specialize (PRE I4 I5 I6). clear I4 I5 I6.
+
+            simpl in H11.
+
+            destruct a, a0 ; [] ; simpl in *.
+            replace derived with false in *  ; [ | solve [destruct derived ; auto] ].
+            replace derived0 with false in * ; [ | solve [destruct derived0 ; auto] ].
+
+            simpl in H11, H22.
+
+            destruct H33 as [ H33 | H33] ; [ | contradiction].
+            destruct H22 as [ H22 | H22] ; [ | contradiction].
+            destruct H11 as [ H11 | H11] ; [ | contradiction].
+
+            apply rel_invert in H11.
+            apply rel_invert in H22.
+            apply rel_invert in H33.
+            subst. simpl.
+
+            apply PRE.
+            contradict D.
+            injection D ; clear D ; intros ; subst.
+            reflexivity.
+Qed.
 
  
 
