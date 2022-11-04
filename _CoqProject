@@ -95,17 +95,17 @@ core/properties/monotonicity/sampleMoore_monotonicity.v
 
 ### prop - injective
 core/properties/injectivity/sampleMoore_injectivity.v
-core/properties/injectivity/injectivity.v
+core/properties/injectivity/Injectivity.v
 
 ### prop - confluence
 core/properties/confluence/basic/basicSyntax.v
 core/properties/confluence/basic/basicExpressions.v
 core/properties/confluence/basic/basicSemantics.v
-core/properties/confluence/confluence.v
+core/properties/confluence/Confluence.v
 core/properties/confluence/examples/moore2mealy_confluence.v
 
 ### prop - universality
-core/properties/universality/universality.v
+core/properties/universality/Universality.v
 
 ### prop - totality
 core/properties/totality/totality.v
