@@ -53,12 +53,8 @@ Proof.
     intros cm rm E PRE co1 co2 ta IN1 IN2 IN3 D.
     subst rm.
 
-    rewrite (tr_execute_in_elements Class2Relational) in IN1, IN2, IN3.
-    destruct IN1 as (? & (H1 & H11)).
-    destruct IN2 as (? & (H2 & H22)).
-    destruct IN3 as (? & (H3 & H33)).
-
-
+    repeat Tactics.destruct_execute.
+   
     repeat Tactics.show_singleton.
     
     simpl RelationalMetamodel.toObject in *.
@@ -67,45 +63,45 @@ Proof.
 
           specialize (PRE a a0 c).
  
-            apply allTuples_incl in H1.
-            apply allTuples_incl in H2.
-            apply allTuples_incl in H3.
-            unfold incl in H1, H2, H3.
-            specialize (H1 (AttributeObject a)).
-            specialize (H2 (AttributeObject a0)).
-            specialize (H3 (ClassObject c)).
+            apply allTuples_incl in IN1.
+            apply allTuples_incl in IN2.
+            apply allTuples_incl in IN3.
+            unfold incl in IN1, IN2, IN3.
+            specialize (IN1 (AttributeObject a)).
+            specialize (IN2 (AttributeObject a0)).
+            specialize (IN3 (ClassObject c)).
 
 
             assert (I4 : In (AttributeObject a) (allModelElements cm)).
-            { apply H1. simpl. auto. }
+            { apply IN1. simpl. auto. }
 
-            clear H1.
+            clear IN1.
 
             assert (I5 : In (AttributeObject a0) (allModelElements cm)).       
-            { apply H2. simpl. auto. }
+            { apply IN2. simpl. auto. }
 
-            clear H2.
+            clear IN2.
 
             assert (I6 : In (ClassObject c) (allModelElements cm)).
-            { apply H3. simpl. auto. }
+            { apply IN3. simpl. auto. }
 
-            clear H3.
+            clear IN3.
 
 
 
             specialize (PRE I4 I5 I6). clear I4 I5 I6.
 
-            simpl in H11.
+            simpl in H.
 
             destruct a, a0 ; [] ; simpl in *.
             replace derived with false in *  ; [ | solve [destruct derived ; auto] ].
             replace derived0 with false in * ; [ | solve [destruct derived0 ; auto] ].
 
-            simpl in H11, H22.
+            simpl in H, H0.
 
-            destruct H33 as [ H33 | H33] ; [ | contradiction].
-            destruct H22 as [ H22 | H22] ; [ | contradiction].
-            destruct H11 as [ H11 | H11] ; [ | contradiction].
+            destruct H1 as [ H33 | H33] ; [ | contradiction].
+            destruct H0 as [ H22 | H22] ; [ | contradiction].
+            destruct H as [ H11 | H11] ; [ | contradiction].
 
             apply rel_invert in H11.
             apply rel_invert in H22.

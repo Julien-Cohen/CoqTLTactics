@@ -10,7 +10,7 @@ Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
 
-From core Require Tactics.
+From core Require Tactics Certification.
 
 (** ** Type correspondence *)
 
@@ -85,3 +85,70 @@ Ltac show_singleton :=
       destruct TMP ;
       subst A (* This [subst] ensures that if A is not a variable, this tactics fails. *)
   end.
+
+(** ** Destructors *)
+
+Ltac destruct_execute :=
+  let H2 := fresh "H" in
+  let e := fresh "sp" in
+  match goal with 
+    [ H : In _ (allModelElements (execute Class2Relational _)) |- _ ] =>
+      rewrite (core.Certification.tr_execute_in_elements Class2Relational) in H ;
+      destruct H as [e [H H2]]
+  end.
+
+Ltac destruct_instantiatePattern :=
+  let H2 := fresh "H" in
+  let e := fresh "x" in
+  match goal with 
+    [ H : In _ (instantiatePattern Class2Relational _ _) |- _ ] =>
+      rewrite (core.Certification.tr_instantiatePattern_in Class2Relational) in H ;
+      destruct H as [e [H H2]]
+  end.
+
+Ltac destruct_matchPattern :=
+  let H2 := fresh "H" in
+  match goal with 
+    [ H : In _ (matchPattern Class2Relational _ _) |- _ ] =>
+      rewrite (core.Certification.tr_matchPattern_in Class2Relational) in H ;
+      destruct H as [H H2]
+  end.
+
+Ltac destruct_instantiateRuleOnPattern :=
+  let H2 := fresh "H" in
+  let e := fresh "x" in
+  match goal with 
+    [ H : In _ (instantiateRuleOnPattern _ _ _) |- _ ] =>
+      rewrite (core.Certification.tr_instantiateRuleOnPattern_in Class2Relational) in H ;
+      destruct H as [e [H H2]]
+  end.
+
+Ltac destruct_instantiateIterationOnPattern :=
+  let H2 := fresh "H" in
+  let e := fresh "ope" in
+  match goal with 
+    [ H : In _ (instantiateIterationOnPattern _ _ _ _) |- _ ] =>
+      apply core.Certification.tr_instantiateIterationOnPattern_in in H ;
+      destruct H as [e [H H2]]
+  end.
+
+Ltac unfold_instantiateElementOnPattern :=
+  match goal with 
+    [ H : context[instantiateElementOnPattern _ _ _ _] |- _ ] => 
+      rewrite core.Certification.tr_instantiateElementOnPattern_leaf in H 
+  end.
+
+Ltac unfold_matchRuleOnPattern :=
+  match goal with 
+    [ H : context[ matchRuleOnPattern _ _ _] |- _ ] => 
+      rewrite (core.Certification.tr_matchRuleOnPattern_leaf Class2Relational) in H
+  end.
+
+Ltac destruct_any := first [ destruct_execute | destruct_instantiatePattern | destruct_matchPattern | destruct_instantiateRuleOnPattern | destruct_instantiateIterationOnPattern | unfold_instantiateElementOnPattern | unfold_matchRuleOnPattern].
+
+Ltac destruct_In_two :=
+  match goal with 
+    [ H : In ?X (Syntax.Transformation_getRules Class2Relational) |- _ ] => 
+      destruct H as [ H | [H | H]] ; [ | | contradiction H] ; subst X
+  end.
+
