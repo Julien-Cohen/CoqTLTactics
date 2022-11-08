@@ -26,6 +26,7 @@ core/TraceLink.v
 core/Syntax.v
 core/Semantics.v
 core/Engine.v
+core/Tactics.v
 
 core/modeling/ModelingMetamodel.v
 core/modeling/ModelingTransformationConfiguration.v

@@ -252,3 +252,10 @@ Proof.
     left.
     reflexivity.
 Qed.
+
+
+Lemma in_not_nil {A} (a:A) s :
+  In a s -> s <> nil.
+Proof.
+  intro H.  destruct s ; [ inversion H | congruence]. 
+Qed.
