@@ -127,18 +127,12 @@ Proof.
     intros e1 e2 r.
     destruct o ; simpl.
     { unfold ConcreteExpressions.makeGuard. simpl.
-      unfold toModelClass ; simpl.
-      unfold toClass ; simpl.
-      destruct s0 ; simpl.
-      { destruct e1 ; reflexivity.  }
-      { destruct e1 ; reflexivity. }
+      Set Printing All. 
+      destruct (@toModelClass ClassM ClassMetamodel s0 e1) ; reflexivity.
+
     }
     {
-      unfold toModelClass ; simpl.
-      unfold toClass ; simpl.
-      destruct s0 ; simpl.
-      { destruct e1 ; reflexivity.  }
-      { destruct e1 ; reflexivity. }
+      destruct (@toModelClass ClassM ClassMetamodel s0 e1) ; reflexivity. 
     }
   }
 Qed.
