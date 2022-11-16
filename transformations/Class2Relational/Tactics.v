@@ -22,7 +22,7 @@ Proof.
  simpl in H.
  destruct a0.
  destruct derived ; simpl in H ; auto.
- destruct H ; auto.
+ destruct_or H ; [ | contradiction].
  unfold toModelElement in H.
  simpl in H.
  discriminate H.
@@ -34,7 +34,7 @@ Lemma columns_come_from_attributes a b c :
 Proof.
  destruct c ; simpl ; [intro H ; exfalso | solve[eauto] ].
  simpl in H.
- destruct H ; auto.
+ destruct_or H ; [ | contradiction ].
  unfold toModelElement in H.
  simpl in H.
  discriminate H.
@@ -149,6 +149,7 @@ Ltac destruct_any := first [ destruct_execute | destruct_instantiatePattern | de
 Ltac destruct_In_two :=
   match goal with 
     [ H : In ?X (Syntax.Transformation_getRules Class2Relational) |- _ ] => 
-      destruct H as [ H | [H | H]] ; [ | | contradiction H] ; subst X
+      simpl in H ;
+      repeat destruct_or H ; [ | | contradiction H] ; subst X
   end.
 

@@ -99,13 +99,13 @@ Proof.
 
             simpl in H, H0.
 
-            destruct H1 as [ H33 | H33] ; [ | contradiction].
-            destruct H0 as [ H22 | H22] ; [ | contradiction].
-            destruct H as [ H11 | H11] ; [ | contradiction].
+            destruct_or H1 ; [ | contradiction].
+            destruct_or H0 ; [ | contradiction].
+            destruct_or H  ; [ | contradiction].
 
-            apply rel_invert in H11.
-            apply rel_invert in H22.
-            apply rel_invert in H33.
+            apply rel_invert in H1.
+            apply rel_invert in H0.
+            apply rel_invert in H.
             subst. simpl.
 
             apply PRE.

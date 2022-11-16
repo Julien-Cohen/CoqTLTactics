@@ -15,26 +15,339 @@ Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
 
+From transformations.Class2Relational Require Tactics.
+
+Lemma getColumnsReferenceOnLinks_app :
+        forall a b c,
+         getColumnReferenceOnLinks c (a++b) = 
+           match getColumnReferenceOnLinks c a with 
+             Some r => Some r 
+           | None => getColumnReferenceOnLinks c b end.
+Proof.
+  induction a ; simpl ; intros b c.
+  + reflexivity.
+  + destruct a.
+  - auto.
+  - destruct c0.
+    destruct (beq_Column cr c).
+    * reflexivity.
+    * auto.
+      
+Qed.
+
+
+Lemma allModelElements_allTuples att cm: 
+  In (AttributeObject att) (allModelElements cm) ->
+  In [AttributeObject att] (allTuples Class2Relational cm).
+Proof.
+  destruct cm ; simpl.
+  unfold allTuples ; simpl.
+  clear.
+  unfold prod_cons.
+  induction modelElements ; intro I ; [ solve [inversion I] | ].
+  simpl.
+  simpl in I.
+  destruct_or I ; [ left | right ].
+  + subst ; auto. 
+  + auto. 
+Qed.
+
+Lemma allModelElements_allTuples_back att cm: 
+  In [AttributeObject att] (allTuples Class2Relational cm) ->
+  In (AttributeObject att) (allModelElements cm).
+Proof.
+  destruct cm ; simpl.
+  unfold allTuples ; simpl.
+  clear.
+  unfold prod_cons.
+  induction modelElements ; simpl ; intro I. 
+  + destruct_or I. discriminate. contradiction.
+  + destruct_or I ; [ left | right ].
+    - inversion_clear I ; auto. 
+    - auto.
+Qed.
+
+Lemma transform_attribute : 
+  forall (cm : ClassModel) (rm : RelationalModel), 
+  (* transformation *) rm = execute Class2Relational cm ->
+  (* precondition *)  forall id name,
+    In (ClassMetamodel.AttributeObject {| attr_id:= id ; derived := false ; attr_name := name|}) (allModelElements cm) ->
+  (* postcondition *) 
+    In (RelationalMetamodel.ColumnObject {| column_id := id; column_name := name |}) (allModelElements rm). 
+Proof.
+  intros cm rm H ; subst.
+  intros i n H.
+  simpl.
+  apply allModelElements_allTuples in H.
+  revert H ; generalize (allTuples Class2Relational cm).
+  induction l ; intro H ; [ solve [inversion H] | simpl ].
+  apply List.in_or_app.
+  simpl in H.
+  destruct_or H ; [ left | right ].
+  + subst.
+    clear IHl.
+    compute.
+    left.
+    reflexivity.
+  + auto. 
+Qed.
+
+Lemma transform_attribute_back : 
+  forall (cm : ClassModel) (rm : RelationalModel), 
+  (* transformation *) rm = execute Class2Relational cm ->
+  (* precondition *)  forall id name,
+      In (RelationalMetamodel.ColumnObject {| column_id := id; column_name := name |}) (allModelElements rm) ->
+  (* postcondition *) 
+    In (ClassMetamodel.AttributeObject {| attr_id:= id ; derived := false ; attr_name := name|}) (allModelElements cm)
+. 
+Proof.
+  intros cm rm H ; subst.
+  intros i n H.
+  simpl in H.
+  apply allModelElements_allTuples_back.
+  revert H ; generalize (allTuples Class2Relational cm).
+  induction l ; intro H ; [ solve [inversion H] | simpl ].
+  simpl in H.
+  apply List.in_app_or in H.
+
+  destruct_or H ; [ left | right ].
+  + Tactics.show_singleton.
+    Tactics.show_origin.
+    f_equal.
+    f_equal.
+    destruct a.
+    destruct derived ; compute in H.
+    - contradiction.
+    - destruct_or H ; [ | contradiction].
+      injection H ; intros ;subst ; clear H.
+      reflexivity.
+  + auto.
+Qed.
+
+(* nul
+Lemma apply_pattern_attribute id name cm :  
+  applyPattern Class2Relational cm
+    [AttributeObject
+       {|
+         attr_id := id;
+         derived := false;
+         attr_name := name
+       |}] = nil .
+Proof.
+  destruct cm.
+
+  unfold applyPattern. 
+  simpl.
+  rewrite <- List.app_nil_end.
+  simpl flat_map.
+
+
+, Class2Relational ; simpl.
+  unfold Parser.parse, Class2Relational' ; simpl.
+  unfold Parser.parseRule ; simpl.
+  unfold applyRuleOnPattern ; simpl.
+  compute.
+Qed. *)
+
+Lemma getAttributeType_In att m: 
+  getAttributeType att m <> None ->
+  exists t, 
+    In (AttributeTypeLink {| for_attribute := att ; type := t |}) m.(modelLinks).
+Proof.
+  destruct m. simpl.
+
+  clear modelElements.
+  induction modelLinks ; simpl ; [ congruence | ] ; intro.
+  destruct a.
+  + (* ClassAttibute *)
+    apply IHmodelLinks in H ; clear IHmodelLinks.
+    destruct H.
+    eexists ; right ; exact H.
+  + (* AttributeType *)
+    destruct a.
+    match goal with [ H : context[ if ?P then _ else _ ] |-_ ] => destruct P eqn:? end.
+    -  clear H.
+       apply lem_beq_Attribute_id in Heqb ; subst.
+       eexists ; left ; reflexivity. 
+    - apply IHmodelLinks in H ; clear IHmodelLinks.
+      destruct H.
+      eexists ; right ; exact H.
+Qed.
+
+Lemma getAttributeType_In_back att t m: 
+  In (AttributeTypeLink {| for_attribute := att ; type := t |}) m.(modelLinks) ->
+  getAttributeType att m <> None.
+Proof.
+  destruct m. simpl.
+
+  clear modelElements.
+  induction modelLinks ; simpl ; [ congruence | ] ; intro.
+  destruct a.
+  + (* ClassAttibute *)
+    destruct_or H ; [discriminate|].
+    apply IHmodelLinks in H ; clear IHmodelLinks.
+    exact H.
+  + (* AttributeType *)
+    destruct a.
+    destruct_or H.
+  - injection H ; intros ;  clear H ; subst.
+    replace (beq_Attribute att att) with true.
+    congruence.
+    { clear. destruct att ; unfold beq_Attribute ; simpl.
+      rewrite Nat.eqb_refl ; simpl.
+      rewrite Bool.eqb_reflx ; simpl.
+      rewrite lem_beq_string_id.
+      reflexivity.
+    }
+
+  - apply IHmodelLinks in H.
+    
+    
+    match goal with [ |- context[ if ?P then _ else _ ]  ] => destruct P eqn:? end .
+    congruence.
+    assumption.
+Qed.
+
 
 Theorem Relational_Column_Reference_definedness:
 forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
   (* precondition *)  (forall (att : Attribute),
-    In (ClassMetamodel_toObject AttributeClass att) (allModelElements cm) ->
+    In (ClassMetamodel.AttributeObject att) (allModelElements cm) ->
         getAttributeType att cm <> None) ->
   (* postcondition *)  (forall (col: Column),
-    In (RelationalMetamodel_toObject ColumnClass col) (allModelElements rm) ->
+    In (RelationalMetamodel.ColumnObject col) (allModelElements rm) ->
       getColumnReference col rm <> None). 
 Proof.
+  intros cm rm E PRE col I1.
+  subst rm.
+
+Ltac duplicate H1 H2 := remember H1 as H2 eqn: TMP ; clear TMP.
+
+{
+
+  duplicate I1 I2.
+  destruct col. 
+  eapply transform_attribute_back in I2 ; [ | reflexivity ].
+  rename column_id into i.
+  rename column_name into n.
+
+  duplicate I2 I3.
+  
+  apply PRE in I3 ; clear PRE.
+  destruct cm ; simpl in *.
+
+
+  duplicate I3 I4. 
+  apply getAttributeType_In_back in I4.
+  {
+    clear I1 I2.
+    unfold getAttributeType in I3.
+
+
+  Tactics.destruct_execute.  
+  Tactics.show_singleton.
+  Tactics.show_origin.
+  repeat Tactics.destruct_any.
+
+  unfold getAttributeType in I.
+  destruct cm.
+  unfold getColumnReference ; simpl.
+
+}*)
+Tactics.destruct_execute.
+  Tactics.show_singleton.
+  Tactics.show_origin.
+  repeat Tactics.destruct_any.
+  rename x into r. 
+  rename x0 into n.
+  rename H0 into Hn.
+  match goal with 
+    [ H : context[match ?P with _ => _ end] |- _ ] => destruct P eqn:E 
+  end ; [ | discriminate ].
+  destruct b ; [ clear H1 | discriminate ].
+
+
+  unfold getColumnReference.
+  unfold execute ; simpl.
+
+  rename H into Hr.
+  rename H2 into Hop.
+  rename H3 into He. 
+  unfold Expressions.evalOutputPatternElementExpr in He.
+
+
+  cut (In (AttributeObject a) (allModelElements cm)).
+  {
+    intro IA.
+    specialize (PRE a IA) ; clear IA.
+    
+
+  Tactics.destruct_In_two ; simpl in *.
+  {
+    (* first rule *)
+    exfalso.
+    destruct Hop as [Hop | Hop] ; [ | contradiction].
+    destruct Hn ; [ | contradiction ] ; subst n.
+    subst ope.
+    simpl in He.
+    unfold Expressions.evalExpr in He.
+    unfold ConcreteExpressions.makeElement in He.
+    simpl in He.
+    discriminate.
+  }
+  {
+    (* second rule *)
+    destruct Hop as [Hop | Hop] ; [ | contradiction].        
+    subst ope.
+    simpl in He.
+    destruct Hn ; [ | contradiction ] ; subst n.
+    unfold ConcreteExpressions.makeElement in He.
+    simpl in He.
+    unfold Expressions.evalExpr in He.
+    simpl in He.
+    injection He ; intro ; clear He ; subst col.
+    simpl in *.
+    unfold ConcreteExpressions.makeGuard in E ; simpl in E.
+    injection E ; intro D ; clear E. 
+    
+    contradict PRE.
+(*    Set Printing All. *)
+
+    replace (@allTuples
+           (@tc ClassMetamodel.Object ClassMetamodel.Link ClassMetamodel.EqDec
+              Object Link EqDec) Class2Relational cm) with (@allTuples C2RConfiguration Class2Relational cm) in I.
+    { 
+      revert PRE.
+      revert I.
+
+    generalize (allTuples Class2Relational cm).
+    induction l ; [ contradiction  | ]; simpl ; intros .
+    destruct I as [ I | I].
+    {
+      subst.
+      rewrite getColumnsReferenceOnLinks_app in PRE.
+      match goal with [H:context [ match ?P with | _ => _ end] |- _] => destruct P eqn:? end.
+      discriminate.
+      clear IHl.
+      destruct a.
+      destruct derived ; [ discriminate | ].
+      simpl in *.
+
+      unfold applyPattern in Heqo.
+      compute in Heqo. simpl in Heqo.
+    }
+
+Qed.
+(* *)*)
 intros cm rm tr pre.
 intros. 
 rewrite tr.
 
 assert 
 (exists t: Table, 
-  In (RelationalMetamodel_BuildLink 
-        ColumnReferenceReference 
-        (BuildColumnReference col t))
+  In (ColumnReferenceLink 
+        (Build_ColumnReference col t))
      (allModelLinks rm)) as HcolInrml.
 {  
 eexists.
@@ -58,8 +371,8 @@ destruct sp as [ | sphd sptl] eqn: sp_ca. (* Case analysis on source pattern *)
     specialize (HspIncm sphd).
     assert (In sphd [sphd]). { left. reflexivity. }
     specialize (HspIncm H).  
-    destruct sphd as [sphd_tp sphd_elem]. 
-    destruct sphd_tp. (* Case analysis on source element type *)
+    destruct sphd as [ sphd_elem | sphd_elem]. (*as [sphd_tp sphd_elem]. 
+    destruct sphd_tp*) (* Case analysis on source element type *)
     ++ (* [Class] *) simpl in HcolInInst.
       destruct HcolInInst.
       +++ inversion H0. (* contradiction in H0 *)
@@ -74,7 +387,7 @@ destruct sp as [ | sphd sptl] eqn: sp_ca. (* Case analysis on source pattern *)
          * 
 remember (applyPattern Class2Relational cm sp) as Rapply.
 rename HeqRapply into Happly.
-rewrite Happly.
+(*rewrite Happly.*)
 rewrite sp_ca.
 unfold applyPattern.
 unfold applyRuleOnPattern.
@@ -82,20 +395,20 @@ unfold applyIterationOnPattern.
 unfold applyElementOnPattern.
 simpl.
 unfold ConcreteExpressions.makeLink.
-unfold ConcreteExpressions.wrapOptionLink.
+unfold ConcreteExpressions.wrapOptionLink. 
 
-destruct ( toModelClass AttributeClass
-(ClassMetamodel_BuildObject AttributeClass
-   (BuildAttribute attr_id false attr_name))) eqn: link_cast_ca.
+destruct ( 
+(ClassMetamodel.AttributeObject
+   (Build_Attribute attr_id false attr_name))) eqn: link_cast_ca.
 **  (* <> None *)
     unfold optionToList.
     simpl.
-    unfold maybeBuildColumnReference.
+(*    unfold maybeBuildColumnReference.
     unfold ModelingSemantics.maybeResolve.
     unfold ModelingSemantics.denoteOutput.
     unfold maybeResolve'.
     unfold maybeSingleton.
-    unfold option_map.
+    unfold option_map.*)
     destruct (getAttributeTypeObject d cm) eqn: link_expr_cl_ca.
     *** destruct (resolve' (trace Class2Relational cm) cm "tab"
 (singleton c)) eqn: link_expr_tb_ca.

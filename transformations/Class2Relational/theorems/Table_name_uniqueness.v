@@ -70,13 +70,12 @@ Proof.
                 specialize (PRE (IN1 I1)).
                 clear I1 I2 IN1 IN2.
                 simpl in H, H0.
-                destruct H ; [ | contradiction].
-                destruct H0 ; [ | contradiction].
+                destruct_or H ; [ | contradiction].
+                destruct_or H0 ; [ | contradiction].
                 apply rel_invert in H0 ;
                 apply rel_invert in H ; subst ; simpl in *.
                 apply not_eq_sym ; apply PRE.
                 contradict D.
                 subst ; reflexivity.
-
 Qed.
 
