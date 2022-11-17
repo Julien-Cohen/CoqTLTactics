@@ -12,6 +12,8 @@ Require Import core.Model.
 
 Require Import Coq.Logic.Eqdep_dec.
 
+Scheme Equality for list.
+
 (* Base types *)
 
 Record Table := { table_id : nat ; table_name : string }.
@@ -34,14 +36,19 @@ Definition maybeBuildTableColumns (t: Table) (c: option (list Column)) : option 
   | _, _ => None
   end.  
 
-(* Accessors *)
-
+(* Equality *)
   
 Definition beq_Table (t1 : Table) (t2: Table) : bool :=
   beq_nat (table_id t1) (table_id t2) && beq_string (table_name t1) (table_name t2).
 
 Definition beq_Column (c1 : Column) (c2 : Column) : bool :=
   beq_nat (column_id c1) (column_id c2) && beq_string (column_name c1) (column_name c2).
+
+Definition beq_TableColumns (c1 : TableColumns) (c2 : TableColumns) : bool :=
+  beq_Table (tab c1) (tab c2) && list_beq Column beq_Column (cols c1) (cols c2).
+
+Definition beq_ColumnReference (c1 : ColumnReference) (c2 : ColumnReference) : bool :=
+  beq_Column (cr c1) (cr c2) && beq_Table (ct c1) (ct c2).
 
 Lemma lem_beq_Table_id:
  forall (a1 a2: Table),
@@ -91,7 +98,6 @@ simpl.
 auto.
 Qed.
 
-
 Lemma lem_beq_Column_id:
  forall (a1 a2: Column),
    beq_Column a1 a2 = true -> a1 = a2.
@@ -114,13 +120,11 @@ Qed.
 Inductive Classes : Set :=
   TableClass | ColumnClass.
 
-
 Definition getTypeByClass (type : Classes) : Set :=
   match type with
   | TableClass => Table
   | ColumnClass => Column
   end.
-
 
 Inductive References : Set :=
   TableColumnsReference | ColumnReferenceReference.
@@ -137,13 +141,11 @@ Inductive Object : Set :=
   | TableObject : Table -> Object
   | ColumnObject : Column -> Object.
 
-
 Definition toObject (c: Classes) : (getTypeByClass c) -> Object.
   destruct c ; simpl ; intro a.
   exact (TableObject a).
   exact (ColumnObject a).
 Defined.
-
 
 Definition beq_Object (c1 : Object) (c2 : Object) : bool :=
   match c1, c2 with
@@ -152,12 +154,9 @@ Definition beq_Object (c1 : Object) (c2 : Object) : bool :=
   | _, _ => false
   end.
 
-
-
 Inductive Link : Set :=
   | TableColumnLink : TableColumns -> Link
   | ColumnReferenceLink : ColumnReference -> Link.
-
 
 (* Reflective functions *)
 
@@ -216,7 +215,6 @@ Definition toRelationalMetamodel_Class (t : Classes) (c : Object) : option (getT
   exact None.
   exact (Some c).
 Defined. 
-
 
 Theorem toRelationalMetamodel_Class_inv :
   forall (t : Classes) (c :Object) (c': getTypeByClass t),
@@ -306,9 +304,13 @@ Qed.
     toSumType := toObject;
   }.
   
-  (* TODO *)
-  Definition beq_Link (c1 : Link) (c2 : Link) : bool := true.
-  
+  Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
+    match c1, c2 with
+    | TableColumnLink o1, TableColumnLink o2 => beq_TableColumns o1 o2
+    | ColumnReferenceLink o1, ColumnReferenceLink o2 => beq_ColumnReference o1 o2
+    | _, _ => false
+    end.
+    
   #[export]
   Instance EqDec : EqDec Object := {
     eq_b := beq_Object;
