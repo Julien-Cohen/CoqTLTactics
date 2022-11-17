@@ -13,6 +13,9 @@ Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require Import core.utils.CpdtTactics.
+
+Scheme Equality for list.
+
 (* Base types *)
 
 Record Class := { class_id : nat ; class_name : string }.
@@ -23,13 +26,19 @@ Record ClassAttributes := { in_class : Class ; attrs : list Attribute }.
 
 Record AttributeType := { for_attribute : Attribute ; type : Class }.
 
-(* Accessors *)
+(* Equality *)
 
 Definition beq_Class (c1 : Class) (c2 : Class) : bool :=
   beq_nat (class_id c1) (class_id c2) && beq_string (class_name c1) (class_name c2).
 
 Definition beq_Attribute (a1 : Attribute) (a2 : Attribute) : bool :=
   beq_nat (attr_id a1) (attr_id a2) && eqb (derived a1) (derived a2) && beq_string (attr_name a1) (attr_name a2).
+
+Definition beq_AttributeType (c1 : AttributeType) (c2 : AttributeType) : bool :=
+  beq_Attribute (for_attribute c1) (for_attribute c2) && beq_Class (type c1) (type c2).
+
+Definition beq_ClassAttributes (c1 : ClassAttributes) (c2 : ClassAttributes) : bool :=
+  beq_Class (in_class c1) (in_class c2) && list_beq Attribute beq_Attribute (attrs c1) (attrs c2).
 
 Lemma lem_beq_Class_id:
  forall (a1 a2: Class),
@@ -67,8 +76,6 @@ destruct (attr_id a1 =? attr_id a2) eqn: ca1.
   + congruence. 
 - congruence.
 Qed.
-
-
 
 (* Meta-types *)
 
@@ -170,7 +177,6 @@ Proof.
 Defined.
 
 
-
 (*  
 match c with
 | ClassMetamodel_BuildObject c0 d =>
@@ -196,7 +202,6 @@ Defined.
 
 (* Generic functions *)
 
-
 Definition toObject (t: Classes) (e: getTypeByClass t) : Object. 
   destruct t ; simpl in e.
   exact (ClassObject e).
@@ -208,7 +213,6 @@ Definition toLink (t: References) (e: getTypeByReference t) : Link.
   exact (ClassAttributeLink e).
   exact (AttributeTypeLink e).
 Defined.
-
 
 Definition getId (c : Object) : nat :=
   match c with
@@ -302,8 +306,12 @@ Instance ClassElementSum : Sum Object Classes :=
   toSumType := toObject;
 }.
 
-(* TODO *)
-Definition beq_Link (c1 : Link) (c2 : Link) : bool := true.
+Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
+  match c1, c2 with
+  | ClassAttributeLink o1, ClassAttributeLink o2 => beq_ClassAttributes o1 o2
+  | AttributeTypeLink o1, AttributeTypeLink o2 => beq_AttributeType o1 o2
+  | _, _ => false
+  end.
 
 #[export]
 Instance ClassLinkSum : Sum Link References :=
