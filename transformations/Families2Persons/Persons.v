@@ -218,10 +218,6 @@ Instance PersonsMetamodel_LinkSum : Sum PersonsMetamodel_Link PersonsMetamodel_R
 	toSumType := PersonsMetamodel_toLink;
 }.
 
-#[export]
-Instance PersonsMetamodel_EqDec : EqDec PersonsMetamodel_Object := {
-    eq_b := beq_PersonsMetamodel_Object;
-}.
 
 #[export]
 Instance PersonsMetamodel_Metamodel_Instance : 
@@ -229,6 +225,7 @@ Instance PersonsMetamodel_Metamodel_Instance :
 {
 	ModelElement := PersonsMetamodel_Object;
 	ModelLink := PersonsMetamodel_Link;
+        elements_eqdec := beq_PersonsMetamodel_Object
 }.
 
 #[export]

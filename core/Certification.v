@@ -19,9 +19,9 @@ Require Import core.Expressions.
 Section Certification.
 
 Context {SourceModelElement SourceModelLink: Type}.
-Context {eqdec_sme: EqDec SourceModelElement}. (* need decidable equality on source model elements *)
+Context {eqdec_sme: SourceModelElement -> SourceModelElement -> bool}. (* need decidable equality on source model elements *)
 Context {TargetModelElement TargetModelLink: Type}.
-Context {eqdec_tme: EqDec TargetModelElement}. (* need decidable equality on source model elements *)
+Context {eqdec_tme: TargetModelElement -> TargetModelElement -> bool}. (* need decidable equality on source model elements *)
 
 Instance smm : Metamodel := {
   ModelElement := SourceModelElement;

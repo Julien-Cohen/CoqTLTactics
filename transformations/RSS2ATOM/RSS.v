@@ -921,10 +921,6 @@ Instance RSSMetamodel_LinkSum : Sum RSSMetamodel_Link RSSMetamodel_Reference :=
 	toSumType := RSSMetamodel_toLink;
 }.
 
-#[export]
-Instance RSSMetamodel_EqDec : EqDec RSSMetamodel_Object := {
-    eq_b := beq_RSSMetamodel_Object;
-}.
 
 #[export]
 Instance RSSMetamodel_Metamodel_Instance : 
@@ -932,6 +928,7 @@ Instance RSSMetamodel_Metamodel_Instance :
 {
 	ModelElement := RSSMetamodel_Object;
 	ModelLink := RSSMetamodel_Link;
+        elements_eqdec := beq_RSSMetamodel_Object
 }.
 
 #[export]

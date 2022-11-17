@@ -30,10 +30,6 @@ Definition TTEq (a b : TTElem) :=
     | _,_ => false
     end.
 
-#[export]
-Instance TTEqDec : EqDec TTElem := {
-    eq_b := TTEq
-}.
 
 Definition isColumn (e: TTElem) :=
     match e with
@@ -78,4 +74,4 @@ Definition evalTT (tt: Model TTElem TTRef) (ins: list bool) : bool := true.
 
 #[export]
 Instance TTM : Metamodel :=
-  Build_Metamodel TTElem TTRef _.
+  Build_Metamodel TTElem TTRef TTEq.

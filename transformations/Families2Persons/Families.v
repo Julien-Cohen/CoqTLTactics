@@ -418,10 +418,6 @@ Instance FamiliesMetamodel_LinkSum : Sum FamiliesMetamodel_Link FamiliesMetamode
 	toSumType := FamiliesMetamodel_toLink;
 }.
 
-#[export]
-Instance FamiliesMetamodel_EqDec : EqDec FamiliesMetamodel_Object := {
-    eq_b := beq_FamiliesMetamodel_Object;
-}.
 
 #[export]
 Instance FamiliesMetamodel_Metamodel_Instance : 
@@ -429,6 +425,7 @@ Instance FamiliesMetamodel_Metamodel_Instance :
 {
 	ModelElement := FamiliesMetamodel_Object;
 	ModelLink := FamiliesMetamodel_Link;
+        elements_eqdec := beq_FamiliesMetamodel_Object
 }.
 
 #[export]

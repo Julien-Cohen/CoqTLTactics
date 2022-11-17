@@ -321,16 +321,13 @@ Instance ClassLinkSum : Sum Link References :=
   toSumType := toLink;
 }.
 
-#[export]
-Instance EqDec : EqDec Object := {
-    eq_b := beq_Object;
-}.
 
 #[export]
 Instance ClassM : Metamodel :=
 {
   ModelElement := Object;
   ModelLink := Link;
+  elements_eqdec := beq_Object ;
 }.
 
 #[export]

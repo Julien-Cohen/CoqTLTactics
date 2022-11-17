@@ -500,10 +500,6 @@ Instance moviesMetamodel_LinkSum : Sum moviesMetamodel_Link moviesMetamodel_Refe
 	toSumType := moviesMetamodel_toLink;
 }.
 
-#[export]
-Instance moviesMetamodel_EqDec : EqDec moviesMetamodel_Object := {
-    eq_b := beq_moviesMetamodel_Object;
-}.
 
 #[export]
 Instance moviesMetamodel_Metamodel_Instance : 
@@ -511,6 +507,7 @@ Instance moviesMetamodel_Metamodel_Instance :
 {
 	ModelElement := moviesMetamodel_Object;
 	ModelLink := moviesMetamodel_Link;
+        elements_eqdec := beq_moviesMetamodel_Object
 }.
 
 #[export]

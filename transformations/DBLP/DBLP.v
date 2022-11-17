@@ -1173,10 +1173,6 @@ Instance DBLPMetamodel_LinkSum : Sum DBLPMetamodel_Link DBLPMetamodel_Reference 
 	toSumType := DBLPMetamodel_toLink;
 }.
 
-#[export]
-Instance DBLPMetamodel_EqDec : EqDec DBLPMetamodel_Object := {
-    eq_b := beq_DBLPMetamodel_Object;
-}.
 
 #[export]
 Instance DBLPMetamodel_Metamodel_Instance : 
@@ -1184,6 +1180,7 @@ Instance DBLPMetamodel_Metamodel_Instance :
 {
 	ModelElement := DBLPMetamodel_Object;
 	ModelLink := DBLPMetamodel_Link;
+        elements_eqdec :=beq_DBLPMetamodel_Object
 }.
 
 #[export]

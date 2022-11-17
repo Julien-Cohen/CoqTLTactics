@@ -241,10 +241,6 @@ Instance MooreMetamodel_LinkSum : Sum MooreMetamodel_Link MooreMetamodel_Referen
 	toSumType := MooreMetamodel_toLink;
 }.
 
-#[export]
-Instance MooreMetamodel_EqDec : EqDec MooreMetamodel_Object := {
-    eq_b := beq_MooreMetamodel_Object;
-}.
 
 #[export]
 Instance MooreMetamodel_Metamodel_Instance : 
@@ -252,6 +248,7 @@ Instance MooreMetamodel_Metamodel_Instance :
 {
 	ModelElement := MooreMetamodel_Object;
 	ModelLink := MooreMetamodel_Link;
+        elements_eqdec := beq_MooreMetamodel_Object
 }.
 
 #[export]

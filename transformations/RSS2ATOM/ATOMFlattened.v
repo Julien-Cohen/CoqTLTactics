@@ -1112,15 +1112,13 @@ Instance ATOMMetamodel_LinkSum : Sum ATOMMetamodel_Link ATOMMetamodel_Reference 
 	toSumType := ATOMMetamodel_toLink;
 }.
 
-Instance ATOMMetamodel_EqDec : EqDec ATOMMetamodel_Object := {
-    eq_b := beq_ATOMMetamodel_Object;
-}.
 
 Instance ATOMMetamodel_Metamodel_Instance : 
 	Metamodel :=
 {
 	ModelElement := ATOMMetamodel_Object;
 	ModelLink := ATOMMetamodel_Link;
+        elements_eqdec := beq_ATOMMetamodel_Object
 }.
 
 Instance ATOMMetamodel_ModelingMetamodel_Instance : 

@@ -242,10 +242,6 @@ Instance MealyMetamodel_LinkSum : Sum MealyMetamodel_Link MealyMetamodel_Referen
 	toSumType := MealyMetamodel_toLink;
 }.
 
-#[export]
-Instance MealyMetamodel_EqDec : EqDec MealyMetamodel_Object := {
-    eq_b := beq_MealyMetamodel_Object;
-}.
 
 #[export]
 Instance MealyMetamodel_Metamodel_Instance : 
@@ -253,6 +249,7 @@ Instance MealyMetamodel_Metamodel_Instance :
 {
 	ModelElement := MealyMetamodel_Object;
 	ModelLink := MealyMetamodel_Link;
+  elements_eqdec :=beq_MealyMetamodel_Object
 }.
 
 #[export]

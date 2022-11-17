@@ -311,10 +311,6 @@ Qed.
     | _, _ => false
     end.
     
-  #[export]
-  Instance EqDec : EqDec Object := {
-    eq_b := beq_Object;
-  }.
 
   #[export]
   Instance RelationalLinkSum : Sum Link References :=
@@ -329,6 +325,7 @@ Qed.
   {
     ModelElement := Object;
     ModelLink := Link;
+    elements_eqdec:= beq_Object ;
   }.
 
   #[export]
