@@ -15,20 +15,20 @@ Require Import transformations.Class2Relational.tests.PersonModel.
 
 (* Expected Output :
       = {|
-       Model.modelElements := RelationalMetamodel_BuildEObject TableClass
+       Model.modelElements := RelationalMetamodel.BuildEElement TableClass
                                 (BuildTable 0 "Person")
-                              :: RelationalMetamodel_BuildEObject ColumnClass
+                              :: RelationalMetamodel.BuildEElement ColumnClass
                                    (BuildColumn 1 "parent") :: nil;
-       Model.modelLinks := RelationalMetamodel_BuildELink
+       Model.modelLinks := RelationalMetamodel.BuildELink
                              TableColumnsReference
                              (BuildTableColumns (BuildTable 0 "Person")
                                 (BuildColumn 1 "parent" :: nil))
-                           :: RelationalMetamodel_BuildELink
+                           :: RelationalMetamodel.BuildELink
                                 ColumnReferenceReference
                                 (BuildColumnReference
                                    (BuildColumn 1 "parent")
                                    (BuildTable 0 "Person")) :: nil |}
-     : TargetModel RelationalMetamodel_EObject RelationalMetamodel_ELink
+     : TargetModel RelationalMetamodel.EElement RelationalMetamodel.ELink
 *)
 
 (* Expected output (short):
@@ -37,19 +37,18 @@ Require Import transformations.Class2Relational.tests.PersonModel.
 *)
 
 Compute 
-  (Model_beq beq_Object beq_Link 
+  (Model_beq beq_Element beq_Link 
     (execute Class2Relational PersonModel) 
     {|
-       Model.modelElements := RelationalMetamodel.toObject TableClass
-                                (Build_Table 0 "Person")
-                              :: RelationalMetamodel.toObject ColumnClass
-                                   (Build_Column 1 "parent") :: nil;
-       Model.modelLinks := RelationalMetamodel.toLink
-                             TableColumnsReference
-                             (Build_TableColumns (Build_Table 0 "Person")
-                                (Build_Column 1 "parent" :: nil))
-                           :: RelationalMetamodel.toLink
-                                ColumnReferenceReference
-                                (Build_ColumnReference
-                                   (Build_Column 1 "parent")
-                                   (Build_Table 0 "Person")) :: nil |}).
+       Model.modelElements := RelationalMetamodel.TableElement
+                                (Build_Table_t 0 "Person")
+                              :: RelationalMetamodel.ColumnElement
+                                   (Build_Column_t 1 "parent") :: nil;
+       Model.modelLinks := RelationalMetamodel.TableColumnLink
+                             (Build_TableColumns_t (Build_Table_t 0 "Person")
+                                (Build_Column_t 1 "parent" :: nil))
+                           :: RelationalMetamodel.ColumnReferenceLink
+                                (Build_ColumnReference_t
+                                   (Build_Column_t 1 "parent")
+                                   (Build_Table_t 0 "Person")) :: nil |}).
+(* Question : should we use [RelationalMetamodel.TableElement (Build_Table_t 0 "Person")] or [RelationalMetamodel.lift_EKind Table_K (Build_Table_t 0 "Person")] here ? *)

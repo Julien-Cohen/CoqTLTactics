@@ -57,23 +57,23 @@ Definition Class2Relational' :=
     rule "Class2Table"
     from [Class_K]
     where (fun m a => true)
-    to [elem [Class_K] TableClass "tab"
-        (fun i m c => Build_Table (class_id c) (class_name c))
-        [link [Class_K] TableClass TableColumnsReference
+    to [elem [Class_K] Table_K "tab"
+        (fun i m c => Build_Table_t (class_id c) (class_name c))
+        [link [Class_K] Table_K TableColumns_K
           (fun tls i m c t =>
             maybeBuildTableColumns t
-              (maybeResolveAll tls m "col" ColumnClass 
+              (maybeResolveAll tls m "col" Column_K 
                 (maybeSingletons (getClassAttributesElements c m))))]]
     ;
     rule "Attribute2Column"
     from [Attribute_K]
     where (fun m a => negb (derived a))
-    to [elem [Attribute_K] ColumnClass "col"
-        (fun i m a => Build_Column (attr_id a) (attr_name a))
-        [link [Attribute_K] ColumnClass ColumnReferenceReference
+    to [elem [Attribute_K] Column_K "col"
+        (fun i m a => Build_Column_t (attr_id a) (attr_name a))
+        [link [Attribute_K] Column_K ColumnReference_K
           (fun tls i m a c =>
             maybeBuildColumnReference c
-              (maybeResolve tls m "tab" TableClass 
+              (maybeResolve tls m "tab" Table_K 
                 (maybeSingleton (getAttributeTypeElement a m))))]]
   ].
 

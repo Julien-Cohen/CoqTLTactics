@@ -37,9 +37,9 @@ forall (cm : ClassModel) (rm : RelationalModel),
     c1 <> c2 -> 
     class_name c1 <> class_name c2) ->
 (* postcondition *)  
-(forall (t1: Table) (t2: Table), 
-    In (RelationalMetamodel.toObject TableClass t1) (allModelElements rm) -> 
-    In (RelationalMetamodel.toObject TableClass t2) (allModelElements rm) -> 
+(forall (t1: Table_t) (t2: Table_t), 
+    In (RelationalMetamodel.lift_EKind Table_K t1) (allModelElements rm) -> 
+    In (RelationalMetamodel.lift_EKind Table_K t2) (allModelElements rm) -> 
     t1 <> t2 -> 
     table_name t1 <> table_name t2).
 Proof.
@@ -50,7 +50,7 @@ Proof.
 
     repeat Tactics.show_singleton.
 
-    simpl RelationalMetamodel.toObject in *.
+    simpl RelationalMetamodel.lift_EKind in *.
     simpl ClassMetamodel.lift_EKind in *.
 
     repeat Tactics.show_origin.

@@ -24,12 +24,12 @@ Theorem Attribute_name_preservation:
         forall (a: Attribute_t),
         In (ClassMetamodel.lift_EKind Attribute_K a) (allModelElements cm) ->
         derived a = false ->
-        exists (c: Column),
-            In (RelationalMetamodel.toObject ColumnClass c) (allModelElements rm) /\
+        exists (c: Column_t),
+            In (RelationalMetamodel.lift_EKind Column_K c) (allModelElements rm) /\
             column_name c = attr_name a.
 Proof.
     intros.
-    exists (Build_Column (attr_id a) (attr_name a)).
+    exists (Build_Column_t (attr_id a) (attr_name a)).
     split.
     - rewrite H.
       rewrite (tr_execute_in_elements Class2Relational).

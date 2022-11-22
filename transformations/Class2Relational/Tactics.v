@@ -15,7 +15,7 @@ From core Require Tactics Certification.
 (** ** Type correspondence *)
 
 Lemma tables_come_from_classes a b c : 
-  In (TableObject a) (instantiatePattern Class2Relational b [c]) ->
+  In (TableElement a) (instantiatePattern Class2Relational b [c]) ->
   exists d, c = ClassElement d.
 Proof.
  destruct c ; simpl ; [ solve [eauto] | intro H ; exfalso ].
@@ -29,7 +29,7 @@ Proof.
 Qed.
 
 Lemma columns_come_from_attributes a b c : 
-  In (ColumnObject a) (instantiatePattern Class2Relational b [c]) ->
+  In (ColumnElement a) (instantiatePattern Class2Relational b [c]) ->
   exists d, c = AttributeElement d.
 Proof.
  destruct c ; simpl ; [intro H ; exfalso | solve[eauto] ].
@@ -47,10 +47,10 @@ Ltac show_origin :=
   let TMP := fresh in
   match goal with 
    
-   [ H : In (TableObject ?a) (instantiatePattern Class2Relational ?b [?c]) |- _ ] =>
+   [ H : In (TableElement ?a) (instantiatePattern Class2Relational ?b [?c]) |- _ ] =>
       destruct (tables_come_from_classes a b c H) as [newclassname TMP]; subst c
 
- | [ H : In (ColumnObject ?a) (instantiatePattern Class2Relational ?b [?c]) |- _ ] =>
+ | [ H : In (ColumnElement ?a) (instantiatePattern Class2Relational ?b [?c]) |- _ ] =>
       destruct (columns_come_from_attributes a b c H) as [newattributename TMP]; subst c
 
 end.

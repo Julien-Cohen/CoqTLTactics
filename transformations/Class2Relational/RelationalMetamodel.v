@@ -16,42 +16,42 @@ Scheme Equality for list.
 
 (* Base types *)
 
-Record Table := { table_id : nat ; table_name : string }.
+Record Table_t := { table_id : nat ; table_name : string }.
 
-Record Column := { column_id : nat ; column_name : string } .
+Record Column_t := { column_id : nat ; column_name : string } .
 
-Record TableColumns := { tab :  Table ; cols : list Column }.
+Record TableColumns_t := { tab : Table_t ; cols : list Column_t }.
 
-Record ColumnReference := { cr : Column ; ct : Table }.
+Record ColumnReference_t := { cr : Column_t ; ct : Table_t }.
 
-Definition maybeBuildColumnReference (c: Column) (t: option Table) : option ColumnReference :=
-  match c, t with
-  | c', Some t' => Some (Build_ColumnReference c' t')
-  | _, _ => None
+Definition maybeBuildColumnReference (c: Column_t) (t: option Table_t) : option ColumnReference_t :=
+  match t with
+  | Some t' => Some (Build_ColumnReference_t c t')
+  | _ => None
   end.  
 
-Definition maybeBuildTableColumns (t: Table) (c: option (list Column)) : option TableColumns :=
-  match t, c with
-  | t', Some c' => Some (Build_TableColumns t' c')
-  | _, _ => None
+Definition maybeBuildTableColumns (t: Table_t) (c: option (list Column_t)) : option TableColumns_t :=
+  match c with
+  | Some c' => Some (Build_TableColumns_t t c')
+  | _ => None
   end.  
 
 (* Equality *)
   
-Definition beq_Table (t1 : Table) (t2: Table) : bool :=
+Definition beq_Table (t1 : Table_t) (t2: Table_t) : bool :=
   beq_nat (table_id t1) (table_id t2) && beq_string (table_name t1) (table_name t2).
 
-Definition beq_Column (c1 : Column) (c2 : Column) : bool :=
+Definition beq_Column (c1 : Column_t) (c2 : Column_t) : bool :=
   beq_nat (column_id c1) (column_id c2) && beq_string (column_name c1) (column_name c2).
 
-Definition beq_TableColumns (c1 : TableColumns) (c2 : TableColumns) : bool :=
-  beq_Table (tab c1) (tab c2) && list_beq Column beq_Column (cols c1) (cols c2).
+Definition beq_TableColumns (c1 : TableColumns_t) (c2 : TableColumns_t) : bool :=
+  beq_Table (tab c1) (tab c2) && list_beq Column_t beq_Column (cols c1) (cols c2).
 
-Definition beq_ColumnReference (c1 : ColumnReference) (c2 : ColumnReference) : bool :=
+Definition beq_ColumnReference (c1 : ColumnReference_t) (c2 : ColumnReference_t) : bool :=
   beq_Column (cr c1) (cr c2) && beq_Table (ct c1) (ct c2).
 
 Lemma lem_beq_Table_id:
- forall (a1 a2: Table),
+ forall (a1 a2: Table_t),
    beq_Table a1 a2 = true -> a1 = a2.
 Proof.
 intros.
@@ -68,7 +68,7 @@ destruct (table_id a1 =? table_id a2) eqn: ca1.
 Qed.
 
 Lemma lem_beq_Table_refl:
- forall (a: Table),
+ forall (a: Table_t),
    beq_Table a a = true.
 Proof.
 intros.
@@ -84,7 +84,7 @@ auto.
 Qed.
 
 Lemma lem_beq_Column_refl : 
- forall (c: Column),
+ forall (c: Column_t),
    beq_Column c c = true.
 Proof.
 intros.
@@ -99,7 +99,7 @@ auto.
 Qed.
 
 Lemma lem_beq_Column_id:
- forall (a1 a2: Column),
+ forall (a1 a2: Column_t),
    beq_Column a1 a2 = true -> a1 = a2.
 Proof.
 intros.
@@ -115,100 +115,97 @@ destruct (column_id a1 =? column_id a2) eqn: ca1.
 - congruence.
 Qed.
 
-(* Meta-types *)
+(* Meta-types (kinds) *)
 
-Inductive Classes : Set :=
-  TableClass | ColumnClass.
+Inductive ElementKind : Set :=
+  Table_K | Column_K.
 
-Definition getTypeByClass (type : Classes) : Set :=
+Definition getTypeByEKind (type : ElementKind) : Set :=
   match type with
-  | TableClass => Table
-  | ColumnClass => Column
+  | Table_K => Table_t
+  | Column_K => Column_t
   end.
 
-Inductive References : Set :=
-  TableColumnsReference | ColumnReferenceReference.
+Inductive LinkKind : Set :=
+  TableColumns_K | ColumnReference_K.
 
-Definition getTypeByReference (type : References) : Set :=
+Definition getTypeByLKind (type : LinkKind) : Set :=
   match type with
-  | TableColumnsReference => TableColumns
-  | ColumnReferenceReference => ColumnReference
+  | TableColumns_K => TableColumns_t
+  | ColumnReference_K => ColumnReference_t
   end.
 
-(* Generic types *)
+(* Generic types (data types) *)
 
-Inductive Object : Set :=
-  | TableObject : Table -> Object
-  | ColumnObject : Column -> Object.
+Inductive Element : Set :=
+  | TableElement : Table_t -> Element
+  | ColumnElement : Column_t -> Element.
 
-Definition toObject (c: Classes) : (getTypeByClass c) -> Object.
-  destruct c ; simpl ; intro a.
-  exact (TableObject a).
-  exact (ColumnObject a).
+Definition lift_EKind (c: ElementKind) : (getTypeByEKind c) -> Element.
+  destruct c ; [ exact TableElement | exact ColumnElement].
 Defined.
 
-Definition beq_Object (c1 : Object) (c2 : Object) : bool :=
+Definition beq_Element (c1 : Element) (c2 : Element) : bool :=
   match c1, c2 with
-  | TableObject o1, TableObject o2 => beq_Table o1 o2
-  | ColumnObject o1, ColumnObject o2 => beq_Column o1 o2
+  | TableElement o1, TableElement o2 => beq_Table o1 o2
+  | ColumnElement o1, ColumnElement o2 => beq_Column o1 o2
   | _, _ => false
   end.
 
 Inductive Link : Set :=
-  | TableColumnLink : TableColumns -> Link
-  | ColumnReferenceLink : ColumnReference -> Link.
+  | TableColumnLink : TableColumns_t -> Link
+  | ColumnReferenceLink : ColumnReference_t -> Link.
+
+Definition lift_LKind (c: LinkKind) : (getTypeByLKind c) -> Link.
+  destruct c ; [ exact TableColumnLink | exact ColumnReferenceLink].
+Defined.
 
 (* Reflective functions *)
 
-Lemma eqClass_dec : forall (c1:Classes) (c2:Classes), { c1 = c2 } + { c1 <> c2 }.
+Lemma eqClass_dec : forall (c1:ElementKind) (c2:ElementKind), { c1 = c2 } + { c1 <> c2 }.
 Proof. repeat decide equality. Defined.
 
-Lemma eqReference_dec : forall (c1:References) (c2:References), { c1 = c2 } + { c1 <> c2 }.
+Lemma eqReference_dec : forall (c1:LinkKind) (c2:LinkKind), { c1 = c2 } + { c1 <> c2 }.
 Proof. repeat decide equality. Defined.
 
-Definition getClass (c : Object) : Classes :=
+Definition getEKind (c : Element) : ElementKind :=
   match c with
-  | TableObject _ => TableClass
-  | ColumnObject _ => ColumnClass
+  | TableElement _ => Table_K
+  | ColumnElement _ => Column_K
   end.
 
-Definition getReference (c : Link) : References :=
+Definition getLKind (c : Link) : LinkKind :=
   match c with
-  | TableColumnLink _ => TableColumnsReference
-  | ColumnReferenceLink _ => ColumnReferenceReference
+  | TableColumnLink _ => TableColumns_K
+  | ColumnReferenceLink _ => ColumnReference_K
   end.
 
-Definition instanceOfClass (cmc: Classes) (c : Object): bool :=
-  if eqClass_dec (getClass c) cmc then true else false.
+Definition instanceOfEKind (cmc: ElementKind) (c : Element): bool :=
+  if eqClass_dec (getEKind c) cmc then true else false.
 
-Definition instanceOfReference (cmr: References) (c : Link): bool :=
-  if eqReference_dec (getReference c) cmr then true else false.
+Definition instanceOfLKind (cmr: LinkKind) (c : Link): bool :=
+  if eqReference_dec (getLKind c) cmr then true else false.
 
-Definition ClassAttributeTypes (c: Classes): Set :=
+Definition ClassAttributeTypes (c: ElementKind): Set :=
   match c with
-  | TableClass => (nat * string)
-  | ColumnClass => (nat * string)
+  | Table_K => (nat * string)
+  | Column_K => (nat * string)
   end.
-(*
-Definition ClassElement (t : Classes) : (ClassAttributeTypes t) -> Object :=
+
+
+Definition ReferenceRoleTypes (c:LinkKind): Set :=
+  match c with
+  | TableColumns_K => (Table_t * list Column_t)
+  | ColumnReference_K => (Column_t * Table_t)
+  end.
+
+Definition Build_ReferenceLink (t : LinkKind) : (ReferenceRoleTypes t) -> Link :=
   match t with
-  | TableClass => (fun (p: nat * string) => (TableObject (Build_Table (fst p) (snd p))))
-  | ColumnClass => (fun (p: nat * string) => (ColumnObject (Build_Column (fst p) (snd p))))
-  end.*)
-
-Definition ReferenceRoleTypes (c:References): Set :=
-  match c with
-  | TableColumnsReference => (Table * list Column)
-  | ColumnReferenceReference => (Column * Table)
+  | TableColumns_K => (fun (p: Table_t * list Column_t) => (TableColumnLink (Build_TableColumns_t (fst p) (snd p))))
+  | ColumnReference_K => (fun (p: Column_t * Table_t) => (ColumnReferenceLink (Build_ColumnReference_t (fst p) (snd p))))
   end.
 
-Definition Build_ReferenceLink (t : References) : (ReferenceRoleTypes t) -> Link :=
-  match t with
-  | TableColumnsReference => (fun (p: Table * list Column) => (TableColumnLink (Build_TableColumns (fst p) (snd p))))
-  | ColumnReferenceReference => (fun (p: Column * Table) => (ColumnReferenceLink (Build_ColumnReference (fst p) (snd p))))
-  end.
-
-Definition toRelationalMetamodel_Class (t : Classes) (c : Object) : option (getTypeByClass t). 
+Definition get_E_data (t : ElementKind) (c : Element) : option (getTypeByEKind t). 
   destruct t ; destruct c ; simpl.
   exact (Some t).
   exact None.
@@ -217,15 +214,15 @@ Definition toRelationalMetamodel_Class (t : Classes) (c : Object) : option (getT
 Defined. 
 
 Theorem toRelationalMetamodel_Class_inv :
-  forall (t : Classes) (c :Object) (c': getTypeByClass t),
-    toRelationalMetamodel_Class t c = Some c' ->
-    c = (toObject t c').
+  forall (t : ElementKind) (c :Element) (c': getTypeByEKind t),
+    get_E_data t c = Some c' ->
+    c = (lift_EKind t c').
 Proof.
   intros.
   destruct t ; destruct c ; simpl in * ; congruence.
 Qed.
 
-Definition toRelationalMetamodel_Reference (t : References) (c : Link) : option (getTypeByReference t).
+Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t).
   destruct t ; destruct c ; simpl .
   exact (Some t).
   exact None.
@@ -235,73 +232,63 @@ Defined.
 
 (* Generic functions *)
 
-Definition toLink (t: References) (e: getTypeByReference t) : Link.
-  destruct t ; simpl in *.
-  exact (TableColumnLink e).
-  exact (ColumnReferenceLink e).
-  Defined.
 
-Definition getId (r : Object) : nat :=
+Definition getId (r : Element) : nat :=
   match r with
-  | TableObject c => table_id c
-  | ColumnObject a => column_id a
+  | TableElement c => table_id c
+  | ColumnElement a => column_id a
   end.
 
-Definition getName (r : Object) : string :=
+Definition getName (r : Element) : string :=
   match r with
-  | TableObject c => table_name c
-  | ColumnObject a => column_name a
+  | TableElement c => table_name c
+  | ColumnElement a => column_name a
   end.
 
-(*Definition allTables (m : RelationalModel) : list Table :=
-  match m with BuildRelationalModel l _  => optionList2List (map (toRelationalMetamodel_Class TableClass) l) end.
 
-Definition allColumns (m : RelationalModel) : list Column :=
-  match m with BuildRelationalModel l _  => optionList2List (map (toRelationalMetamodel_Class ColumnClass) l) end.*)
-
-Fixpoint getTableColumnsOnLinks (t : Table) (l : list Link) : option (list Column) :=
+Fixpoint getTableColumnsOnLinks (t : Table_t) (l : list Link) : option (list Column_t) :=
   match l with
-  | (TableColumnLink (Build_TableColumns tab c)) :: l1 => if beq_Table tab t then Some c else getTableColumnsOnLinks t l1
+  | (TableColumnLink (Build_TableColumns_t tab c)) :: l1 => if beq_Table tab t then Some c else getTableColumnsOnLinks t l1
   | _ :: l1 => getTableColumnsOnLinks t l1
   | nil => None
   end.
 
-Definition getTableColumns (t : Table) (m : Model Object Link) : option (list Column) :=
+Definition getTableColumns (t : Table_t) (m : Model Element Link) : option (list Column_t) :=
 getTableColumnsOnLinks t (allModelLinks m).
 
-Fixpoint getColumnReferenceOnLinks (c : Column) (l : list Link) : option Table :=
+Fixpoint getColumnReferenceOnLinks (c : Column_t) (l : list Link) : option Table_t :=
   match l with
-  | (ColumnReferenceLink (Build_ColumnReference col t)) :: l1 => if beq_Column col c then Some t else getColumnReferenceOnLinks c l1
+  | (ColumnReferenceLink (Build_ColumnReference_t col t)) :: l1 => if beq_Column col c then Some t else getColumnReferenceOnLinks c l1
   | _ :: l1 => getColumnReferenceOnLinks c l1
   | nil => None
   end.
 
-Definition getColumnReference (c : Column) (m : Model Object Link) : option Table := getColumnReferenceOnLinks c (allModelLinks m).
+Definition getColumnReference (c : Column_t) (m : Model Element Link) : option Table_t := getColumnReferenceOnLinks c (allModelLinks m).
 
-Definition bottomRelationalMetamodel_Class (c: Classes) : (getTypeByClass c) :=
+Definition bottomRelationalMetamodel_Class (c: ElementKind) : (getTypeByEKind c) :=
   match c with
-  | TableClass => (Build_Table 0 "")
-  | ColumnClass => (Build_Column 0 "")
+  | Table_K => (Build_Table_t 0 "")
+  | Column_K => (Build_Column_t 0 "")
   end.
 
 Lemma rel_invert : 
-  forall (t: Classes) (t1 t2: getTypeByClass t), toObject t t1 = toObject t t2 -> t1 = t2.
+  forall (t: ElementKind) (t1 t2: getTypeByEKind t), lift_EKind t t1 = lift_EKind t t2 -> t1 = t2.
 Proof.
-  unfold toObject ; intros ; destruct t ; simpl in * ; congruence.
+  unfold lift_EKind ; intros ; destruct t ; simpl in * ; congruence.
 Qed.
 
 Lemma rel_elink_invert : 
-  forall (t: References) (t1 t2: getTypeByReference t), toLink t t1 = toLink t t2 -> t1 = t2.
+  forall (t: LinkKind) (t1 t2: getTypeByLKind t), lift_LKind t t1 = lift_LKind t t2 -> t1 = t2.
 Proof.
   intros. destruct t ; simpl in * ; congruence.
 Qed.
 
   #[export]
-  Instance RelationalElementSum : Sum Object Classes :=
+  Instance RelationalElementSum : Sum Element ElementKind :=
   {
-    denoteSubType := getTypeByClass;
-    toSubType := toRelationalMetamodel_Class;
-    toSumType := toObject;
+    denoteSubType := getTypeByEKind;
+    toSubType := get_E_data;
+    toSumType := lift_EKind;
   }.
   
   Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
@@ -313,19 +300,19 @@ Qed.
     
 
   #[export]
-  Instance RelationalLinkSum : Sum Link References :=
+  Instance RelationalLinkSum : Sum Link LinkKind :=
   {
-    denoteSubType := getTypeByReference;
-    toSubType := toRelationalMetamodel_Reference;
-    toSumType := toLink;
+    denoteSubType := getTypeByLKind;
+    toSubType := get_L_data;
+    toSumType := lift_LKind;
   }.
   
   #[export]
   Instance RelationalM : Metamodel :=
   {
-    ModelElement := Object;
+    ModelElement := Element;
     ModelLink := Link;
-    elements_eqdec:= beq_Object ;
+    elements_eqdec:= beq_Element ;
   }.
 
   #[export]
@@ -335,5 +322,5 @@ Qed.
       links := RelationalLinkSum;
   }.
 
-Definition RelationalModel := Model Object Link.
+Definition RelationalModel := Model Element Link.
 

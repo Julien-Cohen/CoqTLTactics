@@ -40,10 +40,10 @@ forall (cm : ClassModel) (rm : RelationalModel),
         at1 <> at2 ->
         attr_name at1 <> attr_name at2) ->
     (* postcondition *)
-    (forall (co1: Column) (co2: Column) (ta: Table) (*(cos: list Column)*),
-        In (RelationalMetamodel.toObject ColumnClass co1) (allModelElements rm) ->
-        In (RelationalMetamodel.toObject ColumnClass co2) (allModelElements rm) ->
-        In (RelationalMetamodel.toObject TableClass ta) (allModelElements rm) ->
+    (forall (co1: Column_t) (co2: Column_t) (ta: Table_t) (*(cos: list Column)*),
+        In (RelationalMetamodel.lift_EKind Column_K co1) (allModelElements rm) ->
+        In (RelationalMetamodel.lift_EKind Column_K co2) (allModelElements rm) ->
+        In (RelationalMetamodel.lift_EKind Table_K ta) (allModelElements rm) ->
 (*        getTableColumns ta rm = Some cos ->
         In co1 cos ->
         In co2 cos ->*)
@@ -57,7 +57,7 @@ Proof.
    
     repeat Tactics.show_singleton.
     
-    simpl RelationalMetamodel.toObject in *.
+    simpl RelationalMetamodel.lift_EKind in *.
     simpl ClassMetamodel.lift_EKind in *.
     repeat Tactics.show_origin. 
 

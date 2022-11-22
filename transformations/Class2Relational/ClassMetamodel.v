@@ -164,7 +164,7 @@ Definition instanceOfLKind (k: LinkKind) (e : Link): bool :=
   if eqLKind_dec (getLKind e) k then true else false.
 
 
-(* ? *)
+
 Definition get_E_data (t : ElementKind) (c : Element) : option (getTypeByEKind t).
 Proof.
   destruct t ; destruct c ; simpl.
@@ -174,7 +174,7 @@ Proof.
   exact (Some a).
 Defined.
 
-(* ? *)
+
 Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t).
 Proof.
   destruct t ; destruct c ; simpl.
