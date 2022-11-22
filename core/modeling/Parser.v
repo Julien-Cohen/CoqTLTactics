@@ -17,7 +17,7 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 Definition parseOutputPatternLink (intypes: list SourceModelClass) (outtype: TargetModelClass)
   (cr: ConcreteOutputPatternLink intypes outtype) := 
-    (makeLink intypes outtype (ConcreteOutputPatternLink_getRefType cr) (ConcreteOutputPatternLink_getOutputPatternLink cr)).
+    (makeLink intypes outtype cr.(o_OutRef) cr.(o_outpat)).
 
 Definition parseOutputPatternLinks (intypes: list SourceModelClass) (outtype: TargetModelClass)
   (cr: list (ConcreteOutputPatternLink intypes outtype)) := 
@@ -26,26 +26,28 @@ Definition parseOutputPatternLinks (intypes: list SourceModelClass) (outtype: Ta
 
 Definition parseOutputPatternElement (intypes: list SourceModelClass) (co: ConcreteOutputPatternElement intypes) : OutputPatternElement :=
   buildOutputPatternElement
-    (ConcreteOutputPatternElement_getName co)
-    (makeElement intypes (ConcreteOutputPatternElement_getOutType co) (ConcreteOutputPatternElement_getOutPatternElement co))
-    (parseOutputPatternLinks intypes (ConcreteOutputPatternElement_getOutType co) (ConcreteOutputPatternElement_getOutputLinks co)).
+    co.(e_name)
+    (makeElement intypes co.(e_OutType) co.(e_outpat))
+    (parseOutputPatternLinks intypes co.(e_OutType) co.(e_outlink)).
 
 Definition parseRule(cr: ConcreteRule) : Rule :=
   buildRule
-    (ConcreteRule_getName cr)
-    (match ConcreteRule_getGuard cr with
-    | Some g => (makeGuard (ConcreteRule_getInTypes cr) g)
-    | None => (makeEmptyGuard (ConcreteRule_getInTypes cr))
-    end)
-    (match ConcreteRule_getIteratedList cr with
-    | Some i => (makeIterator (ConcreteRule_getInTypes cr) i)
-    | None => (fun _ _ => Some 1)
-    end)
-    (map (parseOutputPatternElement (ConcreteRule_getInTypes cr)) (ConcreteRule_getConcreteOutputPattern cr)).
+    cr.(r_name)
+    ( match cr.(r_guard) with
+      | Some g => (makeGuard cr.(r_InTypes) g)
+      | None => (makeEmptyGuard cr.(r_InTypes))
+      end
+    )
+    ( match cr.(r_iter) with
+      | Some i => (makeIterator cr.(r_InTypes) i)
+      | None => (fun _ _ => Some 1)
+      end
+    )
+    ( map (parseOutputPatternElement cr.(r_InTypes)) cr.(r_outpat) ).
 
 Definition parse(ct: ConcreteTransformation) : Transformation :=
   buildTransformation 
-    (max (map (length (A:=SourceModelClass)) (map ConcreteRule_getInTypes (ConcreteTransformation_getConcreteRules ct))   ))
+    (max (map (length (A:=SourceModelClass)) (map r_InTypes (ConcreteTransformation_getConcreteRules ct))))
     (map parseRule (ConcreteTransformation_getConcreteRules ct)).
 
 End Parser.

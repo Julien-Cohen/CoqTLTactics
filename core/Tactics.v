@@ -11,6 +11,10 @@ Require Import core.modeling.Parser.
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
 
+Ltac destruct_match :=
+  match goal with 
+     [ |- context[match ?P with | _ => _ end]] => destruct P end. 
+
 (** *** One-to-one rules and transformations *)
 
 (** We say a rule is one-to-one rule when it matches singletons. *)
@@ -63,11 +67,12 @@ Qed.
 (** We say a rule has a singleton-pattern when it pattern is a list of size 1. *)
 Definition singleton_pattern_rule (a:ConcreteRule (tc:=tc) (mtc:=mtc)) :=
   match a with 
-  | (ConcreteSyntax.concreteRule s [m] o o0 l) => True
+  | (ConcreteSyntax.Build_ConcreteRule s [m] o o0 l) => True
   | _ => False
   end.
 
 (** A singleton-pattern rule is also a one-to-one rule. *)
+
 
 Lemma one_to_one_rule_parse : 
   forall a, 
@@ -76,22 +81,20 @@ Lemma one_to_one_rule_parse :
 Proof.
   intros a H.
   destruct a ; simpl in H.
-  destruct InTypes ; try contradiction.
-  destruct InTypes ; try contradiction.
+  destruct r_InTypes ; [ contradiction | ].
+  destruct r_InTypes ; [ | contradiction ].
   clear H.
   simpl.
   split ; intro m ; [ | ].
-  {
-    destruct o ; simpl ; reflexivity.
-  }
+  { destruct_match ; simpl ; reflexivity. }
   {
     intros e1 e2 r.
-    destruct o ; simpl.
-    { unfold ConcreteExpressions.makeGuard. simpl.
-
-      destruct (toModelClass s0 e1) ; reflexivity.
+    destruct_match ; simpl.
+    { 
+      unfold ConcreteExpressions.makeGuard. simpl.
+      destruct (toModelClass s e1) ; reflexivity.
     }
-    { destruct (toModelClass s0 e1) ; reflexivity. }
+    { destruct (toModelClass s e1) ; reflexivity. }
   }
 Qed.
 
