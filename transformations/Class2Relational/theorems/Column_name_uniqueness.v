@@ -30,10 +30,10 @@ forall (cm : ClassModel) (rm : RelationalModel),
     (* transformation *)
     rm = execute Class2Relational cm ->
     (* precondition *)
-    (forall (at1: Attribute) (at2: Attribute) (cl: Class) (*(ats: list Attribute)*),
-        In (ClassMetamodel.toObject AttributeClass at1) (allModelElements cm) ->
-        In (ClassMetamodel.toObject AttributeClass at2) (allModelElements cm) ->
-        In (ClassMetamodel.toObject ClassClass cl) (allModelElements cm) ->
+    (forall (at1: Attribute_t) (at2: Attribute_t) (cl: Class_t) (*(ats: list Attribute_t)*),
+        In (ClassMetamodel.lift_EKind Attribute_K at1) (allModelElements cm) ->
+        In (ClassMetamodel.lift_EKind Attribute_K at2) (allModelElements cm) ->
+        In (ClassMetamodel.lift_EKind Class_K cl) (allModelElements cm) ->
 (*        getClassAttributes cl cm = Some ats ->
         In at1 ats ->
         In at2 ats ->*)
@@ -58,7 +58,7 @@ Proof.
     repeat Tactics.show_singleton.
     
     simpl RelationalMetamodel.toObject in *.
-    simpl ClassMetamodel.toObject in *.
+    simpl ClassMetamodel.lift_EKind in *.
     repeat Tactics.show_origin. 
 
           specialize (PRE a a0 c).
@@ -67,22 +67,22 @@ Proof.
             apply allTuples_incl in IN2.
             apply allTuples_incl in IN3.
             unfold incl in IN1, IN2, IN3.
-            specialize (IN1 (AttributeObject a)).
-            specialize (IN2 (AttributeObject a0)).
-            specialize (IN3 (ClassObject c)).
+            specialize (IN1 (AttributeElement a)).
+            specialize (IN2 (AttributeElement a0)).
+            specialize (IN3 (ClassElement c)).
 
 
-            assert (I4 : In (AttributeObject a) (allModelElements cm)).
+            assert (I4 : In (AttributeElement a) (allModelElements cm)).
             { apply IN1. simpl. auto. }
 
             clear IN1.
 
-            assert (I5 : In (AttributeObject a0) (allModelElements cm)).       
+            assert (I5 : In (AttributeElement a0) (allModelElements cm)).       
             { apply IN2. simpl. auto. }
 
             clear IN2.
 
-            assert (I6 : In (ClassObject c) (allModelElements cm)).
+            assert (I6 : In (ClassElement c) (allModelElements cm)).
             { apply IN3. simpl. auto. }
 
             clear IN3.

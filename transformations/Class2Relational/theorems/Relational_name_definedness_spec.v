@@ -65,7 +65,7 @@ forall (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : Relational
   (* transformation *) 
      rm = execute Class2Relational cm ->
   (* precondition *)   
-     (forall (c1 : ClassMetamodel.Object), 
+     (forall (c1 : ClassMetamodel.Element), 
          In c1 (allModelElements cm) -> 
             (ClassMetamodel.getName c1 <> ""%string)) ->
   (* postcondition *) 
@@ -184,7 +184,7 @@ Ltac destruct_pattern Hinst sp :=
 Theorem Relational_name_definedness':
 forall (cm : ClassModel) (rm : RelationalModel),
   (* transformation *) rm = execute Class2Relational cm ->
-  (* precondition *)   (forall (c1 : ClassMetamodel_Object), In c1 (allModelElements cm) -> (ClassMetamodel_getName c1 <> ""%string)) ->
+  (* precondition *)   (forall (c1 : ClassMetamodel_Element), In c1 (allModelElements cm) -> (ClassMetamodel_getName c1 <> ""%string)) ->
   (* postcondition *)  (forall (t1 : RelationalMetamodel_Object), In t1 (allModelElements rm) -> (RelationalMetamodel_getName t1 <> ""%string)).
 Proof.
   intros. subst rm.

@@ -189,12 +189,12 @@ Definition ClassAttributeTypes (c: Classes): Set :=
   | TableClass => (nat * string)
   | ColumnClass => (nat * string)
   end.
-
+(*
 Definition ClassElement (t : Classes) : (ClassAttributeTypes t) -> Object :=
   match t with
   | TableClass => (fun (p: nat * string) => (TableObject (Build_Table (fst p) (snd p))))
   | ColumnClass => (fun (p: nat * string) => (ColumnObject (Build_Column (fst p) (snd p))))
-  end.
+  end.*)
 
 Definition ReferenceRoleTypes (c:References): Set :=
   match c with

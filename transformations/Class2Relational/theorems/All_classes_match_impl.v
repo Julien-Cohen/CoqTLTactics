@@ -14,9 +14,9 @@ Require Import transformations.Class2Relational.RelationalMetamodel.
 Require Import core.utils.CpdtTactics.
 
 Theorem All_classes_match_impl:
-  forall (cm : ClassModel) (c : Class),
+  forall (cm : ClassModel) (c : Class_t),
   exists (r : Rule),
-    matchPattern Class2Relational cm [ClassMetamodel.toObject ClassClass c] = [r].
+    matchPattern Class2Relational cm [ClassMetamodel.lift_EKind Class_K c] = [r].
 Proof.
   eexists.
   reflexivity.

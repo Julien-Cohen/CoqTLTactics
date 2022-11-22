@@ -16,7 +16,7 @@ From core Require Tactics Certification.
 
 Lemma tables_come_from_classes a b c : 
   In (TableObject a) (instantiatePattern Class2Relational b [c]) ->
-  exists d, c = ClassObject d.
+  exists d, c = ClassElement d.
 Proof.
  destruct c ; simpl ; [ solve [eauto] | intro H ; exfalso ].
  simpl in H.
@@ -30,7 +30,7 @@ Qed.
 
 Lemma columns_come_from_attributes a b c : 
   In (ColumnObject a) (instantiatePattern Class2Relational b [c]) ->
-  exists d, c = AttributeObject d.
+  exists d, c = AttributeElement d.
 Proof.
  destruct c ; simpl ; [intro H ; exfalso | solve[eauto] ].
  simpl in H.

@@ -52,28 +52,28 @@ Definition Class2Relational :=
   buildTransformation 1
     [
       buildRule "Class2Table"
-        (makeGuard [ClassClass] (fun m c => true))
-        (makeIterator [ClassClass] (fun m c => 1))
+        (makeGuard [Class_K] (fun m c => true))
+        (makeIterator [Class_K] (fun m c => 1))
         [buildOutputPatternElement "tab"
-          (makeElement [ClassClass] TableClass
+          (makeElement [Class_K] TableClass
             (fun i m c => Build_Table (class_id c) (class_name c)))
-            (makeLink [ClassClass] TableClass TableColumnsReference
+            (makeLink [Class_K] TableClass TableColumnsReference
             (fun tls i m c t =>
               attrs <- getClassAttributes c m;
               cols <- resolveAll tls m "col" ColumnClass 
-                (singletons (map (ClassMetamodel.toObject AttributeClass) attrs));
+                (singletons (map (ClassMetamodel.lift_EKind Attribute_K) attrs));
               return Build_TableColumns t cols))
         ];
       buildRule "Attribute2Column"
-        (makeGuard [AttributeClass] (fun m a => negb (derived a)))
-        (makeIterator [AttributeClass] (fun m a => 1))
+        (makeGuard [Attribute_K] (fun m a => negb (derived a)))
+        (makeIterator [Attribute_K] (fun m a => 1))
         [buildOutputPatternElement "col"
-          (makeElement [AttributeClass] ColumnClass
+          (makeElement [Attribute_K] ColumnClass
             (fun i m a => Build_Column (attr_id a) (attr_name a)))
-            (makeLink [AttributeClass] ColumnClass ColumnReferenceReference
+            (makeLink [Attribute_K] ColumnClass ColumnReferenceReference
               (fun tls i m a c =>
                 cl <- getAttributeType a m;
-                tb <- resolve tls m "tab" TableClass [ClassMetamodel.toObject ClassClass cl];
+                tb <- resolve tls m "tab" TableClass [ClassMetamodel.lift_EKind Class_K cl];
                 return Build_ColumnReference c tb))
         ]
     ].

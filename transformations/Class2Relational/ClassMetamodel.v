@@ -1,13 +1,11 @@
 Require Import String.
 Require Import Bool.
 Require Import List.      (* sequence *)
-Require Import Multiset.  (* bag *)
-Require Import ListSet.   (* set *)
 Require Import PeanoNat.
 Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 
-Require Import core.EqDec.
+(*Require Import core.EqDec.*)
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
@@ -16,32 +14,35 @@ Require Import core.utils.CpdtTactics.
 
 Scheme Equality for list.
 
-(* Base types *)
+(** Base types for elements *)
 
-Record Class := { class_id : nat ; class_name : string }.
+Record Class_t := { class_id : nat ; class_name : string }.
 
-Record Attribute := { attr_id : nat ; derived : bool ; attr_name : string }.
+Record Attribute_t := { attr_id : nat ; derived : bool ; attr_name : string }.
 
-Record ClassAttributes := { in_class : Class ; attrs : list Attribute }.
+(** Base types for links *)
 
-Record AttributeType := { for_attribute : Attribute ; type : Class }.
+Record ClassAttributes_t := { source_class : Class_t ; attrs : list Attribute_t }.
+
+Record AttributeType_t := { source_attribute : Attribute_t ; type : Class_t }.
+
 
 (* Equality *)
 
-Definition beq_Class (c1 : Class) (c2 : Class) : bool :=
+Definition beq_Class (c1 : Class_t) (c2 : Class_t) : bool :=
   beq_nat (class_id c1) (class_id c2) && beq_string (class_name c1) (class_name c2).
 
-Definition beq_Attribute (a1 : Attribute) (a2 : Attribute) : bool :=
+Definition beq_Attribute (a1 : Attribute_t) (a2 : Attribute_t) : bool :=
   beq_nat (attr_id a1) (attr_id a2) && eqb (derived a1) (derived a2) && beq_string (attr_name a1) (attr_name a2).
 
-Definition beq_AttributeType (c1 : AttributeType) (c2 : AttributeType) : bool :=
-  beq_Attribute (for_attribute c1) (for_attribute c2) && beq_Class (type c1) (type c2).
+Definition beq_AttributeType (c1 : AttributeType_t) (c2 : AttributeType_t) : bool :=
+  beq_Attribute (source_attribute c1) (source_attribute c2) && beq_Class (type c1) (type c2).
 
-Definition beq_ClassAttributes (c1 : ClassAttributes) (c2 : ClassAttributes) : bool :=
-  beq_Class (in_class c1) (in_class c2) && list_beq Attribute beq_Attribute (attrs c1) (attrs c2).
+Definition beq_ClassAttributes (c1 : ClassAttributes_t) (c2 : ClassAttributes_t) : bool :=
+  beq_Class (source_class c1) (source_class c2) && list_beq Attribute_t beq_Attribute (attrs c1) (attrs c2).
 
 Lemma lem_beq_Class_id:
- forall (a1 a2: Class),
+ forall (a1 a2: Class_t),
    beq_Class a1 a2 = true -> a1 = a2.
 Proof.
 intros.
@@ -58,7 +59,7 @@ destruct (class_id a1 =? class_id a2) eqn: ca1.
 Qed.
 
 Lemma lem_beq_Attribute_id:
- forall (a1 a2: Attribute),
+ forall (a1 a2: Attribute_t),
    beq_Attribute a1 a2 = true -> a1 = a2.
 Proof.
 intros.
@@ -77,234 +78,62 @@ destruct (attr_id a1 =? attr_id a2) eqn: ca1.
 - congruence.
 Qed.
 
-(* Meta-types *)
 
-Inductive Classes : Set :=
-  ClassClass | AttributeClass.
+(** Meta-types (or kinds, to be used in rules) *)
 
-Definition getTypeByClass (type : Classes) : Set :=
+Inductive ElementKind : Set :=
+  Class_K | Attribute_K.
+
+Definition getTypeByEKind (type : ElementKind) : Set :=
   match type with
-  | ClassClass => Class
-  | AttributeClass => Attribute
+  | Class_K => Class_t
+  | Attribute_K => Attribute_t
   end.
 
-(* not used *)
-Definition getEAttributeTypesByClass (c: Classes): Set :=
-  match c with
-  | ClassClass => (nat * string)
-  | AttributeClass => (nat * bool * string)
-  end.
 
-Inductive References : Set :=
-  ClassAttributesReference | AttributeTypeReference.
 
-Definition getTypeByReference (type : References) : Set :=
+Inductive LinkKind : Set :=
+  ClassAttribute_K | AttributeType_K.
+
+Definition getTypeByLKind (type : LinkKind) : Set :=
   match type with
-  | ClassAttributesReference => ClassAttributes
-  | AttributeTypeReference => AttributeType
+  | ClassAttribute_K => ClassAttributes_t
+  | AttributeType_K => AttributeType_t
   end.
 
-Definition getERoleTypesByReference (c: References): Set :=
-  match c with
-  | ClassAttributesReference => (Class * list Attribute)
-  | AttributeTypeReference => (Attribute * Class)
-  end.
+Lemma eqEKind_dec : forall (c1:ElementKind) (c2:ElementKind), { c1 = c2 } + { c1 <> c2 }.
+Proof. repeat decide equality. Defined.
 
-(* Generic types *)
+Lemma eqLKind_dec : forall (c1:LinkKind) (c2:LinkKind), { c1 = c2 } + { c1 <> c2 }.
+Proof. repeat decide equality. Defined.
 
-Inductive Object : Set :=
-  ClassObject : Class -> Object
-| AttributeObject : Attribute -> Object.
+(** Data types (to build models) *)
+
+Inductive Element : Set :=
+  ClassElement : Class_t -> Element
+| AttributeElement : Attribute_t -> Element.
 
 
-Definition beq_Object (c1 : Object) (c2 : Object) : bool :=
+Definition lift_EKind k : (getTypeByEKind k) -> Element. 
+  destruct k ; [ exact ClassElement | exact AttributeElement].
+Defined.
+
+
+Definition beq_Element (c1 : Element) (c2 : Element) : bool :=
   match c1, c2 with
-  | ClassObject o1, ClassObject o2 => beq_Class o1 o2
-  | AttributeObject o1, AttributeObject o2 => beq_Attribute o1 o2
+  | ClassElement o1, ClassElement o2 => beq_Class o1 o2
+  | AttributeElement o1, AttributeElement o2 => beq_Attribute o1 o2
   | _, _ => false
   end.
 
+
 Inductive Link : Set :=
-   | ClassAttributeLink : ClassAttributes -> Link
-   | AttributeTypeLink : AttributeType -> Link.
+   | ClassAttributeLink : ClassAttributes_t -> Link
+   | AttributeTypeLink : AttributeType_t -> Link.
 
-
-(* Reflective functions *)
-
-Lemma eqClass_dec : forall (c1:Classes) (c2:Classes), { c1 = c2 } + { c1 <> c2 }.
-Proof. repeat decide equality. Defined.
-
-Lemma eqReference_dec : forall (c1:References) (c2:References), { c1 = c2 } + { c1 <> c2 }.
-Proof. repeat decide equality. Defined.
-
-Definition getClass (c : Object) : Classes :=
-   match c with
-   | ClassObject _ => ClassClass
-   | AttributeObject _ => AttributeClass
-   end.
-
-Definition getReference (c : Link) : References :=
-   match c with
-   | ClassAttributeLink _ => ClassAttributesReference
-   | AttributeTypeLink _ => AttributeTypeReference
-   end.
-
-Definition instanceOfClass (cmc: Classes) (c : Object): bool :=
-  if eqClass_dec (getClass c) cmc then true else false.
-
-Definition instanceOfReference (cmr: References) (c : Link): bool :=
-  if eqReference_dec (getReference c) cmr then true else false.
-
-Definition getObjectFromEAttributeValues (t : Classes) : (getEAttributeTypesByClass t) -> Object :=
-  match t with
-  | ClassClass => (fun (p: nat * string) => (ClassObject (Build_Class (fst p) (snd p))))
-  | AttributeClass => (fun (p: nat * bool * string) => (AttributeObject (Build_Attribute (fst (fst p)) (snd (fst p)) (snd p))))
-  end.
-
-Definition getLinkFromERoleValues (t : References) : (getERoleTypesByReference t) -> Link :=
-  match t with
-  | ClassAttributesReference => (fun (p: Class * list Attribute) => (ClassAttributeLink (Build_ClassAttributes (fst p) (snd p))))
-  | AttributeTypeReference => (fun (p: Attribute * Class) => (AttributeTypeLink (Build_AttributeType (fst p) (snd p))))
-  end.
-
-Definition toClass (t : Classes) (c : Object) : option (getTypeByClass t).
-Proof.
-  destruct t ; destruct c ; simpl.
-  exact (Some c).
-  exact None.
-  exact None.
-  exact (Some a).
+Definition lift_LKind k : (getTypeByLKind k) -> Link.
+  destruct k ; [ exact ClassAttributeLink | exact AttributeTypeLink].
 Defined.
-
-
-(*  
-match c with
-| ClassMetamodel_BuildObject c0 d =>
-    let s := ClassMetamodel_eqClass_dec c0 t in
-    match s with
-    | left e => match e with
-                     eq_refl => Some d
-               end
-    | right _ => None
-    end
-  end.
-  
-*)
-
-Definition toReference (t : References) (c : Link) : option (getTypeByReference t).
-Proof.
-  destruct t ; destruct c ; simpl.
-  exact (Some c).
-  exact None.
-  exact None.
-  exact (Some a).
-Defined.
-
-(* Generic functions *)
-
-Definition toObject (t: Classes) (e: getTypeByClass t) : Object. 
-  destruct t ; simpl in e.
-  exact (ClassObject e).
-  exact (AttributeObject e).
-Defined. 
-
-Definition toLink (t: References) (e: getTypeByReference t) : Link. 
-  destruct t ; simpl in e.
-  exact (ClassAttributeLink e).
-  exact (AttributeTypeLink e).
-Defined.
-
-Definition getId (c : Object) : nat :=
-  match c with
-  | ClassObject c => class_id c
-  | AttributeObject a => attr_id a
-  end.
-
-Definition getName (c : Object) : string :=
-  match c with
-  | ClassObject c => class_name c
-  | AttributeObject a => attr_name a
-  end.
-
-(*Definition allClasses (m : ClassModel) : list Class :=
-  match m with BuildClassModel l _ => optionList2List (map (ClassMetamodel_toClass ClassClass) l) end.*)
-
-(*Theorem allClassesInModel :
-  forall (c : Class) (cm: ClassModel), (In c (allClasses cm)) -> (In (ClassMetamodel_BuildObject ClassClass c) (allClassModelElements cm)).
-Proof.
-  intros.
-  destruct cm.
-  unfold allClassModelElements.
-  unfold allClasses in H.
-  apply all_optionList2List_in_list in H.
-  induction l.
-  - inversion H.
-  - simpl in H. simpl.
-    destruct H.
-    + unfold ClassMetamodel_toClass in H.
-      left.
-      destruct (ClassMetamodel_eqClass_dec (ClassMetamodel_getClass a) ClassClass).
-      * destruct a.
-        -- inversion H. reflexivity.
-        -- inversion H.
-      * inversion H.
-    + right.
-      apply IHl.
-      apply H.
-Qed.*)
-  
-(*Definition allAttributes (m : ClassModel) : list Attribute :=
-  match m with BuildClassModel l _ => optionList2List (map (ClassMetamodel_toClass AttributeClass) l) end.*)
-
-Fixpoint getClassAttributesOnLinks (c : Class) (l : list Link) : option (list Attribute) :=
-  match l with
-  | (ClassAttributeLink (Build_ClassAttributes cl a)) :: l1 => if beq_Class cl c then Some a else getClassAttributesOnLinks c l1
-  | _ :: l1 => getClassAttributesOnLinks c l1
-  | nil => None
-  end.
-
-Definition getClassAttributes (c : Class) (m : Model Object Link) : option (list Attribute) :=
-  getClassAttributesOnLinks c (@allModelLinks _ _ m).
-
-Definition getClassAttributesObjects (c : Class) (m : Model Object Link) : option (list Object) :=
-  match getClassAttributes c m with
-  | Some l => Some (map AttributeObject l)
-  | _ => None
-  end.
-
-Fixpoint getAttributeTypeOnLinks (a : Attribute) (l : list Link) : option Class :=
-  match l with
-  | (AttributeTypeLink (Build_AttributeType att c)) :: l1 => if beq_Attribute att a then Some c else getAttributeTypeOnLinks a l1
-  | _ :: l1 => getAttributeTypeOnLinks a l1
-  | nil => None
-  end.
-
-Definition getAttributeType (a : Attribute) (m : Model Object Link) : option Class :=
-  match m with
-    (Build_Model cs ls) => getAttributeTypeOnLinks a ls
-  end.
-
-Definition getAttributeTypeObject (a : Attribute) (m : Model Object Link) : option Object :=
-  match getAttributeType a m with
-  | Some c => Some (toObject ClassClass c)
-  | None => None
-  end.
-
-Definition defaultInstanceOfClass (c: Classes) : (getTypeByClass c) :=
-  match c with
-  | ClassClass => (Build_Class 0 "")
-  | AttributeClass => (Build_Attribute 0 false "")
-  end.
-
-(* Typeclass Instance *)
-
-#[export]
-Instance ClassElementSum : Sum Object Classes :=
-{
-  denoteSubType := getTypeByClass;
-  toSubType := toClass;
-  toSumType := toObject;
-}.
 
 Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
   match c1, c2 with
@@ -313,21 +142,130 @@ Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
   | _, _ => false
   end.
 
+
+(** Reflective functions (typing : correspondence between abstract types (kinds) and model data) *)
+
+Definition getEKind (c : Element) : ElementKind :=
+   match c with
+   | ClassElement _ => Class_K
+   | AttributeElement _ => Attribute_K
+   end.
+
+Definition getLKind (c : Link) : LinkKind :=
+   match c with
+   | ClassAttributeLink _ => ClassAttribute_K
+   | AttributeTypeLink _ => AttributeType_K
+   end.
+
+Definition instanceOfEKind (k: ElementKind) (e : Element): bool :=
+  if eqEKind_dec (getEKind e) k then true else false.
+
+Definition instanceOfLKind (k: LinkKind) (e : Link): bool :=
+  if eqLKind_dec (getLKind e) k then true else false.
+
+
+(* ? *)
+Definition get_E_data (t : ElementKind) (c : Element) : option (getTypeByEKind t).
+Proof.
+  destruct t ; destruct c ; simpl.
+  exact (Some c).
+  exact None.
+  exact None.
+  exact (Some a).
+Defined.
+
+(* ? *)
+Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t).
+Proof.
+  destruct t ; destruct c ; simpl.
+  exact (Some c).
+  exact None.
+  exact None.
+  exact (Some a).
+Defined.
+
+
+(* Generic functions *)
+
+
+Definition getId (c : Element) : nat :=
+  match c with
+  | ClassElement c => c.(class_id)
+  | AttributeElement a => a.(attr_id)
+  end.
+
+Definition getName (c : Element) : string :=
+  match c with
+  | ClassElement c => c.(class_name)
+  | AttributeElement a => a.(attr_name)
+  end.
+
+Fixpoint getClassAttributesOnLinks (c : Class_t) (l : list Link) : option (list Attribute_t) :=
+  match l with
+  | (ClassAttributeLink (Build_ClassAttributes_t cl a)) :: l1 => if beq_Class cl c then Some a else getClassAttributesOnLinks c l1
+  | _ :: l1 => getClassAttributesOnLinks c l1
+  | nil => None
+  end.
+
+Definition getClassAttributes (c : Class_t) (m : Model Element Link) : option (list Attribute_t) :=
+  getClassAttributesOnLinks c (@allModelLinks _ _ m).
+
+Definition getClassAttributesElements (c : Class_t) (m : Model Element Link) : option (list Element) :=
+  match getClassAttributes c m with
+  | Some l => Some (map AttributeElement l)
+  | _ => None
+  end.
+
+Fixpoint getAttributeTypeOnLinks (a : Attribute_t) (l : list Link) : option Class_t :=
+  match l with
+  | (AttributeTypeLink (Build_AttributeType_t att c)) :: l1 => if beq_Attribute att a then Some c else getAttributeTypeOnLinks a l1
+  | _ :: l1 => getAttributeTypeOnLinks a l1
+  | nil => None
+  end.
+
+Definition getAttributeType (a : Attribute_t) (m : Model Element Link) : option Class_t :=
+  match m with
+    (Build_Model cs ls) => getAttributeTypeOnLinks a ls
+  end.
+
+Definition getAttributeTypeElement (a : Attribute_t) (m : Model Element Link) : option Element :=
+  match getAttributeType a m with
+  | Some c => Some (lift_EKind Class_K c)
+  | None => None
+  end.
+
+Definition defaultInstanceOfClass (c: ElementKind) : (getTypeByEKind c) :=
+  match c with
+  | Class_K => (Build_Class_t 0 "")
+  | Attribute_K => (Build_Attribute_t 0 false "")
+  end.
+
+(* Typeclass Instance *)
+
 #[export]
-Instance ClassLinkSum : Sum Link References :=
+Instance ClassElementSum : Sum Element ElementKind :=
 {
-  denoteSubType := getTypeByReference;
-  toSubType := toReference;
-  toSumType := toLink;
+  denoteSubType := getTypeByEKind;
+  toSubType := get_E_data;
+  toSumType := lift_EKind;
+}.
+
+
+#[export]
+Instance ClassLinkSum : Sum Link LinkKind :=
+{
+  denoteSubType := getTypeByLKind;
+  toSubType := get_L_data;
+  toSumType := lift_LKind;
 }.
 
 
 #[export]
 Instance ClassM : Metamodel :=
 {
-  ModelElement := Object;
+  ModelElement := Element;
   ModelLink := Link;
-  elements_eqdec := beq_Object ;
+  elements_eqdec := beq_Element ;
 }.
 
 #[export]
@@ -337,19 +275,19 @@ Instance ClassMetamodel : ModelingMetamodel ClassM :=
     links := ClassLinkSum; 
 }.
 
-Definition ClassModel : Set := Model Object Link.
+Definition ClassModel : Set := Model Element Link.
 
 (* Useful lemmas *)
 Lemma Class_invert : 
-  forall (clec_arg: Classes) (t1 t2: getTypeByClass clec_arg), toObject clec_arg t1 = toObject clec_arg t2 -> t1 = t2.
+  forall (clec_arg: ElementKind) (t1 t2: getTypeByEKind clec_arg), lift_EKind clec_arg t1 = lift_EKind clec_arg t2 -> t1 = t2.
 Proof.
   intros. destruct clec_arg ; simpl in * ; congruence.
 Qed.
 
-Lemma Object_dec: 
-  forall (a: Object),
-    (instanceOfClass ClassClass a) = true
- \/ (instanceOfClass AttributeClass a) = true.
+Lemma Element_dec: 
+  forall (a: Element),
+    (instanceOfEKind Class_K a) = true
+ \/ (instanceOfEKind Attribute_K a) = true.
 Proof.
   intros.
   destruct a.
@@ -358,24 +296,24 @@ Proof.
   + right. reflexivity.
 Qed.
 
-Lemma Class_Object_cast:
+Lemma Class_Element_cast:
   forall a c,
-    toClass ClassClass a = return c ->
-      toObject ClassClass c = a.
+    get_E_data Class_K a = return c ->
+      lift_EKind Class_K c = a.
 Proof.
   intros ; destruct a ; simpl in * ; congruence.
 Qed.
 
-Lemma Attribute_Object_cast:
+Lemma Attribute_Element_cast:
   forall a c,
-    toClass AttributeClass a = return c ->
-      toObject AttributeClass c = a.
+    get_E_data Attribute_K a = return c ->
+      lift_EKind Attribute_K c = a.
 Proof.
   intros ; destruct a ; simpl in * ; congruence.
 Qed.
 
 Lemma Class_dec :
-  forall x y : Class, {x = y} + {x <> y}.
+  forall x y : Class_t, {x = y} + {x <> y}.
 Proof.
   decide equality.
   - apply String.string_dec.
@@ -383,7 +321,7 @@ Proof.
 Qed.
 
 Lemma Attribute_dec :
-  forall x y : Attribute, {x = y} + {x <> y}.
+  forall x y : Attribute_t, {x = y} + {x <> y}.
 Proof.
   decide equality.
   - apply String.string_dec.
@@ -391,7 +329,7 @@ Proof.
   - apply Nat.eq_dec.
 Qed.
 
-Lemma eq_dec : forall (x y : Object), {x = y} + {x <> y}.
+Lemma eq_dec : forall (x y : Element), {x = y} + {x <> y}.
   intros ; destruct x, y ; try (right; discriminate).
   - destruct (Class_dec c c0).
     + left. congruence.

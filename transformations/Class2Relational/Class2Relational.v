@@ -55,26 +55,26 @@ Definition Class2Relational' :=
   transformation
   [
     rule "Class2Table"
-    from [ClassClass]
+    from [Class_K]
     where (fun m a => true)
-    to [elem [ClassClass] TableClass "tab"
+    to [elem [Class_K] TableClass "tab"
         (fun i m c => Build_Table (class_id c) (class_name c))
-        [link [ClassClass] TableClass TableColumnsReference
+        [link [Class_K] TableClass TableColumnsReference
           (fun tls i m c t =>
             maybeBuildTableColumns t
               (maybeResolveAll tls m "col" ColumnClass 
-                (maybeSingletons (getClassAttributesObjects c m))))]]
+                (maybeSingletons (getClassAttributesElements c m))))]]
     ;
     rule "Attribute2Column"
-    from [AttributeClass]
+    from [Attribute_K]
     where (fun m a => negb (derived a))
-    to [elem [AttributeClass] ColumnClass "col"
+    to [elem [Attribute_K] ColumnClass "col"
         (fun i m a => Build_Column (attr_id a) (attr_name a))
-        [link [AttributeClass] ColumnClass ColumnReferenceReference
+        [link [Attribute_K] ColumnClass ColumnReferenceReference
           (fun tls i m a c =>
             maybeBuildColumnReference c
               (maybeResolve tls m "tab" TableClass 
-                (maybeSingleton (getAttributeTypeObject a m))))]]
+                (maybeSingleton (getAttributeTypeElement a m))))]]
   ].
 
 Definition Class2Relational := parse Class2Relational'.

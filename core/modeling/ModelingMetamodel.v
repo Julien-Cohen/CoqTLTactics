@@ -34,6 +34,6 @@ Class ModelingMetamodel `(mm : Metamodel) :=
 
 Definition hasType {mm: Metamodel} {mmm: ModelingMetamodel mm} (t: ModelClass) (e: ModelElement) : bool :=
   match (toModelClass t e) with
-  | Some e' => true
+  | Some _ => true
   | _ => false
   end.

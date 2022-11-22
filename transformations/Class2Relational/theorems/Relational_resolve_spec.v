@@ -24,8 +24,8 @@ Theorem resolve_trivial:
 forall 
   (eng : @TransformationEngine C2RConfiguration CoqTLSyntax)
   (meng: ModelingTransformationEngine Class2RelationalConfiguration eng) 
-  (cm : ClassModel) (c: Class) tls o,
-  (@resolve _ _ _ _ meng tls cm "tab" TableClass [ClassMetamodel.toObject ClassClass c] 1) = Some o ->
+  (cm : ClassModel) (c: Class_t) tls o,
+  (@resolve _ _ _ _ meng tls cm "tab" TableClass [ClassMetamodel.lift_EKind Class_K c] 1) = Some o ->
   (exists (tl : TraceLink.TraceLink), In tl tls).
 Proof.
 intros.

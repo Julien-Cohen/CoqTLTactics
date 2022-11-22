@@ -31,9 +31,9 @@ forall (cm : ClassModel) (rm : RelationalModel),
 (* transformation *) 
     rm = execute Class2Relational cm ->
 (* precondition *)   
-(forall (c1: Class) (c2: Class), 
-    In (ClassMetamodel.toObject ClassClass c1) (allModelElements cm) -> 
-    In (ClassMetamodel.toObject ClassClass c2) (allModelElements cm) -> 
+(forall (c1: Class_t) (c2: Class_t), 
+    In (ClassMetamodel.lift_EKind Class_K c1) (allModelElements cm) -> 
+    In (ClassMetamodel.lift_EKind Class_K c2) (allModelElements cm) -> 
     c1 <> c2 -> 
     class_name c1 <> class_name c2) ->
 (* postcondition *)  
@@ -50,8 +50,8 @@ Proof.
 
     repeat Tactics.show_singleton.
 
-    simpl toObject in *.
-    simpl ClassMetamodel.toObject in *.
+    simpl RelationalMetamodel.toObject in *.
+    simpl ClassMetamodel.lift_EKind in *.
 
     repeat Tactics.show_origin.
 
@@ -60,11 +60,11 @@ Proof.
                 apply allTuples_incl in IN1.
                 apply allTuples_incl in IN2.
                 unfold incl in IN1, IN2.
-                specialize (IN1 (ClassObject c)).
-                specialize (IN2 (ClassObject c0)).
-                assert (I1 : In (ClassObject c) [ClassObject c]). 
+                specialize (IN1 (ClassElement c)).
+                specialize (IN2 (ClassElement c0)).
+                assert (I1 : In (ClassElement c) [ClassElement c]). 
                 { left. reflexivity. }
-                assert (I2 : In (ClassObject c0) [ClassObject c0]). 
+                assert (I2 : In (ClassElement c0) [ClassElement c0]). 
                 { left. reflexivity. }
                 specialize (PRE (IN2 I2)).
                 specialize (PRE (IN1 I1)).
