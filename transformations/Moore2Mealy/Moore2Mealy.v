@@ -33,30 +33,32 @@ Definition Moore2Mealy' :=
       rule "state"
       from [Moore.StateClass]
       to [
-        elem [Moore.StateClass] Mealy.StateClass "s"
-          (fun _ _ s => BuildState (Moore.State_getName s)) nil
+        ELEM "s" ::: Mealy.StateClass  
+          << fun _ _ s => BuildState (Moore.State_getName s) >>
+          
       ];
+
       rule "transition"
       from [Moore.TransitionClass]
       to [
-        elem [Moore.TransitionClass] Mealy.TransitionClass "t"
-          (fun _ m t => BuildTransition 
+        ELEM "t" ::: Mealy.TransitionClass
+          << fun _ m t => BuildTransition 
                           (Moore.Transition_getInput t)
-                          (value (option_map Moore.State_getOutput (Moore.Transition_getTarget t m))))
-          [
-            link [Moore.TransitionClass] Mealy.TransitionClass 
-              Mealy.TransitionSourceReference
+                          (value (option_map Moore.State_getOutput (Moore.Transition_getTarget t m))) >> 
+          <<<
+             LINK  
+              Mealy.TransitionSourceReference //
               (fun tls _ m moore_tr mealy_tr =>
                 maybeBuildTransitionSource mealy_tr
                   (maybeResolve tls m "s" Mealy.StateClass 
-                    (maybeSingleton (Moore.Transition_getSourceObject moore_tr m))));
-            link [Moore.TransitionClass] Mealy.TransitionClass 
-              Mealy.TransitionTargetReference
+                    (maybeSingleton (Moore.Transition_getSourceObject moore_tr m)))) ;
+            LINK 
+              Mealy.TransitionTargetReference //
               (fun tls _ m moore_tr mealy_tr =>
                 maybeBuildTransitionTarget mealy_tr
                   (maybeResolve tls m "s" Mealy.StateClass 
-                    (maybeSingleton (Moore.Transition_getTargetObject moore_tr m))))
-          ]
+                    (maybeSingleton (Moore.Transition_getTargetObject moore_tr m)))) 
+          >>>
       ]
 ].
 

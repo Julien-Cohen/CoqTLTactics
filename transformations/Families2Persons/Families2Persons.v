@@ -64,12 +64,12 @@ Definition Member_getFamilyName (m: Member) (f: FamiliesModel): string :=
       where (fun m member => negb (Member_isFemale member m))
       to 
       [
-        elem [MemberClass] MaleClass "t"
-          (fun i m member => 
+        ELEM "t" ::: MaleClass 
+          << fun i m member => 
             BuildMale (BuildPerson 
               ((Member_getFirstName member) ++ " " ++
-                (Member_getFamilyName member m))))
-          nil
+                (Member_getFamilyName member m))) >>
+          
       ];
 
       rule "Member2Female"
@@ -77,12 +77,12 @@ Definition Member_getFamilyName (m: Member) (f: FamiliesModel): string :=
       where (fun m member => Member_isFemale member m)
       to 
       [
-        elem [MemberClass] FemaleClass "t"
-          (fun i m member => 
+        ELEM "t" ::: FemaleClass 
+          << fun i m member => 
             BuildFemale (BuildPerson 
               ((Member_getFirstName member) ++ " " ++
-                (Member_getFamilyName member m))))
-          nil
+                (Member_getFamilyName member m))) >>
+          
       ]
     ].
 
