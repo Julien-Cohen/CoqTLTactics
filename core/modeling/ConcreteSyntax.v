@@ -116,8 +116,8 @@ Notation "'rule' rulename 'from' types 'to' outputpattern " :=
 
 
 (* Rule without iterator *)
-Notation "'rule' rulename 'from' types 'where' guard 'to' [ 'ELEM' n ::: t << op >> <<< ol >>> ]" :=
-  (Build_ConcreteRule rulename types (Some guard) (None) [ elem types t n op ol ])
+Notation "'rule' rulename 'from' types 'where' guard 'to' [ 'ELEM' n ::: t << op >> <<< [ 'LINK' c // d ] >>> ]" :=
+  (Build_ConcreteRule rulename types (Some guard) (None) [ elem types t n op [link types t c d] ])
     (right associativity, at level 60):coqtl.
 
 (* We need the separators above.
