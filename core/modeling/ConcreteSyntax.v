@@ -45,6 +45,7 @@ Record ConcreteOutputPatternLink (InTypes: list SourceModelClass) (OutType:Targe
 Global Arguments o_OutRef {_ _}.
 Global Arguments o_outpat {_ _}.
 
+
 Record ConcreteOutputPatternElement (InTypes: list SourceModelClass) : Type :=
   elem
     {
@@ -112,3 +113,23 @@ Notation "'rule' rulename 'from' types 'where' guard 'to' outputpattern " :=
 Notation "'rule' rulename 'from' types 'to' outputpattern " :=
   (Build_ConcreteRule rulename types (None) (None) outputpattern)
     (right associativity, at level 60):coqtl.
+
+
+(* Rule without iterator *)
+Notation "'rule' rulename 'from' types 'where' guard 'to' [ 'ELEM' n ::: t << op >> <<< ol >>> ]" :=
+  (Build_ConcreteRule rulename types (Some guard) (None) [ elem types t n op ol ])
+    (right associativity, at level 60):coqtl.
+
+(* We need the separators above.
+
+The following, without a separator, does not work.
+
+Notation "'A' [ i j ]" := (i + j).
+Definition Truc := A [ 1 2 ] . 
+
+The following, with a separator, works.
+
+Notation "'A' [ i | j ]" := (i + j).
+
+Definition Truc := A [ 1 | 2 ] . 
+*)

@@ -57,24 +57,26 @@ Definition Class2Relational' :=
     rule "Class2Table"
     from [Class_K]
     where (fun _ _ => true)
-    to [elem [Class_K] Table_K "tab"
-        (fun _ _ c => Build_Table_t c.(class_id) c.(class_name))
-        [link [Class_K] Table_K TableColumns_K
-          (fun tls _ m c t =>
-            maybeBuildTableColumns t
-              (maybeResolveAll tls m "col" Column_K 
-                (maybeSingletons (getClassAttributesElements c m))))]]
+    to [ ELEM "tab" ::: Table_K  
+        << fun _ _ c => Build_Table_t c.(class_id) c.(class_name) >>
+        <<< [link [Class_K] Table_K TableColumns_K
+               (fun tls _ m c t =>
+                  maybeBuildTableColumns t
+                    (maybeResolveAll tls m "col" Column_K 
+                       (maybeSingletons (getClassAttributesElements c m))))]
+        >>> ]
     ;
     rule "Attribute2Column"
     from [Attribute_K]
     where (fun _ a => negb a.(derived))
-    to [elem [Attribute_K] Column_K "col"
-        (fun _ m a => Build_Column_t a.(attr_id) a.(attr_name))
-        [link [Attribute_K] Column_K ColumnReference_K
-          (fun tls _ m a c =>
-            maybeBuildColumnReference c
-              (maybeResolve tls m "tab" Table_K 
-                (maybeSingleton (getAttributeTypeElement a m))))]]
+    to [ ELEM "col" ::: Column_K 
+        << fun _ m a => Build_Column_t a.(attr_id) a.(attr_name) >>
+        <<< [link [Attribute_K] Column_K ColumnReference_K
+               (fun tls _ m a c =>
+                  maybeBuildColumnReference c
+                    (maybeResolve tls m "tab" Table_K 
+                       (maybeSingleton (getAttributeTypeElement a m))))] 
+        >>> ]
   ].
 
 Definition Class2Relational := parse Class2Relational'.
