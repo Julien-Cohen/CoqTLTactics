@@ -7,7 +7,6 @@ Require Import core.Engine.
 Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.Certification.
-Require Import core.EqDec.
 Require Import core.modeling.iteratetraces.IterateTracesSemantics.
 Require Import Coq.Logic.FunctionalExtensionality.
 

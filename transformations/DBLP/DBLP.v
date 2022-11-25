@@ -16,7 +16,6 @@ Require Import PeanoNat.
 Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 
-Require Import core.EqDec.
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
@@ -1174,16 +1173,13 @@ Instance DBLPMetamodel_LinkSum : Sum DBLPMetamodel_Link DBLPMetamodel_Reference 
 }.
 
 #[export]
-Instance DBLPMetamodel_EqDec : EqDec DBLPMetamodel_Object := {
-    eq_b := beq_DBLPMetamodel_Object;
-}.
-
-#[export]
 Instance DBLPMetamodel_Metamodel_Instance : 
 	Metamodel :=
 {
 	ModelElement := DBLPMetamodel_Object;
 	ModelLink := DBLPMetamodel_Link;
+
+  elements_eqdec := 
 }.
 
 #[export]

@@ -1,16 +1,14 @@
 (** * Metamodel **)
 Require Import core.Model.
-Require Import core.EqDec.
 
 Class Metamodel :=
 {
     ModelElement: Type;
     ModelLink: Type;
     
-    elements_eqdec: EqDec ModelElement;
-
     (* Decidable Equality*)
-    elements_eqb := eq_b;
+    elements_eqdec: forall (x y : ModelElement), {x = y} + {x <> y};
+    elements_eqb (x y: ModelElement) := if elements_eqdec x y then true else false;
 
     InstanceModel := Model ModelElement ModelLink;
 }.

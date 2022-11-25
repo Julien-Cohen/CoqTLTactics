@@ -6,7 +6,6 @@ Require Import Bool.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
-Require Import core.EqDec.
 Require Import core.Metamodel.
 
 Scheme Equality for list.
@@ -23,17 +22,15 @@ Inductive TTElem :=
     (* output *) nat ->
     TTElem.
 
+Theorem TTElem_eqdec: forall (x y : TTElem), {x = y} + {x <> y}.
+  Proof. repeat decide equality. Defined.
+
 Definition TTEq (a b : TTElem) := 
     match a, b with
     | BuildColumn n1 l1, BuildColumn n2 l2 => String.eqb n1 n2 && Nat.eqb l1 l2
     | BuildRow lst1 n1, BuildRow lst2 n2 => list_beq nat Nat.eqb lst1 lst2 && Nat.eqb n1 n2
     | _,_ => false
     end.
-
-#[export]
-Instance TTEqDec : EqDec TTElem := {
-    eq_b := TTEq
-}.
 
 Definition isColumn (e: TTElem) :=
     match e with
@@ -78,4 +75,4 @@ Definition evalTT (tt: Model TTElem TTRef) (ins: list bool) : bool := true.
 
 #[export]
 Instance TTM : Metamodel :=
-  Build_Metamodel TTElem TTRef _.
+  Build_Metamodel TTElem TTRef TTElem_eqdec.

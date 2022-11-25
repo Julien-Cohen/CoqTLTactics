@@ -10,7 +10,6 @@ Require Import core.Model.
 Require Import core.Engine.
 Require Import core.Syntax.
 Require Import core.Semantics.
-Require Import core.EqDec.
 Require Import core.Metamodel.
 Require Import core.TransformationConfiguration.
 Require Import core.SyntaxCertification.
@@ -19,9 +18,9 @@ Require Import core.Expressions.
 Section Certification.
 
 Context {SourceModelElement SourceModelLink: Type}.
-Context {eqdec_sme: EqDec SourceModelElement}. (* need decidable equality on source model elements *)
+Context {eqdec_sme: forall (x y : SourceModelElement), {x = y} + {x <> y}}. (* need decidable equality on source model elements *)
 Context {TargetModelElement TargetModelLink: Type}.
-Context {eqdec_tme: EqDec TargetModelElement}. (* need decidable equality on source model elements *)
+Context {eqdec_tme: forall (x y : TargetModelElement), {x = y} + {x <> y}}. (* need decidable equality on source model elements *)
 
 Instance smm : Metamodel := {
   ModelElement := SourceModelElement;

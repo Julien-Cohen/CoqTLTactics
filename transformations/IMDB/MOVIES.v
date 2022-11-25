@@ -16,7 +16,6 @@ Require Import PeanoNat.
 Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 
-Require Import core.EqDec.
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.

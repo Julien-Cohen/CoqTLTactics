@@ -7,7 +7,6 @@ Require Import PeanoNat.
 Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 
-Require Import core.EqDec.
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
@@ -26,56 +25,17 @@ Record ClassAttributes := { in_class : Class ; attrs : list Attribute }.
 
 Record AttributeType := { for_attribute : Attribute ; type : Class }.
 
-(* Equality *)
+Theorem Class_eqdec: forall (x y : Class), {x = y} + {x <> y}.
+  Proof. repeat decide equality. Defined.
 
-Definition beq_Class (c1 : Class) (c2 : Class) : bool :=
-  beq_nat (class_id c1) (class_id c2) && beq_string (class_name c1) (class_name c2).
+Theorem Attribute_eqdec: forall (x y : Attribute), {x = y} + {x <> y}.
+  Proof. repeat decide equality. Defined.
 
-Definition beq_Attribute (a1 : Attribute) (a2 : Attribute) : bool :=
-  beq_nat (attr_id a1) (attr_id a2) && eqb (derived a1) (derived a2) && beq_string (attr_name a1) (attr_name a2).
+Theorem ClassAttributes_eqdec: forall (x y : ClassAttributes), {x = y} + {x <> y}.
+  Proof. repeat decide equality. Defined.
 
-Definition beq_AttributeType (c1 : AttributeType) (c2 : AttributeType) : bool :=
-  beq_Attribute (for_attribute c1) (for_attribute c2) && beq_Class (type c1) (type c2).
-
-Definition beq_ClassAttributes (c1 : ClassAttributes) (c2 : ClassAttributes) : bool :=
-  beq_Class (in_class c1) (in_class c2) && list_beq Attribute beq_Attribute (attrs c1) (attrs c2).
-
-Lemma lem_beq_Class_id:
- forall (a1 a2: Class),
-   beq_Class a1 a2 = true -> a1 = a2.
-Proof.
-intros.
-unfold beq_Class in H.
-unfold "&&" in H.
-destruct (class_id a1 =? class_id a2) eqn: ca1.
-- apply (lem_beq_string_eq2) in H.
-  apply (beq_nat_true) in ca1.
-  destruct a1,a2.
-  simpl in ca1, H.
-  rewrite ca1,H.
-  auto.
-- congruence.
-Qed.
-
-Lemma lem_beq_Attribute_id:
- forall (a1 a2: Attribute),
-   beq_Attribute a1 a2 = true -> a1 = a2.
-Proof.
-intros.
-unfold beq_Attribute in H.
-unfold "&&" in H.
-destruct (attr_id a1 =? attr_id a2) eqn: ca1.
-- destruct (eqb (derived a1) (derived a2)) eqn: ca2.
-  + apply (lem_beq_string_eq2) in H.
-    apply (beq_nat_true) in ca1.
-    apply (eqb_prop) in ca2.
-    destruct a1,a2.
-    simpl in ca1,ca2, H.
-    rewrite ca1,ca2,H.
-    auto.
-  + congruence. 
-- congruence.
-Qed.
+Theorem AttributeType_eqdec: forall (x y : AttributeType), {x = y} + {x <> y}.
+  Proof. repeat decide equality. Defined.
 
 (* Meta-types *)
 
@@ -116,18 +76,21 @@ Inductive Object : Set :=
   ClassObject : Class -> Object
 | AttributeObject : Attribute -> Object.
 
+Theorem object_eqdec: forall (x y : Object), {x = y} + {x <> y}.
+    Proof. repeat decide equality. Defined. 
 
 Definition beq_Object (c1 : Object) (c2 : Object) : bool :=
-  match c1, c2 with
-  | ClassObject o1, ClassObject o2 => beq_Class o1 o2
-  | AttributeObject o1, AttributeObject o2 => beq_Attribute o1 o2
-  | _, _ => false
-  end.
+  if object_eqdec c1 c2 then true else false.
 
 Inductive Link : Set :=
    | ClassAttributeLink : ClassAttributes -> Link
    | AttributeTypeLink : AttributeType -> Link.
 
+Theorem link_eqdec: forall (x y : Link), {x = y} + {x <> y}.
+    Proof. repeat decide equality. Defined. 
+
+Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
+  if link_eqdec c1 c2 then true else false.
 
 (* Reflective functions *)
 
@@ -258,7 +221,7 @@ Qed.*)
 
 Fixpoint getClassAttributesOnLinks (c : Class) (l : list Link) : option (list Attribute) :=
   match l with
-  | (ClassAttributeLink (Build_ClassAttributes cl a)) :: l1 => if beq_Class cl c then Some a else getClassAttributesOnLinks c l1
+  | (ClassAttributeLink (Build_ClassAttributes cl a)) :: l1 => if Class_eqdec cl c then Some a else getClassAttributesOnLinks c l1
   | _ :: l1 => getClassAttributesOnLinks c l1
   | nil => None
   end.
@@ -274,7 +237,7 @@ Definition getClassAttributesObjects (c : Class) (m : Model Object Link) : optio
 
 Fixpoint getAttributeTypeOnLinks (a : Attribute) (l : list Link) : option Class :=
   match l with
-  | (AttributeTypeLink (Build_AttributeType att c)) :: l1 => if beq_Attribute att a then Some c else getAttributeTypeOnLinks a l1
+  | (AttributeTypeLink (Build_AttributeType att c)) :: l1 => if Attribute_eqdec att a then Some c else getAttributeTypeOnLinks a l1
   | _ :: l1 => getAttributeTypeOnLinks a l1
   | nil => None
   end.
@@ -306,13 +269,6 @@ Instance ClassElementSum : Sum Object Classes :=
   toSumType := toObject;
 }.
 
-Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
-  match c1, c2 with
-  | ClassAttributeLink o1, ClassAttributeLink o2 => beq_ClassAttributes o1 o2
-  | AttributeTypeLink o1, AttributeTypeLink o2 => beq_AttributeType o1 o2
-  | _, _ => false
-  end.
-
 #[export]
 Instance ClassLinkSum : Sum Link References :=
 {
@@ -322,15 +278,12 @@ Instance ClassLinkSum : Sum Link References :=
 }.
 
 #[export]
-Instance EqDec : EqDec Object := {
-    eq_b := beq_Object;
-}.
-
-#[export]
 Instance ClassM : Metamodel :=
 {
   ModelElement := Object;
   ModelLink := Link;
+
+  elements_eqdec:= object_eqdec;
 }.
 
 #[export]
@@ -375,31 +328,4 @@ Lemma Attribute_Object_cast:
       toObject AttributeClass c = a.
 Proof.
   intros ; destruct a ; simpl in * ; congruence.
-Qed.
-
-Lemma Class_dec :
-  forall x y : Class, {x = y} + {x <> y}.
-Proof.
-  decide equality.
-  - apply String.string_dec.
-  - apply Nat.eq_dec.
-Qed.
-
-Lemma Attribute_dec :
-  forall x y : Attribute, {x = y} + {x <> y}.
-Proof.
-  decide equality.
-  - apply String.string_dec.
-  - apply Bool.bool_dec.
-  - apply Nat.eq_dec.
-Qed.
-
-Lemma eq_dec : forall (x y : Object), {x = y} + {x <> y}.
-  intros ; destruct x, y ; try (right; discriminate).
-  - destruct (Class_dec c c0).
-    + left. congruence.
-    + right. congruence. 
-  - destruct (Attribute_dec a a0).
-    + left. congruence.
-    + right. congruence.
 Qed.

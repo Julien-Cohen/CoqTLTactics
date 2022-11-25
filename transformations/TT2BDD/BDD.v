@@ -4,7 +4,6 @@ Require Import Multiset.  (* bag *)
 Require Import ListSet.   (* set *)
 Require Import Bool.
 Require Import core.Metamodel.
-Require Import core.EqDec.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
@@ -15,6 +14,9 @@ Inductive BDDNode :=
   BuildBDDNode :
   (* name *) string ->
   BDDNode.
+
+Theorem BDDNode_eqdec: forall (x y : BDDNode), {x = y} + {x <> y}.
+  Proof. repeat decide equality. Defined.
 
 Inductive BDDEdge := 
   BuildBDDEdge :
@@ -28,13 +30,11 @@ Definition BDDEq (a b : BDDNode) :=
   end.
 
 #[export]
-Instance BDDEqDec : EqDec BDDNode := {
-    eq_b := BDDEq
-}.
-
-#[export]
 Instance BDDM : Metamodel :=
 {
   ModelElement := BDDNode;
   ModelLink := BDDEdge;
+
+  elements_eqdec := BDDNode_eqdec;
+
 }.

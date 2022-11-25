@@ -10,7 +10,6 @@ Require Import core.utils.Utils.
 Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.Model.
-Require Import core.EqDec.
 Require Import core.TransformationConfiguration.
 
 Require Import TT2BDD.TT.

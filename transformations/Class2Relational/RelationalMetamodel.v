@@ -4,7 +4,6 @@ Require Import Multiset.  (* bag *)
 Require Import ListSet.   (* set *)
 Require Import PeanoNat.
 Require Import EqNat.
-Require Import core.EqDec.
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
@@ -140,6 +139,9 @@ Definition getTypeByReference (type : References) : Set :=
 Inductive Object : Set :=
   | TableObject : Table -> Object
   | ColumnObject : Column -> Object.
+
+Theorem object_eqdec: forall (x y : Object), {x = y} + {x <> y}.
+  Proof. repeat decide equality. Defined. 
 
 Definition toObject (c: Classes) : (getTypeByClass c) -> Object.
   destruct c ; simpl ; intro a.
@@ -310,11 +312,6 @@ Qed.
     | ColumnReferenceLink o1, ColumnReferenceLink o2 => beq_ColumnReference o1 o2
     | _, _ => false
     end.
-    
-  #[export]
-  Instance EqDec : EqDec Object := {
-    eq_b := beq_Object;
-  }.
 
   #[export]
   Instance RelationalLinkSum : Sum Link References :=
@@ -329,6 +326,8 @@ Qed.
   {
     ModelElement := Object;
     ModelLink := Link;
+
+    elements_eqdec:= object_eqdec;
   }.
 
   #[export]
