@@ -70,7 +70,7 @@ Definition Class2Relational' :=
     from [Attribute_K]
     where (fun _ a => negb a.(derived))
     to [ ELEM "col" ::: Column_K 
-        << fun _ m a => Build_Column_t a.(attr_id) a.(attr_name) >>
+        << fun _ _ a => Build_Column_t a.(attr_id) a.(attr_name) >>
         <<< LINK ColumnReference_K //
                fun tls _ m a c =>
                   maybeBuildColumnReference c

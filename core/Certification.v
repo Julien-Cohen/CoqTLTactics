@@ -66,7 +66,7 @@ Lemma tr_matchPattern_in :
 forall (tr: Transformation) (sm : SourceModel),
   forall (sp : list SourceModelElement)(r : Rule),
     In r (matchPattern tr sm sp) <->
-      In r (Transformation_getRules tr) /\
+      In r tr.(rules) /\
       matchRuleOnPattern r sm sp = true.
 Proof.
   intros.

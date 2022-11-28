@@ -148,7 +148,7 @@ Ltac destruct_any := first [ destruct_execute | destruct_instantiatePattern | de
 
 Ltac destruct_In_two :=
   match goal with 
-    [ H : In ?X (Syntax.Transformation_getRules Class2Relational) |- _ ] => 
+    [ H : In ?X Class2Relational.(Syntax.rules) |- _ ] => 
       simpl in H ;
       repeat destruct_or H ; [ | | contradiction H] ; subst X
   end.

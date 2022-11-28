@@ -21,7 +21,7 @@ Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceModel
   match evalGuardExpr r sm sp with Some true => true | _ => false end.
 
 Definition matchPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list Rule :=
-  filter (fun (r:Rule) => matchRuleOnPattern r sm sp) (Transformation_getRules tr).
+  filter (fun (r:Rule) => matchRuleOnPattern r sm sp) tr.(rules).
 
 Definition instantiateElementOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat)
   : option TargetModelElement :=
@@ -64,7 +64,7 @@ Definition traceRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelE
 Definition tracePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TraceLink :=
   flat_map (fun r => traceRuleOnPattern r sm sp) (matchPattern tr sm sp).
 
-Definition maxArity (tr: Transformation) : nat := Transformation_getArity tr.
+Definition maxArity (tr: Transformation) : nat := tr.(arity). (* FIMXE : Remove-me *)
 
 Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
   tuples_up_to_n (allModelElements sm) (maxArity tr).

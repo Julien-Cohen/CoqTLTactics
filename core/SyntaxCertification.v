@@ -18,8 +18,8 @@ Instance CoqTLSyntax :
 
       TraceLink := TraceLink;
 
-      Transformation_getArity := Transformation_getArity;
-      Transformation_getRules := Transformation_getRules;
+      Transformation_getArity := arity;
+      Transformation_getRules := rules;
 
       Rule_getOutputPatternElements := Rule_getOutputPatternElements;
 

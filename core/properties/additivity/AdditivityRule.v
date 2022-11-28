@@ -17,13 +17,13 @@ Require Import FunctionalExtensionality.
 (*************************************************************)
 
 Definition Transformation_incl_rules'' {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
-  (Transformation_getArity t1 = Transformation_getArity t2) /\ 
-  subseq (Transformation_getRules t1) (Transformation_getRules t2).
+  (t1.(arity) = t2.(arity)) /\ 
+  subseq t1.(rules) t2.(rules).
 
 
 Definition Transformation_incl_rules''' {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
-  (Transformation_getArity t1 = Transformation_getArity t2) /\ 
-  forall r: Rule, In r (Transformation_getRules t1) -> In r (Transformation_getRules t2).
+  (t1.(arity) = t2.(arity)) /\ 
+  forall r: Rule, In r t1.(rules) -> In r t2.(rules).
 
 
 Lemma tr_incl_equiv:

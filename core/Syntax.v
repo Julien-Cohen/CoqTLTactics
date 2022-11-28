@@ -80,17 +80,10 @@ Definition Rule_findOutputPatternElement (r: Rule) (name: string) : option Outpu
 
 (** *** Transformation *)
 
-Inductive Transformation : Type :=
-  buildTransformation :
-    nat
-    -> list Rule
-    -> Transformation.
-
-Definition Transformation_getArity (x : Transformation) : nat :=
-  match x with buildTransformation y _ => y end.
-
-Definition Transformation_getRules (x : Transformation) : list Rule :=
-  match x with buildTransformation _ y => y end.
+Record Transformation : Type :=
+  buildTransformation 
+    { arity : nat ;
+      rules : list Rule }.
 
 End Syntax.
 

@@ -147,7 +147,7 @@ Proof.
   intro t ; destruct t ; simpl.
   unfold instantiatePattern ; simpl.
   unfold matchPattern ; simpl.
-  induction l ; intros A m ; inversion_clear A ; simpl ; [reflexivity | ].
+  induction rules ; intros A m ; inversion_clear A ; simpl ; [reflexivity | ].
   rewrite one_to_one_nil_false ; auto.
 Qed.
 
@@ -160,7 +160,7 @@ Proof.
   intros t ; destruct t ; simpl.
   unfold instantiatePattern ; simpl.
   unfold matchPattern ; simpl.
-  induction l ; intros A m e1 e2 r; inversion_clear A ; simpl ; [reflexivity | ].
+  induction rules ; intros A m e1 e2 r; inversion_clear A ; simpl ; [reflexivity | ].
   rewrite one_to_one_two_false ; auto.
 Qed.
 
