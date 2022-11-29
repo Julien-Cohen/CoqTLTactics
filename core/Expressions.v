@@ -36,11 +36,11 @@ Definition Expr (A: Type) (B: Type) : Type := A -> B.
 Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a.
 
 Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-evalExpr (Rule_getGuardExpr r) sm sp.
+  evalExpr r.(r_guard) sm sp.
 
 Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
   nat :=
-  match (evalExpr (Rule_getIteratorExpr r) sm sp) with
+  match (evalExpr r.(r_iterator) sm sp) with
   | Some n => n
   | _ => 0
   end.

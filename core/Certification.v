@@ -108,7 +108,7 @@ forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetM
   In te (instantiateIterationOnPattern r sm sp i)
   <->
   (exists (ope: OutputPatternElement),
-      In ope (Rule_getOutputPatternElements r) /\ 
+      In ope r.(r_outputPattern) /\ 
       instantiateElementOnPattern ope sm sp i = Some te).
 Proof.
   split.
@@ -167,7 +167,7 @@ Lemma tr_applyIterationOnPattern_in :
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat),
       In tl (applyIterationOnPattern r tr sm sp i) <->
       (exists (ope: OutputPatternElement),
-          In ope (Rule_getOutputPatternElements r) /\ 
+          In ope r.(r_outputPattern) /\ 
           In tl (applyElementOnPattern ope tr sm sp i)).
 Proof.
   intros.
@@ -407,7 +407,7 @@ Instance CoqTLEngine :
 Lemma tr_match_injective :
 forall (sm : SourceModel)(sp : list SourceModelElement)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIteratorExpr r sm sp)) /\ 
-    (exists ope, In ope (Rule_getOutputPatternElements r) /\  (evalOutputPatternElementExpr sm sp iter ope) <> None ) ->
+    (exists ope, In ope r.(r_outputPattern) /\  (evalOutputPatternElementExpr sm sp iter ope) <> None ) ->
       (exists (te: TargetModelElement),  In te (instantiateRuleOnPattern r sm sp) ).
 Proof.
 intros.
@@ -442,7 +442,7 @@ forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelE
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat) (ope: OutputPatternElement),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\
-      In ope (Rule_getOutputPatternElements r) /\ 
+      In ope r.(r_outputPattern) /\ 
         instantiateElementOnPattern ope sm sp i = Some te).
 Proof.
   intros.

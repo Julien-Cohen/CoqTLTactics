@@ -63,7 +63,7 @@ split.
      flat_map
        (fun o : OutputPatternElement =>
         optionToList (instantiateElementOnPattern o sm1 sp iter))
-       (Rule_getOutputPatternElements r))
+       r.(r_outputPattern))
     (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
   remember (filter (fun r : Rule => matchRuleOnPattern r sm1 sp) l) as l1.
   destruct (matchRuleOnPattern a sm1 sp) eqn: ca.
@@ -85,7 +85,7 @@ flat_map
    flat_map
      (fun o : OutputPatternElement =>
       optionToList (instantiateElementOnPattern o sm1 sp iter))
-     (Rule_getOutputPatternElements r))
+     r.(r_outputPattern))
   (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
 remember (filter (fun r : Rule => matchRuleOnPattern r sm1 sp) l) as l1.
 destruct (matchRuleOnPattern a sm1 sp) eqn: ca.

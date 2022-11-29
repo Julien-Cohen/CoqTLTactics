@@ -43,40 +43,20 @@ Definition OutputPatternElement_getLinkExpr (o: OutputPatternElement) :=
 
 (** *** Rule *)
 
-Inductive Rule : Type :=
-  buildRule :
-    (* name *) string
-    (* from *) -> (SourceModel -> (list SourceModelElement) -> option bool)
-    (* for *) -> (SourceModel -> (list SourceModelElement) -> option nat)
-    (* to *) -> (list OutputPatternElement)
-    -> Rule.
+Record Rule : Type :=
+  buildRule {
+      r_name : string ;
+      r_guard : SourceModel -> (list SourceModelElement) -> option bool ;
+      r_iterator : SourceModel -> (list SourceModelElement) -> option nat ;
+      r_outputPattern : list OutputPatternElement
+    } .
 
-Definition Rule_getName (x : Rule) : string :=
-  match x with
-    buildRule y _ _ _ => y
-  end.
-  
-Definition Rule_getGuardExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> option bool :=
-  match x with
-    buildRule _ y _ _ => y
-  end.
-
-Definition Rule_getIteratorExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> option nat :=
-  match x with
-    buildRule _ _ y _ => y
-  end.
-
-Definition Rule_getOutputPatternElements (x : Rule) :
-  list OutputPatternElement :=
-  match x with
-    buildRule _ _ _ y => y
-  end.
 
 (** find an output pattern element in a rule by the given name: *)
 
 Definition Rule_findOutputPatternElement (r: Rule) (name: string) : option OutputPatternElement :=
   find (fun (o:OutputPatternElement) => beq_string name (OutputPatternElement_getName o))
-        (Rule_getOutputPatternElements r).
+        r.(r_outputPattern).
 
 (** *** Transformation *)
 

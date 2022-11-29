@@ -21,7 +21,7 @@ Instance CoqTLSyntax :
       Transformation_getArity := arity;
       Transformation_getRules := rules;
 
-      Rule_getOutputPatternElements := Rule_getOutputPatternElements;
+      Rule_getOutputPatternElements := r_outputPattern;
 
       TraceLink_getSourcePattern := TraceLink_getSourcePattern;
       TraceLink_getIterator := TraceLink_getIterator;
