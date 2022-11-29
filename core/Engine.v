@@ -59,7 +59,7 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
     evalOutputPatternElementExpr: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
     evalIteratorExpr: Rule -> SourceModel -> list SourceModelElement -> nat;
     evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternElement -> option (list TargetModelLink);
-    evalGuardExpr: Rule->SourceModel->list SourceModelElement->option bool;
+    evalGuardExpr: Rule->SourceModel->list SourceModelElement-> bool;
 }.
   
 Class TransformationEngine (tc: TransformationConfiguration) (ts: TransformationSyntax tc) :=
@@ -77,13 +77,19 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     matchRuleOnPattern: Rule -> SourceModel -> list SourceModelElement -> bool;
 
     instantiatePattern: Transformation -> SourceModel -> list SourceModelElement -> list TargetModelElement;
+
     instantiateRuleOnPattern: Rule -> SourceModel -> list SourceModelElement -> list TargetModelElement; 
+
     instantiateIterationOnPattern: Rule -> SourceModel -> list SourceModelElement -> nat -> list TargetModelElement;
+
     instantiateElementOnPattern: OutputPatternElement -> SourceModel -> list SourceModelElement -> nat -> option TargetModelElement;
     
     applyPattern: Transformation -> SourceModel -> list SourceModelElement -> list TargetModelLink;
+
     applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> list TargetModelLink;
+
     applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
+
     applyElementOnPattern: OutputPatternElement -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
     
     trace: Transformation -> SourceModel -> list TraceLink; 
@@ -131,8 +137,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
 
     tr_matchRuleOnPattern_leaf :
     forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-      matchRuleOnPattern r sm sp =
-       match evalGuardExpr r sm sp with Some true => true | _ => false end;
+      matchRuleOnPattern r sm sp = evalGuardExpr r sm sp ; 
 
     (** ** instantiatePattern *)
 
@@ -321,7 +326,7 @@ Theorem tr_execute_element_leaf :
       (exists (sp : list SourceModelElement) (r : Rule) (i: nat) (ope: OutputPatternElement),
           In sp (allTuples tr sm) /\
           In r (Transformation_getRules tr) /\
-          evalGuardExpr r sm sp = Some true /\
+          evalGuardExpr r sm sp = true /\
           In i (seq 0 (evalIteratorExpr r sm sp)) /\
           In ope (Rule_getOutputPatternElements r) /\ 
           evalOutputPatternElementExpr sm sp i ope = Some te).
@@ -333,14 +338,12 @@ Proof.
     rewrite tr_matchRuleOnPattern_leaf in H1. 
     rewrite tr_instantiateElementOnPattern_leaf in H4.
     exists x, x0, x1, x2.
-    destruct (evalGuardExpr x0 sm x). destruct b.
-    crush. crush. crush. crush.
+    crush. crush. 
   * intros. repeat destruct H. destruct H0, H1, H2, H3.
     exists x, x0, x1, x2.
     crush.
-    rewrite tr_matchRuleOnPattern_leaf.
-    destruct (evalGuardExpr x0 sm x). destruct b.
-    crush. crush. crush. crush.
+    rewrite tr_matchRuleOnPattern_leaf. assumption.
+    crush. crush. 
     rewrite tr_instantiateElementOnPattern_leaf.
     crush.
 Qed.

@@ -25,25 +25,21 @@ Variable tc : TransformationConfiguration.
 Variable mtc : ModelingTransformationConfiguration tc.
 
 Definition one_to_one_rule (r: Syntax.Rule (tc:=tc)) : Prop := 
-  match r with 
-    Syntax.buildRule _ b _ _ =>
-      (forall m, b m nil = None) /\
-        (forall m e1 e2 r, b m (e1 :: e2 :: r) = None)
-  end.
+      (forall m, r.(Syntax.r_guard) m nil = false) /\
+        (forall m e1 e2 s, r.(Syntax.r_guard) m (e1 :: e2 :: s) = false).
 
 
 Lemma one_to_one_nil_false : 
   forall a, 
     one_to_one_rule a ->
     forall m,
-      matchRuleOnPattern a m nil = false.
+      Expressions.evalGuardExpr a m nil = false.
 Proof.
   intros a A m.
   destruct a.
-  unfold matchRuleOnPattern ; simpl in *.
-  destruct A as [A _].
-  rewrite A.
-  reflexivity.
+  simpl in *.
+  destruct A as [A _]. simpl in A.
+  apply A.
 Qed.
 
 
@@ -51,14 +47,13 @@ Lemma one_to_one_two_false :
   forall a, 
     one_to_one_rule a ->
     forall m e1 e2 r,
-      matchRuleOnPattern a m (e1::e2::r) = false.
+      Expressions.evalGuardExpr a m (e1::e2::r) = false.
 Proof.
   intros a A m e1 e2 r.
   destruct a.
-  unfold matchRuleOnPattern ; simpl in *.
-  destruct A as [_ A].
-  rewrite A.
-  reflexivity.
+  simpl in *.
+  destruct A as [_ A] ; simpl in A.
+  apply A.
 Qed.
 
 (** *** Singleton-pattern rules and transformations *)
@@ -86,10 +81,11 @@ Proof.
   clear H.
   simpl.
   split ; intro m ; [ | ].
-  { destruct_match ; simpl ; reflexivity. }
+  { simpl. destruct r_guard ; reflexivity. }
   {
     intros e1 e2 r.
-    destruct_match ; simpl.
+    simpl.
+    destruct r_guard ; simpl.
     { 
       unfold ConcreteExpressions.makeGuard. simpl.
       destruct (toModelClass s e1) ; reflexivity.

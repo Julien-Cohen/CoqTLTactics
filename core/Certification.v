@@ -67,19 +67,12 @@ forall (tr: Transformation) (sm : SourceModel),
   forall (sp : list SourceModelElement)(r : Rule),
     In r (matchPattern tr sm sp) <->
       In r tr.(rules) /\
-      matchRuleOnPattern r sm sp = true.
+      Expressions.evalGuardExpr r sm sp = true.
 Proof.
   intros.
   apply filter_In.
 Qed.
 
-Lemma tr_matchRuleOnPattern_leaf : 
-forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-    matchRuleOnPattern r sm sp =
-      match evalGuardExpr r sm sp with Some true => true | _ => false end.
-Proof.
-  crush.
-Qed.
 
 Lemma tr_instantiatePattern_in :
 forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
@@ -323,7 +316,7 @@ Instance CoqTLEngine :
     execute := execute;
 
     matchPattern := matchPattern;
-    matchRuleOnPattern := matchRuleOnPattern;
+    matchRuleOnPattern := evalGuardExpr ;
 
     instantiatePattern := instantiatePattern;
     instantiateRuleOnPattern := instantiateRuleOnPattern;
@@ -346,7 +339,7 @@ Instance CoqTLEngine :
     tr_execute_in_links := tr_execute_in_links;
 
     tr_matchPattern_in := tr_matchPattern_in;
-    tr_matchRuleOnPattern_leaf := tr_matchRuleOnPattern_leaf;
+    tr_matchRuleOnPattern_leaf := fun _ _ _ _ => eq_refl ;
 
     tr_instantiatePattern_in := tr_instantiatePattern_in;
     tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;

@@ -46,8 +46,8 @@ Definition OutputPatternElement_getLinkExpr (o: OutputPatternElement) :=
 Record Rule : Type :=
   buildRule {
       r_name : string ;
-      r_guard : SourceModel -> (list SourceModelElement) -> option bool ;
-      r_iterator : SourceModel -> (list SourceModelElement) -> option nat ;
+      r_guard : SourceModel -> list SourceModelElement -> bool ;
+      r_iterator : SourceModel -> list SourceModelElement -> option nat ;
       r_outputPattern : list OutputPatternElement
     } .
 

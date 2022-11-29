@@ -19,7 +19,7 @@ Require Import FunctionalExtensionality.
 Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel -> TargetModel) := 
   (buildTransformation 0 [
     (buildRule "rule"%string 
-      (fun sm sp => match sp with nil => Some true | _ => Some false end)
+      (fun sm sp => match sp with nil => true | _ => false end)
       (fun sm sp => Some (length (allModelElements (f sm))))
       [(buildOutputPatternElement "out"%string 
          (fun i sm sp => nth_error (allModelElements (f sm)) i)

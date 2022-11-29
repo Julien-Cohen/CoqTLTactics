@@ -13,24 +13,43 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 (** ** Generic functions generation *)
 
+(** Convert a list of meta-types into a function type. *)
+(** Example : [denoteSignature [A;B;C] D = {A}->{B}->{C}->D .] *) 
 Fixpoint denoteSignature (l : list SourceModelClass) (r : Type) : Type :=
   match l with
   | nil => r
   | l0 :: l' => denoteModelClass l0 -> denoteSignature l' r
   end.
 
-Definition wrapOption {T : Type}
-  (l : list SourceModelClass)
-  (imp : denoteSignature l T) :
-  (list SourceModelElement) -> option T.
-Proof.
-  revert l imp. fix Hl 1. intros l imp sl.
-  destruct l as [ | l0 l'], sl as [ | s0 sl'].
-  - exact (Some imp).
-  - exact None.
-  - exact None.
-  - exact (x <- toModelClass l0 s0; Hl l' (imp x) sl').
-Defined.
+
+Fixpoint wrapOption 
+  {T : Type} 
+  (l : list SourceModelClass) 
+  (imp : denoteSignature l T)
+  (sl : list SourceModelElement) {struct l} : 
+  option T :=
+  match (l,sl) 
+        as l0 
+        return (denoteSignature (fst l0) T -> option T) with
+    
+  | (nil,nil) => (fun v : denoteSignature nil T => Some v)
+                 
+  | (k :: rk, e::re) =>
+      fun (f : denoteSignature (k :: rk) T) =>
+        match toModelClass k e with
+        | Some x => wrapOption (T:=T) rk (f x) re
+        | None => None 
+        end
+
+  | (_::_, nil) => (fun _ => None)
+  
+  | (nil, _::_) => (fun _ => None) 
+          
+  end imp
+.
+(** Example : wrapOption D [A;B;C] (f := fun a b c => d) [e1 ; e2 ; e3] = Some (f e1 e2 e3) *)
+(** Example : wrapOption D [A;B;C] (f := fun a b c => d) [e1 ; e2 ] = None *)
+
 
 Remark wrapOption_len :
   forall t l1 (D:denoteSignature l1 t) l2,
@@ -48,23 +67,23 @@ Proof.
   }
 Qed.
 
+Fixpoint wrapOption' (l:list SourceModelClass) (sl : list SourceModelElement) : bool :=
+  match (l, sl) with
+  | (nil, nil) => true
+  | (k1::r1, e2::r2) => 
+      match toModelClass k1 e2 with
+      | Some _ => wrapOption' r1 r2
+      | None => false
+      end
+  | (nil , _ :: _) => false
+  | (_::_ , nil) => false
+  end. 
 
-Definition wrapOption' 
-(l : list SourceModelClass) :
-(list SourceModelElement) -> option bool.
-Proof.
-  revert l. fix f 1. intros l sl.
-  destruct l as [ | l0 l'] eqn:a, sl as [ | s0 sl'] eqn:B.
-  - exact (Some true).
-  - exact None.
-  - exact None.
-  - exact (x <- toModelClass l0 s0; f l' sl').
-Defined.
 
 Remark wrapOption'_len :
   forall l1  l2,
     length l1 <> length l2 ->
-    wrapOption' l1 l2 = None.
+    wrapOption' l1 l2 = false.
 Proof.
   induction l1 ; intros l2 L ; destruct l2.
   { contradict L ; reflexivity. }
@@ -118,16 +137,28 @@ Proof.
 Defined.
 
 Definition GuardFunction : Type :=
-  SourceModel -> (list SourceModelElement) -> option bool.
-Definition makeGuard (l : list SourceModelClass)
+  SourceModel -> (list SourceModelElement) -> bool.
+
+(* BEGIN FIXME *)
+Definition drop_option_to_bool a :=
+  match a with
+  | None => false
+  | Some b => b
+  end.
+
+Definition makeGuard 
+  (l : list SourceModelClass)
   (imp : SourceModel -> denoteSignature l bool) :
   GuardFunction :=
-  fun sm => wrapOption l (imp sm).
+  fun sm => fun s => drop_option_to_bool (wrapOption l (imp sm) s).
+(* END FIXME *)
+
 Definition makeEmptyGuard (l : list SourceModelClass) : GuardFunction :=
   fun sm => wrapOption' l.
 
 Definition IteratorFunction : Type :=
   SourceModel -> (list SourceModelElement) -> option nat.
+
 Definition makeIterator (l : list SourceModelClass)
   (imp : SourceModel -> denoteSignature l nat) :
   IteratorFunction :=

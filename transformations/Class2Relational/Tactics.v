@@ -138,13 +138,8 @@ Ltac unfold_instantiateElementOnPattern :=
       rewrite core.Certification.tr_instantiateElementOnPattern_leaf in H 
   end.
 
-Ltac unfold_matchRuleOnPattern :=
-  match goal with 
-    [ H : context[ matchRuleOnPattern _ _ _] |- _ ] => 
-      rewrite (core.Certification.tr_matchRuleOnPattern_leaf Class2Relational) in H
-  end.
 
-Ltac destruct_any := first [ destruct_execute | destruct_instantiatePattern | destruct_matchPattern | destruct_instantiateRuleOnPattern | destruct_instantiateIterationOnPattern | unfold_instantiateElementOnPattern | unfold_matchRuleOnPattern].
+Ltac destruct_any := first [ destruct_execute | destruct_instantiatePattern | destruct_matchPattern | destruct_instantiateRuleOnPattern | destruct_instantiateIterationOnPattern | unfold_instantiateElementOnPattern ].
 
 Ltac destruct_In_two :=
   match goal with 

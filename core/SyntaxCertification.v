@@ -31,7 +31,7 @@ Instance CoqTLSyntax :
       evalOutputPatternElementExpr := evalOutputPatternElementExpr;
       evalIteratorExpr := evalIteratorExpr;
       evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
-      evalGuardExpr := evalGuardExpr;
+      evalGuardExpr := Syntax.r_guard;
   }.
 
 End SyntaxCertification.

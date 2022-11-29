@@ -65,8 +65,8 @@ split.
         optionToList (instantiateElementOnPattern o sm1 sp iter))
        r.(r_outputPattern))
     (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
-  remember (filter (fun r : Rule => matchRuleOnPattern r sm1 sp) l) as l1.
-  destruct (matchRuleOnPattern a sm1 sp) eqn: ca.
+  remember (filter (fun r : Rule => evalGuardExpr r sm1 sp) l) as l1.
+  destruct (evalGuardExpr a sm1 sp) eqn: ca.
   - apply in_flat_map in H.
     destruct H. destruct H.
     destruct H.
@@ -87,8 +87,8 @@ flat_map
       optionToList (instantiateElementOnPattern o sm1 sp iter))
      r.(r_outputPattern))
   (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
-remember (filter (fun r : Rule => matchRuleOnPattern r sm1 sp) l) as l1.
-destruct (matchRuleOnPattern a sm1 sp) eqn: ca.
+remember (filter (fun r : Rule => evalGuardExpr r sm1 sp) l) as l1.
+destruct (evalGuardExpr a sm1 sp) eqn: ca.
 ++ destruct H.
 - unfold instantiatePattern in H.
 unfold instantiateRuleOnPattern in H.
