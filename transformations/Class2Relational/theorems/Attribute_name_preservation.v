@@ -42,7 +42,7 @@ Proof.
           destruct H2.
           -- rewrite <- H2. assumption.
           -- contradiction.
-        * unfold maxArity. simpl. lia.
+        * simpl. lia.
       + destruct a.
         simpl in H1.
         rewrite H1.

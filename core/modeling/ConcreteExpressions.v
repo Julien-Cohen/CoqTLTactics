@@ -32,17 +32,50 @@ Proof.
   - exact (x <- toModelClass l0 s0; Hl l' (imp x) sl').
 Defined.
 
+Remark wrapOption_len :
+  forall t l1 (D:denoteSignature l1 t) l2,
+    length l1 <> length l2 ->
+    wrapOption l1 D l2 = None.
+Proof.
+  induction l1 ; intros D l2 L ; destruct l2.
+  { contradict L ; reflexivity. }
+  { reflexivity. }
+  { reflexivity. }
+  { simpl.
+    destruct (toModelClass a s).
+    + apply IHl1. contradict L. simpl. congruence.
+    + reflexivity.
+  }
+Qed.
+
+
 Definition wrapOption' 
 (l : list SourceModelClass) :
 (list SourceModelElement) -> option bool.
 Proof.
-  revert l. fix Hl 1. intros l sl.
+  revert l. fix f 1. intros l sl.
   destruct l as [ | l0 l'] eqn:a, sl as [ | s0 sl'] eqn:B.
   - exact (Some true).
   - exact None.
   - exact None.
-  - exact (x <- toModelClass l0 s0; Hl l' sl').
+  - exact (x <- toModelClass l0 s0; f l' sl').
 Defined.
+
+Remark wrapOption'_len :
+  forall l1  l2,
+    length l1 <> length l2 ->
+    wrapOption' l1 l2 = None.
+Proof.
+  induction l1 ; intros l2 L ; destruct l2.
+  { contradict L ; reflexivity. }
+  { reflexivity. }
+  { reflexivity. }
+  { simpl.
+    destruct (toModelClass a s).
+    + apply IHl1. contradict L. simpl. congruence.
+    + reflexivity.
+  }
+Qed.
 
 Definition wrapList {T : Type} (l : list SourceModelClass)
   (imp : denoteSignature l (list T)) :

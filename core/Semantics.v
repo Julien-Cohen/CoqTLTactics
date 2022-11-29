@@ -64,10 +64,9 @@ Definition traceRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelE
 Definition tracePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TraceLink :=
   flat_map (fun r => traceRuleOnPattern r sm sp) (matchPattern tr sm sp).
 
-Definition maxArity (tr: Transformation) : nat := tr.(arity). (* FIMXE : Remove-me *)
 
 Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
-  tuples_up_to_n (allModelElements sm) (maxArity tr).
+  tuples_up_to_n (allModelElements sm) tr.(arity).
 
 Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
   flat_map (tracePattern tr sm) (allTuples tr sm).  

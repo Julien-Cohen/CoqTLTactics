@@ -68,7 +68,7 @@ destruct H.
 apply in_flat_map. exists x.
 split.
 * unfold allTuples.
-  unfold maxArity.
+
   rewrite <- H.
   assumption.
 * apply in_flat_map.

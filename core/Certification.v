@@ -205,11 +205,13 @@ Qed.
 
 Lemma allTuples_incl_length:
   forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
-  incl sp (allModelElements sm) -> length sp <= maxArity tr -> In sp (allTuples tr sm).
+  incl sp (allModelElements sm) -> 
+  length sp <= tr.(arity) ->
+  In sp (allTuples tr sm).
 Proof.
   intros.
   unfold allTuples.
-  apply tuples_up_to_n_incl_length with (n:=maxArity tr) in H.
+  apply tuples_up_to_n_incl_length with (n:=tr.(arity)) in H.
   - assumption.
   - assumption.
 Qed.
@@ -217,14 +219,14 @@ Qed.
 
 Lemma allTuples_not_incl_length:
   forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
-  length sp > maxArity tr -> not (In sp (allTuples tr sm)).
+  length sp > tr.(arity) -> not (In sp (allTuples tr sm)).
 Proof.
 intros sp tr sm c.
 apply Gt.gt_not_le in c.
 revert c.
 apply contraposition.
 unfold allTuples.
-specialize (tuple_length sp (allModelElements sm) (maxArity tr)).
+specialize (tuple_length sp (allModelElements sm) tr.(arity)).
 crush.
 Qed.
 

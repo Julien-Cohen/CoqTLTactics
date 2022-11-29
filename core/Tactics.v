@@ -101,13 +101,9 @@ Qed.
 
 (** We say a transformation is one-to-one when its rules are one-to-one. *)
 
-Definition one_to_one_transformation :
-  Syntax.Transformation -> Prop :=
-  fun a => 
-    match a with  
-      Syntax.buildTransformation _ b =>
-        List.Forall one_to_one_rule b
-    end.
+Definition one_to_one_transformation (t:Syntax.Transformation) : Prop :=
+  List.Forall one_to_one_rule t.(Syntax.rules).
+
 
 (** We say a transformation has singleton-patterns when its rules have singleton-patterns. *) 
 
@@ -145,6 +141,7 @@ Lemma instpat_nil :
       instantiatePattern t m nil = nil.
 Proof.
   intro t ; destruct t ; simpl.
+  unfold one_to_one_transformation ; simpl.
   unfold instantiatePattern ; simpl.
   unfold matchPattern ; simpl.
   induction rules ; intros A m ; inversion_clear A ; simpl ; [reflexivity | ].
@@ -158,6 +155,7 @@ Lemma instpat_two :
       instantiatePattern t m (e1 :: e2 :: r) = nil.
 Proof.
   intros t ; destruct t ; simpl.
+  unfold one_to_one_transformation ; simpl.
   unfold instantiatePattern ; simpl.
   unfold matchPattern ; simpl.
   induction rules ; intros A m e1 e2 r; inversion_clear A ; simpl ; [reflexivity | ].
