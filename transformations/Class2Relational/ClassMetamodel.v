@@ -84,21 +84,9 @@ Qed.
 Inductive ElementKind : Set :=
   Class_K | Attribute_K.
 
-Definition getTypeByEKind (type : ElementKind) : Set :=
-  match type with
-  | Class_K => Class_t
-  | Attribute_K => Attribute_t
-  end.
-
-
 Inductive LinkKind : Set :=
   ClassAttribute_K | AttributeType_K.
 
-Definition getTypeByLKind (type : LinkKind) : Set :=
-  match type with
-  | ClassAttribute_K => ClassAttributes_t
-  | AttributeType_K => AttributeType_t
-  end.
 
 Lemma eqEKind_dec : forall (c1:ElementKind) (c2:ElementKind), { c1 = c2 } + { c1 <> c2 }.
 Proof. repeat decide equality. Defined.
@@ -112,12 +100,6 @@ Inductive Element : Set :=
   ClassElement : Class_t -> Element
 | AttributeElement : Attribute_t -> Element.
 
-Definition lift_EKind k : (getTypeByEKind k) -> Element := 
-  match k with 
-  | Class_K => ClassElement 
-  | Attribute_K => AttributeElement 
-  end.
-
 Definition beq_Element (c1 : Element) (c2 : Element) : bool :=
   match c1, c2 with
   | ClassElement o1, ClassElement o2 => beq_Class o1 o2
@@ -130,12 +112,6 @@ Inductive Link : Set :=
    | ClassAttributeLink : ClassAttributes_t -> Link
    | AttributeTypeLink : AttributeType_t -> Link.
 
-Definition lift_LKind k : (getTypeByLKind k) -> Link :=
-  match k with
-  | ClassAttribute_K => ClassAttributeLink
-  | AttributeType_K => AttributeTypeLink
-  end.
-
 Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
   match c1, c2 with
   | ClassAttributeLink o1, ClassAttributeLink o2 => beq_ClassAttributes o1 o2
@@ -146,11 +122,38 @@ Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
 
 (** Reflective functions (typing : correspondence between abstract types (kinds) and model data) *)
 
+
+Definition getTypeByEKind (type : ElementKind) : Set :=
+  match type with
+  | Class_K => Class_t
+  | Attribute_K => Attribute_t
+  end.
+
+Definition lift_EKind k : (getTypeByEKind k) -> Element := 
+  match k with 
+  | Class_K => ClassElement 
+  | Attribute_K => AttributeElement 
+  end.
+
 Definition getEKind (c : Element) : ElementKind :=
    match c with
    | ClassElement _ => Class_K
    | AttributeElement _ => Attribute_K
    end.
+
+Definition getTypeByLKind (type : LinkKind) : Set :=
+  match type with
+  | ClassAttribute_K => ClassAttributes_t
+  | AttributeType_K => AttributeType_t
+  end.
+
+
+Definition lift_LKind k : (getTypeByLKind k) -> Link :=
+  match k with
+  | ClassAttribute_K => ClassAttributeLink
+  | AttributeType_K => AttributeTypeLink
+  end.
+
 
 Definition getLKind (c : Link) : LinkKind :=
    match c with
@@ -164,9 +167,60 @@ Definition instanceOfEKind (k: ElementKind) (e : Element): bool :=
 Definition instanceOfLKind (k: LinkKind) (e : Link): bool :=
   if eqLKind_dec (getLKind e) k then true else false.
 
+(*
+Definition get_E_data_old (t : ElementKind) (c : Element) : option (getTypeByEKind t).
+Proof.
+  destruct t ; destruct c ; simpl.
+  exact (Some c).
+  exact None.
+  exact None.
+  exact (Some a).
+Defined.
+*)
+
+Definition get_E_data_old (t : ElementKind) (c : Element) : option (getTypeByEKind t) :=
+match t as e return (option (getTypeByEKind e)) with
+| Class_K =>
+    match c with
+    | ClassElement c0 =>
+         return c0 : option (getTypeByEKind Class_K)
+    | AttributeElement a =>
+        
+         None : option (getTypeByEKind Class_K)
+    end
+| Attribute_K =>
+    match c with
+    | ClassElement c0 =>
+
+         None : option (getTypeByEKind Attribute_K)
+    | AttributeElement a =>
+        
+         return a : option (getTypeByEKind Attribute_K)
+    end
+end.
 
 
-Definition get_E_data (t : ElementKind) (c : Element) : option (getTypeByEKind t).
+Definition get_E_data (t : ElementKind) (c : Element) : option (getTypeByEKind t) :=
+  match (t,c) as e return (option (getTypeByEKind (fst e))) with
+  | (Class_K , ClassElement v) => Some v 
+  | (Class_K , _) => None 
+  | (Attibute_K, AttributeElement v) => Some v 
+  | (Attribute_K , _) => None 
+  end.
+
+(* BUG ? : the following does not work. (two lines have been swaped.) *) 
+(*
+Definition get_E_data_alt (t : ElementKind) (c : Element) : option (getTypeByEKind t) :=
+  match (t,c) as e return (option (getTypeByEKind (fst e))) with
+  | (Class_K , ClassElement v) => Some v 
+  | (Attibute_K, AttributeElement v) => Some v 
+  | (Class_K , _) => None 
+  | (Attribute_K , _) => None 
+  end.
+*)
+
+
+Definition get_L_data_old (t : LinkKind) (c : Link) : option (getTypeByLKind t).
 Proof.
   destruct t ; destruct c ; simpl.
   exact (Some c).
@@ -175,15 +229,13 @@ Proof.
   exact (Some a).
 Defined.
 
-
-Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t).
-Proof.
-  destruct t ; destruct c ; simpl.
-  exact (Some c).
-  exact None.
-  exact None.
-  exact (Some a).
-Defined.
+Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
+  match (t,c) as e return (option (getTypeByLKind (fst e))) with
+  | (ClassAttribute_K , ClassAttributeLink v) => Some v 
+  | (ClassAttribute_K , _) => None 
+  | (AttibuteType_K, AttributeTypeLink v) => Some v 
+  | (AttributeType_K , _) => None 
+  end.
 
 
 (* Generic functions *)
@@ -203,10 +255,14 @@ Definition getName (c : Element) : string :=
 
 Fixpoint getClassAttributesOnLinks (c : Class_t) (l : list Link) : option (list Attribute_t) :=
   match l with
-  | (ClassAttributeLink (Build_ClassAttributes_t cl a)) :: l1 => if beq_Class cl c then Some a else getClassAttributesOnLinks c l1
+  | (ClassAttributeLink c1) :: l1 => 
+      if beq_Class c1.(source_class) c 
+      then Some c1.(attrs) 
+      else getClassAttributesOnLinks c l1
   | _ :: l1 => getClassAttributesOnLinks c l1
   | nil => None
   end.
+
 
 Definition getClassAttributes (c : Class_t) (m : Model Element Link) : option (list Attribute_t) :=
   getClassAttributesOnLinks c (@allModelLinks _ _ m).
@@ -214,24 +270,26 @@ Definition getClassAttributes (c : Class_t) (m : Model Element Link) : option (l
 Definition getClassAttributesElements (c : Class_t) (m : Model Element Link) : option (list Element) :=
   match getClassAttributes c m with
   | Some l => Some (map AttributeElement l)
-  | _ => None
+  | None => None
   end.
 
 Fixpoint getAttributeTypeOnLinks (a : Attribute_t) (l : list Link) : option Class_t :=
   match l with
-  | (AttributeTypeLink (Build_AttributeType_t att c)) :: l1 => if beq_Attribute att a then Some c else getAttributeTypeOnLinks a l1
+  | (AttributeTypeLink a1) :: l1 => 
+      if beq_Attribute a1.(source_attribute) a 
+      then Some a1.(a_type) 
+      else getAttributeTypeOnLinks a l1
   | _ :: l1 => getAttributeTypeOnLinks a l1
   | nil => None
   end.
 
 Definition getAttributeType (a : Attribute_t) (m : Model Element Link) : option Class_t :=
-  match m with
-    (Build_Model cs ls) => getAttributeTypeOnLinks a ls
-  end.
+  getAttributeTypeOnLinks a m.(modelLinks).
+
 
 Definition getAttributeTypeElement (a : Attribute_t) (m : Model Element Link) : option Element :=
   match getAttributeType a m with
-  | Some c => Some (lift_EKind Class_K c)
+  | Some c => Some (ClassElement c)
   | None => None
   end.
 
@@ -300,17 +358,19 @@ Qed.
 Lemma Class_Element_cast:
   forall a c,
     get_E_data Class_K a = return c ->
-      lift_EKind Class_K c = a.
+      ClassElement c = a.
 Proof.
-  intros ; destruct a ; simpl in * ; congruence.
+  unfold get_E_data.
+  intros ; destruct a ; congruence.
 Qed.
 
 Lemma Attribute_Element_cast:
   forall a c,
     get_E_data Attribute_K a = return c ->
-      lift_EKind Attribute_K c = a.
+      AttributeElement c = a.
 Proof.
-  intros ; destruct a ; simpl in * ; congruence.
+  unfold get_E_data.
+  intros ; destruct a ; congruence.
 Qed.
 
 Lemma Class_dec :
