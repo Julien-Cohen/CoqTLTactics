@@ -45,37 +45,30 @@ Lemma lem_beq_Class_id:
  forall (a1 a2: Class_t),
    beq_Class a1 a2 = true -> a1 = a2.
 Proof.
-intros.
-unfold beq_Class in H.
-unfold "&&" in H.
-destruct (class_id a1 =? class_id a2) eqn: ca1.
-- apply (lem_beq_string_eq2) in H.
-  apply (beq_nat_true) in ca1.
-  destruct a1,a2.
-  simpl in ca1, H.
-  rewrite ca1,H.
-  auto.
-- congruence.
+  intros.
+  unfold beq_Class in H.
+  unfold "&&" in H.
+  destruct a1, a2 ; simpl in H.
+  destruct (class_id0 =? class_id1) eqn: ca1 ; [ | discriminate].
+  apply lem_beq_string_eq2 in H ; subst.
+  apply beq_nat_true in ca1 ; subst.
+  reflexivity.
 Qed.
 
 Lemma lem_beq_Attribute_id:
  forall (a1 a2: Attribute_t),
    beq_Attribute a1 a2 = true -> a1 = a2.
 Proof.
-intros.
-unfold beq_Attribute in H.
-unfold "&&" in H.
-destruct (attr_id a1 =? attr_id a2) eqn: ca1.
-- destruct (eqb (derived a1) (derived a2)) eqn: ca2.
-  + apply (lem_beq_string_eq2) in H.
-    apply (beq_nat_true) in ca1.
-    apply (eqb_prop) in ca2.
-    destruct a1,a2.
-    simpl in ca1,ca2, H.
-    rewrite ca1,ca2,H.
-    auto.
-  + congruence. 
-- congruence.
+  intros.
+  unfold beq_Attribute in H.
+  unfold "&&" in H.
+  destruct a1, a2 ; simpl in H.
+  destruct (attr_id0 =? attr_id1) eqn: ca1 ; [ | discriminate].
+  apply (beq_nat_true) in ca1 ; subst.
+  destruct (eqb derived0 derived1) eqn: ca2 ; [ | discriminate].
+  apply (lem_beq_string_eq2) in H ; subst.
+  apply (eqb_prop) in ca2 ; subst.
+  reflexivity.
 Qed.
 
 
@@ -93,6 +86,7 @@ Proof. repeat decide equality. Defined.
 
 Lemma eqLKind_dec : forall (c1:LinkKind) (c2:LinkKind), { c1 = c2 } + { c1 <> c2 }.
 Proof. repeat decide equality. Defined.
+
 
 (** Data types (to build models) *)
 
@@ -167,38 +161,6 @@ Definition instanceOfEKind (k: ElementKind) (e : Element): bool :=
 Definition instanceOfLKind (k: LinkKind) (e : Link): bool :=
   if eqLKind_dec (getLKind e) k then true else false.
 
-(*
-Definition get_E_data_old (t : ElementKind) (c : Element) : option (getTypeByEKind t).
-Proof.
-  destruct t ; destruct c ; simpl.
-  exact (Some c).
-  exact None.
-  exact None.
-  exact (Some a).
-Defined.
-*)
-
-Definition get_E_data_old (t : ElementKind) (c : Element) : option (getTypeByEKind t) :=
-match t as e return (option (getTypeByEKind e)) with
-| Class_K =>
-    match c with
-    | ClassElement c0 =>
-         return c0 : option (getTypeByEKind Class_K)
-    | AttributeElement a =>
-        
-         None : option (getTypeByEKind Class_K)
-    end
-| Attribute_K =>
-    match c with
-    | ClassElement c0 =>
-
-         None : option (getTypeByEKind Attribute_K)
-    | AttributeElement a =>
-        
-         return a : option (getTypeByEKind Attribute_K)
-    end
-end.
-
 
 Definition get_E_data (t : ElementKind) (c : Element) : option (getTypeByEKind t) :=
   match (t,c) as e return (option (getTypeByEKind (fst e))) with
@@ -208,7 +170,7 @@ Definition get_E_data (t : ElementKind) (c : Element) : option (getTypeByEKind t
   | (Attribute_K , _) => None 
   end.
 
-(* BUG ? : the following does not work. (two lines have been swaped.) *) 
+(* BUG ? : the following does not work. (Two lines have been swaped.) *) 
 (*
 Definition get_E_data_alt (t : ElementKind) (c : Element) : option (getTypeByEKind t) :=
   match (t,c) as e return (option (getTypeByEKind (fst e))) with
@@ -219,15 +181,6 @@ Definition get_E_data_alt (t : ElementKind) (c : Element) : option (getTypeByEKi
   end.
 *)
 
-
-Definition get_L_data_old (t : LinkKind) (c : Link) : option (getTypeByLKind t).
-Proof.
-  destruct t ; destruct c ; simpl.
-  exact (Some c).
-  exact None.
-  exact None.
-  exact (Some a).
-Defined.
 
 Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
   match (t,c) as e return (option (getTypeByLKind (fst e))) with
@@ -335,6 +288,7 @@ Instance ClassMetamodel : ModelingMetamodel ClassM :=
 }.
 
 Definition ClassModel : Set := Model Element Link.
+
 
 (* Useful lemmas *)
 Lemma Class_invert : 
