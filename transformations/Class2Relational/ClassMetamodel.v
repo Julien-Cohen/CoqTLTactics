@@ -24,7 +24,7 @@ Record Attribute_t := { attr_id : nat ; derived : bool ; attr_name : string }.
 
 Record ClassAttributes_t := { source_class : Class_t ; attrs : list Attribute_t }.
 
-Record AttributeType_t := { source_attribute : Attribute_t ; type : Class_t }.
+Record AttributeType_t := { source_attribute : Attribute_t ; a_type : Class_t }.
 
 
 (* Equality *)
@@ -36,7 +36,7 @@ Definition beq_Attribute (a1 : Attribute_t) (a2 : Attribute_t) : bool :=
   beq_nat (attr_id a1) (attr_id a2) && eqb (derived a1) (derived a2) && beq_string (attr_name a1) (attr_name a2).
 
 Definition beq_AttributeType (c1 : AttributeType_t) (c2 : AttributeType_t) : bool :=
-  beq_Attribute (source_attribute c1) (source_attribute c2) && beq_Class (type c1) (type c2).
+  beq_Attribute (source_attribute c1) (source_attribute c2) && beq_Class (a_type c1) (a_type c2).
 
 Definition beq_ClassAttributes (c1 : ClassAttributes_t) (c2 : ClassAttributes_t) : bool :=
   beq_Class (source_class c1) (source_class c2) && list_beq Attribute_t beq_Attribute (attrs c1) (attrs c2).
@@ -91,7 +91,6 @@ Definition getTypeByEKind (type : ElementKind) : Set :=
   end.
 
 
-
 Inductive LinkKind : Set :=
   ClassAttribute_K | AttributeType_K.
 
@@ -113,11 +112,11 @@ Inductive Element : Set :=
   ClassElement : Class_t -> Element
 | AttributeElement : Attribute_t -> Element.
 
-
-Definition lift_EKind k : (getTypeByEKind k) -> Element. 
-  destruct k ; [ exact ClassElement | exact AttributeElement].
-Defined.
-
+Definition lift_EKind k : (getTypeByEKind k) -> Element := 
+  match k with 
+  | Class_K => ClassElement 
+  | Attribute_K => AttributeElement 
+  end.
 
 Definition beq_Element (c1 : Element) (c2 : Element) : bool :=
   match c1, c2 with
@@ -131,9 +130,11 @@ Inductive Link : Set :=
    | ClassAttributeLink : ClassAttributes_t -> Link
    | AttributeTypeLink : AttributeType_t -> Link.
 
-Definition lift_LKind k : (getTypeByLKind k) -> Link.
-  destruct k ; [ exact ClassAttributeLink | exact AttributeTypeLink].
-Defined.
+Definition lift_LKind k : (getTypeByLKind k) -> Link :=
+  match k with
+  | ClassAttribute_K => ClassAttributeLink
+  | AttributeType_K => AttributeTypeLink
+  end.
 
 Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
   match c1, c2 with
