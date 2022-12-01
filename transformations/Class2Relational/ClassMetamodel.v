@@ -11,8 +11,7 @@ Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require Import core.utils.CpdtTactics.
-
-Scheme Equality for list.
+Require        core.Tactics.
 
 (** Base types for elements *)
 
@@ -39,38 +38,39 @@ Definition beq_AttributeType (c1 : AttributeType_t) (c2 : AttributeType_t) : boo
   beq_Attribute (source_attribute c1) (source_attribute c2) && beq_Class (a_type c1) (a_type c2).
 
 Definition beq_ClassAttributes (c1 : ClassAttributes_t) (c2 : ClassAttributes_t) : bool :=
-  beq_Class (source_class c1) (source_class c2) && list_beq Attribute_t beq_Attribute (attrs c1) (attrs c2).
+  beq_Class (source_class c1) (source_class c2) && list_beq beq_Attribute (attrs c1) (attrs c2).
+
 
 Lemma lem_beq_Class_id:
  forall (a1 a2: Class_t),
    beq_Class a1 a2 = true -> a1 = a2.
 Proof.
-  intros.
-  unfold beq_Class in H.
-  unfold "&&" in H.
-  destruct a1, a2 ; simpl in H.
-  destruct (class_id0 =? class_id1) eqn: ca1 ; [ | discriminate].
-  apply lem_beq_string_eq2 in H ; subst.
-  apply beq_nat_true in ca1 ; subst.
-  reflexivity.
+  Tactics.beq_eq_tac.
 Qed.
 
 Lemma lem_beq_Attribute_id:
  forall (a1 a2: Attribute_t),
    beq_Attribute a1 a2 = true -> a1 = a2.
 Proof.
-  intros.
-  unfold beq_Attribute in H.
-  unfold "&&" in H.
-  destruct a1, a2 ; simpl in H.
-  destruct (attr_id0 =? attr_id1) eqn: ca1 ; [ | discriminate].
-  apply (beq_nat_true) in ca1 ; subst.
-  destruct (eqb derived0 derived1) eqn: ca2 ; [ | discriminate].
-  apply (lem_beq_string_eq2) in H ; subst.
-  apply (eqb_prop) in ca2 ; subst.
-  reflexivity.
+  Tactics.beq_eq_tac.
 Qed.
 
+Lemma lem_beq_AttributeType_id:
+ forall a1 a2,
+   beq_AttributeType a1 a2 = true -> a1 = a2.
+Proof.
+  Tactics.beq_eq_tac.
+Qed.
+
+Hint Resolve lem_beq_Attribute_id : beq_eq_database.
+(* this is necessary for the success of the [beq_eq_tac] tactics in the lemma below *)
+
+Lemma lem_beq_ClassAttributes_id:
+ forall a1 a2,
+   beq_ClassAttributes a1 a2 = true -> a1 = a2.
+Proof.
+  Tactics.beq_eq_tac.
+Qed.
 
 (** Meta-types (or kinds, to be used in rules) *)
 

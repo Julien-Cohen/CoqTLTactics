@@ -8,10 +8,10 @@ Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
+Require        core.Tactics.
 
 Require Import Coq.Logic.Eqdep_dec.
 
-Scheme Equality for list.
 
 (* Base types *)
 
@@ -44,26 +44,17 @@ Definition beq_Column (c1 : Column_t) (c2 : Column_t) : bool :=
   beq_nat (column_id c1) (column_id c2) && beq_string (column_name c1) (column_name c2).
 
 Definition beq_TableColumns (c1 : TableColumns_t) (c2 : TableColumns_t) : bool :=
-  beq_Table (tab c1) (tab c2) && list_beq Column_t beq_Column (cols c1) (cols c2).
+  beq_Table (tab c1) (tab c2) && list_beq beq_Column (cols c1) (cols c2).
 
 Definition beq_ColumnReference (c1 : ColumnReference_t) (c2 : ColumnReference_t) : bool :=
   beq_Column (cr c1) (cr c2) && beq_Table (ct c1) (ct c2).
+
 
 Lemma lem_beq_Table_id:
  forall (a1 a2: Table_t),
    beq_Table a1 a2 = true -> a1 = a2.
 Proof.
-intros.
-unfold beq_Table in H.
-unfold "&&" in H.
-destruct (table_id a1 =? table_id a2) eqn: ca1.
-- apply (lem_beq_string_eq2) in H.
-  apply (beq_nat_true) in ca1.
-  destruct a1,a2.
-  simpl in ca1, H.
-  rewrite ca1,H.
-  auto.
-- congruence.
+  Tactics.beq_eq_tac.
 Qed.
 
 Lemma lem_beq_Table_refl:
@@ -101,17 +92,24 @@ Lemma lem_beq_Column_id:
  forall (a1 a2: Column_t),
    beq_Column a1 a2 = true -> a1 = a2.
 Proof.
-intros.
-unfold beq_Column in H.
-unfold "&&" in H.
-destruct (column_id a1 =? column_id a2) eqn: ca1.
-- apply (lem_beq_string_eq2) in H.
-  apply (beq_nat_true) in ca1.
-  destruct a1,a2.
-  simpl in ca1, H.
-  rewrite ca1,H.
-  auto.
-- congruence.
+  Tactics.beq_eq_tac.
+Qed.
+
+Hint Resolve lem_beq_Column_id : beq_eq_database.
+(* (needed for the two lemmas below) *)
+
+Lemma lem_beq_TableColumns_id:
+ forall a1 a2,
+   beq_TableColumns a1 a2 = true -> a1 = a2.
+Proof. 
+  Tactics.beq_eq_tac.
+Qed.
+
+Lemma lem_beq_ColumnReference_id:
+ forall a1 a2,
+   beq_ColumnReference a1 a2 = true -> a1 = a2.
+Proof. 
+  Tactics.beq_eq_tac.
 Qed.
 
 (* Meta-types (kinds) *)
