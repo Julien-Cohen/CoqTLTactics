@@ -63,63 +63,63 @@ transformations/TT2BDD/TT2BDDAbstract.v
 transformations/TT2BDD/tests/TTModel.v
 transformations/TT2BDD/tests/TT2BDD_TTModel.v
 
-transformations/RSS2ATOM/RSS.v
-transformations/RSS2ATOM/ATOM.v
-transformations/RSS2ATOM/ATOMFlattened.v
-transformations/RSS2ATOM/RSS2ATOM.v
-transformations/RSS2ATOM/tests/ExempleRSS.v
-transformations/RSS2ATOM/tests/Exemple1RSS.v
-transformations/RSS2ATOM/tests/ExempleATOM.v
-transformations/RSS2ATOM/tests/Exemple1ATOM.v
+#transformations/RSS2ATOM/RSS.v
+#transformations/RSS2ATOM/ATOM.v
+#transformations/RSS2ATOM/ATOMFlattened.v
+#transformations/RSS2ATOM/RSS2ATOM.v
+#transformations/RSS2ATOM/tests/ExempleRSS.v
+#transformations/RSS2ATOM/tests/Exemple1RSS.v
+#transformations/RSS2ATOM/tests/ExempleATOM.v
+#transformations/RSS2ATOM/tests/Exemple1ATOM.v
 
-transformations/DBLP/DBLP.v
-transformations/IMDB/MOVIES.v
+#transformations/DBLP/DBLP.v
+#transformations/IMDB/MOVIES.v
 
-transformations/Families2Persons/tests/sampleFamilies.v
-transformations/Families2Persons/Families.v
-transformations/Families2Persons/Persons.v
-transformations/Families2Persons/Families2Persons.v
+#transformations/Families2Persons/tests/sampleFamilies.v
+#transformations/Families2Persons/Families.v
+#transformations/Families2Persons/Persons.v
+#transformations/Families2Persons/Families2Persons.v
 
-transformations/Moore2Mealy/Moore.v
-transformations/Moore2Mealy/Mealy.v
-transformations/Moore2Mealy/Moore2Mealy.v
-transformations/Moore2Mealy/tests/sampleMoore.v
-transformations/Moore2Mealy/MooreSemantics.v
-transformations/Moore2Mealy/MealySemantics.v
+#transformations/Moore2Mealy/Moore.v
+#transformations/Moore2Mealy/Mealy.v
+#transformations/Moore2Mealy/Moore2Mealy.v
+#transformations/Moore2Mealy/tests/sampleMoore.v
+#transformations/Moore2Mealy/MooreSemantics.v
+#transformations/Moore2Mealy/MealySemantics.v
 
 # Engine proofs
 
 ### prop - mono
-core/properties/monotonicity/Moore2Mealy_monotonicity_witness.v
-core/properties/monotonicity/sampleMoore_monotonicity.v
+#core/properties/monotonicity/Moore2Mealy_monotonicity_witness.v
+#core/properties/monotonicity/sampleMoore_monotonicity.v
 # core/properties/monotonicity/Monotonicity.v
 
 ### prop - injective
-core/properties/injectivity/sampleMoore_injectivity.v
-core/properties/injectivity/Injectivity.v
+#core/properties/injectivity/sampleMoore_injectivity.v
+#core/properties/injectivity/Injectivity.v
 
 ### prop - confluence
 core/properties/confluence/basic/basicSyntax.v
 core/properties/confluence/basic/basicExpressions.v
 core/properties/confluence/basic/basicSemantics.v
-core/properties/confluence/Confluence.v
-core/properties/confluence/examples/moore2mealy_confluence.v
+#core/properties/confluence/Confluence.v
+#core/properties/confluence/examples/moore2mealy_confluence.v
 
 ### prop - universality
 core/properties/universality/Universality.v
 
 ### prop - totality
-core/properties/totality/totality.v
+#core/properties/totality/totality.v
 
 ### prop - surjectivity
-core/properties/surjectivity/surjectivity.v
+#core/properties/surjectivity/surjectivity.v
 
 ### prop - additivity
 core/properties/additivity/AdditivityRule.v
 
 ### prop - distributiveity
 core/properties/distributivity/sampleMoore_distributivity.v
-core/properties/distributivity/distributivity.v
+#core/properties/distributivity/distributivity.v
 
 ### prop - lifting 
 #core/properties/Lifting.v
@@ -148,6 +148,6 @@ transformations/Class2Relational/theorems/Relational_resolve_spec.v
 #transformations/Class2Relational/theorems/Relational_resolve.v
 transformations/Class2Relational/theorems/Table_name_uniqueness.v
 
-transformations/Families2Persons/theorems/sampleTheorems.v
+#transformations/Families2Persons/theorems/sampleTheorems.v
 
 transformations/Moore2Mealy/theorems/moore2mealy.v
