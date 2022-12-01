@@ -32,12 +32,12 @@ Definition evalExpr5 {A B C D E F:Type} (f: Expr5 A B C D E F) (a: A) (b: B) (c:
     evalExpr2 {A B C:Type} (f: A -> B -> C) (a: A) (b: B) := f a b;
   }. *)
 
-Definition Expr (A: Type) (B: Type) : Type := A -> B. (* FIXME *)
+Definition Expr (A: Type) (B: Type) : Type := A -> B. (* Interface for future expression language *)
 
-Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a. (* FIXME *)
+Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a.
 
 Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : bool :=
-  evalExpr r.(r_guard) sm sp. (* FIXME *)
+  evalExpr r.(r_guard) sm sp.
 
 Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
   nat :=

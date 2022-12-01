@@ -56,7 +56,7 @@ Fixpoint eval (p: P) (q0: Node) (I: list nat) : list nat :=
   | i :: I' => 
       
       match search p (Ipr q0 i) with
-      | None => nil (* error ? *)
+      | None => nil (* FIXME: error ? *)
       | Some (node a b) => b :: eval p (node a b) I'  
       end
   end.
