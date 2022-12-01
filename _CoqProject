@@ -19,7 +19,6 @@ core/utils/Utils.v
 
 core/Expressions.v
 core/Model.v
-core/EqDec.v
 core/Metamodel.v
 core/TransformationConfiguration.v
 core/TraceLink.v

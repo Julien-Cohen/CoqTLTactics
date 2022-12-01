@@ -7,7 +7,6 @@ Require Import core.Syntax.
 Require Import Bool.
 Require Import Arith.
 Require Import Semantics.
-Require Import core.EqDec.
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
 Scheme Equality for list.

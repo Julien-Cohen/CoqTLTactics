@@ -1,7 +1,6 @@
 (** * Metamodel **)
 Require Import core.Model.
 Require Import core.Metamodel.
-Require Import core.EqDec.
 
 Class Sum (SumType: Type) (SubTypeName: Type):=
   {

@@ -1,6 +1,5 @@
 (** * Metamodel **)
 Require Import core.Model.
-Require Import core.EqDec.
 
 Class Metamodel :=
 {

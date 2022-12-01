@@ -7,7 +7,6 @@ Require Import core.TransformationConfiguration.
 Require Import core.SyntaxCertification.
 Require Import core.Engine.
 Require Import core.Semantics.
-Require Import core.EqDec.
 Require Import core.Metamodel.
 Require Import core.Certification.
 Require Import core.Syntax.

@@ -17,7 +17,6 @@ Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 Scheme Equality for option. (* equality for option type *)
 
-Require Import core.EqDec.
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.

@@ -4,7 +4,6 @@ Require Import Multiset.  (* bag *)
 Require Import ListSet.   (* set *)
 Require Import Bool.
 Require Import core.Metamodel.
-Require Import core.EqDec.
 
 Require Import core.utils.Utils.
 Require Import core.Model.

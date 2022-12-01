@@ -10,7 +10,6 @@ Require Import core.Model.
 Require Import core.Engine.
 Require Import core.Syntax.
 Require Import core.Semantics.
-Require Import core.EqDec.
 Require Import core.Metamodel.
 Require Import core.TransformationConfiguration.
 Require Import core.SyntaxCertification.
