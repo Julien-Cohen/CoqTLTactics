@@ -6,7 +6,6 @@ Require Import core.Model.
 Require Import core.modeling.ConcreteSyntax.
 Require Import core.Syntax.
 Require Import core.Semantics.
-Require Import core.EqDec. 
 Require Import core.modeling.Parser.
 Require Import Bool.
 Require Import Arith.

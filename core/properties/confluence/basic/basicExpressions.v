@@ -2,8 +2,7 @@ Require Import String.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
-Require Import core.properties.confluence.basic.basicSyntax.
-Require Import core.EqDec. 
+Require Import core.properties.confluence.basic.basicSyntax. 
 Require Import Bool.
 Require Import Arith.
 Require Import TransformationConfiguration.
