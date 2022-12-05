@@ -251,7 +251,7 @@ Fixpoint getTableColumnsOnLinks (t : Table_t) (l : list Link) : option (list Col
   end.
 
 Definition getTableColumns (t : Table_t) (m : Model Element Link) : option (list Column_t) :=
-getTableColumnsOnLinks t (allModelLinks m).
+getTableColumnsOnLinks t m.(modelLinks).
 
 Fixpoint getColumnReferenceOnLinks (c : Column_t) (l : list Link) : option Table_t :=
   match l with
@@ -260,7 +260,7 @@ Fixpoint getColumnReferenceOnLinks (c : Column_t) (l : list Link) : option Table
   | nil => None
   end.
 
-Definition getColumnReference (c : Column_t) (m : Model Element Link) : option Table_t := getColumnReferenceOnLinks c (allModelLinks m).
+Definition getColumnReference (c : Column_t) (m : Model Element Link) : option Table_t := getColumnReferenceOnLinks c m.(modelLinks).
 
 Definition bottomRelationalMetamodel_Class (c: ElementKind) : (getTypeByEKind c) :=
   match c with

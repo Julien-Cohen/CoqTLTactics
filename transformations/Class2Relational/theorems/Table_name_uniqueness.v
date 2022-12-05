@@ -32,14 +32,14 @@ forall (cm : ClassModel) (rm : RelationalModel),
     rm = execute Class2Relational cm ->
 (* precondition *)   
 (forall (c1: Class_t) (c2: Class_t), 
-    In (ClassMetamodel.lift_EKind Class_K c1) (allModelElements cm) -> 
-    In (ClassMetamodel.lift_EKind Class_K c2) (allModelElements cm) -> 
+    In (ClassMetamodel.lift_EKind Class_K c1) cm.(modelElements) -> 
+    In (ClassMetamodel.lift_EKind Class_K c2) cm.(modelElements) -> 
     c1 <> c2 -> 
     class_name c1 <> class_name c2) ->
 (* postcondition *)  
 (forall (t1: Table_t) (t2: Table_t), 
-    In (RelationalMetamodel.lift_EKind Table_K t1) (allModelElements rm) -> 
-    In (RelationalMetamodel.lift_EKind Table_K t2) (allModelElements rm) -> 
+    In (RelationalMetamodel.lift_EKind Table_K t1) rm.(modelElements) -> 
+    In (RelationalMetamodel.lift_EKind Table_K t2) rm.(modelElements) -> 
     t1 <> t2 -> 
     table_name t1 <> table_name t2).
 Proof.

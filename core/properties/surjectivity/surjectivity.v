@@ -30,7 +30,7 @@ Require Import transformations.Moore2Mealy.Moore2Mealy.
 
 Theorem Surjectivity_elem :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-      In te (allModelElements (execute tr sm)) ->
+      In te (execute tr sm).(modelElements) ->
       (exists (sp : list SourceModelElement),
           In sp (allTuples tr sm) /\
           In te (instantiatePattern tr sm sp)).
@@ -43,7 +43,7 @@ Qed.
 
 Theorem Surjectivity_links :
 forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
-      In tl (allModelLinks (execute tr sm)) ->
+      In tl (execute tr sm).(modelLinks) ->
       (exists (sp : list SourceModelElement),
           In sp (allTuples tr sm) /\
           In tl (applyPattern tr sm sp)).

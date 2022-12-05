@@ -56,7 +56,7 @@ Qed.
 Lemma additivity_rules_general :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
   (Transformation_incl_rules''' t1 t2 -> 
-    incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm))).
+    incl  (execute t1 sm).(modelElements)  (execute t2 sm).(modelElements)).
 Proof.
 simpl.
 unfold incl.
@@ -83,7 +83,7 @@ Qed.
 Theorem additivity_rules :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
   (Transformation_incl_rules'' t1 t2 -> 
-    incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm))).
+    incl (execute t1 sm).(modelElements)  (execute t2 sm).(modelElements)).
 Proof.
 intros.
 specialize (tr_incl_equiv tc t1 t2 H).

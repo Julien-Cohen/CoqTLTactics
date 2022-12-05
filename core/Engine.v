@@ -66,7 +66,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** allTuples *)
 
     allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
-      tuples_up_to_n (allModelElements sm) (Transformation_getArity tr);
+      tuples_up_to_n sm.(modelElements) (Transformation_getArity tr);
 
     (** ** Functions *)
     
@@ -105,20 +105,20 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
 
     allTuples_incl:
       forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
-        In sp (allTuples tr sm) -> incl sp (allModelElements sm);
+        In sp (allTuples tr sm) -> incl sp sm.(modelElements);
 
     (** ** execute *)
 
     tr_execute_in_elements :
       forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-      In te (allModelElements (execute tr sm)) <->
+      In te (execute tr sm).(modelElements) <->
       (exists (sp : list SourceModelElement),
           In sp (allTuples tr sm) /\
           In te (instantiatePattern tr sm sp));
 
     tr_execute_in_links :
       forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
-        In tl (allModelLinks (execute tr sm)) <->
+        In tl (execute tr sm).(modelLinks) <->
         (exists (sp : list SourceModelElement),
             In sp (allTuples tr sm) /\
             In tl (applyPattern tr sm sp));
@@ -235,7 +235,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
 Theorem tr_execute_rule_in :
       forall (tc: TransformationConfiguration) (ts: TransformationSyntax tc) (eng: TransformationEngine ts) 
       (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-      In te (allModelElements (execute tr sm)) <->
+      In te (execute tr sm).(modelElements) <->
       (exists (sp : list SourceModelElement) (r : Rule),
           In sp (allTuples tr sm) /\
           In r (Transformation_getRules tr) /\
@@ -264,7 +264,7 @@ Qed.
 Theorem tr_execute_iteration_in :
       forall (tc: TransformationConfiguration) (ts: TransformationSyntax tc) (eng: TransformationEngine ts) 
       (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-      In te (allModelElements (execute tr sm)) <->
+      In te (execute tr sm).(modelElements) <->
       (exists (sp : list SourceModelElement) (r : Rule) (i: nat),
           In sp (allTuples tr sm) /\
           In r (Transformation_getRules tr) /\
@@ -293,7 +293,7 @@ Qed.
 Theorem tr_execute_element_in :
       forall (tc: TransformationConfiguration) (ts: TransformationSyntax tc) (eng: TransformationEngine ts) 
       (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-      In te (allModelElements (execute tr sm)) <->
+      In te (execute tr sm).(modelElements) <->
       (exists (sp : list SourceModelElement) (r : Rule) (i: nat) (ope: OutputPatternElement),
           In sp (allTuples tr sm) /\
           In r (Transformation_getRules tr) /\
@@ -321,7 +321,7 @@ Qed.
 Theorem tr_execute_element_leaf :
       forall (tc: TransformationConfiguration) (ts: TransformationSyntax tc) (eng: TransformationEngine ts) 
       (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-      In te (allModelElements (execute tr sm)) <->
+      In te (execute tr sm).(modelElements) <->
       (exists (sp : list SourceModelElement) (r : Rule) (i: nat) (ope: OutputPatternElement),
           In sp (allTuples tr sm) /\
           In r (Transformation_getRules tr) /\

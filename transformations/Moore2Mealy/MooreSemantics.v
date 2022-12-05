@@ -12,10 +12,10 @@ Definition MooreMetamodel_toTransitions (m: list MooreMetamodel_Object) : list T
     optionList2List (map (fun s => (MooreMetamodel_toClass TransitionClass s)) m).
 
 Definition MooreMetamodel_allStates (m: MooreModel) : list State :=
-    MooreMetamodel_toStates (allModelElements m).
+    MooreMetamodel_toStates m.(modelElements).
 
 Definition MooreMetamodel_allTransitions (m: MooreModel) : list Transition :=
-    MooreMetamodel_toTransitions (allModelElements m).
+    MooreMetamodel_toTransitions m.(modelElements).
 
 Definition initialState (m: MooreModel) : option State :=
     find (fun s => eqb "S0" (State_getName s)) (MooreMetamodel_allStates m).

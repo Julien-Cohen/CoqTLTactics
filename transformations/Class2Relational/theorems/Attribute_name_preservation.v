@@ -22,10 +22,10 @@ Theorem Attribute_name_preservation:
         rm = execute Class2Relational cm ->
         (* postcondition *)  
         forall (a: Attribute_t),
-        In (ClassMetamodel.lift_EKind Attribute_K a) (allModelElements cm) ->
+        In (ClassMetamodel.lift_EKind Attribute_K a) cm.(modelElements) ->
         derived a = false ->
         exists (c: Column_t),
-            In (RelationalMetamodel.lift_EKind Column_K c) (allModelElements rm) /\
+            In (RelationalMetamodel.lift_EKind Column_K c) rm.(modelElements) /\
             column_name c = attr_name a.
 Proof.
     intros.

@@ -12,9 +12,9 @@ Require Import transformations.Families2Persons.Families2Persons.
 
 Theorem tr_FamiliesToPersons :
     forall (sm : FamiliesModel) (te : PersonsMetamodel_Object), 
-      In te (allModelElements (execute Families2Persons sm)) ->
+      In te (execute Families2Persons sm).(modelElements) ->
       (exists (se : FamiliesMetamodel_Object),
-          In se (allModelElements sm) /\
+          In se sm.(modelElements) /\
           In te
             (instantiatePattern Families2Persons sm [se])).
 Proof.

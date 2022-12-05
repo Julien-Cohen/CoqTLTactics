@@ -66,11 +66,11 @@ forall (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : Relational
      rm = execute Class2Relational cm ->
   (* precondition *)   
      (forall (c1 : ClassMetamodel.Element), 
-         In c1 (allModelElements cm) -> 
+         In c1 cm.(modelElements) -> 
             (ClassMetamodel.getName c1 <> ""%string)) ->
   (* postcondition *) 
      (forall (t1 : RelationalMetamodel.Element), 
-         In t1 (allModelElements rm) -> 
+         In t1 rm.(modelElements) -> 
             (RelationalMetamodel.getName t1 <> ""%string)). 
 Proof.
   intros.

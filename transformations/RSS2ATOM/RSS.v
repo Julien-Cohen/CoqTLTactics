@@ -17,11 +17,15 @@ Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 Scheme Equality for option. (* equality for option type *)
 
-Require Import core.utils.Utils.
-Require Import core.Metamodel.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
-Require Import core.utils.CpdtTactics.
+From core 
+  Require Import 
+  utils.Utils
+  Metamodel
+  modeling.ModelingMetamodel
+  Model
+  utils.CpdtTactics
+  Tactics
+.
 
 (* Base types *)
 
@@ -645,7 +649,7 @@ match l with
 end.
 
 Definition RSS_getChannel (rs_arg : RSS) (m : RSSModel) : option (Channel) :=
-  RSS_getChannelOnLinks rs_arg (@allModelLinks _ _ m).
+  RSS_getChannelOnLinks rs_arg m.(modelLinks).
   
 Definition RSS_getChannelObject (rs_arg : RSS) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match RSS_getChannel rs_arg m with
@@ -662,7 +666,7 @@ match l with
 end.
 
 Definition Channel_getRss (ch_arg : Channel) (m : RSSModel) : option (RSS) :=
-  Channel_getRssOnLinks ch_arg (@allModelLinks _ _ m).
+  Channel_getRssOnLinks ch_arg m.(modelLinks).
   
 Definition Channel_getRssObject (ch_arg : Channel) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Channel_getRss ch_arg m with
@@ -678,7 +682,7 @@ match l with
 end.
 
 Definition Channel_getImage (ch_arg : Channel) (m : RSSModel) : option (Image) :=
-  Channel_getImageOnLinks ch_arg (@allModelLinks _ _ m).
+  Channel_getImageOnLinks ch_arg m.(modelLinks).
   
 Definition Channel_getImageObject (ch_arg : Channel) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Channel_getImage ch_arg m with
@@ -694,7 +698,7 @@ match l with
 end.
 
 Definition Channel_getTextInput (ch_arg : Channel) (m : RSSModel) : option (TextInput) :=
-  Channel_getTextInputOnLinks ch_arg (@allModelLinks _ _ m).
+  Channel_getTextInputOnLinks ch_arg m.(modelLinks).
   
 Definition Channel_getTextInputObject (ch_arg : Channel) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Channel_getTextInput ch_arg m with
@@ -710,7 +714,7 @@ match l with
 end.
 
 Definition Channel_getCloud (ch_arg : Channel) (m : RSSModel) : option (Cloud) :=
-  Channel_getCloudOnLinks ch_arg (@allModelLinks _ _ m).
+  Channel_getCloudOnLinks ch_arg m.(modelLinks).
   
 Definition Channel_getCloudObject (ch_arg : Channel) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Channel_getCloud ch_arg m with
@@ -726,7 +730,7 @@ match l with
 end.
 
 Definition Channel_getCategory (ch_arg : Channel) (m : RSSModel) : option (Category) :=
-  Channel_getCategoryOnLinks ch_arg (@allModelLinks _ _ m).
+  Channel_getCategoryOnLinks ch_arg m.(modelLinks).
   
 Definition Channel_getCategoryObject (ch_arg : Channel) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Channel_getCategory ch_arg m with
@@ -742,7 +746,7 @@ match l with
 end.
 
 Definition Channel_getItems (ch_arg : Channel) (m : RSSModel) : option (list Item) :=
-  Channel_getItemsOnLinks ch_arg (@allModelLinks _ _ m).
+  Channel_getItemsOnLinks ch_arg m.(modelLinks).
   
 Definition Channel_getItemsObjects (ch_arg : Channel) (m : RSSModel) : option (list RSSMetamodel_Object) :=
   match Channel_getItems ch_arg m with
@@ -759,7 +763,7 @@ match l with
 end.
 
 Definition Item_getSource (it_arg : Item) (m : RSSModel) : option (Source) :=
-  Item_getSourceOnLinks it_arg (@allModelLinks _ _ m).
+  Item_getSourceOnLinks it_arg m.(modelLinks).
   
 Definition Item_getSourceObject (it_arg : Item) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Item_getSource it_arg m with
@@ -775,7 +779,7 @@ match l with
 end.
 
 Definition Item_getEnclosure (it_arg : Item) (m : RSSModel) : option (Enclosure) :=
-  Item_getEnclosureOnLinks it_arg (@allModelLinks _ _ m).
+  Item_getEnclosureOnLinks it_arg m.(modelLinks).
   
 Definition Item_getEnclosureObject (it_arg : Item) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Item_getEnclosure it_arg m with
@@ -791,7 +795,7 @@ match l with
 end.
 
 Definition Item_getCategory (it_arg : Item) (m : RSSModel) : option (Category) :=
-  Item_getCategoryOnLinks it_arg (@allModelLinks _ _ m).
+  Item_getCategoryOnLinks it_arg m.(modelLinks).
   
 Definition Item_getCategoryObject (it_arg : Item) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Item_getCategory it_arg m with
@@ -807,7 +811,7 @@ match l with
 end.
 
 Definition Item_getChannel (it_arg : Item) (m : RSSModel) : option (Channel) :=
-  Item_getChannelOnLinks it_arg (@allModelLinks _ _ m).
+  Item_getChannelOnLinks it_arg m.(modelLinks).
   
 Definition Item_getChannelObject (it_arg : Item) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Item_getChannel it_arg m with
@@ -824,7 +828,7 @@ match l with
 end.
 
 Definition Image_getChannel (im_arg : Image) (m : RSSModel) : option (Channel) :=
-  Image_getChannelOnLinks im_arg (@allModelLinks _ _ m).
+  Image_getChannelOnLinks im_arg m.(modelLinks).
   
 Definition Image_getChannelObject (im_arg : Image) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Image_getChannel im_arg m with
@@ -841,7 +845,7 @@ match l with
 end.
 
 Definition TextInput_getChannel (te_arg : TextInput) (m : RSSModel) : option (Channel) :=
-  TextInput_getChannelOnLinks te_arg (@allModelLinks _ _ m).
+  TextInput_getChannelOnLinks te_arg m.(modelLinks).
   
 Definition TextInput_getChannelObject (te_arg : TextInput) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match TextInput_getChannel te_arg m with
@@ -858,7 +862,7 @@ match l with
 end.
 
 Definition Cloud_getChannel (cl_arg : Cloud) (m : RSSModel) : option (Channel) :=
-  Cloud_getChannelOnLinks cl_arg (@allModelLinks _ _ m).
+  Cloud_getChannelOnLinks cl_arg m.(modelLinks).
   
 Definition Cloud_getChannelObject (cl_arg : Cloud) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Cloud_getChannel cl_arg m with
@@ -875,7 +879,7 @@ match l with
 end.
 
 Definition Category_getChannel (ca_arg : Category) (m : RSSModel) : option (Channel) :=
-  Category_getChannelOnLinks ca_arg (@allModelLinks _ _ m).
+  Category_getChannelOnLinks ca_arg m.(modelLinks).
   
 Definition Category_getChannelObject (ca_arg : Category) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Category_getChannel ca_arg m with
@@ -891,7 +895,7 @@ match l with
 end.
 
 Definition Category_getItems (ca_arg : Category) (m : RSSModel) : option (Item) :=
-  Category_getItemsOnLinks ca_arg (@allModelLinks _ _ m).
+  Category_getItemsOnLinks ca_arg m.(modelLinks).
   
 Definition Category_getItemsObject (ca_arg : Category) (m : RSSModel) : option (RSSMetamodel_Object) :=
   match Category_getItems ca_arg m with
@@ -943,4 +947,8 @@ Instance RSSMetamodel_ModelingMetamodel_Instance :
 Lemma RSS_invert : 
   forall (rscl_arg: RSSMetamodel_Class) (t1 t2: RSSMetamodel_getTypeByClass rscl_arg), 
     Build_RSSMetamodel_Object rscl_arg t1 = Build_RSSMetamodel_Object rscl_arg t2 -> t1 = t2.
-Admitted.
+Proof. 
+  intros.
+  dep_inversion H.
+  assumption.
+Qed.

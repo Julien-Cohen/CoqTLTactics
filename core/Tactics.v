@@ -17,6 +17,11 @@ Ltac destruct_match :=
   match goal with 
      [ |- context[match ?P with | _ => _ end]] => destruct P end. 
 
+(* To replace the [inversion] tactics on equalities on a dependant type constructor. *)
+Ltac dep_inversion H := 
+  let H':= fresh H in
+  inversion H as [H'] ; apply Eqdep.EqdepTheory.inj_pair2 in H'.
+
 
 (** Tactics to deal with boolean equality on generated types. *)
 

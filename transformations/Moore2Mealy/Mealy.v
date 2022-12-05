@@ -17,11 +17,13 @@ Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 Scheme Equality for option. (* equality for option type *)
 
-Require Import core.utils.Utils.
-Require Import core.Metamodel.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
-Require Import core.utils.CpdtTactics.
+From core Require Import 
+  utils.Utils
+  Metamodel
+  modeling.ModelingMetamodel
+  Model
+  utils.CpdtTactics
+  Tactics.
 
 (* Base types *)
 
@@ -198,7 +200,7 @@ match l with
 end.
 
 Definition Transition_getSource (tr_arg : Transition) (m : MealyModel) : option (State) :=
-  Transition_getSourceOnLinks tr_arg (@allModelLinks _ _ m).
+  Transition_getSourceOnLinks tr_arg m.(modelLinks).
   
 Definition Transition_getSourceObject (tr_arg : Transition) (m : MealyModel) : option (MealyMetamodel_Object) :=
   match Transition_getSource tr_arg m with
@@ -214,7 +216,7 @@ match l with
 end.
 
 Definition Transition_getTarget (tr_arg : Transition) (m : MealyModel) : option (State) :=
-  Transition_getTargetOnLinks tr_arg (@allModelLinks _ _ m).
+  Transition_getTargetOnLinks tr_arg m.(modelLinks).
   
 Definition Transition_getTargetObject (tr_arg : Transition) (m : MealyModel) : option (MealyMetamodel_Object) :=
   match Transition_getTarget tr_arg m with
@@ -264,4 +266,6 @@ Instance MealyMetamodel_ModelingMetamodel_Instance :
 Lemma Mealy_invert : 
   forall (mecl_arg: MealyMetamodel_Class) (t1 t2: MealyMetamodel_getTypeByClass mecl_arg), 
     Build_MealyMetamodel_Object mecl_arg t1 = Build_MealyMetamodel_Object mecl_arg t2 -> t1 = t2.
-Admitted.
+Proof.
+  intros ; Tactics.dep_inversion H ; assumption.
+Qed.

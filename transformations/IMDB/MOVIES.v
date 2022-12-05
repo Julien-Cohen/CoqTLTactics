@@ -16,11 +16,13 @@ Require Import PeanoNat.
 Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 
-Require Import core.utils.Utils.
-Require Import core.Metamodel.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
-Require Import core.utils.CpdtTactics.
+From core Require Import 
+  utils.Utils
+  Metamodel
+  modeling.ModelingMetamodel
+  Model
+  utils.CpdtTactics
+  Tactics.
 
 (* Base types *)
 
@@ -338,7 +340,7 @@ Fixpoint moviesMetamodel_Person_downcastActor (pe_arg : Person) (l : list movies
 end.
 
 Definition Person_downcastActor (pe_arg : Person) (m : moviesModel) : option Actor :=
-  moviesMetamodel_Person_downcastActor pe_arg (@allModelElements _ _ m).
+  moviesMetamodel_Person_downcastActor pe_arg m.(modelElements).
 
 Fixpoint moviesMetamodel_Person_downcastActress (pe_arg : Person) (l : list moviesMetamodel_Object) : option Actress := 
   match l with
@@ -349,7 +351,7 @@ Fixpoint moviesMetamodel_Person_downcastActress (pe_arg : Person) (l : list movi
 end.
 
 Definition Person_downcastActress (pe_arg : Person) (m : moviesModel) : option Actress :=
-  moviesMetamodel_Person_downcastActress pe_arg (@allModelElements _ _ m).
+  moviesMetamodel_Person_downcastActress pe_arg m.(modelElements).
 
 
 Fixpoint moviesMetamodel_Group_downcastCouple (gr_arg : Group) (l : list moviesMetamodel_Object) : option Couple := 
@@ -361,7 +363,7 @@ Fixpoint moviesMetamodel_Group_downcastCouple (gr_arg : Group) (l : list moviesM
 end.
 
 Definition Group_downcastCouple (gr_arg : Group) (m : moviesModel) : option Couple :=
-  moviesMetamodel_Group_downcastCouple gr_arg (@allModelElements _ _ m).
+  moviesMetamodel_Group_downcastCouple gr_arg m.(modelElements).
 
 Fixpoint moviesMetamodel_Group_downcastClique (gr_arg : Group) (l : list moviesMetamodel_Object) : option Clique := 
   match l with
@@ -372,7 +374,7 @@ Fixpoint moviesMetamodel_Group_downcastClique (gr_arg : Group) (l : list moviesM
 end.
 
 Definition Group_downcastClique (gr_arg : Group) (m : moviesModel) : option Clique :=
-  moviesMetamodel_Group_downcastClique gr_arg (@allModelElements _ _ m).
+  moviesMetamodel_Group_downcastClique gr_arg m.(modelElements).
 
 
 
@@ -386,7 +388,7 @@ match l with
 end.
 
 Definition Person_getMovies (pe_arg : Person) (m : moviesModel) : option (list Movie) :=
-  Person_getMoviesOnLinks pe_arg (@allModelLinks _ _ m).
+  Person_getMoviesOnLinks pe_arg m.(modelLinks).
   
 Definition Person_getMoviesObjects (pe_arg : Person) (m : moviesModel) : option (list moviesMetamodel_Object) :=
   match Person_getMovies pe_arg m with
@@ -405,7 +407,7 @@ match l with
 end.
 
 Definition Couple_getP1 (co_arg : Couple) (m : moviesModel) : option (Person) :=
-  Couple_getP1OnLinks co_arg (@allModelLinks _ _ m).
+  Couple_getP1OnLinks co_arg m.(modelLinks).
   
 Definition Couple_getP1Object (co_arg : Couple) (m : moviesModel) : option (moviesMetamodel_Object) :=
   match Couple_getP1 co_arg m with
@@ -421,7 +423,7 @@ match l with
 end.
 
 Definition Couple_getP2 (co_arg : Couple) (m : moviesModel) : option (Person) :=
-  Couple_getP2OnLinks co_arg (@allModelLinks _ _ m).
+  Couple_getP2OnLinks co_arg m.(modelLinks).
   
 Definition Couple_getP2Object (co_arg : Couple) (m : moviesModel) : option (moviesMetamodel_Object) :=
   match Couple_getP2 co_arg m with
@@ -438,7 +440,7 @@ match l with
 end.
 
 Definition Movie_getPersons (mo_arg : Movie) (m : moviesModel) : option (list Person) :=
-  Movie_getPersonsOnLinks mo_arg (@allModelLinks _ _ m).
+  Movie_getPersonsOnLinks mo_arg m.(modelLinks).
   
 Definition Movie_getPersonsObjects (mo_arg : Movie) (m : moviesModel) : option (list moviesMetamodel_Object) :=
   match Movie_getPersons mo_arg m with
@@ -455,7 +457,7 @@ match l with
 end.
 
 Definition Group_getCommonMovies (gr_arg : Group) (m : moviesModel) : option (list Movie) :=
-  Group_getCommonMoviesOnLinks gr_arg (@allModelLinks _ _ m).
+  Group_getCommonMoviesOnLinks gr_arg m.(modelLinks).
   
 Definition Group_getCommonMoviesObjects (gr_arg : Group) (m : moviesModel) : option (list moviesMetamodel_Object) :=
   match Group_getCommonMovies gr_arg m with
@@ -472,7 +474,7 @@ match l with
 end.
 
 Definition Clique_getPersons (cl_arg : Clique) (m : moviesModel) : option (list Person) :=
-  Clique_getPersonsOnLinks cl_arg (@allModelLinks _ _ m).
+  Clique_getPersonsOnLinks cl_arg m.(modelLinks).
   
 Definition Clique_getPersonsObjects (cl_arg : Clique) (m : moviesModel) : option (list moviesMetamodel_Object) :=
   match Clique_getPersons cl_arg m with
@@ -522,4 +524,6 @@ Instance moviesMetamodel_ModelingMetamodel_Instance :
 Lemma movies_invert : 
   forall (mocl_arg: moviesMetamodel_Class) (t1 t2: moviesMetamodel_getTypeByClass mocl_arg), 
     Build_moviesMetamodel_Object mocl_arg t1 = Build_moviesMetamodel_Object mocl_arg t2 -> t1 = t2.
-Admitted.
+Proof.
+  intros. Tactics.dep_inversion H. assumption.
+Qed.

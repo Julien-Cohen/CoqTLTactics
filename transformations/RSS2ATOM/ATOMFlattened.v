@@ -17,11 +17,13 @@ Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 Scheme Equality for option. (* equality for option type *)
 
-Require Import core.utils.Utils.
-Require Import core.Metamodel.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
-Require Import core.utils.CpdtTactics.
+From core Require Import
+  utils.Utils
+  Metamodel
+  modeling.ModelingMetamodel
+  Model
+  utils.CpdtTactics
+  Tactics.
 
 (* Base types *)
 
@@ -727,7 +729,7 @@ match l with
 end.
 
 Definition ATOM_getLinks (at_arg : ATOM) (m : ATOMModel) : option (list Link) :=
-  ATOM_getLinksOnLinks at_arg (@allModelLinks _ _ m).
+  ATOM_getLinksOnLinks at_arg m.(modelLinks).
   
 Definition ATOM_getLinksObjects (at_arg : ATOM) (m : ATOMModel) : option (list ATOMMetamodel_Object) :=
   match ATOM_getLinks at_arg m with
@@ -743,7 +745,7 @@ match l with
 end.
 
 Definition ATOM_getGenerator (at_arg : ATOM) (m : ATOMModel) : option (Generator) :=
-  ATOM_getGeneratorOnLinks at_arg (@allModelLinks _ _ m).
+  ATOM_getGeneratorOnLinks at_arg m.(modelLinks).
   
 Definition ATOM_getGeneratorObject (at_arg : ATOM) (m : ATOMModel) : option (ATOMMetamodel_Object) :=
   match ATOM_getGenerator at_arg m with
@@ -759,7 +761,7 @@ match l with
 end.
 
 Definition ATOM_getCategories (at_arg : ATOM) (m : ATOMModel) : option (list Category) :=
-  ATOM_getCategoriesOnLinks at_arg (@allModelLinks _ _ m).
+  ATOM_getCategoriesOnLinks at_arg m.(modelLinks).
   
 Definition ATOM_getCategoriesObjects (at_arg : ATOM) (m : ATOMModel) : option (list ATOMMetamodel_Object) :=
   match ATOM_getCategories at_arg m with
@@ -775,7 +777,7 @@ match l with
 end.
 
 Definition ATOM_getAuthors (at_arg : ATOM) (m : ATOMModel) : option (list Author) :=
-  ATOM_getAuthorsOnLinks at_arg (@allModelLinks _ _ m).
+  ATOM_getAuthorsOnLinks at_arg m.(modelLinks).
   
 Definition ATOM_getAuthorsObjects (at_arg : ATOM) (m : ATOMModel) : option (list ATOMMetamodel_Object) :=
   match ATOM_getAuthors at_arg m with
@@ -791,7 +793,7 @@ match l with
 end.
 
 Definition ATOM_getContributors (at_arg : ATOM) (m : ATOMModel) : option (list Contributor) :=
-  ATOM_getContributorsOnLinks at_arg (@allModelLinks _ _ m).
+  ATOM_getContributorsOnLinks at_arg m.(modelLinks).
   
 Definition ATOM_getContributorsObjects (at_arg : ATOM) (m : ATOMModel) : option (list ATOMMetamodel_Object) :=
   match ATOM_getContributors at_arg m with
@@ -807,7 +809,7 @@ match l with
 end.
 
 Definition ATOM_getEntrie (at_arg : ATOM) (m : ATOMModel) : option (list Entry) :=
-  ATOM_getEntrieOnLinks at_arg (@allModelLinks _ _ m).
+  ATOM_getEntrieOnLinks at_arg m.(modelLinks).
   
 Definition ATOM_getEntrieObjects (at_arg : ATOM) (m : ATOMModel) : option (list ATOMMetamodel_Object) :=
   match ATOM_getEntrie at_arg m with
@@ -824,7 +826,7 @@ match l with
 end.
 
 Definition Entry_getLinks (en_arg : Entry) (m : ATOMModel) : option (list Link) :=
-  Entry_getLinksOnLinks en_arg (@allModelLinks _ _ m).
+  Entry_getLinksOnLinks en_arg m.(modelLinks).
   
 Definition Entry_getLinksObjects (en_arg : Entry) (m : ATOMModel) : option (list ATOMMetamodel_Object) :=
   match Entry_getLinks en_arg m with
@@ -840,7 +842,7 @@ match l with
 end.
 
 Definition Entry_getSource (en_arg : Entry) (m : ATOMModel) : option (Source) :=
-  Entry_getSourceOnLinks en_arg (@allModelLinks _ _ m).
+  Entry_getSourceOnLinks en_arg m.(modelLinks).
   
 Definition Entry_getSourceObject (en_arg : Entry) (m : ATOMModel) : option (ATOMMetamodel_Object) :=
   match Entry_getSource en_arg m with
@@ -856,7 +858,7 @@ match l with
 end.
 
 Definition Entry_getContent (en_arg : Entry) (m : ATOMModel) : option (Content) :=
-  Entry_getContentOnLinks en_arg (@allModelLinks _ _ m).
+  Entry_getContentOnLinks en_arg m.(modelLinks).
   
 Definition Entry_getContentObject (en_arg : Entry) (m : ATOMModel) : option (ATOMMetamodel_Object) :=
   match Entry_getContent en_arg m with
@@ -872,7 +874,7 @@ match l with
 end.
 
 Definition Entry_getCategories (en_arg : Entry) (m : ATOMModel) : option (list Category) :=
-  Entry_getCategoriesOnLinks en_arg (@allModelLinks _ _ m).
+  Entry_getCategoriesOnLinks en_arg m.(modelLinks).
   
 Definition Entry_getCategoriesObjects (en_arg : Entry) (m : ATOMModel) : option (list ATOMMetamodel_Object) :=
   match Entry_getCategories en_arg m with
@@ -888,7 +890,7 @@ match l with
 end.
 
 Definition Entry_getAuthors (en_arg : Entry) (m : ATOMModel) : option (list Author) :=
-  Entry_getAuthorsOnLinks en_arg (@allModelLinks _ _ m).
+  Entry_getAuthorsOnLinks en_arg m.(modelLinks).
   
 Definition Entry_getAuthorsObjects (en_arg : Entry) (m : ATOMModel) : option (list ATOMMetamodel_Object) :=
   match Entry_getAuthors en_arg m with
@@ -904,7 +906,7 @@ match l with
 end.
 
 Definition Entry_getContributors (en_arg : Entry) (m : ATOMModel) : option (list Contributor) :=
-  Entry_getContributorsOnLinks en_arg (@allModelLinks _ _ m).
+  Entry_getContributorsOnLinks en_arg m.(modelLinks).
   
 Definition Entry_getContributorsObjects (en_arg : Entry) (m : ATOMModel) : option (list ATOMMetamodel_Object) :=
   match Entry_getContributors en_arg m with
@@ -920,7 +922,7 @@ match l with
 end.
 
 Definition Entry_getAtom (en_arg : Entry) (m : ATOMModel) : option (ATOM) :=
-  Entry_getAtomOnLinks en_arg (@allModelLinks _ _ m).
+  Entry_getAtomOnLinks en_arg m.(modelLinks).
   
 Definition Entry_getAtomObject (en_arg : Entry) (m : ATOMModel) : option (ATOMMetamodel_Object) :=
   match Entry_getAtom en_arg m with
@@ -937,7 +939,7 @@ match l with
 end.
 
 Definition Source_getLinks (so_arg : Source) (m : ATOMModel) : option (list Link) :=
-  Source_getLinksOnLinks so_arg (@allModelLinks _ _ m).
+  Source_getLinksOnLinks so_arg m.(modelLinks).
   
 Definition Source_getLinksObjects (so_arg : Source) (m : ATOMModel) : option (list ATOMMetamodel_Object) :=
   match Source_getLinks so_arg m with
@@ -953,7 +955,7 @@ match l with
 end.
 
 Definition Source_getGenerator (so_arg : Source) (m : ATOMModel) : option (Generator) :=
-  Source_getGeneratorOnLinks so_arg (@allModelLinks _ _ m).
+  Source_getGeneratorOnLinks so_arg m.(modelLinks).
   
 Definition Source_getGeneratorObject (so_arg : Source) (m : ATOMModel) : option (ATOMMetamodel_Object) :=
   match Source_getGenerator so_arg m with
@@ -969,7 +971,7 @@ match l with
 end.
 
 Definition Source_getContributors (so_arg : Source) (m : ATOMModel) : option (list Contributor) :=
-  Source_getContributorsOnLinks so_arg (@allModelLinks _ _ m).
+  Source_getContributorsOnLinks so_arg m.(modelLinks).
   
 Definition Source_getContributorsObjects (so_arg : Source) (m : ATOMModel) : option (list ATOMMetamodel_Object) :=
   match Source_getContributors so_arg m with
@@ -985,7 +987,7 @@ match l with
 end.
 
 Definition Source_getCategories (so_arg : Source) (m : ATOMModel) : option (list Category) :=
-  Source_getCategoriesOnLinks so_arg (@allModelLinks _ _ m).
+  Source_getCategoriesOnLinks so_arg m.(modelLinks).
   
 Definition Source_getCategoriesObjects (so_arg : Source) (m : ATOMModel) : option (list ATOMMetamodel_Object) :=
   match Source_getCategories so_arg m with
@@ -1001,7 +1003,7 @@ match l with
 end.
 
 Definition Source_getAuthor (so_arg : Source) (m : ATOMModel) : option (Author) :=
-  Source_getAuthorOnLinks so_arg (@allModelLinks _ _ m).
+  Source_getAuthorOnLinks so_arg m.(modelLinks).
   
 Definition Source_getAuthorObject (so_arg : Source) (m : ATOMModel) : option (ATOMMetamodel_Object) :=
   match Source_getAuthor so_arg m with
@@ -1020,7 +1022,7 @@ match l with
 end.
 
 Definition Category_getAtom (ca_arg : Category) (m : ATOMModel) : option (ATOM) :=
-  Category_getAtomOnLinks ca_arg (@allModelLinks _ _ m).
+  Category_getAtomOnLinks ca_arg m.(modelLinks).
   
 Definition Category_getAtomObject (ca_arg : Category) (m : ATOMModel) : option (ATOMMetamodel_Object) :=
   match Category_getAtom ca_arg m with
@@ -1036,7 +1038,7 @@ match l with
 end.
 
 Definition Category_getEntry (ca_arg : Category) (m : ATOMModel) : option (Entry) :=
-  Category_getEntryOnLinks ca_arg (@allModelLinks _ _ m).
+  Category_getEntryOnLinks ca_arg m.(modelLinks).
   
 Definition Category_getEntryObject (ca_arg : Category) (m : ATOMModel) : option (ATOMMetamodel_Object) :=
   match Category_getEntry ca_arg m with
@@ -1053,7 +1055,7 @@ match l with
 end.
 
 Definition Link_getAtom (li_arg : Link) (m : ATOMModel) : option (ATOM) :=
-  Link_getAtomOnLinks li_arg (@allModelLinks _ _ m).
+  Link_getAtomOnLinks li_arg m.(modelLinks).
   
 Definition Link_getAtomObject (li_arg : Link) (m : ATOMModel) : option (ATOMMetamodel_Object) :=
   match Link_getAtom li_arg m with
@@ -1069,7 +1071,7 @@ match l with
 end.
 
 Definition Link_getEntry (li_arg : Link) (m : ATOMModel) : option (Entry) :=
-  Link_getEntryOnLinks li_arg (@allModelLinks _ _ m).
+  Link_getEntryOnLinks li_arg m.(modelLinks).
   
 Definition Link_getEntryObject (li_arg : Link) (m : ATOMModel) : option (ATOMMetamodel_Object) :=
   match Link_getEntry li_arg m with
@@ -1086,7 +1088,7 @@ match l with
 end.
 
 Definition Author_getAtom (au_arg : Author) (m : ATOMModel) : option (ATOM) :=
-  Author_getAtomOnLinks au_arg (@allModelLinks _ _ m).
+  Author_getAtomOnLinks au_arg m.(modelLinks).
   
 Definition Author_getAtomObject (au_arg : Author) (m : ATOMModel) : option (ATOMMetamodel_Object) :=
   match Author_getAtom au_arg m with
@@ -1132,4 +1134,7 @@ Instance ATOMMetamodel_ModelingMetamodel_Instance :
 Lemma ATOM_invert : 
   forall (atcl_arg: ATOMMetamodel_Class) (t1 t2: ATOMMetamodel_getTypeByClass atcl_arg), 
     Build_ATOMMetamodel_Object atcl_arg t1 = Build_ATOMMetamodel_Object atcl_arg t2 -> t1 = t2.
-Admitted.
+Proof.
+  intros.
+  Tactics.dep_inversion H. assumption.
+Qed.

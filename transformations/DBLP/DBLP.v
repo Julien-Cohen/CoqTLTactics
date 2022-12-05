@@ -16,11 +16,13 @@ Require Import PeanoNat.
 Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 
-Require Import core.utils.Utils.
-Require Import core.Metamodel.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
-Require Import core.utils.CpdtTactics.
+From core Require Import 
+  utils.Utils
+  Metamodel
+  modeling.ModelingMetamodel
+  Model
+  utils.CpdtTactics
+  Tactics.
 
 (* Base types *)
 
@@ -784,7 +786,7 @@ Fixpoint DBLPMetamodel_Record_downcastArticle (re_arg : Record) (l : list DBLPMe
 end.
 
 Definition Record_downcastArticle (re_arg : Record) (m : DBLPModel) : option Article :=
-  DBLPMetamodel_Record_downcastArticle re_arg (@allModelElements _ _ m).
+  DBLPMetamodel_Record_downcastArticle re_arg m.(modelElements).
 
 Fixpoint DBLPMetamodel_Record_downcastBook (re_arg : Record) (l : list DBLPMetamodel_Object) : option Book := 
   match l with
@@ -795,7 +797,7 @@ Fixpoint DBLPMetamodel_Record_downcastBook (re_arg : Record) (l : list DBLPMetam
 end.
 
 Definition Record_downcastBook (re_arg : Record) (m : DBLPModel) : option Book :=
-  DBLPMetamodel_Record_downcastBook re_arg (@allModelElements _ _ m).
+  DBLPMetamodel_Record_downcastBook re_arg m.(modelElements).
 
 Fixpoint DBLPMetamodel_Record_downcastInCollection (re_arg : Record) (l : list DBLPMetamodel_Object) : option InCollection := 
   match l with
@@ -806,7 +808,7 @@ Fixpoint DBLPMetamodel_Record_downcastInCollection (re_arg : Record) (l : list D
 end.
 
 Definition Record_downcastInCollection (re_arg : Record) (m : DBLPModel) : option InCollection :=
-  DBLPMetamodel_Record_downcastInCollection re_arg (@allModelElements _ _ m).
+  DBLPMetamodel_Record_downcastInCollection re_arg m.(modelElements).
 
 Fixpoint DBLPMetamodel_Record_downcastInProceedings (re_arg : Record) (l : list DBLPMetamodel_Object) : option InProceedings := 
   match l with
@@ -817,7 +819,7 @@ Fixpoint DBLPMetamodel_Record_downcastInProceedings (re_arg : Record) (l : list 
 end.
 
 Definition Record_downcastInProceedings (re_arg : Record) (m : DBLPModel) : option InProceedings :=
-  DBLPMetamodel_Record_downcastInProceedings re_arg (@allModelElements _ _ m).
+  DBLPMetamodel_Record_downcastInProceedings re_arg m.(modelElements).
 
 Fixpoint DBLPMetamodel_Record_downcastMastersThesis (re_arg : Record) (l : list DBLPMetamodel_Object) : option MastersThesis := 
   match l with
@@ -828,7 +830,7 @@ Fixpoint DBLPMetamodel_Record_downcastMastersThesis (re_arg : Record) (l : list 
 end.
 
 Definition Record_downcastMastersThesis (re_arg : Record) (m : DBLPModel) : option MastersThesis :=
-  DBLPMetamodel_Record_downcastMastersThesis re_arg (@allModelElements _ _ m).
+  DBLPMetamodel_Record_downcastMastersThesis re_arg m.(modelElements).
 
 Fixpoint DBLPMetamodel_Record_downcastProceedings (re_arg : Record) (l : list DBLPMetamodel_Object) : option Proceedings := 
   match l with
@@ -839,7 +841,7 @@ Fixpoint DBLPMetamodel_Record_downcastProceedings (re_arg : Record) (l : list DB
 end.
 
 Definition Record_downcastProceedings (re_arg : Record) (m : DBLPModel) : option Proceedings :=
-  DBLPMetamodel_Record_downcastProceedings re_arg (@allModelElements _ _ m).
+  DBLPMetamodel_Record_downcastProceedings re_arg m.(modelElements).
 
 Fixpoint DBLPMetamodel_Record_downcastPhDThesis (re_arg : Record) (l : list DBLPMetamodel_Object) : option PhDThesis := 
   match l with
@@ -850,7 +852,7 @@ Fixpoint DBLPMetamodel_Record_downcastPhDThesis (re_arg : Record) (l : list DBLP
 end.
 
 Definition Record_downcastPhDThesis (re_arg : Record) (m : DBLPModel) : option PhDThesis :=
-  DBLPMetamodel_Record_downcastPhDThesis re_arg (@allModelElements _ _ m).
+  DBLPMetamodel_Record_downcastPhDThesis re_arg m.(modelElements).
 
 Fixpoint DBLPMetamodel_Record_downcastWww (re_arg : Record) (l : list DBLPMetamodel_Object) : option Www := 
   match l with
@@ -861,7 +863,7 @@ Fixpoint DBLPMetamodel_Record_downcastWww (re_arg : Record) (l : list DBLPMetamo
 end.
 
 Definition Record_downcastWww (re_arg : Record) (m : DBLPModel) : option Www :=
-  DBLPMetamodel_Record_downcastWww re_arg (@allModelElements _ _ m).
+  DBLPMetamodel_Record_downcastWww re_arg m.(modelElements).
 
 
 
@@ -875,7 +877,7 @@ match l with
 end.
 
 Definition Record_getAuthors (re_arg : Record) (m : DBLPModel) : option (list Author) :=
-  Record_getAuthorsOnLinks re_arg (@allModelLinks _ _ m).
+  Record_getAuthorsOnLinks re_arg m.(modelLinks).
   
 Definition Record_getAuthorsObjects (re_arg : Record) (m : DBLPModel) : option (list DBLPMetamodel_Object) :=
   match Record_getAuthors re_arg m with
@@ -892,7 +894,7 @@ match l with
 end.
 
 Definition Article_getJournal (ar_arg : Article) (m : DBLPModel) : option (Journal) :=
-  Article_getJournalOnLinks ar_arg (@allModelLinks _ _ m).
+  Article_getJournalOnLinks ar_arg m.(modelLinks).
   
 Definition Article_getJournalObject (ar_arg : Article) (m : DBLPModel) : option (DBLPMetamodel_Object) :=
   match Article_getJournal ar_arg m with
@@ -909,7 +911,7 @@ match l with
 end.
 
 Definition Author_getRecords (au_arg : Author) (m : DBLPModel) : option (list Record) :=
-  Author_getRecordsOnLinks au_arg (@allModelLinks _ _ m).
+  Author_getRecordsOnLinks au_arg m.(modelLinks).
   
 Definition Author_getRecordsObjects (au_arg : Author) (m : DBLPModel) : option (list DBLPMetamodel_Object) :=
   match Author_getRecords au_arg m with
@@ -926,7 +928,7 @@ match l with
 end.
 
 Definition Journal_getArticles (jo_arg : Journal) (m : DBLPModel) : option (list Article) :=
-  Journal_getArticlesOnLinks jo_arg (@allModelLinks _ _ m).
+  Journal_getArticlesOnLinks jo_arg m.(modelLinks).
   
 Definition Journal_getArticlesObjects (jo_arg : Journal) (m : DBLPModel) : option (list DBLPMetamodel_Object) :=
   match Journal_getArticles jo_arg m with
@@ -943,7 +945,7 @@ match l with
 end.
 
 Definition Book_getPublisher (bo_arg : Book) (m : DBLPModel) : option (Publisher) :=
-  Book_getPublisherOnLinks bo_arg (@allModelLinks _ _ m).
+  Book_getPublisherOnLinks bo_arg m.(modelLinks).
   
 Definition Book_getPublisherObject (bo_arg : Book) (m : DBLPModel) : option (DBLPMetamodel_Object) :=
   match Book_getPublisher bo_arg m with
@@ -960,7 +962,7 @@ match l with
 end.
 
 Definition InCollection_getEditors (in_arg : InCollection) (m : DBLPModel) : option (list Editor) :=
-  InCollection_getEditorsOnLinks in_arg (@allModelLinks _ _ m).
+  InCollection_getEditorsOnLinks in_arg m.(modelLinks).
   
 Definition InCollection_getEditorsObjects (in_arg : InCollection) (m : DBLPModel) : option (list DBLPMetamodel_Object) :=
   match InCollection_getEditors in_arg m with
@@ -976,7 +978,7 @@ match l with
 end.
 
 Definition InCollection_getSponsoredBy (in_arg : InCollection) (m : DBLPModel) : option (Organization) :=
-  InCollection_getSponsoredByOnLinks in_arg (@allModelLinks _ _ m).
+  InCollection_getSponsoredByOnLinks in_arg m.(modelLinks).
   
 Definition InCollection_getSponsoredByObject (in_arg : InCollection) (m : DBLPModel) : option (DBLPMetamodel_Object) :=
   match InCollection_getSponsoredBy in_arg m with
@@ -992,7 +994,7 @@ match l with
 end.
 
 Definition InCollection_getPublisher (in_arg : InCollection) (m : DBLPModel) : option (Publisher) :=
-  InCollection_getPublisherOnLinks in_arg (@allModelLinks _ _ m).
+  InCollection_getPublisherOnLinks in_arg m.(modelLinks).
   
 Definition InCollection_getPublisherObject (in_arg : InCollection) (m : DBLPModel) : option (DBLPMetamodel_Object) :=
   match InCollection_getPublisher in_arg m with
@@ -1009,7 +1011,7 @@ match l with
 end.
 
 Definition InProceedings_getEditors (in_arg : InProceedings) (m : DBLPModel) : option (list Editor) :=
-  InProceedings_getEditorsOnLinks in_arg (@allModelLinks _ _ m).
+  InProceedings_getEditorsOnLinks in_arg m.(modelLinks).
   
 Definition InProceedings_getEditorsObjects (in_arg : InProceedings) (m : DBLPModel) : option (list DBLPMetamodel_Object) :=
   match InProceedings_getEditors in_arg m with
@@ -1025,7 +1027,7 @@ match l with
 end.
 
 Definition InProceedings_getOrganization (in_arg : InProceedings) (m : DBLPModel) : option (Organization) :=
-  InProceedings_getOrganizationOnLinks in_arg (@allModelLinks _ _ m).
+  InProceedings_getOrganizationOnLinks in_arg m.(modelLinks).
   
 Definition InProceedings_getOrganizationObject (in_arg : InProceedings) (m : DBLPModel) : option (DBLPMetamodel_Object) :=
   match InProceedings_getOrganization in_arg m with
@@ -1041,7 +1043,7 @@ match l with
 end.
 
 Definition InProceedings_getPublisher (in_arg : InProceedings) (m : DBLPModel) : option (Publisher) :=
-  InProceedings_getPublisherOnLinks in_arg (@allModelLinks _ _ m).
+  InProceedings_getPublisherOnLinks in_arg m.(modelLinks).
   
 Definition InProceedings_getPublisherObject (in_arg : InProceedings) (m : DBLPModel) : option (DBLPMetamodel_Object) :=
   match InProceedings_getPublisher in_arg m with
@@ -1058,7 +1060,7 @@ match l with
 end.
 
 Definition MastersThesis_getSchool (ma_arg : MastersThesis) (m : DBLPModel) : option (School) :=
-  MastersThesis_getSchoolOnLinks ma_arg (@allModelLinks _ _ m).
+  MastersThesis_getSchoolOnLinks ma_arg m.(modelLinks).
   
 Definition MastersThesis_getSchoolObject (ma_arg : MastersThesis) (m : DBLPModel) : option (DBLPMetamodel_Object) :=
   match MastersThesis_getSchool ma_arg m with
@@ -1075,7 +1077,7 @@ match l with
 end.
 
 Definition Proceedings_getEditors (pr_arg : Proceedings) (m : DBLPModel) : option (list Editor) :=
-  Proceedings_getEditorsOnLinks pr_arg (@allModelLinks _ _ m).
+  Proceedings_getEditorsOnLinks pr_arg m.(modelLinks).
   
 Definition Proceedings_getEditorsObjects (pr_arg : Proceedings) (m : DBLPModel) : option (list DBLPMetamodel_Object) :=
   match Proceedings_getEditors pr_arg m with
@@ -1091,7 +1093,7 @@ match l with
 end.
 
 Definition Proceedings_getPublisher (pr_arg : Proceedings) (m : DBLPModel) : option (Publisher) :=
-  Proceedings_getPublisherOnLinks pr_arg (@allModelLinks _ _ m).
+  Proceedings_getPublisherOnLinks pr_arg m.(modelLinks).
   
 Definition Proceedings_getPublisherObject (pr_arg : Proceedings) (m : DBLPModel) : option (DBLPMetamodel_Object) :=
   match Proceedings_getPublisher pr_arg m with
@@ -1107,7 +1109,7 @@ match l with
 end.
 
 Definition Proceedings_getSponsoredBy (pr_arg : Proceedings) (m : DBLPModel) : option (list Organization) :=
-  Proceedings_getSponsoredByOnLinks pr_arg (@allModelLinks _ _ m).
+  Proceedings_getSponsoredByOnLinks pr_arg m.(modelLinks).
   
 Definition Proceedings_getSponsoredByObjects (pr_arg : Proceedings) (m : DBLPModel) : option (list DBLPMetamodel_Object) :=
   match Proceedings_getSponsoredBy pr_arg m with
@@ -1124,7 +1126,7 @@ match l with
 end.
 
 Definition PhDThesis_getSchool (ph_arg : PhDThesis) (m : DBLPModel) : option (School) :=
-  PhDThesis_getSchoolOnLinks ph_arg (@allModelLinks _ _ m).
+  PhDThesis_getSchoolOnLinks ph_arg m.(modelLinks).
   
 Definition PhDThesis_getSchoolObject (ph_arg : PhDThesis) (m : DBLPModel) : option (DBLPMetamodel_Object) :=
   match PhDThesis_getSchool ph_arg m with
@@ -1141,7 +1143,7 @@ match l with
 end.
 
 Definition Www_getEditors (ww_arg : Www) (m : DBLPModel) : option (list Editor) :=
-  Www_getEditorsOnLinks ww_arg (@allModelLinks _ _ m).
+  Www_getEditorsOnLinks ww_arg m.(modelLinks).
   
 Definition Www_getEditorsObjects (ww_arg : Www) (m : DBLPModel) : option (list DBLPMetamodel_Object) :=
   match Www_getEditors ww_arg m with
@@ -1195,4 +1197,8 @@ Instance DBLPMetamodel_ModelingMetamodel_Instance :
 Lemma DBLP_invert : 
   forall (dbcl_arg: DBLPMetamodel_Class) (t1 t2: DBLPMetamodel_getTypeByClass dbcl_arg), 
     Build_DBLPMetamodel_Object dbcl_arg t1 = Build_DBLPMetamodel_Object dbcl_arg t2 -> t1 = t2.
-Admitted.
+Proof.
+  intros.
+  Tactics.dep_inversion H.
+  assumption.
+Qed.

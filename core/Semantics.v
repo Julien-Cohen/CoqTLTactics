@@ -63,7 +63,7 @@ Definition tracePattern (tr: Transformation) (sm : SourceModel) (sp: list Source
 
 
 Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
-  tuples_up_to_n (allModelElements sm) tr.(arity).
+  tuples_up_to_n sm.(modelElements) tr.(arity).
 
 Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
   flat_map (tracePattern tr sm) (allTuples tr sm).  

@@ -92,7 +92,7 @@ Ltac destruct_execute :=
   let H2 := fresh "H" in
   let e := fresh "sp" in
   match goal with 
-    [ H : In _ (allModelElements (execute Class2Relational _)) |- _ ] =>
+    [ H : In _ ( (execute Class2Relational _).(modelElements)) |- _ ] =>
       rewrite (core.Certification.tr_execute_in_elements Class2Relational) in H ;
       destruct H as [e [H H2]]
   end.

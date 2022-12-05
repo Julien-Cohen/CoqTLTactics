@@ -46,7 +46,7 @@ Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: lis
 Definition maxArity (tr: Transformation) : nat := Transformation_getArity tr.
 
 Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
-  tuples_up_to_n (allModelElements sm) (maxArity tr).
+  tuples_up_to_n sm.(modelElements) (maxArity tr).
 
 Definition resolveIter (tr: Transformation) (sm: SourceModel) (name: string) (sp: list SourceModelElement) (iter : nat) : option TargetModelElement :=
 let matchedRule := find (fun r:Rule => matchRuleOnPattern r sm sp) (Transformation_getRules tr) in

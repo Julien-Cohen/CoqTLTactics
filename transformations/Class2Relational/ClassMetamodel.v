@@ -218,7 +218,7 @@ Fixpoint getClassAttributesOnLinks (c : Class_t) (l : list Link) : option (list 
 
 
 Definition getClassAttributes (c : Class_t) (m : Model Element Link) : option (list Attribute_t) :=
-  getClassAttributesOnLinks c (@allModelLinks _ _ m).
+  getClassAttributesOnLinks c m.(modelLinks).
 
 Definition getClassAttributesElements (c : Class_t) (m : Model Element Link) : option (list Element) :=
   match getClassAttributes c m with

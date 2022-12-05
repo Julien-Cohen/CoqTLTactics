@@ -68,7 +68,7 @@ Definition locate (m: Model TTElem TTRef) (lv: nat) :=
   find (fun e => match (Column_Level e) with
           | None => false
           | Some n => Nat.eqb n lv
-          end) (allModelElements m).
+          end) m.(modelElements).
 
 Definition output_name (sp: list TTElem) := 
   match hd_error sp with
@@ -79,7 +79,7 @@ Definition output_name (sp: list TTElem) :=
   | _ => ""%string
   end.
 
-Definition maxLv (m: Model TTElem TTRef) := list_max (optionList2List (map Column_Level (allModelElements m))).
+Definition maxLv (m: Model TTElem TTRef) := list_max (optionList2List (map Column_Level m.(modelElements))).
 
 Fixpoint semantic (input: list nat) : nat :=
   match input with

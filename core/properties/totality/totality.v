@@ -33,7 +33,7 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
       (exists (sp : list SourceModelElement),
           In sp (allTuples tr sm) /\
           In te (instantiatePattern tr sm sp)) ->
-          In te (allModelElements (execute tr sm)).
+          In te (execute tr sm).(modelElements).
 Proof.
     apply tr_execute_in_elements.
 Qed.
@@ -61,7 +61,7 @@ forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
       (exists (sp : list SourceModelElement),
           In sp (allTuples tr sm) /\
           In tl (applyPattern tr sm sp)) -> 
-          In tl (allModelLinks (execute tr sm)) .
+          In tl (execute tr sm).(modelLinks) .
 Proof.
     apply tr_execute_in_links.
 Qed.

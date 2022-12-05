@@ -17,11 +17,13 @@ Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 Scheme Equality for option. (* equality for option type *)
 
-Require Import core.utils.Utils.
-Require Import core.Metamodel.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
-Require Import core.utils.CpdtTactics.
+From core Require Import 
+  utils.Utils
+  Metamodel
+  modeling.ModelingMetamodel
+  Model
+  utils.CpdtTactics
+  Tactics.
 
 (* Base types *)
 
@@ -198,7 +200,7 @@ match l with
 end.
 
 Definition Transition_getSource (tr_arg : Transition) (m : MooreModel) : option (State) :=
-  Transition_getSourceOnLinks tr_arg (@allModelLinks _ _ m).
+  Transition_getSourceOnLinks tr_arg m.(modelLinks).
   
 Definition Transition_getSourceObject (tr_arg : Transition) (m : MooreModel) : option (MooreMetamodel_Object) :=
   match Transition_getSource tr_arg m with
@@ -214,7 +216,7 @@ match l with
 end.
 
 Definition Transition_getTarget (tr_arg : Transition) (m : MooreModel) : option (State) :=
-  Transition_getTargetOnLinks tr_arg (@allModelLinks _ _ m).
+  Transition_getTargetOnLinks tr_arg m.(modelLinks).
   
 Definition Transition_getTargetObject (tr_arg : Transition) (m : MooreModel) : option (MooreMetamodel_Object) :=
   match Transition_getTarget tr_arg m with
@@ -263,4 +265,6 @@ Instance MooreMetamodel_ModelingMetamodel_Instance :
 Lemma Moore_invert : 
   forall (mocl_arg: MooreMetamodel_Class) (t1 t2: MooreMetamodel_getTypeByClass mocl_arg), 
     Build_MooreMetamodel_Object mocl_arg t1 = Build_MooreMetamodel_Object mocl_arg t2 -> t1 = t2.
-Admitted.
+Proof.
+  intros. Tactics.dep_inversion H. assumption.
+Qed.

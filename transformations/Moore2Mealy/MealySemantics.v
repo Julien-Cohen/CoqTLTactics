@@ -12,10 +12,10 @@ Definition MealyMetamodel_toTransitions (m: list MealyMetamodel_Object) : list T
     optionList2List (map (fun s => (MealyMetamodel_toClass TransitionClass s)) m).
 
 Definition MealyMetamodel_allStates (m: MealyModel) : list State :=
-    MealyMetamodel_toStates (allModelElements m).
+    MealyMetamodel_toStates m.(modelElements).
 
 Definition MealyMetamodel_allTransitions (m: MealyModel) : list Transition :=
-    MealyMetamodel_toTransitions (allModelElements m).
+    MealyMetamodel_toTransitions m.(modelElements).
 
 Definition initialState (m: MealyModel) : option State :=
     find (fun s => eqb "S0" (State_getName s)) (MealyMetamodel_allStates m).

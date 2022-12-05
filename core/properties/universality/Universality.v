@@ -20,10 +20,10 @@ Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel ->
   (buildTransformation 0 [
     (buildRule "rule"%string 
       (fun sm sp => match sp with nil => true | _ => false end)
-      (fun sm sp => Some (length (allModelElements (f sm))))
+      (fun sm sp => Some (length ((f sm).(modelElements))))
       [(buildOutputPatternElement "out"%string 
-         (fun i sm sp => nth_error (allModelElements (f sm)) i)
-         (fun tls i sm sp te => match i with 0 => Some (allModelLinks (f sm)) | _ => None end))
+         (fun i sm sp => nth_error ((f sm).(modelElements)) i)
+         (fun tls i sm sp te => match i with 0 => Some (f sm).(modelLinks) | _ => None end))
       ])
   ]).
 

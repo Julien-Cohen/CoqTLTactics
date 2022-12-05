@@ -37,8 +37,8 @@ Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transf
 
 Definition TargetModel_equiv {tc: TransformationConfiguration} (m1 m2: TargetModel) :=
   forall (e: TargetModelElement) (l: TargetModelLink),
-   (In e (allModelElements m1) <-> In e (allModelElements m2)) /\
-    (In l (allModelLinks m1) <-> In l (allModelLinks m2)).
+   (In e m1.(modelElements) <-> In e m2.(modelElements)) /\
+    (In l m1.(modelLinks) <-> In l m2.(modelLinks)).
 
 
 

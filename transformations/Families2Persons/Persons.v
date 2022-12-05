@@ -179,7 +179,7 @@ Fixpoint PersonsMetamodel_Person_downcastMale (pe_arg : Person) (l : list Person
 end.
 
 Definition Person_downcastMale (pe_arg : Person) (m : PersonsModel) : option Male :=
-  PersonsMetamodel_Person_downcastMale pe_arg (@allModelElements _ _ m).
+  PersonsMetamodel_Person_downcastMale pe_arg m.(modelElements).
 
 Fixpoint PersonsMetamodel_Person_downcastFemale (pe_arg : Person) (l : list PersonsMetamodel_Object) : option Female := 
   match l with
@@ -190,7 +190,7 @@ Fixpoint PersonsMetamodel_Person_downcastFemale (pe_arg : Person) (l : list Pers
 end.
 
 Definition Person_downcastFemale (pe_arg : Person) (m : PersonsModel) : option Female :=
-  PersonsMetamodel_Person_downcastFemale pe_arg (@allModelElements _ _ m).
+  PersonsMetamodel_Person_downcastFemale pe_arg m.(modelElements).
 
 
 
@@ -240,4 +240,9 @@ Instance PersonsMetamodel_ModelingMetamodel_Instance :
 Lemma Persons_invert : 
   forall (pecl_arg: PersonsMetamodel_Class) (t1 t2: PersonsMetamodel_getTypeByClass pecl_arg), 
     Build_PersonsMetamodel_Object pecl_arg t1 = Build_PersonsMetamodel_Object pecl_arg t2 -> t1 = t2.
-Admitted.
+Proof.
+  intros c m1 m2 E.
+  inversion E. 
+  apply Eqdep.EqdepTheory.inj_pair2.
+  exact H0.
+Qed.

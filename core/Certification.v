@@ -41,7 +41,7 @@ Instance tc : TransformationConfiguration := {
 
 Lemma tr_execute_in_elements :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-  In te (allModelElements (execute tr sm)) <->
+  In te (execute tr sm).(modelElements) <->
   (exists (sp : list SourceModelElement),
       In sp (allTuples tr sm) /\
       In te (instantiatePattern tr sm sp)).
@@ -52,7 +52,7 @@ Qed.
 
 Lemma tr_execute_in_links :
 forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
-  In tl (allModelLinks (execute tr sm)) <->
+  In tl (execute tr sm).(modelLinks) <->
   (exists (sp : list SourceModelElement),
       In sp (allTuples tr sm) /\
       In tl (applyPattern tr sm sp)).
@@ -187,7 +187,7 @@ Lemma maxArity_length:
 
 Lemma allTuples_incl:
   forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
-  In sp (allTuples tr sm) -> incl sp (allModelElements sm).
+  In sp (allTuples tr sm) -> incl sp sm.(modelElements).
 Proof.
   intros.
   unfold allTuples in H. simpl in H. 
@@ -197,7 +197,7 @@ Qed.
 
 Lemma allTuples_incl_length:
   forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
-  incl sp (allModelElements sm) -> 
+  incl sp sm.(modelElements) -> 
   length sp <= tr.(arity) ->
   In sp (allTuples tr sm).
 Proof.
@@ -218,7 +218,7 @@ apply Gt.gt_not_le in c.
 revert c.
 apply contraposition.
 unfold allTuples.
-specialize (tuple_length sp (allModelElements sm) tr.(arity)).
+specialize (tuple_length sp sm.(modelElements) tr.(arity)).
 crush.
 Qed.
 

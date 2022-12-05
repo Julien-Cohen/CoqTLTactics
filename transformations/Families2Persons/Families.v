@@ -17,11 +17,13 @@ Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 Scheme Equality for option. (* equality for option type *)
 
-Require Import core.utils.Utils.
-Require Import core.Metamodel.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
-Require Import core.utils.CpdtTactics.
+From core Require Import 
+  utils.Utils
+  Metamodel
+  modeling.ModelingMetamodel
+  Model
+  utils.CpdtTactics
+  Tactics.
 
 (* Base types *)
 
@@ -277,7 +279,7 @@ match l with
 end.
 
 Definition Family_getFfather (fa_arg : Family) (m : FamiliesModel) : option (Member) :=
-  Family_getFfatherOnLinks fa_arg (@allModelLinks _ _ m).
+  Family_getFfatherOnLinks fa_arg m.(modelLinks).
   
 Definition Family_getFfatherObject (fa_arg : Family) (m : FamiliesModel) : option (FamiliesMetamodel_Object) :=
   match Family_getFfather fa_arg m with
@@ -293,7 +295,7 @@ match l with
 end.
 
 Definition Family_getFmother (fa_arg : Family) (m : FamiliesModel) : option (Member) :=
-  Family_getFmotherOnLinks fa_arg (@allModelLinks _ _ m).
+  Family_getFmotherOnLinks fa_arg m.(modelLinks).
   
 Definition Family_getFmotherObject (fa_arg : Family) (m : FamiliesModel) : option (FamiliesMetamodel_Object) :=
   match Family_getFmother fa_arg m with
@@ -309,7 +311,7 @@ match l with
 end.
 
 Definition Family_getFsons (fa_arg : Family) (m : FamiliesModel) : option (list Member) :=
-  Family_getFsonsOnLinks fa_arg (@allModelLinks _ _ m).
+  Family_getFsonsOnLinks fa_arg m.(modelLinks).
   
 Definition Family_getFsonsObjects (fa_arg : Family) (m : FamiliesModel) : option (list FamiliesMetamodel_Object) :=
   match Family_getFsons fa_arg m with
@@ -325,7 +327,7 @@ match l with
 end.
 
 Definition Family_getFdaughters (fa_arg : Family) (m : FamiliesModel) : option (list Member) :=
-  Family_getFdaughtersOnLinks fa_arg (@allModelLinks _ _ m).
+  Family_getFdaughtersOnLinks fa_arg m.(modelLinks).
   
 Definition Family_getFdaughtersObjects (fa_arg : Family) (m : FamiliesModel) : option (list FamiliesMetamodel_Object) :=
   match Family_getFdaughters fa_arg m with
@@ -342,7 +344,7 @@ match l with
 end.
 
 Definition Member_getFamilyFather (me_arg : Member) (m : FamiliesModel) : option (Family) :=
-  Member_getFamilyFatherOnLinks me_arg (@allModelLinks _ _ m).
+  Member_getFamilyFatherOnLinks me_arg m.(modelLinks).
   
 Definition Member_getFamilyFatherObject (me_arg : Member) (m : FamiliesModel) : option (FamiliesMetamodel_Object) :=
   match Member_getFamilyFather me_arg m with
@@ -358,7 +360,7 @@ match l with
 end.
 
 Definition Member_getFamilyMother (me_arg : Member) (m : FamiliesModel) : option (Family) :=
-  Member_getFamilyMotherOnLinks me_arg (@allModelLinks _ _ m).
+  Member_getFamilyMotherOnLinks me_arg m.(modelLinks).
   
 Definition Member_getFamilyMotherObject (me_arg : Member) (m : FamiliesModel) : option (FamiliesMetamodel_Object) :=
   match Member_getFamilyMother me_arg m with
@@ -374,7 +376,7 @@ match l with
 end.
 
 Definition Member_getFamilySon (me_arg : Member) (m : FamiliesModel) : option (Family) :=
-  Member_getFamilySonOnLinks me_arg (@allModelLinks _ _ m).
+  Member_getFamilySonOnLinks me_arg m.(modelLinks).
   
 Definition Member_getFamilySonObject (me_arg : Member) (m : FamiliesModel) : option (FamiliesMetamodel_Object) :=
   match Member_getFamilySon me_arg m with
@@ -390,7 +392,7 @@ match l with
 end.
 
 Definition Member_getFamilyDaughter (me_arg : Member) (m : FamiliesModel) : option (Family) :=
-  Member_getFamilyDaughterOnLinks me_arg (@allModelLinks _ _ m).
+  Member_getFamilyDaughterOnLinks me_arg m.(modelLinks).
   
 Definition Member_getFamilyDaughterObject (me_arg : Member) (m : FamiliesModel) : option (FamiliesMetamodel_Object) :=
   match Member_getFamilyDaughter me_arg m with
@@ -440,4 +442,6 @@ Instance FamiliesMetamodel_ModelingMetamodel_Instance :
 Lemma Families_invert : 
   forall (facl_arg: FamiliesMetamodel_Class) (t1 t2: FamiliesMetamodel_getTypeByClass facl_arg), 
     Build_FamiliesMetamodel_Object facl_arg t1 = Build_FamiliesMetamodel_Object facl_arg t2 -> t1 = t2.
-Admitted.
+Proof.
+  intros. Tactics.dep_inversion H. assumption.
+Qed.
