@@ -50,14 +50,19 @@ Fixpoint search (p: P) (i: IPair) : option Node :=
   end.
 
 (* semantics of moore machine  *)
-Fixpoint eval (p: P) (q0: Node) (I: list nat) : list nat :=
+Fixpoint eval (p: P) (q0: Node) (I: list nat) : option (list nat) :=
   match I with 
-  | nil => nil
+  | nil => Some nil
   | i :: I' => 
       
       match search p (Ipr q0 i) with
-      | None => nil (* FIXME: error ? *)
-      | Some (node a b) => b :: eval p (node a b) I'  
+      | None => None 
+      | Some (node a b) => 
+          (*res <- eval p (node a b) I' ; return res*)
+          match eval p (node a b) I' with 
+          | Some res => Some (b :: res) 
+          | None => None
+          end 
       end
   end.
 
@@ -88,13 +93,17 @@ Fixpoint search' (p: P') (i: IPair) : option OPair :=
 end.
 
 (* semantics of mealy machine *)
-Fixpoint eval' (p: P') (q0: Node) (I: list nat) : list nat :=
+Fixpoint eval' (p: P') (q0: Node) (I: list nat) : option (list nat) :=
   match I with 
-  | nil => nil
+  | nil => Some nil
   | i :: I' => 
       match search' p (Ipr q0 i) with
-      | None => nil
-      | Some (Opr a b) => b :: eval' p a I'  
+      | None => None
+      | Some (Opr a b) => 
+          match eval' p a I' with
+          | Some res =>Some (b :: res)
+          | None => None
+          end  
       end
   end.
 
@@ -160,7 +169,7 @@ Proof.
     + (* input pair is matched by moore machine *)
       destruct n.
       replace (search' (compile p) (Ipr q0 i)) with (Some (Opr (node n n0) n0)).
-      * f_equal ; auto.
+      * rewrite IHI. reflexivity. 
       * symmetry ; apply compile_s_correct_ca2. assumption. 
     + (* input pair is not matched by moore machine *)
       replace (search' (compile p) (Ipr q0 i)) with (@None OPair).
