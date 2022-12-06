@@ -15,9 +15,9 @@ Record Model (MM:Metamodel) :=
     modelLinks : list MM.(ModelLink);
   }.
 
-Definition Model_beq {MM: Metamodel} (ML_beq: MM.(ModelLink) -> MM.(ModelLink) -> bool) (m1 m2: Model MM) :=
+Definition Model_beq {MM: Metamodel} (m1 m2: Model MM) :=
   andb (list_beq MM.(elements_eqdec) m1.(modelElements) m2.(modelElements))
-  (list_beq ML_beq m1.(modelLinks) m2.(modelLinks)).
+  (list_beq MM.(links_eqdec) m1.(modelLinks) m2.(modelLinks)).
 
 Definition Model_wellFormed {MM: Metamodel} (m: Model MM): Prop :=
   m.(modelElements) = nil -> m.(modelLinks) = nil.

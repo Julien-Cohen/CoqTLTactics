@@ -2,15 +2,15 @@
 Require Import core.Model.
 Require Import core.Metamodel.
 
-Class Sum (SumType: Type) (SubTypeName: Type):=
+Class Sum (SumType: Type) (K: Type):=
   {
-    denoteSubType: SubTypeName -> Set;
-    toSubType: forall (t: SubTypeName), SumType -> option (denoteSubType t);
-    toSumType: forall (t: SubTypeName), (denoteSubType t) -> SumType;
+    denoteSubType: K -> Set;
+    toSubType: forall (k: K), SumType -> option (denoteSubType k);
+    toSumType: forall (k: K), (denoteSubType k) -> SumType;
 
   }.
 
-Class ModelingMetamodel `(mm : Metamodel) :=
+Class ModelingMetamodel (mm : Metamodel) :=
 {
     ModelClass: Type;
     ModelReference: Type;

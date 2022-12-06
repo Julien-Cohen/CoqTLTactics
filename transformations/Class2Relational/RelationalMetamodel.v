@@ -234,7 +234,7 @@ Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t).
   exact (Some c). 
 Defined.
 
-Definition RelationalM : Metamodel :=
+Definition RelationalMM : Metamodel :=
   {|
     ModelElement := Element;
     ModelLink := Link;
@@ -267,7 +267,7 @@ Fixpoint getTableColumnsOnLinks (t : Table_t) (l : list Link) : option (list Col
   | nil => None
   end.
 
-Definition getTableColumns (t : Table_t) (m : Model RelationalM) : option (list Column_t) :=
+Definition getTableColumns (t : Table_t) (m : Model RelationalMM) : option (list Column_t) :=
 getTableColumnsOnLinks t m.(modelLinks).
 
 Fixpoint getColumnReferenceOnLinks (c : Column_t) (l : list Link) : option Table_t :=
@@ -277,7 +277,7 @@ Fixpoint getColumnReferenceOnLinks (c : Column_t) (l : list Link) : option Table
   | nil => None
   end.
 
-Definition getColumnReference (c : Column_t) (m : Model RelationalM) : option Table_t := getColumnReferenceOnLinks c m.(modelLinks).
+Definition getColumnReference (c : Column_t) (m : Model RelationalMM) : option Table_t := getColumnReferenceOnLinks c m.(modelLinks).
 
 Definition bottomRelationalMetamodel_Class (c: ElementKind) : (getTypeByEKind c) :=
   match c with
@@ -317,11 +317,11 @@ Qed.
   
 
   #[export]
-  Instance RelationalMetamodel : ModelingMetamodel RelationalM :=
+  Instance RelationalMetamodel : ModelingMetamodel RelationalMM :=
   { 
       elements := RelationalElementSum;
       links := RelationalLinkSum;
   }.
 
-Definition RelationalModel := Model RelationalM.
+Definition RelationalModel := Model RelationalMM.
 

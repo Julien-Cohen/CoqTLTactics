@@ -192,7 +192,7 @@ Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
 
 
 
-Definition ClassM : Metamodel :=
+Definition ClassMM : Metamodel :=
 {|
   ModelElement := Element ;
   ModelLink := Link ;
@@ -230,10 +230,10 @@ Fixpoint getClassAttributesOnLinks (c : Class_t) (l : list Link) : option (list 
 
 
 
-Definition getClassAttributes (c : Class_t) (m : Model ClassM) : option (list Attribute_t) :=
+Definition getClassAttributes (c : Class_t) (m : Model ClassMM) : option (list Attribute_t) :=
   getClassAttributesOnLinks c m.(modelLinks).
 
-Definition getClassAttributesElements (c : Class_t) (m : Model ClassM) : option (list Element) :=
+Definition getClassAttributesElements (c : Class_t) (m : Model ClassMM) : option (list Element) :=
   match getClassAttributes c m with
   | Some l => Some (map AttributeElement l)
   | None => None
@@ -249,11 +249,11 @@ Fixpoint getAttributeTypeOnLinks (a : Attribute_t) (l : list Link) : option Clas
   | nil => None
   end.
 
-Definition getAttributeType (a : Attribute_t) (m : Model ClassM) : option Class_t :=
+Definition getAttributeType (a : Attribute_t) (m : Model ClassMM) : option Class_t :=
   getAttributeTypeOnLinks a m.(modelLinks).
 
 
-Definition getAttributeTypeElement (a : Attribute_t) (m : Model ClassM) : option Element :=
+Definition getAttributeTypeElement (a : Attribute_t) (m : Model ClassMM) : option Element :=
   match getAttributeType a m with
   | Some c => Some (ClassElement c)
   | None => None
@@ -287,13 +287,13 @@ Instance ClassLinkSum : Sum Link LinkKind :=
 
 
 #[export]
-Instance ClassMetamodel : ModelingMetamodel ClassM :=
+Instance ClassMetamodel : ModelingMetamodel ClassMM :=
 { 
     elements := ClassElementSum;
     links := ClassLinkSum; 
 }.
 
-Definition ClassModel := Model ClassM.
+Definition ClassModel := Model ClassMM.
 
 
 (* Useful lemmas *)

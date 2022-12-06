@@ -37,10 +37,10 @@ Require Import transformations.Class2Relational.tests.PersonModel.
 *)
 
 Compute 
-  (Model_beq (MM:= RelationalM) beq_Link 
+  (Model_beq   
     (execute Class2Relational PersonModel) 
     (Build_Model  
-       RelationalM 
+       RelationalMM 
        (RelationalMetamodel.TableElement
           (Build_Table_t 0 "Person")
           :: RelationalMetamodel.ColumnElement
