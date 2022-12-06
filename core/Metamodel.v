@@ -1,5 +1,5 @@
 (** * Metamodel **)
-Require Import core.Model.
+
 
 Class Metamodel :=
 {
@@ -8,5 +8,4 @@ Class Metamodel :=
     
     elements_eqdec: ModelElement -> ModelElement -> bool; (* FIXME : no semantics with respect to equality *)
 
-    InstanceModel := Model ModelElement ModelLink;
 }.
