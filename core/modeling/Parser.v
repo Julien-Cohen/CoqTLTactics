@@ -15,16 +15,16 @@ Section Parser.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.
 
-Definition parseOutputPatternLink (intypes: list SourceModelClass) (outtype: TargetModelClass)
+Definition parseOutputPatternLink (intypes: list SourceEKind) (outtype: TargetEKind)
   (cr: ConcreteOutputPatternLink intypes outtype) := 
     (makeLink intypes outtype cr.(o_OutRef) cr.(o_outpat)).
 
-Definition parseOutputPatternLinks (intypes: list SourceModelClass) (outtype: TargetModelClass)
+Definition parseOutputPatternLinks (intypes: list SourceEKind) (outtype: TargetEKind)
   (cr: list (ConcreteOutputPatternLink intypes outtype)) := 
     fun (tls:list TraceLink) (iter:nat) (sm:SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) =>
     Some (flat_map (fun (x: ConcreteOutputPatternLink intypes outtype) => optionListToList (parseOutputPatternLink intypes outtype x tls iter sm sp te)) cr).
 
-Definition parseOutputPatternElement (intypes: list SourceModelClass) (co: ConcreteOutputPatternElement intypes) : OutputPatternElement :=
+Definition parseOutputPatternElement (intypes: list SourceEKind) (co: ConcreteOutputPatternElement intypes) : OutputPatternElement :=
   buildOutputPatternElement
     co.(e_name)
     (makeElement intypes co.(e_OutType) co.(e_outpat))
@@ -47,7 +47,7 @@ Definition parseRule(cr: ConcreteRule) : Rule :=
 
 Definition parse(ct: ConcreteTransformation) : Transformation :=
   buildTransformation 
-    (max (map (length (A:=SourceModelClass)) (map r_InTypes (ConcreteTransformation_getConcreteRules ct))))
+    (max (map (length (A:=SourceEKind)) (map r_InTypes (ConcreteTransformation_getConcreteRules ct))))
     (map parseRule (ConcreteTransformation_getConcreteRules ct)).
 
 End Parser.

@@ -15,16 +15,16 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 (** Convert a list of meta-types into a function type. *)
 (** Example : [denoteSignature [A;B;C] D = {A}->{B}->{C}->D .] *) 
-Fixpoint denoteSignature (l : list SourceModelClass) (r : Type) : Type :=
+Fixpoint denoteSignature (l : list SourceEKind) (r : Type) : Type :=
   match l with
   | nil => r
-  | l0 :: l' => denoteModelClass l0 -> denoteSignature l' r
+  | l0 :: l' => denoteEKind l0 -> denoteSignature l' r
   end.
 
 
 Fixpoint wrapOption 
   {T : Type} 
-  (l : list SourceModelClass) 
+  (l : list SourceEKind) 
   (imp : denoteSignature l T)
   (sl : list SourceModelElement) {struct l} : 
   option T :=
@@ -36,7 +36,7 @@ Fixpoint wrapOption
                  
   | (k :: rk, e::re) =>
       fun (f : denoteSignature (k :: rk) T) =>
-        match toModelClass k e with
+        match toEKind k e with
         | Some x => wrapOption (T:=T) rk (f x) re
         | None => None 
         end
@@ -61,17 +61,17 @@ Proof.
   { reflexivity. }
   { reflexivity. }
   { simpl.
-    destruct (toModelClass a s).
+    destruct (toEKind a s).
     + apply IHl1. contradict L. simpl. congruence.
     + reflexivity.
   }
 Qed.
 
-Fixpoint wrapOption' (l:list SourceModelClass) (sl : list SourceModelElement) : bool :=
+Fixpoint wrapOption' (l:list SourceEKind) (sl : list SourceModelElement) : bool :=
   match (l, sl) with
   | (nil, nil) => true
   | (k1::r1, e2::r2) => 
-      match toModelClass k1 e2 with
+      match toEKind k1 e2 with
       | Some _ => wrapOption' r1 r2
       | None => false
       end
@@ -90,13 +90,13 @@ Proof.
   { reflexivity. }
   { reflexivity. }
   { simpl.
-    destruct (toModelClass a s).
+    destruct (toEKind a s).
     + apply IHl1. contradict L. simpl. congruence.
     + reflexivity.
   }
 Qed.
 
-Definition wrapList {T : Type} (l : list SourceModelClass)
+Definition wrapList {T : Type} (l : list SourceEKind)
   (imp : denoteSignature l (list T)) :
   (list SourceModelElement) -> list T.
 Proof.
@@ -105,14 +105,14 @@ Proof.
   - exact imp.
   - exact nil.
   - exact nil.
-  - destruct (toModelClass l0 s0) as [x | ].
+  - destruct (toEKind l0 s0) as [x | ].
     + exact (Hl l' (imp x) sl').
     + exact nil.
 Defined.
 
 Definition wrapOptionElement
-  (l : list SourceModelClass) (t : TargetModelClass)
-  (imp : denoteSignature l (denoteModelClass t)) :
+  (l : list SourceEKind) (t : TargetEKind)
+  (imp : denoteSignature l (denoteEKind t)) :
   (list SourceModelElement) -> option TargetModelElement.
 Proof.
   revert l imp. fix Hl 1. intros l imp sl.
@@ -120,20 +120,20 @@ Proof.
   - exact (Some (toModelElement t imp)).
   - exact None.
   - exact None.
-  - exact (x0 <- toModelClass l0 s0; Hl l' (imp x0) sl').
+  - exact (x0 <- toEKind l0 s0; Hl l' (imp x0) sl').
 Defined.
 
 Definition wrapOptionLink
-  (l : list SourceModelClass) (t : TargetModelClass) (r : TargetModelReference)
-  (imp : denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
+  (l : list SourceEKind) (t : TargetEKind) (r : TargetLKind)
+  (imp : denoteSignature l (denoteEKind t -> option (denoteLKind r))) :
   (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink).
 Proof.
   revert l imp. fix Hl 1. intros l imp sl v.
   destruct l as [ | l0 l'], sl as [ | s0 sl'].
-  - refine (xv <- toModelClass t v; xr <- imp xv; return [toModelLink r xr]).
+  - refine (xv <- toEKind t v; xr <- imp xv; return [toModelLink r xr]).
   - exact None.
   - exact None.
-  - exact (x0 <- toModelClass l0 s0; Hl l' (imp x0) sl' v).
+  - exact (x0 <- toEKind l0 s0; Hl l' (imp x0) sl' v).
 Defined.
 
 Definition GuardFunction : Type :=
@@ -147,35 +147,35 @@ Definition drop_option_to_bool a :=
   end.
 
 Definition makeGuard 
-  (l : list SourceModelClass)
+  (l : list SourceEKind)
   (imp : SourceModel -> denoteSignature l bool) :
   GuardFunction :=
   fun sm => fun s => drop_option_to_bool (wrapOption l (imp sm) s).
 (* END FIXME *)
 
-Definition makeEmptyGuard (l : list SourceModelClass) : GuardFunction :=
+Definition makeEmptyGuard (l : list SourceEKind) : GuardFunction :=
   fun sm => wrapOption' l.
 
 Definition IteratorFunction : Type :=
   SourceModel -> (list SourceModelElement) -> option nat.
 
-Definition makeIterator (l : list SourceModelClass)
+Definition makeIterator (l : list SourceEKind)
   (imp : SourceModel -> denoteSignature l nat) :
   IteratorFunction :=
   fun sm => wrapOption l (imp sm).
 
 Definition ElementFunction : Type :=
   nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement.
-Definition makeElement (l : list SourceModelClass) (t : TargetModelClass)
-  (imp : nat -> SourceModel -> denoteSignature l (denoteModelClass t)) :
+Definition makeElement (l : list SourceEKind) (t : TargetEKind)
+  (imp : nat -> SourceModel -> denoteSignature l (denoteEKind t)) :
   ElementFunction :=
   fun it sm => wrapOptionElement l t (imp it sm).
 
 Definition LinkFunction : Type :=
   list TraceLink
   -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink).
-Definition makeLink (l : list SourceModelClass) (t : TargetModelClass) (r : TargetModelReference)
-  (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
+Definition makeLink (l : list SourceEKind) (t : TargetEKind) (r : TargetLKind)
+  (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteEKind t -> option (denoteLKind r))) :
   LinkFunction :=
   fun mt it sm => wrapOptionLink l t r (imp mt it sm).
 

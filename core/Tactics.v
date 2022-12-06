@@ -154,9 +154,9 @@ Proof.
     destruct r_guard ; simpl.
     { 
       unfold ConcreteExpressions.makeGuard. simpl.
-      destruct (toModelClass s e1) ; reflexivity.
+      destruct (toEKind s e1) ; reflexivity.
     }
-    { destruct (toModelClass s e1) ; reflexivity. }
+    { destruct (toEKind s e1) ; reflexivity. }
   }
 Qed.
 

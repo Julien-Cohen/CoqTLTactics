@@ -43,32 +43,32 @@ Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: Model
   (t: TransformationEngine ts) :=
   {
     resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
-             (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat),
-        option (list (denoteModelClass type));
+             (type: TargetEKind) (sps: list(list SourceModelElement)) (iter: nat),
+        option (list (denoteEKind type));
     resolve: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
-             (type: TargetModelClass) (sp: list SourceModelElement) (iter : nat), option (denoteModelClass type);
+             (type: TargetEKind) (sp: list SourceModelElement) (iter : nat), option (denoteEKind type);
 
     (** ** Theorems *)
 
     tr_resolveAll_in:
     forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-      (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
-      (te: denoteModelClass type),
-      (exists tes: list (denoteModelClass type),
+      (type: TargetEKind) (sps: list(list SourceModelElement)) (iter: nat)
+      (te: denoteEKind type),
+      (exists tes: list (denoteEKind type),
           resolveAll tls sm name type sps iter = Some tes /\ In te tes) <->
       (exists (sp: list SourceModelElement),
           In sp sps /\
           resolve tls sm name type sp iter = Some te);
 
     tr_resolve_leaf:
-    forall (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
-      (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
+    forall (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetEKind)
+      (sp: list SourceModelElement) (iter: nat) (x: denoteEKind type),
       resolve tls sm name type sp iter = return x ->
        (exists (tl : TraceLink),
          In tl tls /\
          Is_true (list_beq SourceModelElement SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
          ((TraceLink_getIterator tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
-         (toModelClass type (TraceLink_getTargetElement tl) = Some x));
+         (toEKind type (TraceLink_getTargetElement tl) = Some x));
 
   }.

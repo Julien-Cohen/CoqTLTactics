@@ -2,37 +2,37 @@
 Require Import core.Model.
 Require Import core.Metamodel.
 
-Class Sum (SumType: Type) (K: Type):=
+Class Sum (T: Type) (K: Type):=
   {
     denoteSubType: K -> Set;
-    toSubType: forall (k: K), SumType -> option (denoteSubType k);
-    toSumType: forall (k: K), (denoteSubType k) -> SumType;
+    toSubType: forall (k: K), T -> option (denoteSubType k);
+    toSumType: forall (k: K), (denoteSubType k) -> T;
 
   }.
 
 Class ModelingMetamodel (mm : Metamodel) :=
 {
-    ModelClass: Type;
-    ModelReference: Type;
-    elements: Sum mm.(ModelElement) ModelClass;
-    links: Sum mm.(ModelLink) ModelReference;
+    EKind: Type;
+    LKind: Type;
+    elements: Sum mm.(ModelElement) EKind;
+    links: Sum mm.(ModelLink) LKind;
     
     (* Denotation *)
-    denoteModelClass: ModelClass -> Set := denoteSubType;
-    denoteModelReference: ModelReference -> Set := denoteSubType;
+    denoteEKind: EKind -> Set := denoteSubType;
+    denoteLKind: LKind -> Set := denoteSubType;
   
     (* Downcasting *)
-    toModelClass: forall (t:ModelClass), mm.(ModelElement) -> option (denoteModelClass t) := toSubType;
-    toModelReference: forall (t:ModelReference), mm.(ModelLink) -> option (denoteModelReference t) := toSubType;
+    toEKind: forall (t:EKind), mm.(ModelElement) -> option (denoteEKind t) := toSubType;
+    toLKind: forall (t:LKind), mm.(ModelLink) -> option (denoteLKind t) := toSubType;
   
     (* Upcasting *)
-    toModelElement: forall (t: ModelClass), (denoteModelClass t) -> mm.(ModelElement) := toSumType;
-    toModelLink: forall (t: ModelReference), (denoteModelReference t) -> mm.(ModelLink) := toSumType;
+    toModelElement: forall (t: EKind), (denoteEKind t) -> mm.(ModelElement) := toSumType;
+    toModelLink: forall (t: LKind), (denoteLKind t) -> mm.(ModelLink) := toSumType;
 
 }.
 
-Definition hasType {mm: Metamodel} {mmm: ModelingMetamodel mm} (t: ModelClass) (e: mm.(ModelElement)) : bool :=
-  match (toModelClass t e) with
+Definition hasType {mm: Metamodel} {mmm: ModelingMetamodel mm} (t: EKind) (e: mm.(ModelElement)) : bool :=
+  match (toEKind t e) with
   | Some _ => true
   | _ => false
   end.

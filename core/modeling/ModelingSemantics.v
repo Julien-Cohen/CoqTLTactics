@@ -17,10 +17,10 @@ Section SemanticsModeling.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.  
 
-(*Fixpoint checkTypes (ses: list SourceModelElement) (scs: list SourceModelClass) : bool :=
+(*Fixpoint checkTypes (ses: list SourceModelElement) (scs: list SourceEKind) : bool :=
   match ses, scs with
   | se::ses', sc::scs' => 
-    match (toModelClass sc se) with
+    match (toEKind sc se) with
     | Some c => checkTypes ses' scs'
     | _ => false
     end
@@ -37,43 +37,43 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 (*Definition TraceLink' := @TraceLink SourceModelElement TargetModelElement.*)
 
-Definition denoteOutput (type: TargetModelClass) (f: option TargetModelElement): option (denoteModelClass type) :=
+Definition denoteOutput (type: TargetEKind) (f: option TargetModelElement): option (denoteEKind type) :=
     match f with
-    | Some e => toModelClass type e
+    | Some e => toEKind type e
     | _ => None
     end.
 
-Definition denoteOutputList (type: TargetModelClass) (f: option (list TargetModelElement)): option (list (denoteModelClass type)) :=
+Definition denoteOutputList (type: TargetEKind) (f: option (list TargetModelElement)): option (list (denoteEKind type)) :=
     match f with
-    | Some l => Some (flat_map (fun e:TargetModelElement => optionToList (toModelClass type e)) l)
+    | Some l => Some (flat_map (fun e:TargetModelElement => optionToList (toEKind type e)) l)
     | _ => None
     end.
 
 
 Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
-            (type: TargetModelClass) (sp: list SourceModelElement)
-            (iter : nat) : option (denoteModelClass type) :=
+            (type: TargetEKind) (sp: list SourceModelElement)
+            (iter : nat) : option (denoteEKind type) :=
   denoteOutput type (resolveIter tls sm name sp iter).
 
 Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
+  (type: TargetEKind) (sp: list SourceModelElement) : option (denoteEKind type) :=
   denoteOutput type (resolve tr sm name sp).
 
 Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
-  : option (list (denoteModelClass type)) :=
+  (type: TargetEKind) (sps: list(list SourceModelElement)) (iter: nat)
+  : option (list (denoteEKind type)) :=
   denoteOutputList type (resolveAllIter tr sm name sps iter).
 
 Definition resolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (type: TargetModelClass) (sps: list(list SourceModelElement)) : option (list (denoteModelClass type)) :=
+  (type: TargetEKind) (sps: list(list SourceModelElement)) : option (list (denoteEKind type)) :=
   denoteOutputList type (resolveAll tr sm name sps).
 
 Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (type: TargetModelClass) (sp: option (list SourceModelElement)) : option (denoteModelClass type) :=
+  (type: TargetEKind) (sp: option (list SourceModelElement)) : option (denoteEKind type) :=
   denoteOutput type (maybeResolve tr sm name sp).
 
 Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (type: TargetModelClass) (sp: option (list (list SourceModelElement))) : option (list (denoteModelClass type)) :=
+  (type: TargetEKind) (sp: option (list (list SourceModelElement))) : option (list (denoteEKind type)) :=
   denoteOutputList type (maybeResolveAll tr sm name sp).
 
 End SemanticsModeling.
