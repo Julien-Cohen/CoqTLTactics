@@ -720,7 +720,7 @@ Inductive DBLPMetamodel_Link : Set :=
  | Build_DBLPMetamodel_Link : 
     forall (dbre_arg:DBLPMetamodel_Reference), (DBLPMetamodel_getTypeByReference dbre_arg) -> DBLPMetamodel_Link.
 
-(* TODO *)
+(* FIXME *)
 Definition beq_DBLPMetamodel_Link (l1 : DBLPMetamodel_Link) (l2 : DBLPMetamodel_Link) : bool := true.
 
 (* Reflective functions *)
@@ -774,7 +774,8 @@ Definition DBLPMetamodel_Metamodel_Instance :
   {|
     ModelElement := DBLPMetamodel_Object;
     ModelLink := DBLPMetamodel_Link;
-    elements_eqdec :=beq_DBLPMetamodel_Object
+    elements_eqdec := beq_DBLPMetamodel_Object ;
+    links_eqdec := beq_DBLPMetamodel_Link
   |}.
 
 

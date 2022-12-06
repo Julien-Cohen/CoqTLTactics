@@ -2,6 +2,8 @@ Set Implicit Arguments.
 Require Import List.
 Scheme Equality for list.
 
+Require ListUtils.
+
 Require Import Metamodel.
 
 (** * Model
@@ -20,17 +22,19 @@ Definition Model_beq {MM: Metamodel} (ML_beq: MM.(ModelLink) -> MM.(ModelLink) -
 Definition Model_wellFormed {MM: Metamodel} (m: Model MM): Prop :=
   m.(modelElements) = nil -> m.(modelLinks) = nil.
 
-(*Definition Model_incl {MM : Metamodel} (m1 m2: Model MM) := 
+Local Notation count := ListUtils.count_occ_b.
+
+Definition Model_incl {MM : Metamodel} (m1 m2: Model MM) := 
   forall e,
-   count_occ' _ m1.(modelElements) e <= count_occ' _ m2.(modelElements) e /\
+   count MM.(elements_eqdec) m1.(modelElements) e <= count MM.(elements_eqdec) m2.(modelElements) e /\
    forall l,
-   count_occ' _ m1.(modelLinks) l <= count_occ' _ m2.(modelLinks) l.
+   count MM.(links_eqdec) m1.(modelLinks) l <= count MM.(links_eqdec) m2.(modelLinks) l.
    
 Definition Model_equiv {MM : Metamodel} (m1 m2: Model MM)  := 
   forall e,
-  count_occ' _ m1.(modelElements) e = count_occ' _ m2.(modelElements) e /\
+  count MM.(elements_eqdec) m1.(modelElements) e = count MM.(elements_eqdec) m2.(modelElements) e /\
   forall l,
-  count_occ' _ m1.(modelLinks) l = count_occ' _ m2.(modelLinks) l. *)
+  count MM.(links_eqdec) m1.(modelLinks) l = count MM.(links_eqdec) m2.(modelLinks) l. 
 
 Definition Model_app {MM: Metamodel} (m1 m2: Model MM) := 
   {| 

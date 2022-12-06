@@ -19,18 +19,18 @@ Theorem tr_FamiliesToPersons :
             (instantiatePattern Families2Persons sm [se])).
 Proof.
     intros.
-    apply tr_execute_in_elements in H.
+    apply (tr_execute_in_elements (smm:=FamiliesMetamodel_Metamodel_Instance) (tmm:=PersonsMetamodel_Metamodel_Instance)) in H.
     destruct H.
     destruct H.
     destruct x.
     - contradiction H0.
     - destruct x.
-      + exists f. 
+      + exists s. 
         apply allTuples_incl in H.
         unfold incl in H.
-        specialize (H f).
+        specialize (H s).
         crush.
       + exfalso. 
-        specialize (allTuples_not_incl_length (f :: f0 :: x) Families2Persons sm).
+        specialize (allTuples_not_incl_length (s :: s0 :: x) Families2Persons sm).
         crush.
 Qed.

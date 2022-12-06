@@ -581,7 +581,7 @@ Inductive RSSMetamodel_Link : Set :=
  | Build_RSSMetamodel_Link : 
     forall (rsre_arg:RSSMetamodel_Reference), (RSSMetamodel_getTypeByReference rsre_arg) -> RSSMetamodel_Link.
 
-(* TODO *)
+(* FIXME *)
 Definition beq_RSSMetamodel_Link (l1 : RSSMetamodel_Link) (l2 : RSSMetamodel_Link) : bool := true.
 
 (* Reflective functions *)
@@ -635,7 +635,8 @@ Definition RSSMetamodel_Metamodel_Instance :
   {|
     ModelElement := RSSMetamodel_Object;
     ModelLink := RSSMetamodel_Link;
-    elements_eqdec := beq_RSSMetamodel_Object
+    elements_eqdec := beq_RSSMetamodel_Object ;
+    links_eqdec := beq_RSSMetamodel_Link
   |}.
 
 

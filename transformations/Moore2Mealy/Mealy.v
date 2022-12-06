@@ -131,7 +131,7 @@ Inductive MealyMetamodel_Link : Set :=
  | Build_MealyMetamodel_Link : 
     forall (mere_arg:MealyMetamodel_Reference), (MealyMetamodel_getTypeByReference mere_arg) -> MealyMetamodel_Link.
 
-(* TODO *)
+(* FIXME *)
 Definition beq_MealyMetamodel_Link (l1 : MealyMetamodel_Link) (l2 : MealyMetamodel_Link) : bool := true.
 
 (* Reflective functions *)
@@ -185,7 +185,8 @@ Definition MealyMetamodel_Metamodel_Instance :
   {|
     ModelElement := MealyMetamodel_Object;
     ModelLink := MealyMetamodel_Link;
-    elements_eqdec :=beq_MealyMetamodel_Object
+    elements_eqdec :=beq_MealyMetamodel_Object ;
+    links_eqdec := beq_MealyMetamodel_Link
   |}.
 
 

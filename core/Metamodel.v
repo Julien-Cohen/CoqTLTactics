@@ -7,5 +7,6 @@ Record Metamodel :=
     ModelLink: Type;
     
     elements_eqdec: ModelElement -> ModelElement -> bool; (* FIXME : no semantics with respect to equality *)
+    links_eqdec: ModelLink -> ModelLink -> bool; 
 
 }.

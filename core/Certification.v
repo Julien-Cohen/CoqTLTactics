@@ -17,22 +17,10 @@ Require Import core.Expressions.
 
 Section Certification.
 
-Context {SourceModelElement SourceModelLink: Type}.
-Context {eqdec_sme: SourceModelElement -> SourceModelElement -> bool}. (* need decidable equality on source model elements *)
-Context {TargetModelElement TargetModelLink: Type}.
-Context {eqdec_tme: TargetModelElement -> TargetModelElement -> bool}. (* need decidable equality on source model elements *)
 
-Definition smm : Metamodel := {|
-  ModelElement := SourceModelElement;
-  ModelLink := SourceModelLink;
-  elements_eqdec := eqdec_sme;
-|}.
+Context {smm : Metamodel}.
 
-Definition tmm : Metamodel := {|
-  ModelElement := TargetModelElement;
-  ModelLink := TargetModelLink;
-  elements_eqdec := eqdec_tme;
-|}.
+Context {tmm : Metamodel}.
 
 Instance tc : TransformationConfiguration := {
   SourceMetamodel := smm;

@@ -211,7 +211,7 @@ Inductive FamiliesMetamodel_Link : Set :=
  | Build_FamiliesMetamodel_Link : 
     forall (fare_arg:FamiliesMetamodel_Reference), (FamiliesMetamodel_getTypeByReference fare_arg) -> FamiliesMetamodel_Link.
 
-(* TODO *)
+(* FIXME *)
 Definition beq_FamiliesMetamodel_Link (l1 : FamiliesMetamodel_Link) (l2 : FamiliesMetamodel_Link) : bool := true.
 
 (* Reflective functions *)
@@ -265,7 +265,8 @@ Definition FamiliesMetamodel_Metamodel_Instance :
   {|
     ModelElement := FamiliesMetamodel_Object;
     ModelLink := FamiliesMetamodel_Link;
-    elements_eqdec := beq_FamiliesMetamodel_Object
+    elements_eqdec := beq_FamiliesMetamodel_Object ;
+    links_eqdec := beq_FamiliesMetamodel_Link
   |}.
 
 

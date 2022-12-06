@@ -738,7 +738,7 @@ Inductive ATOMMetamodel_Link : Set :=
  | Build_ATOMMetamodel_Link : 
     forall (atre_arg:ATOMMetamodel_Reference), (ATOMMetamodel_getTypeByReference atre_arg) -> ATOMMetamodel_Link.
 
-(* TODO *)
+(* FIXME *)
 Definition beq_ATOMMetamodel_Link (l1 : ATOMMetamodel_Link) (l2 : ATOMMetamodel_Link) : bool := true.
 
 (* Reflective functions *)
@@ -792,7 +792,8 @@ Definition ATOMMetamodel_Metamodel_Instance :
   {|
     ModelElement := ATOMMetamodel_Object;
     ModelLink := ATOMMetamodel_Link;
-    elements_eqdec :=  beq_ATOMMetamodel_Object
+    elements_eqdec :=  beq_ATOMMetamodel_Object ;
+    links_eqdec := beq_ATOMMetamodel_Link
   |}.
 
 

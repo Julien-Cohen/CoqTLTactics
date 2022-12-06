@@ -131,7 +131,7 @@ Inductive MooreMetamodel_Link : Set :=
  | Build_MooreMetamodel_Link : 
     forall (more_arg:MooreMetamodel_Reference), (MooreMetamodel_getTypeByReference more_arg) -> MooreMetamodel_Link.
 
-(* TODO *)
+(* FIXME *)
 Definition beq_MooreMetamodel_Link (l1 : MooreMetamodel_Link) (l2 : MooreMetamodel_Link) : bool := true.
 
 (* Reflective functions *)
@@ -185,7 +185,8 @@ Definition MooreMetamodel_Metamodel_Instance :
   {|
     ModelElement := MooreMetamodel_Object;
     ModelLink := MooreMetamodel_Link;
-    elements_eqdec := beq_MooreMetamodel_Object
+    elements_eqdec := beq_MooreMetamodel_Object ;
+    links_eqdec := beq_MooreMetamodel_Link
   |}.
 
 

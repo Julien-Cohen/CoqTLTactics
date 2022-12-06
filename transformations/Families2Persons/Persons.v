@@ -113,7 +113,7 @@ Inductive PersonsMetamodel_Link : Set :=
  | Build_PersonsMetamodel_Link : 
     forall (pere_arg:PersonsMetamodel_Reference), (PersonsMetamodel_getTypeByReference pere_arg) -> PersonsMetamodel_Link.
 
-(* TODO *)
+(* FIXME *)
 Definition beq_PersonsMetamodel_Link (l1 : PersonsMetamodel_Link) (l2 : PersonsMetamodel_Link) : bool := true.
 
 (* Reflective functions *)
@@ -167,7 +167,8 @@ Definition PersonsMetamodel_Metamodel_Instance :
   {|
     ModelElement := PersonsMetamodel_Object;
     ModelLink := PersonsMetamodel_Link;
-    elements_eqdec := beq_PersonsMetamodel_Object
+    elements_eqdec := beq_PersonsMetamodel_Object ;
+    links_eqdec := beq_PersonsMetamodel_Link
   |}.
 
 

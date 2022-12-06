@@ -70,7 +70,12 @@ Inductive TTRef :=
   unit. 
 
 Definition TTM : Metamodel :=
-  Build_Metamodel TTElem TTRef TTEq.
+  {| 
+    ModelElement := TTElem ;
+    ModelLink := TTRef ;
+    elements_eqdec := TTEq ;
+    links_eqdec := fun _ _ => true
+  |}.
 
 
 Definition evalTT (tt: Model TTM) (ins: list bool) : bool := true.

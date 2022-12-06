@@ -196,7 +196,8 @@ Definition ClassM : Metamodel :=
 {|
   ModelElement := Element ;
   ModelLink := Link ;
-  elements_eqdec := beq_Element
+  elements_eqdec := beq_Element ;
+  links_eqdec := beq_Link
 |}.
 
 

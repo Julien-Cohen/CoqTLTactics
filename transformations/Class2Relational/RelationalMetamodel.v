@@ -157,6 +157,13 @@ Definition lift_LKind (c: LinkKind) : (getTypeByLKind c) -> Link.
   destruct c ; [ exact TableColumnLink | exact ColumnReferenceLink].
 Defined.
 
+  Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
+    match c1, c2 with
+    | TableColumnLink o1, TableColumnLink o2 => beq_TableColumns o1 o2
+    | ColumnReferenceLink o1, ColumnReferenceLink o2 => beq_ColumnReference o1 o2
+    | _, _ => false
+    end.
+
 (* Reflective functions *)
 
 Lemma eqClass_dec : forall (c1:ElementKind) (c2:ElementKind), { c1 = c2 } + { c1 <> c2 }.
@@ -231,7 +238,8 @@ Definition RelationalM : Metamodel :=
   {|
     ModelElement := Element;
     ModelLink := Link;
-    elements_eqdec := beq_Element
+    elements_eqdec := beq_Element ;
+    links_eqdec := beq_Link
   |}.
 
 
@@ -297,12 +305,6 @@ Qed.
     toSumType := lift_EKind;
   }.
   
-  Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
-    match c1, c2 with
-    | TableColumnLink o1, TableColumnLink o2 => beq_TableColumns o1 o2
-    | ColumnReferenceLink o1, ColumnReferenceLink o2 => beq_ColumnReference o1 o2
-    | _, _ => false
-    end.
     
 
   #[export]

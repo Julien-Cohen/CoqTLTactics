@@ -259,3 +259,10 @@ Lemma in_not_nil {A} (a:A) s :
 Proof.
   intro H.  destruct s ; [ inversion H | congruence]. 
 Qed.
+
+
+Fixpoint count_occ_b {A} (f:A->A->bool) l e :=
+  match l with 
+  | nil => 0
+  | a::r => (match f a e with true => 1  | false => 0 end) + count_occ_b f r e
+  end.
