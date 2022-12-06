@@ -179,7 +179,17 @@ Proof.
 Defined.
 
 (* Generic functions *)
-Definition MooreModel := Model MooreMetamodel_Object MooreMetamodel_Link.
+
+Definition MooreMetamodel_Metamodel_Instance : 
+  Metamodel :=
+  {|
+    ModelElement := MooreMetamodel_Object;
+    ModelLink := MooreMetamodel_Link;
+    elements_eqdec := beq_MooreMetamodel_Object
+  |}.
+
+
+Definition MooreModel := Model MooreMetamodel_Metamodel_Instance.
 
 Definition MooreMetamodel_toObject (mocl_arg: MooreMetamodel_Class) (t: MooreMetamodel_getTypeByClass mocl_arg) : MooreMetamodel_Object :=
   (Build_MooreMetamodel_Object mocl_arg t).
@@ -242,15 +252,6 @@ Instance MooreMetamodel_LinkSum : Sum MooreMetamodel_Link MooreMetamodel_Referen
 	toSumType := MooreMetamodel_toLink;
 }.
 
-
-#[export]
-Instance MooreMetamodel_Metamodel_Instance : 
-	Metamodel :=
-{
-	ModelElement := MooreMetamodel_Object;
-	ModelLink := MooreMetamodel_Link;
-        elements_eqdec := beq_MooreMetamodel_Object
-}.
 
 #[export]
 Instance MooreMetamodel_ModelingMetamodel_Instance : 

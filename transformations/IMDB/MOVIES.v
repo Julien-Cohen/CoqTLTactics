@@ -322,7 +322,17 @@ Proof.
 Defined.
 
 (* Generic functions *)
-Definition moviesModel := Model moviesMetamodel_Object moviesMetamodel_Link.
+
+Definition moviesMetamodel_Metamodel_Instance : 
+  Metamodel :=
+  {|
+    ModelElement := moviesMetamodel_Object;
+    ModelLink := moviesMetamodel_Link;
+    elements_eqdec := beq_moviesMetamodel_Object
+  |}.
+
+
+Definition moviesModel := Model moviesMetamodel_Metamodel_Instance.
 
 Definition moviesMetamodel_toObject (mocl_arg: moviesMetamodel_Class) (t: moviesMetamodel_getTypeByClass mocl_arg) : moviesMetamodel_Object :=
   (Build_moviesMetamodel_Object mocl_arg t).
@@ -502,14 +512,6 @@ Instance moviesMetamodel_LinkSum : Sum moviesMetamodel_Link moviesMetamodel_Refe
 }.
 
 
-#[export]
-Instance moviesMetamodel_Metamodel_Instance : 
-	Metamodel :=
-{
-	ModelElement := moviesMetamodel_Object;
-	ModelLink := moviesMetamodel_Link;
-        elements_eqdec := beq_moviesMetamodel_Object
-}.
 
 #[export]
 Instance moviesMetamodel_ModelingMetamodel_Instance : 

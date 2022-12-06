@@ -11,8 +11,8 @@ Require Import transformations.Families2Persons.Families.
 Open Scope string_scope.
 
 
-Definition InputModel : Model FamiliesMetamodel_Object FamiliesMetamodel_Link :=
-	(Build_Model
+Definition InputModel : Model FamiliesMetamodel_Metamodel_Instance :=
+	(Build_Model FamiliesMetamodel_Metamodel_Instance
 		(
 		(Build_FamiliesMetamodel_Object MemberClass (BuildMember  "David")) :: 
 		(Build_FamiliesMetamodel_Object MemberClass (BuildMember  "Kelly")) :: 

@@ -629,7 +629,17 @@ Proof.
 Defined.
 
 (* Generic functions *)
-Definition RSSModel := Model RSSMetamodel_Object RSSMetamodel_Link.
+
+Definition RSSMetamodel_Metamodel_Instance : 
+  Metamodel :=
+  {|
+    ModelElement := RSSMetamodel_Object;
+    ModelLink := RSSMetamodel_Link;
+    elements_eqdec := beq_RSSMetamodel_Object
+  |}.
+
+
+Definition RSSModel := Model RSSMetamodel_Metamodel_Instance.
 
 Definition RSSMetamodel_toObject (rscl_arg: RSSMetamodel_Class) (t: RSSMetamodel_getTypeByClass rscl_arg) : RSSMetamodel_Object :=
   (Build_RSSMetamodel_Object rscl_arg t).
@@ -925,14 +935,6 @@ Instance RSSMetamodel_LinkSum : Sum RSSMetamodel_Link RSSMetamodel_Reference :=
 }.
 
 
-#[export]
-Instance RSSMetamodel_Metamodel_Instance : 
-	Metamodel :=
-{
-	ModelElement := RSSMetamodel_Object;
-	ModelLink := RSSMetamodel_Link;
-        elements_eqdec := beq_RSSMetamodel_Object
-}.
 
 #[export]
 Instance RSSMetamodel_ModelingMetamodel_Instance : 

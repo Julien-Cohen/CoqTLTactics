@@ -22,17 +22,17 @@ Context {eqdec_sme: SourceModelElement -> SourceModelElement -> bool}. (* need d
 Context {TargetModelElement TargetModelLink: Type}.
 Context {eqdec_tme: TargetModelElement -> TargetModelElement -> bool}. (* need decidable equality on source model elements *)
 
-Instance smm : Metamodel := {
+Definition smm : Metamodel := {|
   ModelElement := SourceModelElement;
   ModelLink := SourceModelLink;
   elements_eqdec := eqdec_sme;
-}.
+|}.
 
-Instance tmm : Metamodel := {
+Definition tmm : Metamodel := {|
   ModelElement := TargetModelElement;
   ModelLink := TargetModelLink;
   elements_eqdec := eqdec_tme;
-}.
+|}.
 
 Instance tc : TransformationConfiguration := {
   SourceMetamodel := smm;

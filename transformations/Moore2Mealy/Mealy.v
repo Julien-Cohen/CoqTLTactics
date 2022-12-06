@@ -179,7 +179,17 @@ Proof.
 Defined.
 
 (* Generic functions *)
-Definition MealyModel := Model MealyMetamodel_Object MealyMetamodel_Link.
+
+Definition MealyMetamodel_Metamodel_Instance : 
+  Metamodel :=
+  {|
+    ModelElement := MealyMetamodel_Object;
+    ModelLink := MealyMetamodel_Link;
+    elements_eqdec :=beq_MealyMetamodel_Object
+  |}.
+
+
+Definition MealyModel := Model MealyMetamodel_Metamodel_Instance.
 
 Definition MealyMetamodel_toObject (mecl_arg: MealyMetamodel_Class) (t: MealyMetamodel_getTypeByClass mecl_arg) : MealyMetamodel_Object :=
   (Build_MealyMetamodel_Object mecl_arg t).
@@ -244,14 +254,6 @@ Instance MealyMetamodel_LinkSum : Sum MealyMetamodel_Link MealyMetamodel_Referen
 }.
 
 
-#[export]
-Instance MealyMetamodel_Metamodel_Instance : 
-	Metamodel :=
-{
-	ModelElement := MealyMetamodel_Object;
-	ModelLink := MealyMetamodel_Link;
-  elements_eqdec :=beq_MealyMetamodel_Object
-}.
 
 #[export]
 Instance MealyMetamodel_ModelingMetamodel_Instance : 

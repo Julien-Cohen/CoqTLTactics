@@ -2,39 +2,45 @@ Set Implicit Arguments.
 Require Import List.
 Scheme Equality for list.
 
+Require Import Metamodel.
 
 (** * Model
   Each model is constructed by a list of {@code ModelElement} and {@ModelLink}. **)
 
-Record Model (ModelElement: Type) (ModelLink: Type) :=
+Record Model (MM:Metamodel) :=
   {
-    modelElements : list ModelElement;
-    modelLinks : list ModelLink;
+    modelElements : list MM.(ModelElement);
+    modelLinks : list MM.(ModelLink);
   }.
 
-Definition Model_beq {ME ML: Type} (ME_beq: ME -> ME -> bool) (ML_beq: ML -> ML -> bool) (m1 m2: Model ME ML) :=
-  andb (list_beq ME_beq m1.(modelElements) m2.(modelElements))
+Definition Model_beq {MM: Metamodel} (ML_beq: MM.(ModelLink) -> MM.(ModelLink) -> bool) (m1 m2: Model MM) :=
+  andb (list_beq MM.(elements_eqdec) m1.(modelElements) m2.(modelElements))
   (list_beq ML_beq m1.(modelLinks) m2.(modelLinks)).
 
-Definition Model_wellFormed {ME ML: Type} (m: Model ME ML): Prop :=
+Definition Model_wellFormed {MM: Metamodel} (m: Model MM): Prop :=
   m.(modelElements) = nil -> m.(modelLinks) = nil.
 
-(*Definition Model_incl {ME ML: Type} (m1 m2: Model ME ML) := 
-  forall (e:ME) (l:ML),
+(*Definition Model_incl {MM : Metamodel} (m1 m2: Model MM) := 
+  forall e,
    count_occ' _ m1.(modelElements) e <= count_occ' _ m2.(modelElements) e /\
+   forall l,
    count_occ' _ m1.(modelLinks) l <= count_occ' _ m2.(modelLinks) l.
-
-Definition Model_equiv {ME ML: Type} (m1 m2: Model ME ML)  := 
-  forall (e:ME) (l:ML),
+   
+Definition Model_equiv {MM : Metamodel} (m1 m2: Model MM)  := 
+  forall e,
   count_occ' _ m1.(modelElements) e = count_occ' _ m2.(modelElements) e /\
+  forall l,
   count_occ' _ m1.(modelLinks) l = count_occ' _ m2.(modelLinks) l. *)
 
-Definition Model_app {ME ML: Type} (m1 m2: Model ME ML) := 
-  Build_Model 
-    (app m1.(modelElements) m2.(modelElements))
-    (app m1.(modelLinks) m2.(modelLinks)).
+Definition Model_app {MM: Metamodel} (m1 m2: Model MM) := 
+  {| 
+    modelElements := app m1.(modelElements) m2.(modelElements) ;
+    modelLinks := app m1.(modelLinks) m2.(modelLinks)
+  |}.
 
-Definition Model_concat {ME ML: Type} (ms: list (Model ME ML)) := 
-  Build_Model 
-    (flat_map (@modelElements _ _ ) ms)
-    (flat_map (@modelLinks _ _) ms).
+Definition Model_concat {MM: Metamodel} (ms: list (Model MM)) := 
+  {|
+    modelElements := flat_map (@modelElements _) ms ;
+    modelLinks := flat_map (@modelLinks _) ms
+  |}.
+

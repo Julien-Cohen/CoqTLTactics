@@ -768,7 +768,17 @@ Proof.
 Defined.
 
 (* Generic functions *)
-Definition DBLPModel := Model DBLPMetamodel_Object DBLPMetamodel_Link.
+
+Definition DBLPMetamodel_Metamodel_Instance : 
+  Metamodel :=
+  {|
+    ModelElement := DBLPMetamodel_Object;
+    ModelLink := DBLPMetamodel_Link;
+    elements_eqdec :=beq_DBLPMetamodel_Object
+  |}.
+
+
+Definition DBLPModel := Model DBLPMetamodel_Metamodel_Instance.
 
 Definition DBLPMetamodel_toObject (dbcl_arg: DBLPMetamodel_Class) (t: DBLPMetamodel_getTypeByClass dbcl_arg) : DBLPMetamodel_Object :=
   (Build_DBLPMetamodel_Object dbcl_arg t).
@@ -1175,14 +1185,6 @@ Instance DBLPMetamodel_LinkSum : Sum DBLPMetamodel_Link DBLPMetamodel_Reference 
 }.
 
 
-#[export]
-Instance DBLPMetamodel_Metamodel_Instance : 
-	Metamodel :=
-{
-	ModelElement := DBLPMetamodel_Object;
-	ModelLink := DBLPMetamodel_Link;
-        elements_eqdec :=beq_DBLPMetamodel_Object
-}.
 
 #[export]
 Instance DBLPMetamodel_ModelingMetamodel_Instance : 

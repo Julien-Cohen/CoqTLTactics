@@ -227,6 +227,15 @@ Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t).
   exact (Some c). 
 Defined.
 
+Definition RelationalM : Metamodel :=
+  {|
+    ModelElement := Element;
+    ModelLink := Link;
+    elements_eqdec := beq_Element
+  |}.
+
+
+
 (* Generic functions *)
 
 
@@ -250,7 +259,7 @@ Fixpoint getTableColumnsOnLinks (t : Table_t) (l : list Link) : option (list Col
   | nil => None
   end.
 
-Definition getTableColumns (t : Table_t) (m : Model Element Link) : option (list Column_t) :=
+Definition getTableColumns (t : Table_t) (m : Model RelationalM) : option (list Column_t) :=
 getTableColumnsOnLinks t m.(modelLinks).
 
 Fixpoint getColumnReferenceOnLinks (c : Column_t) (l : list Link) : option Table_t :=
@@ -260,7 +269,7 @@ Fixpoint getColumnReferenceOnLinks (c : Column_t) (l : list Link) : option Table
   | nil => None
   end.
 
-Definition getColumnReference (c : Column_t) (m : Model Element Link) : option Table_t := getColumnReferenceOnLinks c m.(modelLinks).
+Definition getColumnReference (c : Column_t) (m : Model RelationalM) : option Table_t := getColumnReferenceOnLinks c m.(modelLinks).
 
 Definition bottomRelationalMetamodel_Class (c: ElementKind) : (getTypeByEKind c) :=
   match c with
@@ -304,13 +313,6 @@ Qed.
     toSumType := lift_LKind;
   }.
   
-  #[export]
-  Instance RelationalM : Metamodel :=
-  {
-    ModelElement := Element;
-    ModelLink := Link;
-    elements_eqdec:= beq_Element ;
-  }.
 
   #[export]
   Instance RelationalMetamodel : ModelingMetamodel RelationalM :=
@@ -319,5 +321,5 @@ Qed.
       links := RelationalLinkSum;
   }.
 
-Definition RelationalModel := Model Element Link.
+Definition RelationalModel := Model RelationalM.
 

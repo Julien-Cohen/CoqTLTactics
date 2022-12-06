@@ -709,7 +709,17 @@ Proof.
 Defined.
 
 (* Generic functions *)
-Definition ATOMModel := Model ATOMMetamodel_Object ATOMMetamodel_Link.
+
+Definition ATOMMetamodel_Metamodel_Instance : 
+  Metamodel :=
+  {|
+    ModelElement := ATOMMetamodel_Object;
+    ModelLink := ATOMMetamodel_Link;
+    elements_eqdec := beq_ATOMMetamodel_Object
+  |}.
+
+
+Definition ATOMModel := Model ATOMMetamodel_Metamodel_Instance.
 
 Definition ATOMMetamodel_toObject (atcl_arg: ATOMMetamodel_Class) (t: ATOMMetamodel_getTypeByClass atcl_arg) : ATOMMetamodel_Object :=
   (Build_ATOMMetamodel_Object atcl_arg t).
@@ -1114,13 +1124,6 @@ Instance ATOMMetamodel_LinkSum : Sum ATOMMetamodel_Link ATOMMetamodel_Reference 
 }.
 
 
-Instance ATOMMetamodel_Metamodel_Instance : 
-	Metamodel :=
-{
-	ModelElement := ATOMMetamodel_Object;
-	ModelLink := ATOMMetamodel_Link;
-        elements_eqdec := beq_ATOMMetamodel_Object
-}.
 
 Instance ATOMMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel ATOMMetamodel_Metamodel_Instance :=

@@ -11,8 +11,8 @@ Class TransformationConfiguration := {
   TargetModelElement:= @ModelElement TargetMetamodel;
   TargetModelLink:= @ModelLink TargetMetamodel;
 
-  SourceModel := Model SourceMetamodel.(ModelElement) SourceMetamodel.(ModelLink);
-  TargetModel := Model TargetMetamodel.(ModelElement) TargetMetamodel.(ModelLink);
+  SourceModel := Model SourceMetamodel;
+  TargetModel := Model TargetMetamodel;
 
   SourceElement_eqdec := @elements_eqdec SourceMetamodel;
   TargetElement_eqdec := @elements_eqdec TargetMetamodel;

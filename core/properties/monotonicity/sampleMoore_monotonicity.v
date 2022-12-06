@@ -14,8 +14,8 @@
 (* Moore models as counterexample to prove monotonicity of CoqTL *)
 
 
- Definition Moore_m1 : Model MooreMetamodel_Object MooreMetamodel_Link :=
-     (Build_Model
+ Definition Moore_m1 : Model MooreMetamodel_Metamodel_Instance :=
+     (Build_Model MooreMetamodel_Metamodel_Instance
         (
             (Build_MooreMetamodel_Object StateClass (BuildState  "S0" "1")) :: nil
         )
@@ -24,8 +24,8 @@
         )
      ).
  
-Definition Moore_m2 : Model MooreMetamodel_Object MooreMetamodel_Link :=
-        (Build_Model
+Definition Moore_m2 : Model MooreMetamodel_Metamodel_Instance :=
+        (Build_Model MooreMetamodel_Metamodel_Instance
             (
                 (Build_MooreMetamodel_Object TransitionClass (BuildTransition  "0")) :: 
                 (Build_MooreMetamodel_Object TransitionClass (BuildTransition  "1")) ::

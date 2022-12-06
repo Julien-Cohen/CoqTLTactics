@@ -10,8 +10,8 @@ Require Import core.Model.
 Require Import transformations.TT2BDD.TT.
 Require Import transformations.TT2BDD.BDD.
 
-Definition TTable_OR : Model TTElem TTRef :=
-  (Build_Model
+Definition TTable_OR : Model TTM :=
+  (Build_Model TTM
      (* elements *)
      ((BuildColumn "A" 1) :: 
       (BuildColumn "B" 2) :: 

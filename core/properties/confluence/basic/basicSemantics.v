@@ -81,8 +81,9 @@ Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list Source
 (** * Execute **)
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
-  Build_Model
-    (* elements *) (flat_map (instantiatePattern tr sm) (allTuples tr sm))
-    (* links *) (flat_map (applyPattern tr sm) (allTuples tr sm)).
+  {|
+    modelElements := flat_map (instantiatePattern tr sm) (allTuples tr sm) ;
+    modelLinks := flat_map (applyPattern tr sm) (allTuples tr sm)
+  |}.
 
 End Semantics.

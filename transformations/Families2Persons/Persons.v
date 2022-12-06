@@ -161,7 +161,17 @@ Proof.
 Defined.
 
 (* Generic functions *)
-Definition PersonsModel := Model PersonsMetamodel_Object PersonsMetamodel_Link.
+
+Definition PersonsMetamodel_Metamodel_Instance : 
+  Metamodel :=
+  {|
+    ModelElement := PersonsMetamodel_Object;
+    ModelLink := PersonsMetamodel_Link;
+    elements_eqdec := beq_PersonsMetamodel_Object
+  |}.
+
+
+Definition PersonsModel := Model PersonsMetamodel_Metamodel_Instance.
 
 Definition PersonsMetamodel_toObject (pecl_arg: PersonsMetamodel_Class) (t: PersonsMetamodel_getTypeByClass pecl_arg) : PersonsMetamodel_Object :=
   (Build_PersonsMetamodel_Object pecl_arg t).
@@ -218,14 +228,6 @@ Instance PersonsMetamodel_LinkSum : Sum PersonsMetamodel_Link PersonsMetamodel_R
 }.
 
 
-#[export]
-Instance PersonsMetamodel_Metamodel_Instance : 
-	Metamodel :=
-{
-	ModelElement := PersonsMetamodel_Object;
-	ModelLink := PersonsMetamodel_Link;
-        elements_eqdec := beq_PersonsMetamodel_Object
-}.
 
 #[export]
 Instance PersonsMetamodel_ModelingMetamodel_Instance : 

@@ -14,8 +14,8 @@ Open Scope string_scope.
 	 	   <-"0"--
 	*)
 
-Definition InputModel : Model MooreMetamodel_Object MooreMetamodel_Link :=
-	(Build_Model
+Definition InputModel : Model MooreMetamodel_Metamodel_Instance :=
+	(Build_Model MooreMetamodel_Metamodel_Instance
 		(
 		(Build_MooreMetamodel_Object TransitionClass (BuildTransition  "0")) :: 
 		(Build_MooreMetamodel_Object StateClass (BuildState  "S0" "1")) :: 

@@ -11,8 +11,8 @@ Require Import transformations.RSS2ATOM.ATOM.
 Open Scope string_scope.
 
 
-Definition Exemple1ATOM : Model ATOMMetamodel_Object ATOMMetamodel_Link :=
-	(Build_Model
+Definition Exemple1ATOM : Model ATOMMetamodel_Metamodel_Instance :=
+	(Build_Model ATOMMetamodel_Metamodel_Instance
 		(
 		(Build_ATOMMetamodel_Object LinkClass (BuildLink   None   (Some "http://www.atoute.org/page_du_medecin/spe/mg/mg_1024.htm")  None   None   None   (Some 0))) :: 
 		(Build_ATOMMetamodel_Object EntryClass (BuildEntry  "Dictionnaires médicaux" ""  None   (Some "")  None  "")) :: 

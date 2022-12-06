@@ -191,6 +191,17 @@ Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
   end.
 
 
+
+Definition ClassM : Metamodel :=
+{|
+  ModelElement := Element ;
+  ModelLink := Link ;
+  elements_eqdec := beq_Element
+|}.
+
+
+
+
 (* Generic functions *)
 
 
@@ -217,10 +228,11 @@ Fixpoint getClassAttributesOnLinks (c : Class_t) (l : list Link) : option (list 
   end.
 
 
-Definition getClassAttributes (c : Class_t) (m : Model Element Link) : option (list Attribute_t) :=
+
+Definition getClassAttributes (c : Class_t) (m : Model ClassM) : option (list Attribute_t) :=
   getClassAttributesOnLinks c m.(modelLinks).
 
-Definition getClassAttributesElements (c : Class_t) (m : Model Element Link) : option (list Element) :=
+Definition getClassAttributesElements (c : Class_t) (m : Model ClassM) : option (list Element) :=
   match getClassAttributes c m with
   | Some l => Some (map AttributeElement l)
   | None => None
@@ -236,11 +248,11 @@ Fixpoint getAttributeTypeOnLinks (a : Attribute_t) (l : list Link) : option Clas
   | nil => None
   end.
 
-Definition getAttributeType (a : Attribute_t) (m : Model Element Link) : option Class_t :=
+Definition getAttributeType (a : Attribute_t) (m : Model ClassM) : option Class_t :=
   getAttributeTypeOnLinks a m.(modelLinks).
 
 
-Definition getAttributeTypeElement (a : Attribute_t) (m : Model Element Link) : option Element :=
+Definition getAttributeTypeElement (a : Attribute_t) (m : Model ClassM) : option Element :=
   match getAttributeType a m with
   | Some c => Some (ClassElement c)
   | None => None
@@ -272,13 +284,6 @@ Instance ClassLinkSum : Sum Link LinkKind :=
 }.
 
 
-#[export]
-Instance ClassM : Metamodel :=
-{
-  ModelElement := Element;
-  ModelLink := Link;
-  elements_eqdec := beq_Element ;
-}.
 
 #[export]
 Instance ClassMetamodel : ModelingMetamodel ClassM :=
@@ -287,7 +292,7 @@ Instance ClassMetamodel : ModelingMetamodel ClassM :=
     links := ClassLinkSum; 
 }.
 
-Definition ClassModel : Set := Model Element Link.
+Definition ClassModel := Model ClassM.
 
 
 (* Useful lemmas *)

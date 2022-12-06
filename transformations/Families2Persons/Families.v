@@ -259,7 +259,17 @@ Proof.
 Defined.
 
 (* Generic functions *)
-Definition FamiliesModel := Model FamiliesMetamodel_Object FamiliesMetamodel_Link.
+
+Definition FamiliesMetamodel_Metamodel_Instance : 
+  Metamodel :=
+  {|
+    ModelElement := FamiliesMetamodel_Object;
+    ModelLink := FamiliesMetamodel_Link;
+    elements_eqdec := beq_FamiliesMetamodel_Object
+  |}.
+
+
+Definition FamiliesModel := Model FamiliesMetamodel_Metamodel_Instance.
 
 Definition FamiliesMetamodel_toObject (facl_arg: FamiliesMetamodel_Class) (t: FamiliesMetamodel_getTypeByClass facl_arg) : FamiliesMetamodel_Object :=
   (Build_FamiliesMetamodel_Object facl_arg t).
@@ -420,14 +430,6 @@ Instance FamiliesMetamodel_LinkSum : Sum FamiliesMetamodel_Link FamiliesMetamode
 }.
 
 
-#[export]
-Instance FamiliesMetamodel_Metamodel_Instance : 
-	Metamodel :=
-{
-	ModelElement := FamiliesMetamodel_Object;
-	ModelLink := FamiliesMetamodel_Link;
-        elements_eqdec := beq_FamiliesMetamodel_Object
-}.
 
 #[export]
 Instance FamiliesMetamodel_ModelingMetamodel_Instance : 

@@ -1,7 +1,7 @@
 (** * Metamodel **)
 
 
-Class Metamodel :=
+Record Metamodel :=
 {
     ModelElement: Type;
     ModelLink: Type;

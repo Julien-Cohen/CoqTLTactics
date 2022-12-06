@@ -27,10 +27,9 @@ Definition BDDEq (a b : BDDNode) :=
   end.
 
 
-#[export]
-Instance BDDM : Metamodel :=
-{
+Definition BDDM : Metamodel :=
+{|
   ModelElement := BDDNode;
   ModelLink := BDDEdge;
   elements_eqdec := BDDEq
-}.
+|}.

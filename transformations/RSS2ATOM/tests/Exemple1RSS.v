@@ -11,8 +11,8 @@ Require Import transformations.RSS2ATOM.RSS.
 Open Scope string_scope.
 
 
-Definition Exemple1RSS : Model RSSMetamodel_Object RSSMetamodel_Link :=
-	(Build_Model
+Definition Exemple1RSS : Model RSSMetamodel_Metamodel_Instance :=
+	(Build_Model RSSMetamodel_Metamodel_Instance
 		(
 		(Build_RSSMetamodel_Object ChannelClass (BuildChannel  "Atoute.org"  (Some "http://www.atoute.org/") ""  (Some "")  (Some "")  (Some "")  (Some "")  (Some "")  (Some "")  (Some 0)  (Some "")  (Some 0)  (Some "")  None   (Some ""))) :: 
 		(Build_RSSMetamodel_Object RSSClass (BuildRSS  "0.91")) :: 
