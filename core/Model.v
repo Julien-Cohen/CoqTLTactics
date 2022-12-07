@@ -7,12 +7,12 @@ Require ListUtils.
 Require Import Metamodel.
 
 (** * Model
-  Each model is constructed by a list of {@code ModelElement} and {@ModelLink}. **)
+  Each model is constructed by a list of {@code ElementType} and {@LinkType}. **)
 
 Record Model (MM:Metamodel) :=
   {
-    modelElements : list MM.(ModelElement);
-    modelLinks : list MM.(ModelLink);
+    modelElements : list MM.(ElementType);
+    modelLinks : list MM.(LinkType);
   }.
 
 Definition Model_beq {MM: Metamodel} (m1 m2: Model MM) :=

@@ -17,7 +17,7 @@ Section SemanticsModeling.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.  
 
-(*Fixpoint checkTypes (ses: list SourceModelElement) (scs: list SourceEKind) : bool :=
+(* Fixpoint checkTypes (ses: list SourceElementType) (scs: list smmm.(EKind)) : bool :=
   match ses, scs with
   | se::ses', sc::scs' => 
     match (toEData sc se) with
@@ -26,56 +26,57 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
     end
   | nil, nil => true
   | _, _ => false
-  end.*)
+  end. *) 
 
-(*Definition evalGuardExpr (r : ConcreteRule (smm:=smm)) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
+(*
+Definition evalGuardExpr (r : ConcreteRule (smm:=smm)) (sm: SourceModel) (sp: list SourceElementType) : option bool :=
   if (checkTypes sp (ConcreteRule_getInTypes (smm:=smm) r)) then
-    @evalGuardExpr' SourceModelElement SourceModelLink TargetModelElement TargetModelLink (parseRule r) sm sp
+    @evalGuardExpr' SourceElementType SourceModelLink TargetElementType TargetModelLink (parseRule r) sm sp
   else Some false. *)
 
 (* ** Resolve *)
 
-(*Definition TraceLink' := @TraceLink SourceModelElement TargetModelElement.*)
+(*Definition TraceLink' := @TraceLink SourceElementType TargetElementType.*)
 
-Local Notation TargetEKind := tmm.(EKind).
+Local Notation TargetEKind := tmmm.(EKind).
 
-Definition denoteOutput (k: TargetEKind) (f: option TargetModelElement): option (denoteEDatatype k) :=
+Definition denoteOutput (k: TargetEKind) (f: option TargetElementType): option (denoteEDatatype k) :=
     match f with
     | Some e => toEData k e
     | _ => None
     end.
 
-Definition denoteOutputList (k: TargetEKind) (f: option (list TargetModelElement)): option (list (denoteEDatatype k)) :=
+Definition denoteOutputList (k: TargetEKind) (f: option (list TargetElementType)): option (list (denoteEDatatype k)) :=
     match f with
-    | Some l => Some (flat_map (fun e:TargetModelElement => optionToList (toEData k e)) l)
+    | Some l => Some (flat_map (fun e:TargetElementType => optionToList (toEData k e)) l)
     | _ => None
     end.
 
 
 Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
-            (k: TargetEKind) (sp: list SourceModelElement)
+            (k: TargetEKind) (sp: list SourceElementType)
             (iter : nat) : option (denoteEDatatype k) :=
   denoteOutput k (resolveIter tls sm name sp iter).
 
 Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (k: TargetEKind) (sp: list SourceModelElement) : option (denoteEDatatype k) :=
+  (k: TargetEKind) (sp: list SourceElementType) : option (denoteEDatatype k) :=
   denoteOutput k (resolve tr sm name sp).
 
 Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (k: TargetEKind) (sps: list(list SourceModelElement)) (iter: nat)
+  (k: TargetEKind) (sps: list(list SourceElementType)) (iter: nat)
   : option (list (denoteEDatatype k)) :=
   denoteOutputList k (resolveAllIter tr sm name sps iter).
 
 Definition resolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (k: TargetEKind) (sps: list(list SourceModelElement)) : option (list (denoteEDatatype k)) :=
+  (k: TargetEKind) (sps: list(list SourceElementType)) : option (list (denoteEDatatype k)) :=
   denoteOutputList k (resolveAll tr sm name sps).
 
 Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (k: TargetEKind) (sp: option (list SourceModelElement)) : option (denoteEDatatype k) :=
+  (k: TargetEKind) (sp: option (list SourceElementType)) : option (denoteEDatatype k) :=
   denoteOutput k (maybeResolve tr sm name sp).
 
 Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (k: TargetEKind) (sp: option (list (list SourceModelElement))) : option (list (denoteEDatatype k)) :=
+  (k: TargetEKind) (sp: option (list (list SourceElementType))) : option (list (denoteEDatatype k)) :=
   denoteOutputList k (maybeResolveAll tr sm name sp).
 
 End SemanticsModeling.

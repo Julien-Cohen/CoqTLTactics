@@ -39,20 +39,20 @@ Class ModelingMetamodel (mm : Metamodel) :=
 {
     EKind: Type;
     LKind: Type;
-    elements: Sum mm.(ModelElement) EKind;
-    links: Sum mm.(ModelLink) LKind;
+    elements: Sum mm.(ElementType) EKind;
+    links: Sum mm.(LinkType) LKind;
     
     (* Denotation *)
     denoteEDatatype: EKind -> Set := elements.(denoteDatatype);
     denoteLDatatype: LKind -> Set := links.(denoteDatatype);
   
     (* Downcasting *)
-    toEData: forall (k:EKind), mm.(ModelElement) -> option (denoteEDatatype k) := elements.(toRawData) ;
-    toLData: forall (k:LKind), mm.(ModelLink) -> option (denoteLDatatype k) := links.(toRawData); (* not used *)
+    toEData: forall (k:EKind), mm.(ElementType) -> option (denoteEDatatype k) := elements.(toRawData) ;
+    toLData: forall (k:LKind), mm.(LinkType) -> option (denoteLDatatype k) := links.(toRawData); (* not used *)
   
     (* Upcasting *)
-    toModelElement: forall (k: EKind), (denoteEDatatype k) -> mm.(ModelElement) := elements.(constuctor) ;
-    toModelLink: forall (k: LKind), (denoteLDatatype k) -> mm.(ModelLink) := links.(constuctor);
+    toModelElement: forall (k: EKind), (denoteEDatatype k) -> mm.(ElementType) := elements.(constuctor) ;
+    toModelLink: forall (k: LKind), (denoteLDatatype k) -> mm.(LinkType) := links.(constuctor);
 
 }.
 

@@ -20,8 +20,8 @@ Context {tc: TransformationConfiguration}.
 
 Inductive TraceLink : Type :=
   buildTraceLink : 
-    (list SourceModelElement * nat * string)
-    -> TargetModelElement
+    (list SourceElementType * nat * string)
+    -> TargetElementType
     -> TraceLink.
 
 Definition TraceLink_getSourcePattern (tl: TraceLink):=

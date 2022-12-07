@@ -5,11 +5,11 @@ Class TransformationConfiguration := {
   SourceMetamodel: Metamodel;
   TargetMetamodel: Metamodel;
 
-  SourceModelElement:= @ModelElement SourceMetamodel;
-  SourceModelLink:= @ModelLink SourceMetamodel;
+  SourceElementType:= @ElementType SourceMetamodel;
+  SourceLinkType:= @LinkType SourceMetamodel;
 
-  TargetModelElement:= @ModelElement TargetMetamodel;
-  TargetModelLink:= @ModelLink TargetMetamodel;
+  TargetElementType:= @ElementType TargetMetamodel;
+  TargetLinkType:= @LinkType TargetMetamodel;
 
   SourceModel := Model SourceMetamodel;
   TargetModel := Model TargetMetamodel;

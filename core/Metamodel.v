@@ -3,10 +3,10 @@
 
 Record Metamodel :=
 {
-    ModelElement: Type;
-    ModelLink: Type;
+    ElementType: Type;
+    LinkType: Type;
     
-    elements_eqdec: ModelElement -> ModelElement -> bool; (* FIXME : no semantics with respect to equality *)
-    links_eqdec: ModelLink -> ModelLink -> bool; 
+    elements_eqdec: ElementType -> ElementType -> bool; (* FIXME : no semantics with respect to equality *)
+    links_eqdec: LinkType -> LinkType -> bool; 
 
 }.

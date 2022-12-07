@@ -11,9 +11,9 @@ Section ConcreteExpressions.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.  
 
-Local Notation SourceEKind := smm.(EKind).
-Local Notation TargetEKind := tmm.(EKind).
-Local Notation TargetLKind := tmm.(LKind).
+Local Notation SourceEKind := smmm.(EKind).
+Local Notation TargetEKind := tmmm.(EKind).
+Local Notation TargetLKind := tmmm.(LKind).
 
 (** ** Generic functions generation *)
 
@@ -31,7 +31,7 @@ Fixpoint wrap
   {T : Type} 
   (skinds : list SourceEKind) 
   (imp : denoteSignature skinds T)
-  (sl : list SourceModelElement) {struct skinds} : 
+  (sl : list SourceElementType) {struct skinds} : 
   option T :=
   match (skinds,sl) 
         as c
@@ -61,9 +61,9 @@ Fixpoint wrap
 
 
 
-Local Notation instanceof := mtc.(smm).(elements).(instanceof).
+Local Notation instanceof := mtc.(smmm).(elements).(instanceof).
 
-Fixpoint wrap' (l:list SourceEKind) (sl : list SourceModelElement) : bool :=
+Fixpoint wrap' (l:list SourceEKind) (sl : list SourceElementType) : bool :=
   match (l, sl) with
   | (nil, nil) => true
   | (k1::r1, e2::r2) => instanceof k1 e2 && wrap' r1 r2 
@@ -80,10 +80,10 @@ Fixpoint wrapElement
   (skinds : list SourceEKind) 
   (tk : TargetEKind) 
   (imp : denoteSignature skinds (denoteEDatatype tk))
-  (selements : list SourceModelElement) {struct skinds} :
-  option TargetModelElement :=
+  (selements : list SourceElementType) {struct skinds} :
+  option TargetElementType :=
   match (skinds,selements) as c
-        return (denoteSignature (fst c) (denoteEDatatype tk) -> option TargetModelElement)
+        return (denoteSignature (fst c) (denoteEDatatype tk) -> option TargetElementType)
   with
 
   | (nil, nil) => 
@@ -111,16 +111,16 @@ Fixpoint wrapLink
   (r : TargetLKind) 
   (imp : denoteSignature skinds
            (denoteEDatatype k -> option (denoteLDatatype r)))
-  (selements : list SourceModelElement)
-  (v : TargetModelElement) {struct skinds}
+  (selements : list SourceElementType)
+  (v : TargetElementType) {struct skinds}
   :       
   
-        option (list TargetModelLink)
+        option (list TargetLinkType)
 := 
 
    match (skinds, selements) as c
      return (denoteSignature (fst c) (denoteEDatatype k -> option (denoteLDatatype r)) ->
-        option (list TargetModelLink))
+        option (list TargetLinkType))
    with
      
    | (nil, nil) => 
@@ -152,7 +152,7 @@ Fixpoint wrapLink
 (** ** Use of those generators *)
 
 Definition GuardFunction : Type :=
-  SourceModel -> (list SourceModelElement) -> bool.
+  SourceModel -> (list SourceElementType) -> bool.
 
 (* BEGIN FIXME *)
 Definition drop_option_to_bool a :=
@@ -172,7 +172,7 @@ Definition makeEmptyGuard (l : list SourceEKind) : GuardFunction :=
   fun _ => wrap' l.
 
 Definition IteratorFunction : Type :=
-  SourceModel -> (list SourceModelElement) -> option nat.
+  SourceModel -> (list SourceElementType) -> option nat.
 
 Definition makeIterator (l : list SourceEKind)
   (imp : SourceModel -> denoteSignature l nat) :
@@ -180,7 +180,7 @@ Definition makeIterator (l : list SourceEKind)
   fun sm => wrap l (imp sm).
 
 Definition ElementFunction : Type :=
-  nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement.
+  nat -> SourceModel -> (list SourceElementType) -> option TargetElementType.
 
 Definition makeElement (l : list SourceEKind) (k : TargetEKind)
   (imp : nat -> SourceModel -> denoteSignature l (denoteEDatatype k)) :
@@ -189,7 +189,7 @@ Definition makeElement (l : list SourceEKind) (k : TargetEKind)
 
 Definition LinkFunction : Type :=
   list TraceLink
-  -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink).
+  -> nat -> SourceModel -> (list SourceElementType) -> TargetElementType -> option (list TargetLinkType).
 
 Definition makeLink (l : list SourceEKind) (k : TargetEKind) (r : TargetLKind)
   (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteEDatatype k -> option (denoteLDatatype r))) :

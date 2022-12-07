@@ -178,8 +178,8 @@ Defined.
 Definition MealyMetamodel_Metamodel_Instance : 
   Metamodel :=
   {|
-    ModelElement := MealyMetamodel_Object;
-    ModelLink := MealyMetamodel_Link;
+    ElementType := MealyMetamodel_Object;
+    LinkType := MealyMetamodel_Link;
     elements_eqdec :=beq_MealyMetamodel_Object ;
     links_eqdec := beq_MealyMetamodel_Link
   |}.

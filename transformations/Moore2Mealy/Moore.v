@@ -178,8 +178,8 @@ Defined.
 Definition MooreMetamodel_Metamodel_Instance : 
   Metamodel :=
   {|
-    ModelElement := MooreMetamodel_Object;
-    ModelLink := MooreMetamodel_Link;
+    ElementType := MooreMetamodel_Object;
+    LinkType := MooreMetamodel_Link;
     elements_eqdec := beq_MooreMetamodel_Object ;
     links_eqdec := beq_MooreMetamodel_Link
   |}.

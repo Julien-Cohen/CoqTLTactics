@@ -71,8 +71,8 @@ Inductive TTRef :=
 
 Definition TTM : Metamodel :=
   {| 
-    ModelElement := TTElem ;
-    ModelLink := TTRef ;
+    ElementType := TTElem ;
+    LinkType := TTRef ;
     elements_eqdec := TTEq ;
     links_eqdec := fun _ _ => true
   |}.

@@ -23,16 +23,16 @@ Context {tc: TransformationConfiguration}.
 Inductive OutputPatternElement : Type :=
   buildOutputPatternElement :
     (* id *) string 
-    (* element expr *) -> (nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
-    (* link expr *) -> ((SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement) 
-                         -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink)) -> OutputPatternElement.
+    (* element expr *) -> (nat -> SourceModel -> (list SourceElementType) -> option TargetElementType) 
+    (* link expr *) -> ((SourceModel -> string -> list SourceElementType -> nat -> option TargetElementType) 
+                         -> nat -> SourceModel -> (list SourceElementType) -> TargetElementType -> option (list TargetLinkType)) -> OutputPatternElement.
  
 Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
   match o with
     buildOutputPatternElement y _ _ => y
   end.
 
-Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement :=
+Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -> SourceModel -> (list SourceElementType) -> option TargetElementType :=
   match o with
     buildOutputPatternElement _ y _ => y
   end.
@@ -47,8 +47,8 @@ Definition OutputPatternElement_getLinkExpr (o: OutputPatternElement) :=
 Inductive Rule : Type :=
   buildRule :
     (* name *) string
-    (* from *) -> (SourceModel -> (list SourceModelElement) -> option bool)
-    (* for *) -> (SourceModel -> (list SourceModelElement) -> option nat)
+    (* from *) -> (SourceModel -> (list SourceElementType) -> option bool)
+    (* for *) -> (SourceModel -> (list SourceElementType) -> option nat)
     (* to *) -> (list OutputPatternElement)
     -> Rule.
 
@@ -57,12 +57,12 @@ Definition Rule_getName (x : Rule) : string :=
     buildRule y _ _ _ => y
   end.
   
-Definition Rule_getGuardExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> option bool :=
+Definition Rule_getGuardExpr (x : Rule) : SourceModel -> (list SourceElementType) -> option bool :=
   match x with
     buildRule _ y _ _ => y
   end.
 
-Definition Rule_getIteratorExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> option nat :=
+Definition Rule_getIteratorExpr (x : Rule) : SourceModel -> (list SourceElementType) -> option nat :=
   match x with
     buildRule _ _ y _ => y
   end.

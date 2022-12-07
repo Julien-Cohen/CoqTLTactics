@@ -33,8 +33,8 @@ Definition BDDEdege_beq a b :=
 
 Definition BDDM : Metamodel :=
 {|
-  ModelElement := BDDNode;
-  ModelLink := BDDEdge;
+  ElementType := BDDNode;
+  LinkType := BDDEdge;
   elements_eqdec := BDDEq ;
   links_eqdec :=  BDDEdege_beq
 |}.

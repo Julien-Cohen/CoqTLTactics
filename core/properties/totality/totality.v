@@ -29,8 +29,8 @@ Require Import transformations.Moore2Mealy.Moore2Mealy.
 (** Totality on model elements                               *)
 
 Theorem Totality_elem :
-forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-      (exists (sp : list SourceModelElement),
+forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
+      (exists (sp : list SourceElementType),
           In sp (allTuples tr sm) /\
           In te (instantiatePattern tr sm sp)) ->
           In te (execute tr sm).(modelElements).
@@ -40,7 +40,7 @@ Qed.
 
 (*
 Theorem Totality_elem:
-forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (te : TargetModelElement),
+forall (tr: Transformation) (sm : SourceModel) (sp : list SourceElementType) (te : TargetElementType),
 In sp (allTuples tr sm) -> 
 In te (instantiatePattern tr sm sp) ->
 In te (allModelElements (execute tr sm)).
@@ -57,8 +57,8 @@ Qed.
 (** Totality on model links                                  *)
 
 Theorem Totality_links :
-forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
-      (exists (sp : list SourceModelElement),
+forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
+      (exists (sp : list SourceElementType),
           In sp (allTuples tr sm) /\
           In tl (applyPattern tr sm sp)) -> 
           In tl (execute tr sm).(modelLinks) .
@@ -68,7 +68,7 @@ Qed.
 
 (*
 Theorem Totality_link:
-forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (tl : TargetModelLink),
+forall (tr: Transformation) (sm : SourceModel) (sp : list SourceElementType) (tl : TargetLinkType),
 In sp (allTuples tr sm) -> 
 In tl (applyPattern tr sm sp) ->
 In tl (allModelLinks (execute tr sm)).

@@ -35,24 +35,24 @@ Definition Expr (A: Type) (B: Type) : Type := A -> B. (* Interface for future ex
 
 Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a.
 
-Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : bool :=
+Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceElementType) : bool :=
   evalExpr r.(r_guard) sm sp.
 
-Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
+Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceElementType) :
   nat :=
   match (evalExpr r.(r_iterator) sm sp) with
   | Some n => n
   | _ => 0
   end.
 
-Definition evalOutputPatternElementExpr (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (o: OutputPatternElement)
-  : option TargetModelElement := 
+Definition evalOutputPatternElementExpr (sm: SourceModel) (sp: list SourceElementType) (iter: nat) (o: OutputPatternElement)
+  : option TargetElementType := 
 (evalExpr (OutputPatternElement_getElementExpr o) iter sm sp).
 
 Definition evalOutputPatternLinkExpr
-            (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: nat) (tr: list TraceLink)
+            (sm: SourceModel) (sp: list SourceElementType) (oe: TargetElementType) (iter: nat) (tr: list TraceLink)
             (o: OutputPatternElement)
-  : option (list TargetModelLink) :=
+  : option (list TargetLinkType) :=
 (evalExpr (OutputPatternElement_getLinkExpr o) tr iter sm sp oe).
 
 End Expressions.

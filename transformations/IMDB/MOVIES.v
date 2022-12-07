@@ -321,8 +321,8 @@ Defined.
 Definition moviesMetamodel_Metamodel_Instance : 
   Metamodel :=
   {|
-    ModelElement := moviesMetamodel_Object;
-    ModelLink := moviesMetamodel_Link;
+    ElementType := moviesMetamodel_Object;
+    LinkType := moviesMetamodel_Link;
     elements_eqdec := beq_moviesMetamodel_Object ;
     links_eqdec := beq_moviesMetamodel_Link
   |}.

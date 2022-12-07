@@ -3,7 +3,7 @@ Require Import core.modeling.ModelingMetamodel.
 
 Class ModelingTransformationConfiguration (tc: TransformationConfiguration):= {
 
-  smm: ModelingMetamodel SourceMetamodel;
-  tmm: ModelingMetamodel TargetMetamodel;
+  smmm: ModelingMetamodel SourceMetamodel;
+  tmmm: ModelingMetamodel TargetMetamodel;
 
 }.

@@ -160,8 +160,8 @@ Defined.
 Definition PersonsMetamodel_Metamodel_Instance : 
   Metamodel :=
   {|
-    ModelElement := PersonsMetamodel_Object;
-    ModelLink := PersonsMetamodel_Link;
+    ElementType := PersonsMetamodel_Object;
+    LinkType := PersonsMetamodel_Link;
     elements_eqdec := beq_PersonsMetamodel_Object ;
     links_eqdec := beq_PersonsMetamodel_Link
   |}.

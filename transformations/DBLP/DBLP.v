@@ -767,8 +767,8 @@ Defined.
 Definition DBLPMetamodel_Metamodel_Instance : 
   Metamodel :=
   {|
-    ModelElement := DBLPMetamodel_Object;
-    ModelLink := DBLPMetamodel_Link;
+    ElementType := DBLPMetamodel_Object;
+    LinkType := DBLPMetamodel_Link;
     elements_eqdec := beq_DBLPMetamodel_Object ;
     links_eqdec := beq_DBLPMetamodel_Link
   |}.

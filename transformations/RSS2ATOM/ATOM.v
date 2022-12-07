@@ -785,8 +785,8 @@ Defined.
 Definition ATOMMetamodel_Metamodel_Instance : 
   Metamodel :=
   {|
-    ModelElement := ATOMMetamodel_Object;
-    ModelLink := ATOMMetamodel_Link;
+    ElementType := ATOMMetamodel_Object;
+    LinkType := ATOMMetamodel_Link;
     elements_eqdec :=  beq_ATOMMetamodel_Object ;
     links_eqdec := beq_ATOMMetamodel_Link
   |}.

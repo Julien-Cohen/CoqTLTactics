@@ -628,8 +628,8 @@ Defined.
 Definition RSSMetamodel_Metamodel_Instance : 
   Metamodel :=
   {|
-    ModelElement := RSSMetamodel_Object;
-    ModelLink := RSSMetamodel_Link;
+    ElementType := RSSMetamodel_Object;
+    LinkType := RSSMetamodel_Link;
     elements_eqdec := beq_RSSMetamodel_Object ;
     links_eqdec := beq_RSSMetamodel_Link
   |}.

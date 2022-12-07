@@ -23,15 +23,15 @@ Context {tc: TransformationConfiguration}.
 Inductive OutputPatternElement : Type :=
   buildOutputPatternElement :
     string 
-    -> (nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
-    -> (list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink)) -> OutputPatternElement.
+    -> (nat -> SourceModel -> (list SourceElementType) -> option TargetElementType) 
+    -> (list TraceLink -> nat -> SourceModel -> (list SourceElementType) -> TargetElementType -> option (list TargetLinkType)) -> OutputPatternElement.
 
 Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
   match o with
     buildOutputPatternElement y _ _ => y
   end.
 
-Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement :=
+Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -> SourceModel -> (list SourceElementType) -> option TargetElementType :=
   match o with
     buildOutputPatternElement _ y _ => y
   end.
@@ -46,8 +46,8 @@ Definition OutputPatternElement_getLinkExpr (o: OutputPatternElement) :=
 Record Rule : Type :=
   buildRule {
       r_name : string ;
-      r_guard : SourceModel -> list SourceModelElement -> bool ;
-      r_iterator : SourceModel -> list SourceModelElement -> option nat ;
+      r_guard : SourceModel -> list SourceElementType -> bool ;
+      r_iterator : SourceModel -> list SourceElementType -> option nat ;
       r_outputPattern : list OutputPatternElement
     } .
 

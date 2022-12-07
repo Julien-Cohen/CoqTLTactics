@@ -29,9 +29,9 @@ Require Import transformations.Moore2Mealy.Moore2Mealy.
 (** Surjectivity on model elements                           *)
 
 Theorem Surjectivity_elem :
-forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
+forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
       In te (execute tr sm).(modelElements) ->
-      (exists (sp : list SourceModelElement),
+      (exists (sp : list SourceElementType),
           In sp (allTuples tr sm) /\
           In te (instantiatePattern tr sm sp)).
 Proof.
@@ -42,9 +42,9 @@ Qed.
 (** Surjectivity on model links                              *)
 
 Theorem Surjectivity_links :
-forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
+forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
       In tl (execute tr sm).(modelLinks) ->
-      (exists (sp : list SourceModelElement),
+      (exists (sp : list SourceElementType),
           In sp (allTuples tr sm) /\
           In tl (applyPattern tr sm sp)).
 Proof.

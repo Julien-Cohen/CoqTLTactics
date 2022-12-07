@@ -258,8 +258,8 @@ Defined.
 Definition FamiliesMetamodel_Metamodel_Instance : 
   Metamodel :=
   {|
-    ModelElement := FamiliesMetamodel_Object;
-    ModelLink := FamiliesMetamodel_Link;
+    ElementType := FamiliesMetamodel_Object;
+    LinkType := FamiliesMetamodel_Link;
     elements_eqdec := beq_FamiliesMetamodel_Object ;
     links_eqdec := beq_FamiliesMetamodel_Link
   |}.

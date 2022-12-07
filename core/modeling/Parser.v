@@ -11,8 +11,8 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 (* parse Concrete syntax into abstract syntax. *)
 
-Local Notation SourceEKind := smm.(EKind).
-Local Notation TargetEKind := tmm.(EKind).
+Local Notation SourceEKind := smmm.(EKind).
+Local Notation TargetEKind := tmmm.(EKind).
 
 Section Parser.
 
@@ -24,7 +24,7 @@ Definition parseOutputPatternLink (inkinds: list SourceEKind) (outtype: TargetEK
 
 Definition parseOutputPatternLinks (inkinds: list SourceEKind) (outtype: TargetEKind)
   (cr: list (ConcreteOutputPatternLink inkinds outtype)) := 
-    fun (tls:list TraceLink) (iter:nat) (sm:SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) =>
+    fun (tls:list TraceLink) (iter:nat) (sm:SourceModel) (sp: list SourceElementType) (te: TargetElementType) =>
     Some (flat_map (fun (x: ConcreteOutputPatternLink inkinds outtype) => optionListToList (parseOutputPatternLink inkinds outtype x tls iter sm sp te)) cr).
 
 Definition parseOutputPatternElement (inkinds: list SourceEKind) (co: ConcreteOutputPatternElement inkinds) : OutputPatternElement :=

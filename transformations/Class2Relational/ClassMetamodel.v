@@ -188,8 +188,8 @@ Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
 
 Definition ClassMM : Metamodel :=
 {|
-  ModelElement := Element ;
-  ModelLink := Link ;
+  ElementType := Element ;
+  LinkType := Link ;
   elements_eqdec := beq_Element ;
   links_eqdec := beq_Link
 |}.

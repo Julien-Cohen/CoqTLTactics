@@ -12,9 +12,9 @@ Section ConcreteSyntax.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.
 
-Local Notation SourceEKind := smm.(EKind).
-Local Notation TargetEKind := tmm.(EKind).
-Local Notation TargetLKind := tmm.(LKind).
+Local Notation SourceEKind := smmm.(EKind).
+Local Notation TargetEKind := tmmm.(EKind).
+Local Notation TargetLKind := tmmm.(LKind).
 
 
 (** ** Syntax **)
