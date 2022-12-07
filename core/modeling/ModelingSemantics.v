@@ -37,6 +37,8 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 (*Definition TraceLink' := @TraceLink SourceModelElement TargetModelElement.*)
 
+Local Notation TargetEKind := tmm.(EKind).
+
 Definition denoteOutput (k: TargetEKind) (f: option TargetModelElement): option (denoteEDatatype k) :=
     match f with
     | Some e => toEData k e

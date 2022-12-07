@@ -11,6 +11,10 @@ Section ConcreteExpressions.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.  
 
+Local Notation SourceEKind := smm.(EKind).
+Local Notation TargetEKind := tmm.(EKind).
+Local Notation TargetLKind := tmm.(LKind).
+
 (** ** Generic functions generation *)
 
 (** Convert a list of kinds into a function type. *)
@@ -50,28 +54,12 @@ Fixpoint wrap
   | (nil, _::_) => mismatch
 
           
-  end imp
-.
-(** Example : wrap D [k1;k2;k3] (f := fun a b c => d) [C1 e1 ; C2 e2 ; C3 e3] = Some (f e1 e2 e3) *)
-(** Example : wrap D [k1;k2;k3] (f := fun a b c => d) [C1 e1 ; C2 e2 ] = None *)
-(** Example : wrap D [k1;k2;k3] (f := fun a b c => d) [C1 e1; C2 e2 ;C4 e2] = None (k3 and C4 do not match) *)
+  end imp.
+(** Example : wrap [k1;k2;k3] f [C1 e1 ; C2 e2 ; C3 e3] = Some (f e1 e2 e3) (if all the types match) *)
+(** Example : wrap [k1;k2;k3] f [C1 e1 ; C2 e2 ] = None *)
+(** Example : wrap [k1;k2;k3] f [C1 e1; C2 e2 ;C4 e2] = None (k3 and C4 do not match) *)
 
 
-Remark wrap_len :
-  forall t l1 (D:denoteSignature l1 t) l2,
-    length l1 <> length l2 ->
-    wrap l1 D l2 = None.
-Proof.
-  induction l1 ; intros D l2 L ; destruct l2.
-  { contradict L ; reflexivity. }
-  { reflexivity. }
-  { reflexivity. }
-  { simpl.
-    destruct (toEData a s).
-    + apply IHl1. contradict L. simpl. congruence.
-    + reflexivity.
-  }
-Qed.
 
 Local Notation instanceof := mtc.(smm).(elements).(instanceof).
 
@@ -84,21 +72,6 @@ Fixpoint wrap' (l:list SourceEKind) (sl : list SourceModelElement) : bool :=
   end. 
 
 
-Remark wrap'_len :
-  forall l1  l2,
-    length l1 <> length l2 ->
-    wrap' l1 l2 = false.
-Proof.
-  induction l1 ; intros l2 L ; destruct l2.
-  { contradict L ; reflexivity. }
-  { reflexivity. }
-  { reflexivity. }
-  { simpl.
-    destruct (instanceof a s).
-    + apply IHl1. contradict L. simpl. congruence.
-    + reflexivity.
-  }
-Qed.
 
 
 
@@ -176,6 +149,8 @@ Fixpoint wrapLink
    end imp .
 
 
+(** ** Use of those generators *)
+
 Definition GuardFunction : Type :=
   SourceModel -> (list SourceModelElement) -> bool.
 
@@ -194,7 +169,7 @@ Definition makeGuard
 (* END FIXME *)
 
 Definition makeEmptyGuard (l : list SourceEKind) : GuardFunction :=
-  fun sm => wrap' l.
+  fun _ => wrap' l.
 
 Definition IteratorFunction : Type :=
   SourceModel -> (list SourceModelElement) -> option nat.

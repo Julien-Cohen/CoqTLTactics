@@ -11,6 +11,9 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 (* parse Concrete syntax into abstract syntax. *)
 
+Local Notation SourceEKind := smm.(EKind).
+Local Notation TargetEKind := tmm.(EKind).
+
 Section Parser.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.

@@ -154,7 +154,7 @@ Proof.
     destruct r_guard ; simpl.
     { 
       unfold ConcreteExpressions.makeGuard. simpl.
-      destruct (toEData s e1) ; reflexivity.
+      destruct (toEData e e1) ; reflexivity.
     }
     { apply andb_false_r. }
   }

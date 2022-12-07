@@ -39,6 +39,9 @@ Scheme Equality for list.
 
 Set Implicit Arguments.
 
+Local Notation TargetEKind := tmm.(EKind).
+
+
 Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: ModelingTransformationConfiguration tc) (ts: TransformationSyntax tc)
   (t: TransformationEngine ts) :=
   {

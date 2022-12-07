@@ -12,6 +12,11 @@ Section ConcreteSyntax.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.
 
+Local Notation SourceEKind := smm.(EKind).
+Local Notation TargetEKind := tmm.(EKind).
+Local Notation TargetLKind := tmm.(LKind).
+
+
 (** ** Syntax **)
 
 Fixpoint denoteFunction (skinds : list SourceEKind) (otype: Type) :=
@@ -23,6 +28,8 @@ Fixpoint denoteFunction (skinds : list SourceEKind) (otype: Type) :=
 Definition outputPatternLink
 (skinds : list SourceEKind) (tkind: TargetEKind)  (tref: TargetLKind):=
 denoteFunction skinds ((denoteEDatatype tkind) -> option (denoteLDatatype tref)).
+
+
 
 Definition outputPatternElementTypes
 (skinds : list SourceEKind) (tkind: TargetEKind) :=
