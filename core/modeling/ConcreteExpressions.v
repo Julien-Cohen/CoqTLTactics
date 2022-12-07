@@ -13,8 +13,8 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 (** ** Generic functions generation *)
 
-(** Convert a list of meta-types into a function type. *)
-(** Example : [denoteSignature [A;B;C] D = {A}->{B}->{C}->D .] *) 
+(** Convert a list of kinds into a function type. *)
+(** Example : [denoteSignature [A;B;C] D = a -> b -> c -> d .] *) 
 Fixpoint denoteSignature (l : list SourceEKind) (r : Type) : Type :=
   match l with
   | nil => r
@@ -47,8 +47,9 @@ Fixpoint wrapOption
           
   end imp
 .
-(** Example : wrapOption D [A;B;C] (f := fun a b c => d) [e1 ; e2 ; e3] = Some (f e1 e2 e3) *)
-(** Example : wrapOption D [A;B;C] (f := fun a b c => d) [e1 ; e2 ] = None *)
+(** Example : wrapOption D [k1;k2;k3] (f := fun a b c => d) [C1 e1 ; C2 e2 ; C3 e3] = Some (f e1 e2 e3) *)
+(** Example : wrapOption D [k1;k2;k3] (f := fun a b c => d) [C1 e1 ; C2 e2 ] = None *)
+(** Example : wrapOption D [k1;k2;k3] (f := fun a b c => d) [C1 e1; C2 e2 ;C4 e2] = None (k3 and C4 do not match) *)
 
 
 Remark wrapOption_len :
@@ -67,14 +68,12 @@ Proof.
   }
 Qed.
 
+Notation instanceof := mtc.(smm).(elements).(instanceof).
+
 Fixpoint wrapOption' (l:list SourceEKind) (sl : list SourceModelElement) : bool :=
   match (l, sl) with
   | (nil, nil) => true
-  | (k1::r1, e2::r2) => 
-      match toEData k1 e2 with
-      | Some _ => wrapOption' r1 r2
-      | None => false
-      end
+  | (k1::r1, e2::r2) => instanceof k1 e2 && wrapOption' r1 r2 
   | (nil , _ :: _) => false
   | (_::_ , nil) => false
   end. 
@@ -90,7 +89,7 @@ Proof.
   { reflexivity. }
   { reflexivity. }
   { simpl.
-    destruct (toEData a s).
+    destruct (instanceof a s).
     + apply IHl1. contradict L. simpl. congruence.
     + reflexivity.
   }
@@ -109,6 +108,8 @@ Proof.
     + exact (Hl l' (imp x) sl').
     + exact nil.
 Defined.
+
+
 
 Definition wrapOptionElement
   (l : list SourceEKind) (k : TargetEKind)

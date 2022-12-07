@@ -29,8 +29,7 @@ Class Sum (T: Type) (K: Type):=
     toRawData: forall (k: K), T -> option (denoteDatatype k);
     constuctor: forall (k: K), (denoteDatatype k) -> T;
     instanceof : K -> T -> bool :=
-      fun k d => match toRawData k d with Some _ => true | None => false end
-                             (* FIXME : instanceof not used *)
+      fun k d => match toRawData k d with Some _ => true | None => false end                             
   }.
 
 
