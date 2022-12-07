@@ -21,8 +21,9 @@ Fixpoint denoteSignature (l : list SourceEKind) (r : Type) : Type :=
   | k :: l' => denoteEDatatype k -> denoteSignature l' r
   end.
 
+Local Notation mismatch := (fun _ => None).
 
-Fixpoint wrapOption 
+Fixpoint wrap 
   {T : Type} 
   (skinds : list SourceEKind) 
   (imp : denoteSignature skinds T)
@@ -36,29 +37,30 @@ Fixpoint wrapOption
       fun v => Some v
                  
   | (k :: rk, e::re) =>
-      fun f  =>
-        match toEData k e with
-        | Some x => wrapOption rk (f x) re
-        | None => None 
-        end
+      match toEData k e with
+      | Some d => 
+          fun f  => wrap rk (f d) re
+      
+      | None => mismatch
+      end
 
-  | (_::_, nil) => 
-      fun _ => None
+  | (_::_, nil) => mismatch
+
   
-  | (nil, _::_) => 
-      fun _ => None 
+  | (nil, _::_) => mismatch
+
           
   end imp
 .
-(** Example : wrapOption D [k1;k2;k3] (f := fun a b c => d) [C1 e1 ; C2 e2 ; C3 e3] = Some (f e1 e2 e3) *)
-(** Example : wrapOption D [k1;k2;k3] (f := fun a b c => d) [C1 e1 ; C2 e2 ] = None *)
-(** Example : wrapOption D [k1;k2;k3] (f := fun a b c => d) [C1 e1; C2 e2 ;C4 e2] = None (k3 and C4 do not match) *)
+(** Example : wrap D [k1;k2;k3] (f := fun a b c => d) [C1 e1 ; C2 e2 ; C3 e3] = Some (f e1 e2 e3) *)
+(** Example : wrap D [k1;k2;k3] (f := fun a b c => d) [C1 e1 ; C2 e2 ] = None *)
+(** Example : wrap D [k1;k2;k3] (f := fun a b c => d) [C1 e1; C2 e2 ;C4 e2] = None (k3 and C4 do not match) *)
 
 
-Remark wrapOption_len :
+Remark wrap_len :
   forall t l1 (D:denoteSignature l1 t) l2,
     length l1 <> length l2 ->
-    wrapOption l1 D l2 = None.
+    wrap l1 D l2 = None.
 Proof.
   induction l1 ; intros D l2 L ; destruct l2.
   { contradict L ; reflexivity. }
@@ -71,21 +73,21 @@ Proof.
   }
 Qed.
 
-Notation instanceof := mtc.(smm).(elements).(instanceof).
+Local Notation instanceof := mtc.(smm).(elements).(instanceof).
 
-Fixpoint wrapOption' (l:list SourceEKind) (sl : list SourceModelElement) : bool :=
+Fixpoint wrap' (l:list SourceEKind) (sl : list SourceModelElement) : bool :=
   match (l, sl) with
   | (nil, nil) => true
-  | (k1::r1, e2::r2) => instanceof k1 e2 && wrapOption' r1 r2 
+  | (k1::r1, e2::r2) => instanceof k1 e2 && wrap' r1 r2 
   | (nil , _ :: _) => false
   | (_::_ , nil) => false
   end. 
 
 
-Remark wrapOption'_len :
+Remark wrap'_len :
   forall l1  l2,
     length l1 <> length l2 ->
-    wrapOption' l1 l2 = false.
+    wrap' l1 l2 = false.
 Proof.
   induction l1 ; intros l2 L ; destruct l2.
   { contradict L ; reflexivity. }
@@ -98,34 +100,10 @@ Proof.
   }
 Qed.
 
-Fixpoint wrapList 
-  {T : Type} 
-  (skinds : list SourceEKind) 
-  (imp : denoteSignature skinds (list T))
-  (selements : list SourceModelElement) {struct skinds} : list T := 
-
-  match (skinds,selements) as c return (denoteSignature (fst c) (list T) -> list T) with
-
-  | (nil, nil) => 
-      fun l => l
-          
-  | (k :: rk, e :: re) =>
-      fun f =>
-        match toEData k e  with
-        | Some v => wrapList rk (f v) re
-        | None => nil
-        end
-          
-  | (nil, _ :: _) => fun _ => nil
-                                
-  | (_ :: _, nil) => fun _ => nil
-                                
-  end imp.
-     
 
 
 
-Fixpoint wrapOptionElement 
+Fixpoint wrapElement 
   (skinds : list SourceEKind) 
   (tk : TargetEKind) 
   (imp : denoteSignature skinds (denoteEDatatype tk))
@@ -139,20 +117,22 @@ Fixpoint wrapOptionElement
       fun v  => Some (toModelElement tk v)
 
   | (k::rk, e :: re) =>
-      fun f =>
-        v <- toEData k e ; 
-        wrapOptionElement rk tk (f v) re
+      match toEData k e with
+      | Some v =>
+          fun f => wrapElement rk tk (f v) re
 
-  | (nil , _ :: _) => 
-      fun _  => None
+      | None => mismatch 
 
-  | (_ :: _ , nil) => 
-      fun _  => None
+      end
+
+  | (nil , _ :: _) => mismatch
+
+  | (_ :: _ , nil) => mismatch
 
                                               
 end imp.
 
-Fixpoint wrapOptionLink
+Fixpoint wrapLink
   (skinds : list SourceEKind)
   (k : TargetEKind) 
   (r : TargetLKind) 
@@ -171,22 +151,27 @@ Fixpoint wrapOptionLink
    with
      
    | (nil, nil) => 
-       fun tr  =>
-          xv <- toEData k v;
-          xr <- tr xv;
-        Some [toModelLink r xr]
-         
+       match toEData k v with
+       | Some d =>
+           (fun tr =>  
+             t_d <- tr d ; Some [toModelLink r t_d])
+ 
+       | None => mismatch
+       end
+  
                                       
-   | (k1 :: rk, e :: re) =>
-       fun f =>
-          x0 <- toEData k1 e;
-          wrapOptionLink rk k r (f x0) re v
+   | (k1 :: rk, e1 :: re) =>
+       match toEData k1 e1 with
+       | Some d =>
+          fun f => wrapLink rk k r (f d) re v
 
-   | (nil, _ :: _) => 
-       fun _  => None
+       | None => mismatch
+
+       end
+
+   | (nil , _ :: _) => mismatch
                                      
-   | (_ :: _ , nil) => 
-       fun _ => None
+   | (_ :: _ , nil) => mismatch
                             
    end imp .
 
@@ -205,11 +190,11 @@ Definition makeGuard
   (l : list SourceEKind)
   (imp : SourceModel -> denoteSignature l bool) :
   GuardFunction :=
-  fun sm s => drop_option_to_bool (wrapOption l (imp sm) s).
+  fun sm s => drop_option_to_bool (wrap l (imp sm) s).
 (* END FIXME *)
 
 Definition makeEmptyGuard (l : list SourceEKind) : GuardFunction :=
-  fun sm => wrapOption' l.
+  fun sm => wrap' l.
 
 Definition IteratorFunction : Type :=
   SourceModel -> (list SourceModelElement) -> option nat.
@@ -217,7 +202,7 @@ Definition IteratorFunction : Type :=
 Definition makeIterator (l : list SourceEKind)
   (imp : SourceModel -> denoteSignature l nat) :
   IteratorFunction :=
-  fun sm => wrapOption l (imp sm).
+  fun sm => wrap l (imp sm).
 
 Definition ElementFunction : Type :=
   nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement.
@@ -225,7 +210,7 @@ Definition ElementFunction : Type :=
 Definition makeElement (l : list SourceEKind) (k : TargetEKind)
   (imp : nat -> SourceModel -> denoteSignature l (denoteEDatatype k)) :
   ElementFunction :=
-  fun it sm => wrapOptionElement l k (imp it sm).
+  fun it sm => wrapElement l k (imp it sm).
 
 Definition LinkFunction : Type :=
   list TraceLink
@@ -234,6 +219,6 @@ Definition LinkFunction : Type :=
 Definition makeLink (l : list SourceEKind) (k : TargetEKind) (r : TargetLKind)
   (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteEDatatype k -> option (denoteLDatatype r))) :
   LinkFunction :=
-  fun mt it sm => wrapOptionLink l k r (imp mt it sm).
+  fun mt it sm => wrapLink l k r (imp mt it sm).
 
 End ConcreteExpressions.
