@@ -24,26 +24,29 @@ Fixpoint denoteSignature (l : list SourceEKind) (r : Type) : Type :=
 
 Fixpoint wrapOption 
   {T : Type} 
-  (l : list SourceEKind) 
-  (imp : denoteSignature l T)
-  (sl : list SourceModelElement) {struct l} : 
+  (skinds : list SourceEKind) 
+  (imp : denoteSignature skinds T)
+  (sl : list SourceModelElement) {struct skinds} : 
   option T :=
-  match (l,sl) 
-        as l0 
-        return (denoteSignature (fst l0) T -> option T) with
+  match (skinds,sl) 
+        as c
+        return (denoteSignature (fst c) T -> option T) with
     
-  | (nil,nil) => (fun v : denoteSignature nil T => Some v)
+  | (nil,nil) => 
+      fun v => Some v
                  
   | (k :: rk, e::re) =>
-      fun (f : denoteSignature (k :: rk) T) =>
+      fun f  =>
         match toEData k e with
-        | Some x => wrapOption (T:=T) rk (f x) re
+        | Some x => wrapOption rk (f x) re
         | None => None 
         end
 
-  | (_::_, nil) => (fun _ => None)
+  | (_::_, nil) => 
+      fun _ => None
   
-  | (nil, _::_) => (fun _ => None) 
+  | (nil, _::_) => 
+      fun _ => None 
           
   end imp
 .
@@ -95,47 +98,98 @@ Proof.
   }
 Qed.
 
-Definition wrapList {T : Type} (l : list SourceEKind)
-  (imp : denoteSignature l (list T)) :
-  (list SourceModelElement) -> list T.
-Proof.
-  revert l imp. fix Hl 1. intros l imp sl.
-  destruct l as [ | l0 l'], sl as [ | s0 sl'].
-  - exact imp.
-  - exact nil.
-  - exact nil.
-  - destruct (toEData l0 s0) as [x | ].
-    + exact (Hl l' (imp x) sl').
-    + exact nil.
-Defined.
+Fixpoint wrapList 
+  {T : Type} 
+  (skinds : list SourceEKind) 
+  (imp : denoteSignature skinds (list T))
+  (selements : list SourceModelElement) {struct skinds} : list T := 
+
+  match (skinds,selements) as c return (denoteSignature (fst c) (list T) -> list T) with
+
+  | (nil, nil) => 
+      fun l => l
+          
+  | (k :: rk, e :: re) =>
+      fun f =>
+        match toEData k e  with
+        | Some v => wrapList rk (f v) re
+        | None => nil
+        end
+          
+  | (nil, _ :: _) => fun _ => nil
+                                
+  | (_ :: _, nil) => fun _ => nil
+                                
+  end imp.
+     
 
 
 
-Definition wrapOptionElement
-  (l : list SourceEKind) (k : TargetEKind)
-  (imp : denoteSignature l (denoteEDatatype k)) :
-  (list SourceModelElement) -> option TargetModelElement.
-Proof.
-  revert l imp. fix Hl 1. intros l imp sl.
-  destruct l as [ | l0 l'], sl as [ | s0 sl'].
-  - exact (Some (toModelElement k imp)).
-  - exact None.
-  - exact None.
-  - exact (x0 <- toEData l0 s0; Hl l' (imp x0) sl').
-Defined.
+Fixpoint wrapOptionElement 
+  (skinds : list SourceEKind) 
+  (tk : TargetEKind) 
+  (imp : denoteSignature skinds (denoteEDatatype tk))
+  (selements : list SourceModelElement) {struct skinds} :
+  option TargetModelElement :=
+  match (skinds,selements) as c
+        return (denoteSignature (fst c) (denoteEDatatype tk) -> option TargetModelElement)
+  with
 
-Definition wrapOptionLink
-  (l : list SourceEKind) (k : TargetEKind) (r : TargetLKind)
-  (imp : denoteSignature l (denoteEDatatype k -> option (denoteLDatatype r))) :
-  (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink).
-Proof.
-  revert l imp. fix Hl 1. intros l imp sl v.
-  destruct l as [ | l0 l'], sl as [ | s0 sl'].
-  - refine (xv <- toEData k v; xr <- imp xv; return [toModelLink r xr]).
-  - exact None.
-  - exact None.
-  - exact (x0 <- toEData l0 s0; Hl l' (imp x0) sl' v).
-Defined.
+  | (nil, nil) => 
+      fun v  => Some (toModelElement tk v)
+
+  | (k::rk, e :: re) =>
+      fun f =>
+        v <- toEData k e ; 
+        wrapOptionElement rk tk (f v) re
+
+  | (nil , _ :: _) => 
+      fun _  => None
+
+  | (_ :: _ , nil) => 
+      fun _  => None
+
+                                              
+end imp.
+
+Fixpoint wrapOptionLink
+  (skinds : list SourceEKind)
+  (k : TargetEKind) 
+  (r : TargetLKind) 
+  (imp : denoteSignature skinds
+           (denoteEDatatype k -> option (denoteLDatatype r)))
+  (selements : list SourceModelElement)
+  (v : TargetModelElement) {struct skinds}
+  :       
+  
+        option (list TargetModelLink)
+:= 
+
+   match (skinds, selements) as c
+     return (denoteSignature (fst c) (denoteEDatatype k -> option (denoteLDatatype r)) ->
+        option (list TargetModelLink))
+   with
+     
+   | (nil, nil) => 
+       fun tr  =>
+          xv <- toEData k v;
+          xr <- tr xv;
+        Some [toModelLink r xr]
+         
+                                      
+   | (k1 :: rk, e :: re) =>
+       fun f =>
+          x0 <- toEData k1 e;
+          wrapOptionLink rk k r (f x0) re v
+
+   | (nil, _ :: _) => 
+       fun _  => None
+                                     
+   | (_ :: _ , nil) => 
+       fun _ => None
+                            
+   end imp .
+
 
 Definition GuardFunction : Type :=
   SourceModel -> (list SourceModelElement) -> bool.
@@ -151,7 +205,7 @@ Definition makeGuard
   (l : list SourceEKind)
   (imp : SourceModel -> denoteSignature l bool) :
   GuardFunction :=
-  fun sm => fun s => drop_option_to_bool (wrapOption l (imp sm) s).
+  fun sm s => drop_option_to_bool (wrapOption l (imp sm) s).
 (* END FIXME *)
 
 Definition makeEmptyGuard (l : list SourceEKind) : GuardFunction :=
