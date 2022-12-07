@@ -153,11 +153,6 @@ Definition MealyMetamodel_getEReference (meli_arg : MealyMetamodel_Link) : Mealy
   | (Build_MealyMetamodel_Link meli_arg _) => meli_arg
    end.
 
-Definition MealyMetamodel_instanceOfEClass (mecl_arg: MealyMetamodel_Class) (meob_arg : MealyMetamodel_Object): bool :=
-  if MealyMetamodel_eqEClass_dec (MealyMetamodel_getEClass meob_arg) mecl_arg then true else false.
-
-Definition MealyMetamodel_instanceOfEReference (mere_arg: MealyMetamodel_Reference) (meli_arg : MealyMetamodel_Link): bool :=
-  if MealyMetamodel_eqEReference_dec (MealyMetamodel_getEReference meli_arg) mere_arg then true else false.
 
 
 Definition MealyMetamodel_toClass (mecl_arg : MealyMetamodel_Class) (meob_arg : MealyMetamodel_Object) : option (MealyMetamodel_getTypeByClass mecl_arg).
@@ -241,17 +236,17 @@ Definition Transition_getTargetObject (tr_arg : Transition) (m : MealyModel) : o
 #[export]
 Instance MealyMetamodel_ElementSum : Sum MealyMetamodel_Object MealyMetamodel_Class :=
 {
-	denoteSubType := MealyMetamodel_getTypeByClass;
-	toSubType := MealyMetamodel_toClass;
-	toSumType := MealyMetamodel_toObject;
+	denoteDatatype := MealyMetamodel_getTypeByClass;
+	toRawData := MealyMetamodel_toClass;
+	constuctor := MealyMetamodel_toObject;
 }.
 
 #[export]
 Instance MealyMetamodel_LinkSum : Sum MealyMetamodel_Link MealyMetamodel_Reference :=
 {
-	denoteSubType := MealyMetamodel_getTypeByReference;
-	toSubType := MealyMetamodel_toReference;
-	toSumType := MealyMetamodel_toLink;
+	denoteDatatype := MealyMetamodel_getTypeByReference;
+	toRawData := MealyMetamodel_toReference;
+	constuctor := MealyMetamodel_toLink;
 }.
 
 
@@ -272,3 +267,11 @@ Lemma Mealy_invert :
 Proof.
   intros ; Tactics.dep_inversion H ; assumption.
 Qed.
+
+
+(* Not Used *)
+Definition MealyMetamodel_instanceOfEClass (mecl_arg: MealyMetamodel_Class) (meob_arg : MealyMetamodel_Object): bool :=
+  if MealyMetamodel_eqEClass_dec (MealyMetamodel_getEClass meob_arg) mecl_arg then true else false.
+
+Definition MealyMetamodel_instanceOfEReference (mere_arg: MealyMetamodel_Reference) (meli_arg : MealyMetamodel_Link): bool :=
+  if MealyMetamodel_eqEReference_dec (MealyMetamodel_getEReference meli_arg) mere_arg then true else false.

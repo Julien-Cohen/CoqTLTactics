@@ -155,12 +155,6 @@ Definition getLKind (c : Link) : LinkKind :=
    | AttributeTypeLink _ => AttributeType_K
    end.
 
-Definition instanceOfEKind (k: ElementKind) (e : Element): bool :=
-  if eqEKind_dec (getEKind e) k then true else false.
-
-Definition instanceOfLKind (k: LinkKind) (e : Link): bool :=
-  if eqLKind_dec (getLKind e) k then true else false.
-
 
 Definition get_E_data (t : ElementKind) (c : Element) : option (getTypeByEKind t) :=
   match (t,c) as e return (option (getTypeByEKind (fst e))) with
@@ -270,18 +264,18 @@ Definition defaultInstanceOfClass (c: ElementKind) : (getTypeByEKind c) :=
 #[export]
 Instance ClassElementSum : Sum Element ElementKind :=
 {
-  denoteSubType := getTypeByEKind;
-  toSubType := get_E_data;
-  toSumType := lift_EKind;
+  denoteDatatype := getTypeByEKind;
+  toRawData := get_E_data;
+  constuctor := lift_EKind;
 }.
 
 
 #[export]
 Instance ClassLinkSum : Sum Link LinkKind :=
 {
-  denoteSubType := getTypeByLKind;
-  toSubType := get_L_data;
-  toSumType := lift_LKind;
+  denoteDatatype := getTypeByLKind;
+  toRawData := get_L_data;
+  constuctor := lift_LKind;
 }.
 
 
@@ -302,6 +296,13 @@ Lemma Class_invert :
 Proof.
   intros. destruct clec_arg ; simpl in * ; congruence.
 Qed.
+
+Definition instanceOfEKind (k: ElementKind) (e : Element): bool :=
+  if eqEKind_dec (getEKind e) k then true else false.
+
+Definition instanceOfLKind (k: LinkKind) (e : Link): bool :=
+  if eqLKind_dec (getLKind e) k then true else false.
+
 
 Lemma Element_dec: 
   forall (a: Element),

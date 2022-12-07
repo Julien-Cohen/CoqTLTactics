@@ -296,11 +296,6 @@ Definition moviesMetamodel_getEReference (moli_arg : moviesMetamodel_Link) : mov
   | (Build_moviesMetamodel_Link moli_arg _) => moli_arg
    end.
 
-Definition moviesMetamodel_instanceOfEClass (mocl_arg: moviesMetamodel_Class) (moob_arg : moviesMetamodel_Object): bool :=
-  if moviesMetamodel_eqEClass_dec (moviesMetamodel_getEClass moob_arg) mocl_arg then true else false.
-
-Definition moviesMetamodel_instanceOfEReference (more_arg: moviesMetamodel_Reference) (moli_arg : moviesMetamodel_Link): bool :=
-  if moviesMetamodel_eqEReference_dec (moviesMetamodel_getEReference moli_arg) more_arg then true else false.
 
 
 Definition moviesMetamodel_toClass (mocl_arg : moviesMetamodel_Class) (moob_arg : moviesMetamodel_Object) : option (moviesMetamodel_getTypeByClass mocl_arg).
@@ -499,17 +494,17 @@ Definition Clique_getPersonsObjects (cl_arg : Clique) (m : moviesModel) : option
 #[export]
 Instance moviesMetamodel_ElementSum : Sum moviesMetamodel_Object moviesMetamodel_Class :=
 {
-	denoteSubType := moviesMetamodel_getTypeByClass;
-	toSubType := moviesMetamodel_toClass;
-	toSumType := moviesMetamodel_toObject;
+	denoteDatatype := moviesMetamodel_getTypeByClass;
+	toRawData := moviesMetamodel_toClass;
+	constuctor := moviesMetamodel_toObject;
 }.
 
 #[export]
 Instance moviesMetamodel_LinkSum : Sum moviesMetamodel_Link moviesMetamodel_Reference :=
 {
-	denoteSubType := moviesMetamodel_getTypeByReference;
-	toSubType := moviesMetamodel_toReference;
-	toSumType := moviesMetamodel_toLink;
+	denoteDatatype := moviesMetamodel_getTypeByReference;
+	toRawData := moviesMetamodel_toReference;
+	constuctor := moviesMetamodel_toLink;
 }.
 
 
@@ -530,3 +525,11 @@ Lemma movies_invert :
 Proof.
   intros. Tactics.dep_inversion H. assumption.
 Qed.
+
+
+(* Not Used *)
+Definition moviesMetamodel_instanceOfEClass (mocl_arg: moviesMetamodel_Class) (moob_arg : moviesMetamodel_Object): bool :=
+  if moviesMetamodel_eqEClass_dec (moviesMetamodel_getEClass moob_arg) mocl_arg then true else false.
+
+Definition moviesMetamodel_instanceOfEReference (more_arg: moviesMetamodel_Reference) (moli_arg : moviesMetamodel_Link): bool :=
+  if moviesMetamodel_eqEReference_dec (moviesMetamodel_getEReference moli_arg) more_arg then true else false.

@@ -135,11 +135,6 @@ Definition PersonsMetamodel_getEReference (peli_arg : PersonsMetamodel_Link) : P
   | (Build_PersonsMetamodel_Link peli_arg _) => peli_arg
    end.
 
-Definition PersonsMetamodel_instanceOfEClass (pecl_arg: PersonsMetamodel_Class) (peob_arg : PersonsMetamodel_Object): bool :=
-  if PersonsMetamodel_eqEClass_dec (PersonsMetamodel_getEClass peob_arg) pecl_arg then true else false.
-
-Definition PersonsMetamodel_instanceOfEReference (pere_arg: PersonsMetamodel_Reference) (peli_arg : PersonsMetamodel_Link): bool :=
-  if PersonsMetamodel_eqEReference_dec (PersonsMetamodel_getEReference peli_arg) pere_arg then true else false.
 
 
 Definition PersonsMetamodel_toClass (pecl_arg : PersonsMetamodel_Class) (peob_arg : PersonsMetamodel_Object) : option (PersonsMetamodel_getTypeByClass pecl_arg).
@@ -215,17 +210,17 @@ Definition Person_downcastFemale (pe_arg : Person) (m : PersonsModel) : option F
 #[export]
 Instance PersonsMetamodel_ElementSum : Sum PersonsMetamodel_Object PersonsMetamodel_Class :=
 {
-	denoteSubType := PersonsMetamodel_getTypeByClass;
-	toSubType := PersonsMetamodel_toClass;
-	toSumType := PersonsMetamodel_toObject;
+	denoteDatatype := PersonsMetamodel_getTypeByClass;
+	toRawData := PersonsMetamodel_toClass;
+	constuctor := PersonsMetamodel_toObject;
 }.
 
 #[export]
 Instance PersonsMetamodel_LinkSum : Sum PersonsMetamodel_Link PersonsMetamodel_Reference :=
 {
-	denoteSubType := PersonsMetamodel_getTypeByReference;
-	toSubType := PersonsMetamodel_toReference;
-	toSumType := PersonsMetamodel_toLink;
+	denoteDatatype := PersonsMetamodel_getTypeByReference;
+	toRawData := PersonsMetamodel_toReference;
+	constuctor := PersonsMetamodel_toLink;
 }.
 
 
@@ -249,3 +244,10 @@ Proof.
   apply Eqdep.EqdepTheory.inj_pair2.
   exact H0.
 Qed.
+
+(* Not Used *)
+Definition PersonsMetamodel_instanceOfEClass (pecl_arg: PersonsMetamodel_Class) (peob_arg : PersonsMetamodel_Object): bool :=
+  if PersonsMetamodel_eqEClass_dec (PersonsMetamodel_getEClass peob_arg) pecl_arg then true else false.
+
+Definition PersonsMetamodel_instanceOfEReference (pere_arg: PersonsMetamodel_Reference) (peli_arg : PersonsMetamodel_Link): bool :=
+  if PersonsMetamodel_eqEReference_dec (PersonsMetamodel_getEReference peli_arg) pere_arg then true else false.

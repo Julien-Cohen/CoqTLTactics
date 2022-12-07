@@ -742,11 +742,6 @@ Definition DBLPMetamodel_getEReference (dbli_arg : DBLPMetamodel_Link) : DBLPMet
   | (Build_DBLPMetamodel_Link dbli_arg _) => dbli_arg
    end.
 
-Definition DBLPMetamodel_instanceOfEClass (dbcl_arg: DBLPMetamodel_Class) (dbob_arg : DBLPMetamodel_Object): bool :=
-  if DBLPMetamodel_eqEClass_dec (DBLPMetamodel_getEClass dbob_arg) dbcl_arg then true else false.
-
-Definition DBLPMetamodel_instanceOfEReference (dbre_arg: DBLPMetamodel_Reference) (dbli_arg : DBLPMetamodel_Link): bool :=
-  if DBLPMetamodel_eqEReference_dec (DBLPMetamodel_getEReference dbli_arg) dbre_arg then true else false.
 
 
 Definition DBLPMetamodel_toClass (dbcl_arg : DBLPMetamodel_Class) (dbob_arg : DBLPMetamodel_Object) : option (DBLPMetamodel_getTypeByClass dbcl_arg).
@@ -1172,17 +1167,17 @@ Definition Www_getEditorsObjects (ww_arg : Www) (m : DBLPModel) : option (list D
 #[export]
 Instance DBLPMetamodel_ElementSum : Sum DBLPMetamodel_Object DBLPMetamodel_Class :=
 {
-	denoteSubType := DBLPMetamodel_getTypeByClass;
-	toSubType := DBLPMetamodel_toClass;
-	toSumType := DBLPMetamodel_toObject;
+	denoteDatatype := DBLPMetamodel_getTypeByClass;
+	toRawData := DBLPMetamodel_toClass;
+	constuctor := DBLPMetamodel_toObject;
 }.
 
 #[export]
 Instance DBLPMetamodel_LinkSum : Sum DBLPMetamodel_Link DBLPMetamodel_Reference :=
 {
-	denoteSubType := DBLPMetamodel_getTypeByReference;
-	toSubType := DBLPMetamodel_toReference;
-	toSumType := DBLPMetamodel_toLink;
+	denoteDatatype := DBLPMetamodel_getTypeByReference;
+	toRawData := DBLPMetamodel_toReference;
+	constuctor := DBLPMetamodel_toLink;
 }.
 
 
@@ -1205,3 +1200,10 @@ Proof.
   Tactics.dep_inversion H.
   assumption.
 Qed.
+
+(* Not Used *)
+Definition DBLPMetamodel_instanceOfEClass (dbcl_arg: DBLPMetamodel_Class) (dbob_arg : DBLPMetamodel_Object): bool :=
+  if DBLPMetamodel_eqEClass_dec (DBLPMetamodel_getEClass dbob_arg) dbcl_arg then true else false.
+
+Definition DBLPMetamodel_instanceOfEReference (dbre_arg: DBLPMetamodel_Reference) (dbli_arg : DBLPMetamodel_Link): bool :=
+  if DBLPMetamodel_eqEReference_dec (DBLPMetamodel_getEReference dbli_arg) dbre_arg then true else false.

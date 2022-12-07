@@ -2,13 +2,39 @@
 Require Import core.Model.
 Require Import core.Metamodel.
 
+
+(** Consider a metamodel where the type T below is used.
+   
+   Parameter a : Type.  
+   Parameter b : Type.
+
+   Inductive T := Cons_A of a | Cons_B of b. 
+
+   We call terms of type T "elements" or "links".
+   We call a and b "datatypes". We call terms of type a or b "raw data".
+
+  In transformation rules, we have to express patterns on elements (or links). To do this we use a type which abstracts the cases in T, here the type K below.
+
+   Inductive K := A | B. 
+
+   We call the constructors/terms A and B "kinds".
+   
+   The class Sum T K expresses the correspondance between T and K. 
+*)  
+
+
 Class Sum (T: Type) (K: Type):=
   {
-    denoteSubType: K -> Set;
-    toSubType: forall (k: K), T -> option (denoteSubType k);
-    toSumType: forall (k: K), (denoteSubType k) -> T;
-
+    denoteDatatype: K -> Set;
+    toRawData: forall (k: K), T -> option (denoteDatatype k);
+    constuctor: forall (k: K), (denoteDatatype k) -> T;
+    instanceof : K -> T -> bool :=
+      fun k d => match toRawData k d with Some _ => true | None => false end
+                             (* FIXME : instanceof not used *)
   }.
+
+
+(** Metamodels contain elements and links, so a "correspondance" for a metamodel is built from two "kinds" and their two correspondances. *) 
 
 Class ModelingMetamodel (mm : Metamodel) :=
 {
@@ -18,21 +44,17 @@ Class ModelingMetamodel (mm : Metamodel) :=
     links: Sum mm.(ModelLink) LKind;
     
     (* Denotation *)
-    denoteEKind: EKind -> Set := denoteSubType;
-    denoteLKind: LKind -> Set := denoteSubType;
+    denoteEDatatype: EKind -> Set := elements.(denoteDatatype);
+    denoteLDatatype: LKind -> Set := links.(denoteDatatype);
   
     (* Downcasting *)
-    toEKind: forall (t:EKind), mm.(ModelElement) -> option (denoteEKind t) := toSubType;
-    toLKind: forall (t:LKind), mm.(ModelLink) -> option (denoteLKind t) := toSubType;
+    toEData: forall (k:EKind), mm.(ModelElement) -> option (denoteEDatatype k) := elements.(toRawData) ;
+    toLData: forall (k:LKind), mm.(ModelLink) -> option (denoteLDatatype k) := links.(toRawData); (* not used *)
   
     (* Upcasting *)
-    toModelElement: forall (t: EKind), (denoteEKind t) -> mm.(ModelElement) := toSumType;
-    toModelLink: forall (t: LKind), (denoteLKind t) -> mm.(ModelLink) := toSumType;
+    toModelElement: forall (k: EKind), (denoteEDatatype k) -> mm.(ModelElement) := elements.(constuctor) ;
+    toModelLink: forall (k: LKind), (denoteLDatatype k) -> mm.(ModelLink) := links.(constuctor);
 
 }.
 
-Definition hasType {mm: Metamodel} {mmm: ModelingMetamodel mm} (t: EKind) (e: mm.(ModelElement)) : bool :=
-  match (toEKind t e) with
-  | Some _ => true
-  | _ => false
-  end.
+

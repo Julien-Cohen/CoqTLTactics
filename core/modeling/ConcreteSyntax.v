@@ -14,49 +14,49 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 (** ** Syntax **)
 
-Fixpoint denoteFunction (sclasses : list SourceEKind) (otype: Type) :=
-  match sclasses with
+Fixpoint denoteFunction (skinds : list SourceEKind) (otype: Type) :=
+  match skinds with
   | nil => otype
-  | cons class classes' => (denoteEKind class) -> denoteFunction classes' otype
+  | cons k ks => (denoteEDatatype k) -> denoteFunction ks otype
   end.
 
 Definition outputPatternLink
-(sclasses : list SourceEKind) (tclass: TargetEKind)  (tref: TargetLKind):=
-denoteFunction (sclasses) ((denoteEKind tclass) -> option (denoteLKind tref)).
+(skinds : list SourceEKind) (tkind: TargetEKind)  (tref: TargetLKind):=
+denoteFunction skinds ((denoteEDatatype tkind) -> option (denoteLDatatype tref)).
 
 Definition outputPatternElementTypes
-(sclasses : list SourceEKind) (tclass: TargetEKind) :=
-  denoteFunction (sclasses) (denoteEKind tclass).
+(skinds : list SourceEKind) (tkind: TargetEKind) :=
+  denoteFunction skinds (denoteEDatatype tkind).
 
 Definition iteratedListTypes
-(sclasses : list SourceEKind) :=
-  denoteFunction (sclasses) nat.
+(skinds : list SourceEKind) :=
+  denoteFunction skinds nat.
 
-Definition guardTypes (sclasses : list SourceEKind) :=
-  denoteFunction (sclasses) bool.
+Definition guardTypes (skinds : list SourceEKind) :=
+  denoteFunction skinds bool.
 
-Record ConcreteOutputPatternLink (InTypes: list SourceEKind) (OutType:TargetEKind) : Type :=
+Record ConcreteOutputPatternLink (InKinds: list SourceEKind) (OutKind:TargetEKind) : Type :=
   link 
     {
-      o_OutRef: TargetLKind ;
-      o_outpat : list TraceLink -> nat -> SourceModel -> (outputPatternLink InTypes OutType o_OutRef)
+      o_OutRefKind: TargetLKind ;
+      o_outpat : list TraceLink -> nat -> SourceModel -> (outputPatternLink InKinds OutKind o_OutRefKind)
     }.
 
-Global Arguments o_OutRef {_ _}.
+Global Arguments o_OutRefKind {_ _}.
 Global Arguments o_outpat {_ _}.
 
 
-Record ConcreteOutputPatternElement (InTypes: list SourceEKind) : Type :=
+Record ConcreteOutputPatternElement (InKinds: list SourceEKind) : Type :=
   elem
     {
-      e_OutType:TargetEKind ;
+      e_OutKind:TargetEKind ;
       e_name : string ;
-      e_outpat : nat -> SourceModel -> (outputPatternElementTypes InTypes e_OutType) ;
-      e_outlink : list (ConcreteOutputPatternLink InTypes e_OutType)
+      e_outpat : nat -> SourceModel -> (outputPatternElementTypes InKinds e_OutKind) ;
+      e_outlink : list (ConcreteOutputPatternLink InKinds e_OutKind)
     }.
 
 Global Arguments e_name {_}.
-Global Arguments e_OutType {_}.
+Global Arguments e_OutKind {_}.
 Global Arguments e_outpat {_}. 
 Global Arguments e_outlink {_}. 
 
@@ -64,10 +64,10 @@ Global Arguments e_outlink {_}.
 Record ConcreteRule  :=
     { 
       r_name : string ;
-      r_InTypes: list SourceEKind ;
-      r_guard :  option (SourceModel -> (guardTypes r_InTypes)) ;
-      r_iter :  option (SourceModel -> (iteratedListTypes r_InTypes)) ;
-      r_outpat   :  (list (ConcreteOutputPatternElement r_InTypes))
+      r_InKinds: list SourceEKind ;
+      r_guard :  option (SourceModel -> (guardTypes r_InKinds)) ;
+      r_iter :  option (SourceModel -> (iteratedListTypes r_InKinds)) ;
+      r_outpat   :  (list (ConcreteOutputPatternElement r_InKinds))
     }.
 
 Inductive ConcreteTransformation : Type :=
@@ -78,8 +78,8 @@ Inductive ConcreteTransformation : Type :=
 (** ** Accessors **)
 
 
-Definition ConcreteRule_findConcreteOutputPatternElement (r: ConcreteRule) (name: string) : option (ConcreteOutputPatternElement (r_InTypes r)) :=
-  find (fun(o:ConcreteOutputPatternElement r.(r_InTypes) ) => beq_string name o.(e_name))
+Definition ConcreteRule_findConcreteOutputPatternElement (r: ConcreteRule) (name: string) : option (ConcreteOutputPatternElement (r_InKinds r)) :=
+  find (fun(o:ConcreteOutputPatternElement r.(r_InKinds) ) => beq_string name o.(e_name))
         r.(r_outpat).
 
 Definition ConcreteTransformation_getConcreteRules (x : ConcreteTransformation) : list ConcreteRule :=

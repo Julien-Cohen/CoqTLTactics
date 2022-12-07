@@ -153,11 +153,6 @@ Definition MooreMetamodel_getEReference (moli_arg : MooreMetamodel_Link) : Moore
   | (Build_MooreMetamodel_Link moli_arg _) => moli_arg
    end.
 
-Definition MooreMetamodel_instanceOfEClass (mocl_arg: MooreMetamodel_Class) (moob_arg : MooreMetamodel_Object): bool :=
-  if MooreMetamodel_eqEClass_dec (MooreMetamodel_getEClass moob_arg) mocl_arg then true else false.
-
-Definition MooreMetamodel_instanceOfEReference (more_arg: MooreMetamodel_Reference) (moli_arg : MooreMetamodel_Link): bool :=
-  if MooreMetamodel_eqEReference_dec (MooreMetamodel_getEReference moli_arg) more_arg then true else false.
 
 
 Definition MooreMetamodel_toClass (mocl_arg : MooreMetamodel_Class) (moob_arg : MooreMetamodel_Object) : option (MooreMetamodel_getTypeByClass mocl_arg).
@@ -240,17 +235,17 @@ Definition Transition_getTargetObject (tr_arg : Transition) (m : MooreModel) : o
 #[export]
 Instance MooreMetamodel_ElementSum : Sum MooreMetamodel_Object MooreMetamodel_Class :=
 {
-	denoteSubType := MooreMetamodel_getTypeByClass;
-	toSubType := MooreMetamodel_toClass;
-	toSumType := MooreMetamodel_toObject;
+	denoteDatatype := MooreMetamodel_getTypeByClass;
+	toRawData := MooreMetamodel_toClass;
+	constuctor := MooreMetamodel_toObject;
 }.
 
 #[export]
 Instance MooreMetamodel_LinkSum : Sum MooreMetamodel_Link MooreMetamodel_Reference :=
 {
-	denoteSubType := MooreMetamodel_getTypeByReference;
-	toSubType := MooreMetamodel_toReference;
-	toSumType := MooreMetamodel_toLink;
+	denoteDatatype := MooreMetamodel_getTypeByReference;
+	toRawData := MooreMetamodel_toReference;
+	constuctor := MooreMetamodel_toLink;
 }.
 
 
@@ -270,3 +265,10 @@ Lemma Moore_invert :
 Proof.
   intros. Tactics.dep_inversion H. assumption.
 Qed.
+
+(* Not Used *)
+Definition MooreMetamodel_instanceOfEClass (mocl_arg: MooreMetamodel_Class) (moob_arg : MooreMetamodel_Object): bool :=
+  if MooreMetamodel_eqEClass_dec (MooreMetamodel_getEClass moob_arg) mocl_arg then true else false.
+
+Definition MooreMetamodel_instanceOfEReference (more_arg: MooreMetamodel_Reference) (moli_arg : MooreMetamodel_Link): bool :=
+  if MooreMetamodel_eqEReference_dec (MooreMetamodel_getEReference moli_arg) more_arg then true else false.

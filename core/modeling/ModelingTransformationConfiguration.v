@@ -11,5 +11,5 @@ Class ModelingTransformationConfiguration (tc: TransformationConfiguration):= {
   TargetEKind:= @EKind _ tmm;
   TargetLKind:= @LKind _ tmm;  
 
-  denoteSourceEKind:= @denoteEKind _ smm;
+  denoteSourceEDatatype:= @denoteEDatatype _ smm; (* FIXME : not used *)
 }.

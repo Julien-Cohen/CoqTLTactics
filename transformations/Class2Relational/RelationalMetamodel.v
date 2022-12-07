@@ -184,11 +184,6 @@ Definition getLKind (c : Link) : LinkKind :=
   | ColumnReferenceLink _ => ColumnReference_K
   end.
 
-Definition instanceOfEKind (cmc: ElementKind) (c : Element): bool :=
-  if eqClass_dec (getEKind c) cmc then true else false.
-
-Definition instanceOfLKind (cmr: LinkKind) (c : Link): bool :=
-  if eqReference_dec (getLKind c) cmr then true else false.
 
 Definition ClassAttributeTypes (c: ElementKind): Set :=
   match c with
@@ -300,9 +295,9 @@ Qed.
   #[export]
   Instance RelationalElementSum : Sum Element ElementKind :=
   {
-    denoteSubType := getTypeByEKind;
-    toSubType := get_E_data;
-    toSumType := lift_EKind;
+    denoteDatatype := getTypeByEKind;
+    toRawData := get_E_data;
+    constuctor := lift_EKind;
   }.
   
     
@@ -310,9 +305,9 @@ Qed.
   #[export]
   Instance RelationalLinkSum : Sum Link LinkKind :=
   {
-    denoteSubType := getTypeByLKind;
-    toSubType := get_L_data;
-    toSumType := lift_LKind;
+    denoteDatatype := getTypeByLKind;
+    toRawData := get_L_data;
+    constuctor := lift_LKind;
   }.
   
 
@@ -324,4 +319,11 @@ Qed.
   }.
 
 Definition RelationalModel := Model RelationalMM.
+
+(* Not used *)
+Definition instanceOfEKind (cmc: ElementKind) (c : Element): bool :=
+  if eqClass_dec (getEKind c) cmc then true else false.
+
+Definition instanceOfLKind (cmr: LinkKind) (c : Link): bool :=
+  if eqReference_dec (getLKind c) cmr then true else false.
 

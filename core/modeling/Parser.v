@@ -15,39 +15,39 @@ Section Parser.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.
 
-Definition parseOutputPatternLink (intypes: list SourceEKind) (outtype: TargetEKind)
-  (cr: ConcreteOutputPatternLink intypes outtype) := 
-    (makeLink intypes outtype cr.(o_OutRef) cr.(o_outpat)).
+Definition parseOutputPatternLink (inkinds: list SourceEKind) (outtype: TargetEKind)
+  (cr: ConcreteOutputPatternLink inkinds outtype) := 
+    (makeLink inkinds outtype cr.(o_OutRefKind) cr.(o_outpat)).
 
-Definition parseOutputPatternLinks (intypes: list SourceEKind) (outtype: TargetEKind)
-  (cr: list (ConcreteOutputPatternLink intypes outtype)) := 
+Definition parseOutputPatternLinks (inkinds: list SourceEKind) (outtype: TargetEKind)
+  (cr: list (ConcreteOutputPatternLink inkinds outtype)) := 
     fun (tls:list TraceLink) (iter:nat) (sm:SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) =>
-    Some (flat_map (fun (x: ConcreteOutputPatternLink intypes outtype) => optionListToList (parseOutputPatternLink intypes outtype x tls iter sm sp te)) cr).
+    Some (flat_map (fun (x: ConcreteOutputPatternLink inkinds outtype) => optionListToList (parseOutputPatternLink inkinds outtype x tls iter sm sp te)) cr).
 
-Definition parseOutputPatternElement (intypes: list SourceEKind) (co: ConcreteOutputPatternElement intypes) : OutputPatternElement :=
+Definition parseOutputPatternElement (inkinds: list SourceEKind) (co: ConcreteOutputPatternElement inkinds) : OutputPatternElement :=
   buildOutputPatternElement
     co.(e_name)
-    (makeElement intypes co.(e_OutType) co.(e_outpat))
-    (parseOutputPatternLinks intypes co.(e_OutType) co.(e_outlink)).
+    (makeElement inkinds co.(e_OutKind) co.(e_outpat))
+    (parseOutputPatternLinks inkinds co.(e_OutKind) co.(e_outlink)).
 
 Definition parseRule(cr: ConcreteRule) : Rule :=
   buildRule
     cr.(r_name)
     ( match cr.(r_guard) with
-      | Some g => (makeGuard cr.(r_InTypes) g)
-      | None => (makeEmptyGuard cr.(r_InTypes))
+      | Some g => (makeGuard cr.(r_InKinds) g)
+      | None => (makeEmptyGuard cr.(r_InKinds))
       end
     )
     ( match cr.(r_iter) with
-      | Some i => (makeIterator cr.(r_InTypes) i)
+      | Some i => (makeIterator cr.(r_InKinds) i)
       | None => (fun _ _ => Some 1)
       end
     )
-    ( map (parseOutputPatternElement cr.(r_InTypes)) cr.(r_outpat) ).
+    ( map (parseOutputPatternElement cr.(r_InKinds)) cr.(r_outpat) ).
 
 Definition parse(ct: ConcreteTransformation) : Transformation :=
   buildTransformation 
-    (max (map (length (A:=SourceEKind)) (map r_InTypes (ConcreteTransformation_getConcreteRules ct))))
+    (max (map (length (A:=SourceEKind)) (map r_InKinds (ConcreteTransformation_getConcreteRules ct))))
     (map parseRule (ConcreteTransformation_getConcreteRules ct)).
 
 End Parser.

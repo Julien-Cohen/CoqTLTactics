@@ -683,11 +683,6 @@ Definition ATOMMetamodel_getEReference (atli_arg : ATOMMetamodel_Link) : ATOMMet
   | (Build_ATOMMetamodel_Link atli_arg _) => atli_arg
    end.
 
-Definition ATOMMetamodel_instanceOfEClass (atcl_arg: ATOMMetamodel_Class) (atob_arg : ATOMMetamodel_Object): bool :=
-  if ATOMMetamodel_eqEClass_dec (ATOMMetamodel_getEClass atob_arg) atcl_arg then true else false.
-
-Definition ATOMMetamodel_instanceOfEReference (atre_arg: ATOMMetamodel_Reference) (atli_arg : ATOMMetamodel_Link): bool :=
-  if ATOMMetamodel_eqEReference_dec (ATOMMetamodel_getEReference atli_arg) atre_arg then true else false.
 
 
 Definition ATOMMetamodel_toClass (atcl_arg : ATOMMetamodel_Class) (atob_arg : ATOMMetamodel_Object) : option (ATOMMetamodel_getTypeByClass atcl_arg).
@@ -1112,16 +1107,16 @@ Definition Author_getAtomObject (au_arg : Author) (m : ATOMModel) : option (ATOM
 (* Typeclass Instances *)	
 Instance ATOMMetamodel_ElementSum : Sum ATOMMetamodel_Object ATOMMetamodel_Class :=
 {
-	denoteSubType := ATOMMetamodel_getTypeByClass;
-	toSubType := ATOMMetamodel_toClass;
-	toSumType := ATOMMetamodel_toObject;
+	denoteDatatype := ATOMMetamodel_getTypeByClass;
+	toRawData := ATOMMetamodel_toClass;
+	constuctor := ATOMMetamodel_toObject;
 }.
 
 Instance ATOMMetamodel_LinkSum : Sum ATOMMetamodel_Link ATOMMetamodel_Reference :=
 {
-	denoteSubType := ATOMMetamodel_getTypeByReference;
-	toSubType := ATOMMetamodel_toReference;
-	toSumType := ATOMMetamodel_toLink;
+	denoteDatatype := ATOMMetamodel_getTypeByReference;
+	toRawData := ATOMMetamodel_toReference;
+	constuctor := ATOMMetamodel_toLink;
 }.
 
 
@@ -1142,3 +1137,10 @@ Proof.
   intros.
   Tactics.dep_inversion H. assumption.
 Qed.
+
+(* Not Used *)
+Definition ATOMMetamodel_instanceOfEClass (atcl_arg: ATOMMetamodel_Class) (atob_arg : ATOMMetamodel_Object): bool :=
+  if ATOMMetamodel_eqEClass_dec (ATOMMetamodel_getEClass atob_arg) atcl_arg then true else false.
+
+Definition ATOMMetamodel_instanceOfEReference (atre_arg: ATOMMetamodel_Reference) (atli_arg : ATOMMetamodel_Link): bool :=
+  if ATOMMetamodel_eqEReference_dec (ATOMMetamodel_getEReference atli_arg) atre_arg then true else false.

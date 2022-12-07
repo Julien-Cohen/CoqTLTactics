@@ -233,11 +233,6 @@ Definition FamiliesMetamodel_getEReference (fali_arg : FamiliesMetamodel_Link) :
   | (Build_FamiliesMetamodel_Link fali_arg _) => fali_arg
    end.
 
-Definition FamiliesMetamodel_instanceOfEClass (facl_arg: FamiliesMetamodel_Class) (faob_arg : FamiliesMetamodel_Object): bool :=
-  if FamiliesMetamodel_eqEClass_dec (FamiliesMetamodel_getEClass faob_arg) facl_arg then true else false.
-
-Definition FamiliesMetamodel_instanceOfEReference (fare_arg: FamiliesMetamodel_Reference) (fali_arg : FamiliesMetamodel_Link): bool :=
-  if FamiliesMetamodel_eqEReference_dec (FamiliesMetamodel_getEReference fali_arg) fare_arg then true else false.
 
 
 Definition FamiliesMetamodel_toClass (facl_arg : FamiliesMetamodel_Class) (faob_arg : FamiliesMetamodel_Object) : option (FamiliesMetamodel_getTypeByClass facl_arg).
@@ -417,17 +412,17 @@ Definition Member_getFamilyDaughterObject (me_arg : Member) (m : FamiliesModel) 
 #[export]
 Instance FamiliesMetamodel_ElementSum : Sum FamiliesMetamodel_Object FamiliesMetamodel_Class :=
 {
-	denoteSubType := FamiliesMetamodel_getTypeByClass;
-	toSubType := FamiliesMetamodel_toClass;
-	toSumType := FamiliesMetamodel_toObject;
+	denoteDatatype := FamiliesMetamodel_getTypeByClass;
+	toRawData := FamiliesMetamodel_toClass;
+	constuctor := FamiliesMetamodel_toObject;
 }.
 
 #[export]
 Instance FamiliesMetamodel_LinkSum : Sum FamiliesMetamodel_Link FamiliesMetamodel_Reference :=
 {
-	denoteSubType := FamiliesMetamodel_getTypeByReference;
-	toSubType := FamiliesMetamodel_toReference;
-	toSumType := FamiliesMetamodel_toLink;
+	denoteDatatype := FamiliesMetamodel_getTypeByReference;
+	toRawData := FamiliesMetamodel_toReference;
+	constuctor := FamiliesMetamodel_toLink;
 }.
 
 
@@ -448,3 +443,10 @@ Lemma Families_invert :
 Proof.
   intros. Tactics.dep_inversion H. assumption.
 Qed.
+
+(* Not Used *)
+Definition FamiliesMetamodel_instanceOfEClass (facl_arg: FamiliesMetamodel_Class) (faob_arg : FamiliesMetamodel_Object): bool :=
+  if FamiliesMetamodel_eqEClass_dec (FamiliesMetamodel_getEClass faob_arg) facl_arg then true else false.
+
+Definition FamiliesMetamodel_instanceOfEReference (fare_arg: FamiliesMetamodel_Reference) (fali_arg : FamiliesMetamodel_Link): bool :=
+  if FamiliesMetamodel_eqEReference_dec (FamiliesMetamodel_getEReference fali_arg) fare_arg then true else false.

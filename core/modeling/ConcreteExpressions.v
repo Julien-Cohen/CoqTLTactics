@@ -18,7 +18,7 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 Fixpoint denoteSignature (l : list SourceEKind) (r : Type) : Type :=
   match l with
   | nil => r
-  | l0 :: l' => denoteEKind l0 -> denoteSignature l' r
+  | k :: l' => denoteEDatatype k -> denoteSignature l' r
   end.
 
 
@@ -36,7 +36,7 @@ Fixpoint wrapOption
                  
   | (k :: rk, e::re) =>
       fun (f : denoteSignature (k :: rk) T) =>
-        match toEKind k e with
+        match toEData k e with
         | Some x => wrapOption (T:=T) rk (f x) re
         | None => None 
         end
@@ -61,7 +61,7 @@ Proof.
   { reflexivity. }
   { reflexivity. }
   { simpl.
-    destruct (toEKind a s).
+    destruct (toEData a s).
     + apply IHl1. contradict L. simpl. congruence.
     + reflexivity.
   }
@@ -71,7 +71,7 @@ Fixpoint wrapOption' (l:list SourceEKind) (sl : list SourceModelElement) : bool 
   match (l, sl) with
   | (nil, nil) => true
   | (k1::r1, e2::r2) => 
-      match toEKind k1 e2 with
+      match toEData k1 e2 with
       | Some _ => wrapOption' r1 r2
       | None => false
       end
@@ -90,7 +90,7 @@ Proof.
   { reflexivity. }
   { reflexivity. }
   { simpl.
-    destruct (toEKind a s).
+    destruct (toEData a s).
     + apply IHl1. contradict L. simpl. congruence.
     + reflexivity.
   }
@@ -105,35 +105,35 @@ Proof.
   - exact imp.
   - exact nil.
   - exact nil.
-  - destruct (toEKind l0 s0) as [x | ].
+  - destruct (toEData l0 s0) as [x | ].
     + exact (Hl l' (imp x) sl').
     + exact nil.
 Defined.
 
 Definition wrapOptionElement
-  (l : list SourceEKind) (t : TargetEKind)
-  (imp : denoteSignature l (denoteEKind t)) :
+  (l : list SourceEKind) (k : TargetEKind)
+  (imp : denoteSignature l (denoteEDatatype k)) :
   (list SourceModelElement) -> option TargetModelElement.
 Proof.
   revert l imp. fix Hl 1. intros l imp sl.
   destruct l as [ | l0 l'], sl as [ | s0 sl'].
-  - exact (Some (toModelElement t imp)).
+  - exact (Some (toModelElement k imp)).
   - exact None.
   - exact None.
-  - exact (x0 <- toEKind l0 s0; Hl l' (imp x0) sl').
+  - exact (x0 <- toEData l0 s0; Hl l' (imp x0) sl').
 Defined.
 
 Definition wrapOptionLink
-  (l : list SourceEKind) (t : TargetEKind) (r : TargetLKind)
-  (imp : denoteSignature l (denoteEKind t -> option (denoteLKind r))) :
+  (l : list SourceEKind) (k : TargetEKind) (r : TargetLKind)
+  (imp : denoteSignature l (denoteEDatatype k -> option (denoteLDatatype r))) :
   (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink).
 Proof.
   revert l imp. fix Hl 1. intros l imp sl v.
   destruct l as [ | l0 l'], sl as [ | s0 sl'].
-  - refine (xv <- toEKind t v; xr <- imp xv; return [toModelLink r xr]).
+  - refine (xv <- toEData k v; xr <- imp xv; return [toModelLink r xr]).
   - exact None.
   - exact None.
-  - exact (x0 <- toEKind l0 s0; Hl l' (imp x0) sl' v).
+  - exact (x0 <- toEData l0 s0; Hl l' (imp x0) sl' v).
 Defined.
 
 Definition GuardFunction : Type :=
@@ -166,17 +166,19 @@ Definition makeIterator (l : list SourceEKind)
 
 Definition ElementFunction : Type :=
   nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement.
-Definition makeElement (l : list SourceEKind) (t : TargetEKind)
-  (imp : nat -> SourceModel -> denoteSignature l (denoteEKind t)) :
+
+Definition makeElement (l : list SourceEKind) (k : TargetEKind)
+  (imp : nat -> SourceModel -> denoteSignature l (denoteEDatatype k)) :
   ElementFunction :=
-  fun it sm => wrapOptionElement l t (imp it sm).
+  fun it sm => wrapOptionElement l k (imp it sm).
 
 Definition LinkFunction : Type :=
   list TraceLink
   -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink).
-Definition makeLink (l : list SourceEKind) (t : TargetEKind) (r : TargetLKind)
-  (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteEKind t -> option (denoteLKind r))) :
+
+Definition makeLink (l : list SourceEKind) (k : TargetEKind) (r : TargetLKind)
+  (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteEDatatype k -> option (denoteLDatatype r))) :
   LinkFunction :=
-  fun mt it sm => wrapOptionLink l t r (imp mt it sm).
+  fun mt it sm => wrapOptionLink l k r (imp mt it sm).
 
 End ConcreteExpressions.

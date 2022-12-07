@@ -603,11 +603,6 @@ Definition RSSMetamodel_getEReference (rsli_arg : RSSMetamodel_Link) : RSSMetamo
   | (Build_RSSMetamodel_Link rsli_arg _) => rsli_arg
    end.
 
-Definition RSSMetamodel_instanceOfEClass (rscl_arg: RSSMetamodel_Class) (rsob_arg : RSSMetamodel_Object): bool :=
-  if RSSMetamodel_eqEClass_dec (RSSMetamodel_getEClass rsob_arg) rscl_arg then true else false.
-
-Definition RSSMetamodel_instanceOfEReference (rsre_arg: RSSMetamodel_Reference) (rsli_arg : RSSMetamodel_Link): bool :=
-  if RSSMetamodel_eqEReference_dec (RSSMetamodel_getEReference rsli_arg) rsre_arg then true else false.
 
 
 Definition RSSMetamodel_toClass (rscl_arg : RSSMetamodel_Class) (rsob_arg : RSSMetamodel_Object) : option (RSSMetamodel_getTypeByClass rscl_arg).
@@ -922,17 +917,17 @@ Definition Category_getItemsObject (ca_arg : Category) (m : RSSModel) : option (
 #[export]
 Instance RSSMetamodel_ElementSum : Sum RSSMetamodel_Object RSSMetamodel_Class :=
 {
-	denoteSubType := RSSMetamodel_getTypeByClass;
-	toSubType := RSSMetamodel_toClass;
-	toSumType := RSSMetamodel_toObject;
+	denoteDatatype := RSSMetamodel_getTypeByClass;
+	toRawData := RSSMetamodel_toClass;
+	constuctor := RSSMetamodel_toObject;
 }.
 
 #[export]
 Instance RSSMetamodel_LinkSum : Sum RSSMetamodel_Link RSSMetamodel_Reference :=
 {
-	denoteSubType := RSSMetamodel_getTypeByReference;
-	toSubType := RSSMetamodel_toReference;
-	toSumType := RSSMetamodel_toLink;
+	denoteDatatype := RSSMetamodel_getTypeByReference;
+	toRawData := RSSMetamodel_toReference;
+	constuctor := RSSMetamodel_toLink;
 }.
 
 
@@ -955,3 +950,10 @@ Proof.
   dep_inversion H.
   assumption.
 Qed.
+
+(* Not Used *)
+Definition RSSMetamodel_instanceOfEClass (rscl_arg: RSSMetamodel_Class) (rsob_arg : RSSMetamodel_Object): bool :=
+  if RSSMetamodel_eqEClass_dec (RSSMetamodel_getEClass rsob_arg) rscl_arg then true else false.
+
+Definition RSSMetamodel_instanceOfEReference (rsre_arg: RSSMetamodel_Reference) (rsli_arg : RSSMetamodel_Link): bool :=
+  if RSSMetamodel_eqEReference_dec (RSSMetamodel_getEReference rsli_arg) rsre_arg then true else false.

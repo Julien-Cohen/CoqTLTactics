@@ -142,8 +142,8 @@ Lemma one_to_one_rule_parse :
 Proof.
   intros a H.
   destruct a ; simpl in H.
-  destruct r_InTypes ; [ contradiction | ].
-  destruct r_InTypes ; [ | contradiction ].
+  destruct r_InKinds ; [ contradiction | ].
+  destruct r_InKinds ; [ | contradiction ].
   clear H.
   simpl.
   split ; intro m ; [ | ].
@@ -154,9 +154,9 @@ Proof.
     destruct r_guard ; simpl.
     { 
       unfold ConcreteExpressions.makeGuard. simpl.
-      destruct (toEKind s e1) ; reflexivity.
+      destruct (toEData s e1) ; reflexivity.
     }
-    { destruct (toEKind s e1) ; reflexivity. }
+    { destruct (toEData s e1) ; reflexivity. }
   }
 Qed.
 
