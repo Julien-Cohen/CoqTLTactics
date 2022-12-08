@@ -23,8 +23,6 @@ Proof.
  destruct a0.
  destruct derived ; simpl in H ; auto.
  destruct_or H ; [ | contradiction].
- unfold toModelElement in H.
- simpl in H.
  discriminate H.
 Qed.
 
@@ -35,8 +33,6 @@ Proof.
  destruct c ; simpl ; [intro H ; exfalso | solve[eauto] ].
  simpl in H.
  destruct_or H ; [ | contradiction ].
- unfold toModelElement in H.
- simpl in H.
  discriminate H.
 Qed.
 

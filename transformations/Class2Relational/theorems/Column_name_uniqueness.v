@@ -12,8 +12,7 @@ Require Import List.
 Require Import String.
 Require Import core.utils.Utils.
 
-(*Require Import core.Semantics.
-Require Import core.Certification.*)
+
 Require Import core.Semantics.
 Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
@@ -103,9 +102,9 @@ Proof.
             destruct_or H0 ; [ | contradiction].
             destruct_or H  ; [ | contradiction].
 
-            apply rel_invert in H1.
-            apply rel_invert in H0.
-            apply rel_invert in H.
+            inversion H1. 
+            inversion H0. 
+            inversion H. 
             subst. simpl.
 
             apply PRE.

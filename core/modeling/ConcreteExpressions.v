@@ -87,7 +87,7 @@ Fixpoint wrapElement
   with
 
   | (nil, nil) => 
-      fun v  => Some (toModelElement tk v)
+      fun v  => Some (elements.(constructor) tk v)
 
   | (k::rk, e :: re) =>
       match toEData k e with
@@ -127,7 +127,7 @@ Fixpoint wrapLink
        match toEData k v with
        | Some d =>
            (fun tr =>  
-             t_d <- tr d ; Some [toModelLink r t_d])
+             t_d <- tr d ; Some [links.(constructor) r t_d])
  
        | None => mismatch
        end

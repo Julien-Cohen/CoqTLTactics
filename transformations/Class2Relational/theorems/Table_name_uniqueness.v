@@ -11,8 +11,6 @@ Require Import List.
 Require Import String.
 Require Import core.utils.Utils.
 
-(*Require Import core.Semantics.
-Require Import core.Certification.*)
 Require Import core.Semantics.
 Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
@@ -72,8 +70,8 @@ Proof.
                 simpl in H, H0.
                 destruct_or H ; [ | contradiction].
                 destruct_or H0 ; [ | contradiction].
-                apply rel_invert in H0 ;
-                apply rel_invert in H ; subst ; simpl in *.
+                inversion H0 ;
+                inversion H ; subst ; simpl in *.
                 apply not_eq_sym ; apply PRE.
                 contradict D.
                 subst ; reflexivity.
