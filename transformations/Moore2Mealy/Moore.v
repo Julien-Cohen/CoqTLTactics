@@ -267,8 +267,11 @@ Proof.
 Qed.
 
 (* Not Used *)
-Definition MooreMetamodel_instanceOfEClass (mocl_arg: MooreMetamodel_Class) (moob_arg : MooreMetamodel_Object): bool :=
-  if MooreMetamodel_eqEClass_dec (MooreMetamodel_getEClass moob_arg) mocl_arg then true else false.
+Definition MooreMetamodel_instanceOfEClass :
+  MooreMetamodel_Class -> MooreMetamodel_Object -> bool :=
+  MooreMetamodel_ElementSum.(instanceof).
 
-Definition MooreMetamodel_instanceOfEReference (more_arg: MooreMetamodel_Reference) (moli_arg : MooreMetamodel_Link): bool :=
-  if MooreMetamodel_eqEReference_dec (MooreMetamodel_getEReference moli_arg) more_arg then true else false.
+Definition MooreMetamodel_instanceOfEReference :
+  MooreMetamodel_Reference -> MooreMetamodel_Link -> bool :=
+  MooreMetamodel_LinkSum.(instanceof).
+

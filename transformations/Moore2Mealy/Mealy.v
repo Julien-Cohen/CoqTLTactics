@@ -270,8 +270,11 @@ Qed.
 
 
 (* Not Used *)
-Definition MealyMetamodel_instanceOfEClass (mecl_arg: MealyMetamodel_Class) (meob_arg : MealyMetamodel_Object): bool :=
-  if MealyMetamodel_eqEClass_dec (MealyMetamodel_getEClass meob_arg) mecl_arg then true else false.
+Definition MealyMetamodel_instanceOfEClass :
+  MealyMetamodel_Class -> MealyMetamodel_Object -> bool :=
+  MealyMetamodel_ElementSum.(instanceof).
 
-Definition MealyMetamodel_instanceOfEReference (mere_arg: MealyMetamodel_Reference) (meli_arg : MealyMetamodel_Link): bool :=
-  if MealyMetamodel_eqEReference_dec (MealyMetamodel_getEReference meli_arg) mere_arg then true else false.
+Definition MealyMetamodel_instanceOfEReference :
+  MealyMetamodel_Reference -> MealyMetamodel_Link -> bool :=
+  MealyMetamodel_LinkSum.(instanceof).
+

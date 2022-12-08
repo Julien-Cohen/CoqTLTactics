@@ -297,11 +297,13 @@ Proof.
   intros. destruct clec_arg ; simpl in * ; congruence.
 Qed.
 
-Definition instanceOfEKind (k: ElementKind) (e : Element): bool :=
-  if eqEKind_dec (getEKind e) k then true else false.
+Definition instanceOfEKind :
+  ElementKind -> Element -> bool :=
+  ClassElementSum.(instanceof).
 
-Definition instanceOfLKind (k: LinkKind) (e : Link): bool :=
-  if eqLKind_dec (getLKind e) k then true else false.
+Definition instanceOfLKind : 
+  LinkKind -> Link -> bool :=
+  ClassLinkSum.(instanceof).
 
 
 Lemma Element_dec: 
@@ -309,11 +311,9 @@ Lemma Element_dec:
     (instanceOfEKind Class_K a) = true
  \/ (instanceOfEKind Attribute_K a) = true.
 Proof.
-  intros.
-  destruct a.
-  destruct c.
-  + left. reflexivity. 
-  + right. reflexivity.
+  unfold instanceOfEKind.
+  intro.
+  destruct a ; unfold instanceof ; simpl ; auto.
 Qed.
 
 Lemma Class_Element_cast:

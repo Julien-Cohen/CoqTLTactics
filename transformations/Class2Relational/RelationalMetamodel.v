@@ -321,9 +321,12 @@ Qed.
 Definition RelationalModel := Model RelationalMM.
 
 (* Not used *)
-Definition instanceOfEKind (cmc: ElementKind) (c : Element): bool :=
-  if eqClass_dec (getEKind c) cmc then true else false.
+Definition instanceOfEKind : 
+  ElementKind -> Element -> bool := 
+  RelationalElementSum.(instanceof).
 
-Definition instanceOfLKind (cmr: LinkKind) (c : Link): bool :=
-  if eqReference_dec (getLKind c) cmr then true else false.
+Definition instanceOfLKind : 
+  LinkKind -> Link -> bool :=
+  RelationalLinkSum.(instanceof).
+
 

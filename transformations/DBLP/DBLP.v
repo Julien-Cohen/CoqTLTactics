@@ -1202,8 +1202,11 @@ Proof.
 Qed.
 
 (* Not Used *)
-Definition DBLPMetamodel_instanceOfEClass (dbcl_arg: DBLPMetamodel_Class) (dbob_arg : DBLPMetamodel_Object): bool :=
-  if DBLPMetamodel_eqEClass_dec (DBLPMetamodel_getEClass dbob_arg) dbcl_arg then true else false.
+Definition instanceOfEClass : 
+  DBLPMetamodel_Class -> DBLPMetamodel_Object -> bool :=
+  DBLPMetamodel_ElementSum.(instanceof).
+  
 
-Definition DBLPMetamodel_instanceOfEReference (dbre_arg: DBLPMetamodel_Reference) (dbli_arg : DBLPMetamodel_Link): bool :=
-  if DBLPMetamodel_eqEReference_dec (DBLPMetamodel_getEReference dbli_arg) dbre_arg then true else false.
+Definition instanceOfEReference : 
+  DBLPMetamodel_Reference -> DBLPMetamodel_Link -> bool :=
+  DBLPMetamodel_LinkSum.(instanceof).

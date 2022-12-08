@@ -1139,8 +1139,11 @@ Proof.
 Qed.
 
 (* Not Used *)
-Definition ATOMMetamodel_instanceOfEClass (atcl_arg: ATOMMetamodel_Class) (atob_arg : ATOMMetamodel_Object): bool :=
-  if ATOMMetamodel_eqEClass_dec (ATOMMetamodel_getEClass atob_arg) atcl_arg then true else false.
+Definition ATOMMetamodel_instanceOfEClass :
+  ATOMMetamodel_Class -> ATOMMetamodel_Object -> bool :=
+  ATOMMetamodel_ElementSum.(instanceof).
 
-Definition ATOMMetamodel_instanceOfEReference (atre_arg: ATOMMetamodel_Reference) (atli_arg : ATOMMetamodel_Link): bool :=
-  if ATOMMetamodel_eqEReference_dec (ATOMMetamodel_getEReference atli_arg) atre_arg then true else false.
+Definition ATOMMetamodel_instanceOfEReference :
+  ATOMMetamodel_Reference -> ATOMMetamodel_Link -> bool :=
+  ATOMMetamodel_LinkSum.(instanceof).
+

@@ -528,8 +528,11 @@ Qed.
 
 
 (* Not Used *)
-Definition moviesMetamodel_instanceOfEClass (mocl_arg: moviesMetamodel_Class) (moob_arg : moviesMetamodel_Object): bool :=
-  if moviesMetamodel_eqEClass_dec (moviesMetamodel_getEClass moob_arg) mocl_arg then true else false.
+Definition moviesMetamodel_instanceOfEClass :
+  moviesMetamodel_Class -> moviesMetamodel_Object -> bool :=
+  moviesMetamodel_ElementSum.(instanceof).
 
-Definition moviesMetamodel_instanceOfEReference (more_arg: moviesMetamodel_Reference) (moli_arg : moviesMetamodel_Link): bool :=
-  if moviesMetamodel_eqEReference_dec (moviesMetamodel_getEReference moli_arg) more_arg then true else false.
+Definition moviesMetamodel_instanceOfEReference :
+  moviesMetamodel_Reference -> moviesMetamodel_Link -> bool :=
+  moviesMetamodel_LinkSum.(instanceof).
+

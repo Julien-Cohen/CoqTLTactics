@@ -246,8 +246,11 @@ Proof.
 Qed.
 
 (* Not Used *)
-Definition PersonsMetamodel_instanceOfEClass (pecl_arg: PersonsMetamodel_Class) (peob_arg : PersonsMetamodel_Object): bool :=
-  if PersonsMetamodel_eqEClass_dec (PersonsMetamodel_getEClass peob_arg) pecl_arg then true else false.
+Definition PersonsMetamodel_instanceOfEClass :
+  PersonsMetamodel_Class ->  PersonsMetamodel_Object -> bool :=
+  PersonsMetamodel_ElementSum.(instanceof).
 
-Definition PersonsMetamodel_instanceOfEReference (pere_arg: PersonsMetamodel_Reference) (peli_arg : PersonsMetamodel_Link): bool :=
-  if PersonsMetamodel_eqEReference_dec (PersonsMetamodel_getEReference peli_arg) pere_arg then true else false.
+Definition PersonsMetamodel_instanceOfEReference : 
+  PersonsMetamodel_Reference -> PersonsMetamodel_Link -> bool :=
+  PersonsMetamodel_LinkSum.(instanceof).
+

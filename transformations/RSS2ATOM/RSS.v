@@ -952,8 +952,11 @@ Proof.
 Qed.
 
 (* Not Used *)
-Definition RSSMetamodel_instanceOfEClass (rscl_arg: RSSMetamodel_Class) (rsob_arg : RSSMetamodel_Object): bool :=
-  if RSSMetamodel_eqEClass_dec (RSSMetamodel_getEClass rsob_arg) rscl_arg then true else false.
+Definition RSSMetamodel_instanceOfEClass :
+  RSSMetamodel_Class -> RSSMetamodel_Object -> bool :=
+  RSSMetamodel_ElementSum.(instanceof).
 
-Definition RSSMetamodel_instanceOfEReference (rsre_arg: RSSMetamodel_Reference) (rsli_arg : RSSMetamodel_Link): bool :=
-  if RSSMetamodel_eqEReference_dec (RSSMetamodel_getEReference rsli_arg) rsre_arg then true else false.
+Definition RSSMetamodel_instanceOfEReference :
+  RSSMetamodel_Reference ->  RSSMetamodel_Link -> bool :=
+  RSSMetamodel_LinkSum.(instanceof).
+

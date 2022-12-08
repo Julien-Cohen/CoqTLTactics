@@ -445,8 +445,12 @@ Proof.
 Qed.
 
 (* Not Used *)
-Definition FamiliesMetamodel_instanceOfEClass (facl_arg: FamiliesMetamodel_Class) (faob_arg : FamiliesMetamodel_Object): bool :=
-  if FamiliesMetamodel_eqEClass_dec (FamiliesMetamodel_getEClass faob_arg) facl_arg then true else false.
+Definition FamiliesMetamodel_instanceOfEClass : 
+  FamiliesMetamodel_Class -> FamiliesMetamodel_Object -> bool :=
+  FamiliesMetamodel_ElementSum.(instanceof).
 
-Definition FamiliesMetamodel_instanceOfEReference (fare_arg: FamiliesMetamodel_Reference) (fali_arg : FamiliesMetamodel_Link): bool :=
-  if FamiliesMetamodel_eqEReference_dec (FamiliesMetamodel_getEReference fali_arg) fare_arg then true else false.
+
+Definition FamiliesMetamodel_instanceOfEReference : 
+  FamiliesMetamodel_Reference -> FamiliesMetamodel_Link -> bool :=
+  FamiliesMetamodel_LinkSum.(instanceof).
+
