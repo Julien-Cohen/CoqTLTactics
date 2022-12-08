@@ -238,7 +238,7 @@ Instance MealyMetamodel_ElementSum : Sum MealyMetamodel_Object MealyMetamodel_Cl
 {
 	denoteDatatype := MealyMetamodel_getTypeByClass;
 	toRawData := MealyMetamodel_toClass;
-	constuctor := MealyMetamodel_toObject;
+	constructor := MealyMetamodel_toObject;
 }.
 
 #[export]
@@ -246,7 +246,7 @@ Instance MealyMetamodel_LinkSum : Sum MealyMetamodel_Link MealyMetamodel_Referen
 {
 	denoteDatatype := MealyMetamodel_getTypeByReference;
 	toRawData := MealyMetamodel_toReference;
-	constuctor := MealyMetamodel_toLink;
+	constructor := MealyMetamodel_toLink;
 }.
 
 

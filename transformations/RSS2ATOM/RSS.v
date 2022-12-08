@@ -919,7 +919,7 @@ Instance RSSMetamodel_ElementSum : Sum RSSMetamodel_Object RSSMetamodel_Class :=
 {
 	denoteDatatype := RSSMetamodel_getTypeByClass;
 	toRawData := RSSMetamodel_toClass;
-	constuctor := RSSMetamodel_toObject;
+	constructor := RSSMetamodel_toObject;
 }.
 
 #[export]
@@ -927,7 +927,7 @@ Instance RSSMetamodel_LinkSum : Sum RSSMetamodel_Link RSSMetamodel_Reference :=
 {
 	denoteDatatype := RSSMetamodel_getTypeByReference;
 	toRawData := RSSMetamodel_toReference;
-	constuctor := RSSMetamodel_toLink;
+	constructor := RSSMetamodel_toLink;
 }.
 
 

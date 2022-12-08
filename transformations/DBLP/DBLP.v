@@ -1169,7 +1169,7 @@ Instance DBLPMetamodel_ElementSum : Sum DBLPMetamodel_Object DBLPMetamodel_Class
 {
 	denoteDatatype := DBLPMetamodel_getTypeByClass;
 	toRawData := DBLPMetamodel_toClass;
-	constuctor := DBLPMetamodel_toObject;
+	constructor := DBLPMetamodel_toObject;
 }.
 
 #[export]
@@ -1177,7 +1177,7 @@ Instance DBLPMetamodel_LinkSum : Sum DBLPMetamodel_Link DBLPMetamodel_Reference 
 {
 	denoteDatatype := DBLPMetamodel_getTypeByReference;
 	toRawData := DBLPMetamodel_toReference;
-	constuctor := DBLPMetamodel_toLink;
+	constructor := DBLPMetamodel_toLink;
 }.
 
 

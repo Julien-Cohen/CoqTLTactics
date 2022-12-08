@@ -297,7 +297,7 @@ Qed.
   {
     denoteDatatype := getTypeByEKind;
     toRawData := get_E_data;
-    constuctor := lift_EKind;
+    constructor := lift_EKind;
   }.
   
     
@@ -307,7 +307,7 @@ Qed.
   {
     denoteDatatype := getTypeByLKind;
     toRawData := get_L_data;
-    constuctor := lift_LKind;
+    constructor := lift_LKind;
   }.
   
 

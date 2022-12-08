@@ -1261,7 +1261,7 @@ Instance ATOMMetamodel_ElementSum : Sum ATOMMetamodel_Object ATOMMetamodel_Class
 {
 	denoteDatatype := ATOMMetamodel_getTypeByClass;
 	toRawData := ATOMMetamodel_toClass;
-	constuctor := ATOMMetamodel_toObject;
+	constructor := ATOMMetamodel_toObject;
 }.
 
 #[export]
@@ -1269,7 +1269,7 @@ Instance ATOMMetamodel_LinkSum : Sum ATOMMetamodel_Link ATOMMetamodel_Reference 
 {
 	denoteDatatype := ATOMMetamodel_getTypeByReference;
 	toRawData := ATOMMetamodel_toReference;
-	constuctor := ATOMMetamodel_toLink;
+	constructor := ATOMMetamodel_toLink;
 }.
 
 

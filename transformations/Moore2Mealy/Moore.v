@@ -237,7 +237,7 @@ Instance MooreMetamodel_ElementSum : Sum MooreMetamodel_Object MooreMetamodel_Cl
 {
 	denoteDatatype := MooreMetamodel_getTypeByClass;
 	toRawData := MooreMetamodel_toClass;
-	constuctor := MooreMetamodel_toObject;
+	constructor := MooreMetamodel_toObject;
 }.
 
 #[export]
@@ -245,7 +245,7 @@ Instance MooreMetamodel_LinkSum : Sum MooreMetamodel_Link MooreMetamodel_Referen
 {
 	denoteDatatype := MooreMetamodel_getTypeByReference;
 	toRawData := MooreMetamodel_toReference;
-	constuctor := MooreMetamodel_toLink;
+	constructor := MooreMetamodel_toLink;
 }.
 
 

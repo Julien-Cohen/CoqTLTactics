@@ -266,7 +266,7 @@ Instance ClassElementSum : Sum Element ElementKind :=
 {
   denoteDatatype := getTypeByEKind;
   toRawData := get_E_data;
-  constuctor := lift_EKind;
+  constructor := lift_EKind;
 }.
 
 
@@ -275,7 +275,7 @@ Instance ClassLinkSum : Sum Link LinkKind :=
 {
   denoteDatatype := getTypeByLKind;
   toRawData := get_L_data;
-  constuctor := lift_LKind;
+  constructor := lift_LKind;
 }.
 
 

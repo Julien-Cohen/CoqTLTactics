@@ -496,7 +496,7 @@ Instance moviesMetamodel_ElementSum : Sum moviesMetamodel_Object moviesMetamodel
 {
 	denoteDatatype := moviesMetamodel_getTypeByClass;
 	toRawData := moviesMetamodel_toClass;
-	constuctor := moviesMetamodel_toObject;
+	constructor := moviesMetamodel_toObject;
 }.
 
 #[export]
@@ -504,7 +504,7 @@ Instance moviesMetamodel_LinkSum : Sum moviesMetamodel_Link moviesMetamodel_Refe
 {
 	denoteDatatype := moviesMetamodel_getTypeByReference;
 	toRawData := moviesMetamodel_toReference;
-	constuctor := moviesMetamodel_toLink;
+	constructor := moviesMetamodel_toLink;
 }.
 
 

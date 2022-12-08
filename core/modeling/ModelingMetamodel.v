@@ -27,7 +27,7 @@ Class Sum (T: Type) (K: Type):=
   {
     denoteDatatype: K -> Set;
     toRawData: forall (k: K), T -> option (denoteDatatype k);
-    constuctor: forall (k: K), (denoteDatatype k) -> T;
+    constructor: forall (k: K), (denoteDatatype k) -> T;
     instanceof : K -> T -> bool :=
       fun k d => match toRawData k d with Some _ => true | None => false end                             
   }.
@@ -48,11 +48,11 @@ Class ModelingMetamodel (mm : Metamodel) :=
   
     (* Downcasting *)
     toEData: forall (k:EKind), mm.(ElementType) -> option (denoteEDatatype k) := elements.(toRawData) ;
-    toLData: forall (k:LKind), mm.(LinkType) -> option (denoteLDatatype k) := links.(toRawData); (* not used *)
+
   
     (* Upcasting *)
-    toModelElement: forall (k: EKind), (denoteEDatatype k) -> mm.(ElementType) := elements.(constuctor) ;
-    toModelLink: forall (k: LKind), (denoteLDatatype k) -> mm.(LinkType) := links.(constuctor);
+    toModelElement: forall (k: EKind), (denoteEDatatype k) -> mm.(ElementType) := elements.(constructor) ;
+    toModelLink: forall (k: LKind), (denoteLDatatype k) -> mm.(LinkType) := links.(constructor); 
 
 }.
 

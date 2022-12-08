@@ -212,7 +212,7 @@ Instance PersonsMetamodel_ElementSum : Sum PersonsMetamodel_Object PersonsMetamo
 {
 	denoteDatatype := PersonsMetamodel_getTypeByClass;
 	toRawData := PersonsMetamodel_toClass;
-	constuctor := PersonsMetamodel_toObject;
+	constructor := PersonsMetamodel_toObject;
 }.
 
 #[export]
@@ -220,7 +220,7 @@ Instance PersonsMetamodel_LinkSum : Sum PersonsMetamodel_Link PersonsMetamodel_R
 {
 	denoteDatatype := PersonsMetamodel_getTypeByReference;
 	toRawData := PersonsMetamodel_toReference;
-	constuctor := PersonsMetamodel_toLink;
+	constructor := PersonsMetamodel_toLink;
 }.
 
 

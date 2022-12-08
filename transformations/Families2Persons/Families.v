@@ -414,7 +414,7 @@ Instance FamiliesMetamodel_ElementSum : Sum FamiliesMetamodel_Object FamiliesMet
 {
 	denoteDatatype := FamiliesMetamodel_getTypeByClass;
 	toRawData := FamiliesMetamodel_toClass;
-	constuctor := FamiliesMetamodel_toObject;
+	constructor := FamiliesMetamodel_toObject;
 }.
 
 #[export]
@@ -422,7 +422,7 @@ Instance FamiliesMetamodel_LinkSum : Sum FamiliesMetamodel_Link FamiliesMetamode
 {
 	denoteDatatype := FamiliesMetamodel_getTypeByReference;
 	toRawData := FamiliesMetamodel_toReference;
-	constuctor := FamiliesMetamodel_toLink;
+	constructor := FamiliesMetamodel_toLink;
 }.
 
 
