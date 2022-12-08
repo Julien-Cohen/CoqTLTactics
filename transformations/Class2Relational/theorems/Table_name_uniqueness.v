@@ -51,14 +51,14 @@ Proof.
     repeat Tactics.show_origin.
 
 
-    Tactics.in_singleton_allTuples IN1.
-    Tactics.in_singleton_allTuples IN2.
-    specialize (PRE c c0 IN1 IN2) ; clear IN1 IN2.
+    Tactics.in_singleton_allTuples IN_E.
+    Tactics.in_singleton_allTuples IN_E0.
+    specialize (PRE c c0 IN_E IN_E0) ; clear IN_E IN_E0.
     
-    simpl in H, H0.
-    remove_or_false H.
-    remove_or_false H0.
-    inversion H0 ; inversion H ; subst ; simpl in *.
+    simpl in IN1, IN2.
+    remove_or_false IN1.
+    remove_or_false IN2.
+    inversion IN1 ; inversion IN2 ; subst ; simpl in *.
     apply PRE.
     contradict D.
     subst ; reflexivity.

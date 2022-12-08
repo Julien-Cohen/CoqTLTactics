@@ -60,8 +60,7 @@ Ltac unfoldTransformation Tr :=
   simpl.*)
 
 
-Theorem Relational_name_definedness:
-forall (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : RelationalModel),
+Theorem Relational_name_definedness (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : RelationalModel) :
   (* transformation *) 
      rm = execute Class2Relational cm ->
   (* precondition *)   
@@ -69,70 +68,57 @@ forall (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : Relational
          In c1 cm.(modelElements) -> 
             (ClassMetamodel.getName c1 <> ""%string)) ->
   (* postcondition *) 
-     (forall (t1 : RelationalMetamodel.Element), 
-         In t1 rm.(modelElements) -> 
-            (RelationalMetamodel.getName t1 <> ""%string)). 
+     (forall (e : RelationalMetamodel.Element), 
+         In e rm.(modelElements) -> 
+            (RelationalMetamodel.getName e <> ""%string)). 
 Proof.
-  intros.
+  intros T P e IN; intros.
   subst rm.
 
   Tactics.destruct_execute.
 
   Tactics.show_singleton. 
 
-  rename x into c.
-
-  Tactics.in_singleton_allTuples H1.
-  specialize (H0 c H1). 
-
-  destruct c. (* Case analysis on source element type *)
+  Tactics.in_singleton_allTuples IN_E.
+  specialize (P e0 IN_E). 
+  
+  destruct e0. (* Case analysis on source element type *)
   * (* [Class] *) 
     repeat Tactics.destruct_any.
-  
-    Tactics.destruct_In_two. 
+    
+    Tactics.destruct_In_two ;
+      simpl in * ;
+      remove_or_false IN_OP ;
+      subst ope ; simpl in *. 
     ** (* Class2Table *)
-      simpl in H4.
-      remove_or_false H4.
-      subst ope.
-      simpl in H5.
-      inversion_clear H5.
-      simpl. 
-      apply H0.
+      inversion_clear IN.
+      exact P.
       
     **  (* Attribute2Column contradict *)
       exfalso.
-      simpl in H4.
-      remove_or_false H4.
-      subst ope.
-      simpl in H5. 
-      inversion H5.
-      
+      discriminate IN.
       
   * (* [Attribute] *) 
     destruct a.
     destruct derived ; repeat Tactics.destruct_any.
     -- (* derived *)
-      exfalso.
-      Tactics.destruct_In_two. 
-      ** simpl in H3 ; inversion H3.
-      ** simpl in H3 ; inversion H3.
+      exfalso. (* no rule can match *)
+      Tactics.destruct_In_two ; discriminate M.
+
              
     -- (* not derived *) 
-      Tactics.destruct_In_two.
-      **  (* Class2Table contradict *)
+      Tactics.destruct_In_two;
+        simpl in * ;
+        remove_or_false IN_OP ;
+        subst ope ; simpl in *.
+      **  (* Class2Table impossible *)
         exfalso.
-        simpl in H4.
-        remove_or_false H4.
-        subst ope.
-        simpl in H5; inversion H5.
+        discriminate IN.
         
       ** (* Attribute2Column *) 
-        simpl in H4.
-        remove_or_false H4.
-        subst ope.
-        simpl in H5 ; inversion_clear H5.
+        simpl in IN ; inversion_clear IN.
         simpl. 
-        apply H0.
+        exact P.
 Qed.
 
 (* Alternative for (* [Attribute] *):
