@@ -36,10 +36,10 @@ Proof.
 Qed.
 
 
-Lemma allModelElements_allTuples att cm: 
-  In (AttributeObject att) (allModelElements cm) ->
-  In [AttributeObject att] (allTuples Class2Relational cm).
-Proof.
+Lemma allModelElements_allTuples att (cm:Model ClassMM): 
+  In (AttributeElement att) cm.(modelElements) ->
+  In [AttributeElement att] (allTuples Class2Relational cm).
+Proof. 
   destruct cm ; simpl.
   unfold allTuples ; simpl.
   clear.
@@ -53,8 +53,8 @@ Proof.
 Qed.
 
 Lemma allModelElements_allTuples_back att cm: 
-  In [AttributeObject att] (allTuples Class2Relational cm) ->
-  In (AttributeObject att) (allModelElements cm).
+  In [AttributeElement att] (allTuples Class2Relational cm) ->
+  In (AttributeElement att) cm.(modelElements).
 Proof.
   destruct cm ; simpl.
   unfold allTuples ; simpl.
@@ -71,9 +71,9 @@ Lemma transform_attribute :
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
   (* precondition *)  forall id name,
-    In (ClassMetamodel.AttributeObject {| attr_id:= id ; derived := false ; attr_name := name|}) (allModelElements cm) ->
+    In (AttributeElement {| attr_id:= id ; derived := false ; attr_name := name|}) cm.(modelElements) ->
   (* postcondition *) 
-    In (RelationalMetamodel.ColumnObject {| column_id := id; column_name := name |}) (allModelElements rm). 
+    In (ColumnElement {| column_id := id; column_name := name |}) (rm.(modelElements)). 
 Proof.
   intros cm rm H ; subst.
   intros i n H.
@@ -96,9 +96,9 @@ Lemma transform_attribute_back :
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
   (* precondition *)  forall id name,
-      In (RelationalMetamodel.ColumnObject {| column_id := id; column_name := name |}) (allModelElements rm) ->
+      In (ColumnElement {| column_id := id; column_name := name |}) (rm.(modelElements)) ->
   (* postcondition *) 
-    In (ClassMetamodel.AttributeObject {| attr_id:= id ; derived := false ; attr_name := name|}) (allModelElements cm)
+    In (AttributeElement {| attr_id:= id ; derived := false ; attr_name := name|}) (cm.(modelElements))
 . 
 Proof.
   intros cm rm H ; subst.
@@ -127,7 +127,7 @@ Qed.
 (* nul
 Lemma apply_pattern_attribute id name cm :  
   applyPattern Class2Relational cm
-    [AttributeObject
+    [AttributeElement
        {|
          attr_id := id;
          derived := false;
@@ -152,10 +152,10 @@ Qed. *)
 Lemma getAttributeType_In att m: 
   getAttributeType att m <> None ->
   exists t, 
-    In (AttributeTypeLink {| for_attribute := att ; type := t |}) m.(modelLinks).
+    In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks).
 Proof.
   destruct m. simpl.
-
+  unfold getAttributeType ; simpl.
   clear modelElements.
   induction modelLinks ; simpl ; [ congruence | ] ; intro.
   destruct a.
@@ -174,12 +174,12 @@ Proof.
       eexists ; right ; exact H.
 Qed.
 
-Lemma getAttributeType_In_back att t m: 
-  In (AttributeTypeLink {| for_attribute := att ; type := t |}) m.(modelLinks) ->
+Lemma getAttributeType_In_back att t (m:Model ClassMM): 
+  In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks) ->
   getAttributeType att m <> None.
 Proof.
   destruct m. simpl.
-
+  unfold getAttributeType ; simpl.
   clear modelElements.
   induction modelLinks ; simpl ; [ congruence | ] ; intro.
   destruct a.
@@ -190,7 +190,7 @@ Proof.
   + (* AttributeType *)
     destruct a.
     destruct_or H.
-  - injection H ; intros ;  clear H ; subst.
+  - injection H ; intros ;  clear H ; subst. simpl.
     replace (beq_Attribute att att) with true.
     congruence.
     { clear. destruct att ; unfold beq_Attribute ; simpl.
@@ -212,11 +212,11 @@ Qed.
 Theorem Relational_Column_Reference_definedness:
 forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
-  (* precondition *)  (forall (att : Attribute),
-    In (ClassMetamodel.AttributeObject att) (allModelElements cm) ->
+  (* precondition *)  (forall (att : Attribute_t),
+    In (AttributeElement att) cm.(modelElements) ->
         getAttributeType att cm <> None) ->
-  (* postcondition *)  (forall (col: Column),
-    In (RelationalMetamodel.ColumnObject col) (allModelElements rm) ->
+  (* postcondition *)  (forall (col: Column_t),
+    In (ColumnElement col) rm.(modelElements) ->
       getColumnReference col rm <> None). 
 Proof.
   intros cm rm E PRE col I1.
@@ -277,7 +277,7 @@ Tactics.destruct_execute.
   unfold Expressions.evalOutputPatternElementExpr in He.
 
 
-  cut (In (AttributeObject a) (allModelElements cm)).
+  cut (In (AttributeElement a) (allModelElements cm)).
   {
     intro IA.
     specialize (PRE a IA) ; clear IA.
@@ -398,7 +398,7 @@ unfold ConcreteExpressions.makeLink.
 unfold ConcreteExpressions.wrapOptionLink. 
 
 destruct ( 
-(ClassMetamodel.AttributeObject
+(ClassMetamodel.AttributeElement
    (Build_Attribute attr_id false attr_name))) eqn: link_cast_ca.
 **  (* <> None *)
     unfold optionToList.

@@ -117,8 +117,8 @@ Qed.
 Inductive ElementKind : Set :=
   Table_K | Column_K.
 
-Definition getTypeByEKind (type : ElementKind) : Set :=
-  match type with
+Definition getTypeByEKind (k : ElementKind) : Set :=
+  match k with
   | Table_K => Table_t
   | Column_K => Column_t
   end.
@@ -126,8 +126,8 @@ Definition getTypeByEKind (type : ElementKind) : Set :=
 Inductive LinkKind : Set :=
   TableColumns_K | ColumnReference_K.
 
-Definition getTypeByLKind (type : LinkKind) : Set :=
-  match type with
+Definition getTypeByLKind (k : LinkKind) : Set :=
+  match k with
   | TableColumns_K => TableColumns_t
   | ColumnReference_K => ColumnReference_t
   end.

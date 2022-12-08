@@ -5,7 +5,7 @@ Require Import PeanoNat.
 Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 
-(*Require Import core.EqDec.*)
+
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
@@ -117,8 +117,8 @@ Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
 (** Reflective functions (typing : correspondence between abstract types (kinds) and model data) *)
 
 
-Definition getTypeByEKind (type : ElementKind) : Set :=
-  match type with
+Definition getTypeByEKind (k : ElementKind) : Set :=
+  match k with
   | Class_K => Class_t
   | Attribute_K => Attribute_t
   end.
@@ -135,8 +135,8 @@ Definition getEKind (c : Element) : ElementKind :=
    | AttributeElement _ => Attribute_K
    end.
 
-Definition getTypeByLKind (type : LinkKind) : Set :=
-  match type with
+Definition getTypeByLKind (k : LinkKind) : Set :=
+  match k with
   | ClassAttribute_K => ClassAttributes_t
   | AttributeType_K => AttributeType_t
   end.
