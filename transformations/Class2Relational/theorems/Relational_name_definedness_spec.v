@@ -82,32 +82,30 @@ Proof.
 
   rename x into c.
 
-  specialize (H0 c). 
-  apply allTuples_incl in H1.
-  unfold incl in H1.
-  specialize (H1 c).
-  assert (In c [c]). { left. reflexivity. }
-  specialize (H0 (H1 H2)).
+  Tactics.in_singleton_allTuples H1.
+  specialize (H0 c H1). 
+
   destruct c. (* Case analysis on source element type *)
   * (* [Class] *) 
     repeat Tactics.destruct_any.
-    
+  
     Tactics.destruct_In_two. 
     ** (* Class2Table *)
+      simpl in H4.
+      remove_or_false H4.
+      subst ope.
       simpl in H5.
-      destruct H5 ; [ | contradiction ] ; subst ope.
-      simpl in H6.
-      inversion_clear H6.
+      inversion_clear H5.
       simpl. 
       apply H0.
       
     **  (* Attribute2Column contradict *)
       exfalso.
-      simpl in H5.
-      destruct H5 ; [ | contradiction ].
+      simpl in H4.
+      remove_or_false H4.
       subst ope.
-      simpl in H6. 
-      inversion H6.
+      simpl in H5. 
+      inversion H5.
       
       
   * (* [Attribute] *) 
@@ -116,22 +114,23 @@ Proof.
     -- (* derived *)
       exfalso.
       Tactics.destruct_In_two. 
-      ** simpl in H4 ; inversion H4.
-      ** simpl in H4 ; inversion H4.
+      ** simpl in H3 ; inversion H3.
+      ** simpl in H3 ; inversion H3.
              
     -- (* not derived *) 
       Tactics.destruct_In_two.
       **  (* Class2Table contradict *)
         exfalso.
-        simpl in H5.
-        destruct H5 ; [ | contradiction] ; subst ope.
-        simpl in H6; inversion H6.
+        simpl in H4.
+        remove_or_false H4.
+        subst ope.
+        simpl in H5; inversion H5.
         
       ** (* Attribute2Column *) 
-        simpl in H5.
-        destruct H5 ; [ | contradiction ].
+        simpl in H4.
+        remove_or_false H4.
         subst ope.
-        simpl in H6 ; inversion_clear H6.
+        simpl in H5 ; inversion_clear H5.
         simpl. 
         apply H0.
 Qed.

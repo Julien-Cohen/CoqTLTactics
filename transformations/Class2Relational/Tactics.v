@@ -22,7 +22,7 @@ Proof.
  simpl in H.
  destruct a0.
  destruct derived ; simpl in H ; auto.
- destruct_or H ; [ | contradiction].
+ remove_or_false H.
  discriminate H.
 Qed.
 
@@ -32,7 +32,7 @@ Lemma columns_come_from_attributes a b c :
 Proof.
  destruct c ; simpl ; [intro H ; exfalso | solve[eauto] ].
  simpl in H.
- destruct_or H ; [ | contradiction ].
+ remove_or_false H.
  discriminate H.
 Qed.
 
@@ -144,3 +144,8 @@ Ltac destruct_In_two :=
       repeat destruct_or H ; [ | | contradiction H] ; subst X
   end.
 
+(** Tactics to transform H : In [e] (allTuples _ cm)
+    into H: In (e) (modelElements cm)
+*)
+Ltac in_singleton_allTuples H:=
+  apply Certification.allTuples_incl in H ; apply incl_singleton in H.

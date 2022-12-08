@@ -51,26 +51,16 @@ Proof.
     repeat Tactics.show_origin.
 
 
-                specialize (PRE c0 c).
-                apply allTuples_incl in IN1.
-                apply allTuples_incl in IN2.
-                unfold incl in IN1, IN2.
-                specialize (IN1 (ClassElement c)).
-                specialize (IN2 (ClassElement c0)).
-                assert (I1 : In (ClassElement c) [ClassElement c]). 
-                { left. reflexivity. }
-                assert (I2 : In (ClassElement c0) [ClassElement c0]). 
-                { left. reflexivity. }
-                specialize (PRE (IN2 I2)).
-                specialize (PRE (IN1 I1)).
-                clear I1 I2 IN1 IN2.
-                simpl in H, H0.
-                destruct_or H ; [ | contradiction].
-                destruct_or H0 ; [ | contradiction].
-                inversion H0 ;
-                inversion H ; subst ; simpl in *.
-                apply not_eq_sym ; apply PRE.
-                contradict D.
-                subst ; reflexivity.
+    Tactics.in_singleton_allTuples IN1.
+    Tactics.in_singleton_allTuples IN2.
+    specialize (PRE c c0 IN1 IN2) ; clear IN1 IN2.
+    
+    simpl in H, H0.
+    remove_or_false H.
+    remove_or_false H0.
+    inversion H0 ; inversion H ; subst ; simpl in *.
+    apply PRE.
+    contradict D.
+    subst ; reflexivity.
 Qed.
 

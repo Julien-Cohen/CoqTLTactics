@@ -10,3 +10,8 @@ Ltac destruct_or H :=
   match type of H with _ \/ _ =>
      destruct H as [ H | H ]
   end.
+
+Ltac remove_or_false H := 
+  match type of H with 
+    _ \/ False => destruct H as [ H | H ] ; [ | contradiction] 
+  end. 

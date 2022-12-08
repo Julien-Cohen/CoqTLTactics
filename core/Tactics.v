@@ -244,3 +244,11 @@ Qed.
 
 
 End A.
+
+Require Certification.
+
+(** Tactics to transform H : In [e] (allTuples _ cm)
+    into H: In (e) (modelElements cm)
+*)
+Ltac in_singleton_allTuples H:=
+  apply Certification.allTuples_incl in H ; apply incl_singleton in H.

@@ -118,7 +118,7 @@ Proof.
     destruct a.
     destruct derived ; compute in H.
     - contradiction.
-    - destruct_or H ; [ | contradiction].
+    - remove_or_false H.
       injection H ; intros ;subst ; clear H.
       reflexivity.
   + auto.

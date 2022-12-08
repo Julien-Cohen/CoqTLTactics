@@ -58,36 +58,12 @@ Proof.
     
 
     repeat Tactics.show_origin. 
+    
+    Tactics.in_singleton_allTuples IN1.
+    Tactics.in_singleton_allTuples IN2.
+    Tactics.in_singleton_allTuples IN3.
 
-          specialize (PRE a a0 c).
- 
-            apply allTuples_incl in IN1.
-            apply allTuples_incl in IN2.
-            apply allTuples_incl in IN3.
-            unfold incl in IN1, IN2, IN3.
-            specialize (IN1 (AttributeElement a)).
-            specialize (IN2 (AttributeElement a0)).
-            specialize (IN3 (ClassElement c)).
-
-
-            assert (I4 : In (AttributeElement a) cm.(modelElements)).
-            { apply IN1. simpl. auto. }
-
-            clear IN1.
-
-            assert (I5 : In (AttributeElement a0) cm.(modelElements)).       
-            { apply IN2. simpl. auto. }
-
-            clear IN2.
-
-            assert (I6 : In (ClassElement c) cm.(modelElements)).
-            { apply IN3. simpl. auto. }
-
-            clear IN3.
-
-
-
-            specialize (PRE I4 I5 I6). clear I4 I5 I6.
+           specialize (PRE a a0 c IN1 IN2 IN3). clear IN1 IN2 IN3.
 
             simpl in H.
 
@@ -97,9 +73,9 @@ Proof.
 
             simpl in H, H0.
 
-            destruct_or H1 ; [ | contradiction].
-            destruct_or H0 ; [ | contradiction].
-            destruct_or H  ; [ | contradiction].
+            remove_or_false H.
+            remove_or_false H0.
+            remove_or_false H1.
 
             inversion H1. 
             inversion H0. 

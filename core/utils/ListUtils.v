@@ -266,3 +266,9 @@ Fixpoint count_occ_b {A} (f:A->A->bool) l e :=
   | nil => 0
   | a::r => (match f a e with true => 1  | false => 0 end) + count_occ_b f r e
   end.
+
+Lemma incl_singleton :
+  forall {T} (a:T) b, incl (a::nil)  b -> List.In a b.
+Proof.
+  unfold incl. intros. cut (In a (a::nil)) ; simpl ; auto.
+Qed.
