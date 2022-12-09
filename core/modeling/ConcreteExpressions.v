@@ -63,6 +63,7 @@ Fixpoint wrap
 
 Local Notation instanceof := mtc.(smmm).(elements).(instanceof).
 
+(* FIXME : utiliser wrap pour definir wrap' ? *)
 Fixpoint wrap' (l:list SourceEKind) (sl : list SourceElementType) : bool :=
   match (l, sl) with
   | (nil, nil) => true

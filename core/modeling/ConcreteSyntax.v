@@ -17,7 +17,7 @@ Local Notation TargetEKind := tmmm.(EKind).
 Local Notation TargetLKind := tmmm.(LKind).
 
 
-(** ** Syntax **)
+(** ** Syntax (computed types) **)
 
 
 
@@ -31,12 +31,7 @@ Definition outputPatternElementTypes
 (skinds : list SourceEKind) (tkind: TargetEKind) :=
   denoteSignature skinds (denoteEDatatype tkind).
 
-Definition iteratedListTypes
-(skinds : list SourceEKind) :=
-  denoteSignature skinds nat.
 
-Definition guardTypes (skinds : list SourceEKind) :=
-  denoteSignature skinds bool.
 
 Record ConcreteOutputPatternLink (InKinds: list SourceEKind) (OutKind:TargetEKind) : Type :=
   link 
@@ -66,11 +61,11 @@ Global Arguments e_outlink {_}.
 
 Record ConcreteRule  :=
     { 
-      r_name : string ;
+      r_name   : string ;
       r_InKinds: list SourceEKind ;
-      r_guard :  option (SourceModel -> (guardTypes r_InKinds)) ;
-      r_iter :  option (SourceModel -> (iteratedListTypes r_InKinds)) ;
-      r_outpat   :  (list (ConcreteOutputPatternElement r_InKinds))
+      r_guard  : option (SourceModel -> (denoteSignature r_InKinds bool)) ;
+      r_iter   : option (SourceModel -> (denoteSignature r_InKinds nat))  ;
+      r_outpat : list (ConcreteOutputPatternElement r_InKinds)
     }.
 
 Inductive ConcreteTransformation : Type :=
