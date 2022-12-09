@@ -112,6 +112,32 @@ Proof.
   Tactics.beq_eq_tac.
 Qed.
 
+
+(* Generic types (data types) *)
+
+Inductive Element : Set :=
+  | TableElement : Table_t -> Element
+  | ColumnElement : Column_t -> Element.
+
+
+Definition beq_Element (c1 : Element) (c2 : Element) : bool :=
+  match c1, c2 with
+  | TableElement o1, TableElement o2 => beq_Table o1 o2
+  | ColumnElement o1, ColumnElement o2 => beq_Column o1 o2
+  | _, _ => false
+  end.
+
+Inductive Link : Set :=
+  | TableColumnLink : TableColumns_t -> Link
+  | ColumnReferenceLink : ColumnReference_t -> Link.
+
+  Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
+    match c1, c2 with
+    | TableColumnLink o1, TableColumnLink o2 => beq_TableColumns o1 o2
+    | ColumnReferenceLink o1, ColumnReferenceLink o2 => beq_ColumnReference o1 o2
+    | _, _ => false
+    end.
+
 (* Meta-types (kinds) *)
 
 Inductive ElementKind : Set :=
@@ -132,37 +158,14 @@ Definition getTypeByLKind (k : LinkKind) : Set :=
   | ColumnReference_K => ColumnReference_t
   end.
 
-(* Generic types (data types) *)
-
-Inductive Element : Set :=
-  | TableElement : Table_t -> Element
-  | ColumnElement : Column_t -> Element.
-
 Definition lift_EKind (c: ElementKind) : (getTypeByEKind c) -> Element.
   destruct c ; [ exact TableElement | exact ColumnElement].
 Defined.
-
-Definition beq_Element (c1 : Element) (c2 : Element) : bool :=
-  match c1, c2 with
-  | TableElement o1, TableElement o2 => beq_Table o1 o2
-  | ColumnElement o1, ColumnElement o2 => beq_Column o1 o2
-  | _, _ => false
-  end.
-
-Inductive Link : Set :=
-  | TableColumnLink : TableColumns_t -> Link
-  | ColumnReferenceLink : ColumnReference_t -> Link.
 
 Definition lift_LKind (c: LinkKind) : (getTypeByLKind c) -> Link.
   destruct c ; [ exact TableColumnLink | exact ColumnReferenceLink].
 Defined.
 
-  Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
-    match c1, c2 with
-    | TableColumnLink o1, TableColumnLink o2 => beq_TableColumns o1 o2
-    | ColumnReferenceLink o1, ColumnReferenceLink o2 => beq_ColumnReference o1 o2
-    | _, _ => false
-    end.
 
 (* Reflective functions *)
 

@@ -72,21 +72,6 @@ Proof.
   Tactics.beq_eq_tac.
 Qed.
 
-(** Meta-types (or kinds, to be used in rules) *)
-
-Inductive ElementKind : Set :=
-  Class_K | Attribute_K.
-
-Inductive LinkKind : Set :=
-  ClassAttribute_K | AttributeType_K.
-
-
-Lemma eqEKind_dec : forall (c1:ElementKind) (c2:ElementKind), { c1 = c2 } + { c1 <> c2 }.
-Proof. repeat decide equality. Defined.
-
-Lemma eqLKind_dec : forall (c1:LinkKind) (c2:LinkKind), { c1 = c2 } + { c1 <> c2 }.
-Proof. repeat decide equality. Defined.
-
 
 (** Data types (to build models) *)
 
@@ -113,6 +98,21 @@ Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
   | _, _ => false
   end.
 
+
+(** Meta-types (or kinds, to be used in rules) *)
+
+Inductive ElementKind : Set :=
+  Class_K | Attribute_K.
+
+Inductive LinkKind : Set :=
+  ClassAttribute_K | AttributeType_K.
+
+
+Lemma eqEKind_dec : forall (c1:ElementKind) (c2:ElementKind), { c1 = c2 } + { c1 <> c2 }.
+Proof. repeat decide equality. Defined.
+
+Lemma eqLKind_dec : forall (c1:LinkKind) (c2:LinkKind), { c1 = c2 } + { c1 <> c2 }.
+Proof. repeat decide equality. Defined.
 
 (** Reflective functions (typing : correspondence between abstract types (kinds) and model data) *)
 
