@@ -135,6 +135,14 @@ Definition getEKind (c : Element) : ElementKind :=
    | AttributeElement _ => Attribute_K
    end.
 
+Definition get_E_data (k : ElementKind) (c : Element) : option (getTypeByEKind k) :=
+  match (k,c) as e return (option (getTypeByEKind (fst e))) with
+  | (Class_K , ClassElement v) => Some v 
+  | (Attribute_K, AttributeElement v) => Some v 
+  | (_ , _) => None
+  end.
+
+
 Definition getTypeByLKind (k : LinkKind) : Set :=
   match k with
   | ClassAttribute_K => ClassAttributes_t
@@ -155,33 +163,11 @@ Definition getLKind (c : Link) : LinkKind :=
    | AttributeTypeLink _ => AttributeType_K
    end.
 
-
-Definition get_E_data (t : ElementKind) (c : Element) : option (getTypeByEKind t) :=
-  match (t,c) as e return (option (getTypeByEKind (fst e))) with
-  | (Class_K , ClassElement v) => Some v 
-  | (Class_K , _) => None 
-  | (Attibute_K, AttributeElement v) => Some v 
-  | (Attribute_K , _) => None 
-  end.
-
-(* BUG ? : the following does not work. (Two lines have been swaped.) *) 
-(*
-Definition get_E_data_alt (t : ElementKind) (c : Element) : option (getTypeByEKind t) :=
-  match (t,c) as e return (option (getTypeByEKind (fst e))) with
-  | (Class_K , ClassElement v) => Some v 
-  | (Attibute_K, AttributeElement v) => Some v 
-  | (Class_K , _) => None 
-  | (Attribute_K , _) => None 
-  end.
-*)
-
-
 Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
   match (t,c) as e return (option (getTypeByLKind (fst e))) with
   | (ClassAttribute_K , ClassAttributeLink v) => Some v 
-  | (ClassAttribute_K , _) => None 
-  | (AttibuteType_K, AttributeTypeLink v) => Some v 
-  | (AttributeType_K , _) => None 
+  | (AttributeType_K, AttributeTypeLink v) => Some v 
+  | (_ , _) => None 
   end.
 
 
