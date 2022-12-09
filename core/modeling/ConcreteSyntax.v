@@ -19,28 +19,24 @@ Local Notation TargetLKind := tmmm.(LKind).
 
 (** ** Syntax **)
 
-Fixpoint denoteFunction (skinds : list SourceEKind) (otype: Type) :=
-  match skinds with
-  | nil => otype
-  | cons k ks => (denoteEDatatype k) -> denoteFunction ks otype
-  end.
+
 
 Definition outputPatternLink
 (skinds : list SourceEKind) (tkind: TargetEKind)  (tref: TargetLKind):=
-denoteFunction skinds ((denoteEDatatype tkind) -> option (denoteLDatatype tref)).
+denoteSignature skinds ((denoteEDatatype tkind) -> option (denoteLDatatype tref)).
 
 
 
 Definition outputPatternElementTypes
 (skinds : list SourceEKind) (tkind: TargetEKind) :=
-  denoteFunction skinds (denoteEDatatype tkind).
+  denoteSignature skinds (denoteEDatatype tkind).
 
 Definition iteratedListTypes
 (skinds : list SourceEKind) :=
-  denoteFunction skinds nat.
+  denoteSignature skinds nat.
 
 Definition guardTypes (skinds : list SourceEKind) :=
-  denoteFunction skinds bool.
+  denoteSignature skinds bool.
 
 Record ConcreteOutputPatternLink (InKinds: list SourceEKind) (OutKind:TargetEKind) : Type :=
   link 
