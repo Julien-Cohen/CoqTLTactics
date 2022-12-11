@@ -63,7 +63,7 @@ Fixpoint wrap
 
 Local Notation instanceof := mtc.(smmm).(elements).(instanceof).
 
-(* FIXME : utiliser wrap pour definir wrap' ? *)
+
 Fixpoint wrap' (l:list SourceEKind) (sl : list SourceElementType) : bool :=
   match (l, sl) with
   | (nil, nil) => true
@@ -72,10 +72,41 @@ Fixpoint wrap' (l:list SourceEKind) (sl : list SourceElementType) : bool :=
   | (_::_ , nil) => false
   end. 
 
+(** [wrap'] can be expressed by an application of [wrap]. *)
+(* BEGIN *)
+
+Definition drop_option_to_bool a :=
+  match a with
+  | None => false
+  | Some b => b
+  end.
 
 
+Fixpoint dummy (l:list SourceEKind) : denoteSignature l bool:=
+  match l with
+  | nil => true
+  | k::r => fun e => dummy r
+  end.
+
+Definition wrap'' l a := 
+  drop_option_to_bool (wrap l (dummy l) a).
 
 
+Lemma correct : forall a b, wrap' a b = wrap'' a b.
+Proof.
+  unfold wrap''.
+  induction a ; destruct b ; simpl ; [ reflexivity | reflexivity | reflexivity | ].
+
+  unfold ModelingMetamodel.instanceof.
+  unfold toEData.
+  simpl.
+  match goal with [ |- context[match ?E with _ => _ end] ] => destruct E end.
+  + rewrite Bool.andb_true_l.
+    apply IHa.
+  + apply Bool.andb_false_l.
+Qed.
+
+(* END *)
 
 Fixpoint wrapElement 
   (skinds : list SourceEKind) 
@@ -155,19 +186,12 @@ Fixpoint wrapLink
 Definition GuardFunction : Type :=
   SourceModel -> (list SourceElementType) -> bool.
 
-(* BEGIN FIXME *)
-Definition drop_option_to_bool a :=
-  match a with
-  | None => false
-  | Some b => b
-  end.
 
 Definition makeGuard 
   (l : list SourceEKind)
   (imp : SourceModel -> denoteSignature l bool) :
   GuardFunction :=
   fun sm s => drop_option_to_bool (wrap l (imp sm) s).
-(* END FIXME *)
 
 Definition makeEmptyGuard (l : list SourceEKind) : GuardFunction :=
   fun _ => wrap' l.
