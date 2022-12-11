@@ -27,6 +27,7 @@ Fixpoint denoteSignature (l : list SourceEKind) (r : Type) : Type :=
 
 Local Notation mismatch := (fun _ => None).
 
+(** wrap sk impl sl does typecheck that sl has the correct type with respect to skinds ans imp, and if so it applies imp to the elements od sl. *) 
 Fixpoint wrap 
   {T : Type} 
   (skinds : list SourceEKind) 
@@ -61,19 +62,7 @@ Fixpoint wrap
 
 
 
-Local Notation instanceof := mtc.(smmm).(elements).(instanceof).
 
-
-Fixpoint wrap' (l:list SourceEKind) (sl : list SourceElementType) : bool :=
-  match (l, sl) with
-  | (nil, nil) => true
-  | (k1::r1, e2::r2) => instanceof k1 e2 && wrap' r1 r2 
-  | (nil , _ :: _) => false
-  | (_::_ , nil) => false
-  end. 
-
-(** [wrap'] can be expressed by an application of [wrap]. *)
-(* BEGIN *)
 
 Definition drop_option_to_bool a :=
   match a with
@@ -88,25 +77,11 @@ Fixpoint dummy (l:list SourceEKind) : denoteSignature l bool:=
   | k::r => fun e => dummy r
   end.
 
-Definition wrap'' l a := 
+
+(** wrap' only does the typecheck. It is a particular case of wrap wher the imp function does nothing. *)
+Definition wrap' l a := 
   drop_option_to_bool (wrap l (dummy l) a).
 
-
-Lemma correct : forall a b, wrap' a b = wrap'' a b.
-Proof.
-  unfold wrap''.
-  induction a ; destruct b ; simpl ; [ reflexivity | reflexivity | reflexivity | ].
-
-  unfold ModelingMetamodel.instanceof.
-  unfold toEData.
-  simpl.
-  match goal with [ |- context[match ?E with _ => _ end] ] => destruct E end.
-  + rewrite Bool.andb_true_l.
-    apply IHa.
-  + apply Bool.andb_false_l.
-Qed.
-
-(* END *)
 
 Fixpoint wrapElement 
   (skinds : list SourceEKind) 

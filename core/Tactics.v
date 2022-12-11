@@ -156,7 +156,11 @@ Proof.
       unfold ConcreteExpressions.makeGuard. simpl.
       destruct (toEData e e1) ; reflexivity.
     }
-    { apply andb_false_r. }
+    { unfold makeEmptyGuard.  
+      unfold wrap'.
+      unfold wrap.
+      destruct (toEData e e1) ; reflexivity.
+    }
   }
 Qed.
 
