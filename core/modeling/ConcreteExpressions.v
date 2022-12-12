@@ -82,7 +82,7 @@ Fixpoint dummy (l:list SourceEKind) : denoteSignature l bool:=
 Definition wrap' l a := 
   drop_option_to_bool (wrap l (dummy l) a).
 
-Definition wrapElement_alt (skinds : list SourceEKind) 
+Definition wrapElement (skinds : list SourceEKind) 
   (tk : TargetEKind) 
   (imp : denoteSignature skinds (denoteEDatatype tk))
   (selements : list SourceElementType)  :
@@ -92,43 +92,6 @@ Definition wrapElement_alt (skinds : list SourceEKind)
     | None => None
     | Some v => Some (elements.(constructor) tk v)
   end.
-
-Fixpoint wrapElement 
-  (skinds : list SourceEKind) 
-  (tk : TargetEKind) 
-  (imp : denoteSignature skinds (denoteEDatatype tk))
-  (selements : list SourceElementType) {struct skinds} :
-  option TargetElementType :=
-  match (skinds,selements) as c
-        return (denoteSignature (fst c) (denoteEDatatype tk) -> option TargetElementType)
-  with
-
-  | (nil, nil) => 
-      fun v  => Some (elements.(constructor) tk v)
-
-  | (k::rk, e :: re) =>
-      match toEData k e with
-      | Some v =>
-          fun f => wrapElement rk tk (f v) re
-
-      | None => mismatch 
-
-      end
-
-  | (nil , _ :: _) => mismatch
-
-  | (_ :: _ , nil) => mismatch
-
-                                              
-end imp.
-
-Lemma correct : forall a b c d, wrapElement a b c d = wrapElement_alt a b c d.
-Proof.
-  unfold wrapElement_alt.
-  induction a ; intros b c ; destruct d ; simpl ; [ reflexivity | reflexivity | reflexivity | ].
-  destruct (toEData a s) ; [ | reflexivity].
-  apply IHa.
-Qed.
 
 Fixpoint wrapLink
   (skinds : list SourceEKind)
