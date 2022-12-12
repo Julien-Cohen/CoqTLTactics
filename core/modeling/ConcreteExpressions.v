@@ -25,9 +25,17 @@ Fixpoint denoteSignature (l : list SourceEKind) (r : Type) : Type :=
   | k :: l' => denoteEDatatype k -> denoteSignature l' r
   end.
 
+(** generate function with the convenient type. *) 
+Fixpoint dummy {T} (l:list SourceEKind) (n:T) : denoteSignature l T :=
+  match l with
+  | nil => n
+  | k::r => fun e => dummy r n
+  end.
+
+
 Local Notation mismatch := (fun _ => None).
 
-(** wrap sk impl sl does typecheck that sl has the correct type with respect to skinds ans imp, and if so it applies imp to the elements od sl. *) 
+(** [wrap sk impl sl] does typecheck that [sl] has the correct type with respect to [skinds] ans [imp], and if so it applies [imp] to the elements of [sl]. *) 
 Fixpoint wrap 
   {T : Type} 
   (skinds : list SourceEKind) 
@@ -70,28 +78,19 @@ Definition drop_option_to_bool a :=
   | Some b => b
   end.
 
-
-Fixpoint dummy (l:list SourceEKind) : denoteSignature l bool:=
-  match l with
-  | nil => true
-  | k::r => fun e => dummy r
-  end.
-
-
 (** wrap' only does the typecheck. It is a particular case of wrap wher the imp function does nothing. *)
 Definition wrap' l a := 
-  drop_option_to_bool (wrap l (dummy l) a).
+  drop_option_to_bool (wrap l (dummy l true) a).
 
-Definition wrapElement (skinds : list SourceEKind) 
+Definition wrapElement 
+  (skinds : list SourceEKind) 
   (tk : TargetEKind) 
   (imp : denoteSignature skinds (denoteEDatatype tk))
   (selements : list SourceElementType)  :
   option TargetElementType := 
 
-  match wrap skinds imp selements with
-    | None => None
-    | Some v => Some (elements.(constructor) tk v)
-  end.
+    v <- wrap skinds imp selements ;
+    return (elements.(constructor) tk v).
 
 Definition wrapLink
   (skinds : list SourceEKind)
@@ -102,10 +101,11 @@ Definition wrapLink
   (selements : list SourceElementType)
   (v : TargetElementType) :       
   option (list TargetLinkType) :=
-      f <- wrap skinds imp selements ;
-      x <- toEData k v ;
-      y <- f x ;
-      return [links.(constructor) r y].
+
+    f <- wrap skinds imp selements ;
+    x <- toEData k v ;
+    y <- f x ;
+    return [links.(constructor) r y].
 
 (** ** Use of those generators *)
 
