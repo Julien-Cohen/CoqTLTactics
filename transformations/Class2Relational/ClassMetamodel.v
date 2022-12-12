@@ -272,21 +272,14 @@ Proof.
   intros. destruct clec_arg ; simpl in * ; congruence.
 Qed.
 
-Definition instanceOfEKind :
-  ElementKind -> Element -> bool :=
-  ClassElementSum.(instanceof).
-
-Definition instanceOfLKind : 
-  LinkKind -> Link -> bool :=
-  ClassLinkSum.(instanceof).
 
 
 Lemma Element_dec: 
   forall (a: Element),
-    (instanceOfEKind Class_K a) = true
- \/ (instanceOfEKind Attribute_K a) = true.
+    (instanceof Class_K a) = true
+ \/ (instanceof Attribute_K a) = true.
 Proof.
-  unfold instanceOfEKind.
+
   intro.
   destruct a ; unfold instanceof ; simpl ; auto.
 Qed.

@@ -314,13 +314,3 @@ Qed.
 
 Definition RelationalModel := Model RelationalMM.
 
-(* Not used *)
-Definition instanceOfEKind : 
-  ElementKind -> Element -> bool := 
-  RelationalElementSum.(instanceof).
-
-Definition instanceOfLKind : 
-  LinkKind -> Link -> bool :=
-  RelationalLinkSum.(instanceof).
-
-
