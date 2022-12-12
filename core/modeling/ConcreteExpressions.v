@@ -93,6 +93,20 @@ Definition wrapElement (skinds : list SourceEKind)
     | Some v => Some (elements.(constructor) tk v)
   end.
 
+Definition wrapLink_alt
+  (skinds : list SourceEKind)
+  (k : TargetEKind) 
+  (r : TargetLKind) 
+  (imp : denoteSignature skinds
+           (denoteEDatatype k -> option (denoteLDatatype r)))
+  (selements : list SourceElementType)
+  (v : TargetElementType) :       
+  option (list TargetLinkType) :=
+      f <- wrap skinds imp selements ;
+      x <- toEData k v ;
+      y <- f x ;
+      return [links.(constructor) r y].
+
 Fixpoint wrapLink
   (skinds : list SourceEKind)
   (k : TargetEKind) 
@@ -136,6 +150,14 @@ Fixpoint wrapLink
                             
    end imp .
 
+Lemma correct : forall a b c d e f, wrapLink_alt a b c d e f = wrapLink a b c d e f.
+Proof.
+  unfold wrapLink_alt.
+  induction a ; intros b c d ; destruct e ; intro f ; simpl ; [ | reflexivity | reflexivity | ].
+  +  destruct (toEData b f) ; reflexivity.
+  + destruct (toEData a s) ; [ | reflexivity].
+    apply IHa.
+Qed.
 
 (** ** Use of those generators *)
 
