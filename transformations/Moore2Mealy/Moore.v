@@ -236,7 +236,7 @@ Definition Transition_getTargetObject (tr_arg : Transition) (m : MooreModel) : o
 Instance MooreMetamodel_ElementSum : Sum MooreMetamodel_Object MooreMetamodel_Class :=
 {
 	denoteDatatype := MooreMetamodel_getTypeByClass;
-	toRawData := MooreMetamodel_toClass;
+	unbox := MooreMetamodel_toClass;
 	constructor := MooreMetamodel_toObject;
 }.
 
@@ -244,7 +244,7 @@ Instance MooreMetamodel_ElementSum : Sum MooreMetamodel_Object MooreMetamodel_Cl
 Instance MooreMetamodel_LinkSum : Sum MooreMetamodel_Link MooreMetamodel_Reference :=
 {
 	denoteDatatype := MooreMetamodel_getTypeByReference;
-	toRawData := MooreMetamodel_toReference;
+	unbox := MooreMetamodel_toReference;
 	constructor := MooreMetamodel_toLink;
 }.
 

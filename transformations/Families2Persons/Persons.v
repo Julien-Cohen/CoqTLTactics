@@ -211,7 +211,7 @@ Definition Person_downcastFemale (pe_arg : Person) (m : PersonsModel) : option F
 Instance PersonsMetamodel_ElementSum : Sum PersonsMetamodel_Object PersonsMetamodel_Class :=
 {
 	denoteDatatype := PersonsMetamodel_getTypeByClass;
-	toRawData := PersonsMetamodel_toClass;
+	unbox := PersonsMetamodel_toClass;
 	constructor := PersonsMetamodel_toObject;
 }.
 
@@ -219,7 +219,7 @@ Instance PersonsMetamodel_ElementSum : Sum PersonsMetamodel_Object PersonsMetamo
 Instance PersonsMetamodel_LinkSum : Sum PersonsMetamodel_Link PersonsMetamodel_Reference :=
 {
 	denoteDatatype := PersonsMetamodel_getTypeByReference;
-	toRawData := PersonsMetamodel_toReference;
+	unbox := PersonsMetamodel_toReference;
 	constructor := PersonsMetamodel_toLink;
 }.
 

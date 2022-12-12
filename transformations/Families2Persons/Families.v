@@ -413,7 +413,7 @@ Definition Member_getFamilyDaughterObject (me_arg : Member) (m : FamiliesModel) 
 Instance FamiliesMetamodel_ElementSum : Sum FamiliesMetamodel_Object FamiliesMetamodel_Class :=
 {
 	denoteDatatype := FamiliesMetamodel_getTypeByClass;
-	toRawData := FamiliesMetamodel_toClass;
+	unbox := FamiliesMetamodel_toClass;
 	constructor := FamiliesMetamodel_toObject;
 }.
 
@@ -421,7 +421,7 @@ Instance FamiliesMetamodel_ElementSum : Sum FamiliesMetamodel_Object FamiliesMet
 Instance FamiliesMetamodel_LinkSum : Sum FamiliesMetamodel_Link FamiliesMetamodel_Reference :=
 {
 	denoteDatatype := FamiliesMetamodel_getTypeByReference;
-	toRawData := FamiliesMetamodel_toReference;
+	unbox := FamiliesMetamodel_toReference;
 	constructor := FamiliesMetamodel_toLink;
 }.
 

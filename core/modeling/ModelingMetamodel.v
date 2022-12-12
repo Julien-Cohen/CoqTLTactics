@@ -26,10 +26,10 @@ Require Import core.Metamodel.
 Class Sum (T: Type) (K: Type):=
   {
     denoteDatatype: K -> Set;
-    toRawData: forall (k: K), T -> option (denoteDatatype k);
+    unbox: forall (k: K), T -> option (denoteDatatype k);
     constructor: forall (k: K), (denoteDatatype k) -> T;
     instanceof : K -> T -> bool :=
-      fun k d => match toRawData k d with Some _ => true | None => false end                             
+      fun k d => match unbox k d with Some _ => true | None => false end                             
   }.
 
 
@@ -48,7 +48,7 @@ Class ModelingMetamodel (mm : Metamodel) :=
     denoteLDatatype: LKind -> Set := links.(denoteDatatype);
   
     (* Downcasting *)
-    toEData: forall (k:EKind), mm.(ElementType) -> option (denoteEDatatype k) := elements.(toRawData) ;
+    toEData: forall (k:EKind), mm.(ElementType) -> option (denoteEDatatype k) := elements.(unbox) ;
 
   
 }.

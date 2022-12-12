@@ -918,7 +918,7 @@ Definition Category_getItemsObject (ca_arg : Category) (m : RSSModel) : option (
 Instance RSSMetamodel_ElementSum : Sum RSSMetamodel_Object RSSMetamodel_Class :=
 {
 	denoteDatatype := RSSMetamodel_getTypeByClass;
-	toRawData := RSSMetamodel_toClass;
+	unbox := RSSMetamodel_toClass;
 	constructor := RSSMetamodel_toObject;
 }.
 
@@ -926,7 +926,7 @@ Instance RSSMetamodel_ElementSum : Sum RSSMetamodel_Object RSSMetamodel_Class :=
 Instance RSSMetamodel_LinkSum : Sum RSSMetamodel_Link RSSMetamodel_Reference :=
 {
 	denoteDatatype := RSSMetamodel_getTypeByReference;
-	toRawData := RSSMetamodel_toReference;
+	unbox := RSSMetamodel_toReference;
 	constructor := RSSMetamodel_toLink;
 }.
 

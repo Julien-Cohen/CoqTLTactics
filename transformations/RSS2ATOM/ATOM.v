@@ -1260,7 +1260,7 @@ Definition Author_getAtomObject (au_arg : Author) (m : ATOMModel) : option (ATOM
 Instance ATOMMetamodel_ElementSum : Sum ATOMMetamodel_Object ATOMMetamodel_Class :=
 {
 	denoteDatatype := ATOMMetamodel_getTypeByClass;
-	toRawData := ATOMMetamodel_toClass;
+	unbox := ATOMMetamodel_toClass;
 	constructor := ATOMMetamodel_toObject;
 }.
 
@@ -1268,7 +1268,7 @@ Instance ATOMMetamodel_ElementSum : Sum ATOMMetamodel_Object ATOMMetamodel_Class
 Instance ATOMMetamodel_LinkSum : Sum ATOMMetamodel_Link ATOMMetamodel_Reference :=
 {
 	denoteDatatype := ATOMMetamodel_getTypeByReference;
-	toRawData := ATOMMetamodel_toReference;
+	unbox := ATOMMetamodel_toReference;
 	constructor := ATOMMetamodel_toLink;
 }.
 

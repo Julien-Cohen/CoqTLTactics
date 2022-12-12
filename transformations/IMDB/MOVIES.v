@@ -495,7 +495,7 @@ Definition Clique_getPersonsObjects (cl_arg : Clique) (m : moviesModel) : option
 Instance moviesMetamodel_ElementSum : Sum moviesMetamodel_Object moviesMetamodel_Class :=
 {
 	denoteDatatype := moviesMetamodel_getTypeByClass;
-	toRawData := moviesMetamodel_toClass;
+	unbox := moviesMetamodel_toClass;
 	constructor := moviesMetamodel_toObject;
 }.
 
@@ -503,7 +503,7 @@ Instance moviesMetamodel_ElementSum : Sum moviesMetamodel_Object moviesMetamodel
 Instance moviesMetamodel_LinkSum : Sum moviesMetamodel_Link moviesMetamodel_Reference :=
 {
 	denoteDatatype := moviesMetamodel_getTypeByReference;
-	toRawData := moviesMetamodel_toReference;
+	unbox := moviesMetamodel_toReference;
 	constructor := moviesMetamodel_toLink;
 }.
 

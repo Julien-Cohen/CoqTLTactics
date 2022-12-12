@@ -237,7 +237,7 @@ Definition Transition_getTargetObject (tr_arg : Transition) (m : MealyModel) : o
 Instance MealyMetamodel_ElementSum : Sum MealyMetamodel_Object MealyMetamodel_Class :=
 {
 	denoteDatatype := MealyMetamodel_getTypeByClass;
-	toRawData := MealyMetamodel_toClass;
+	unbox := MealyMetamodel_toClass;
 	constructor := MealyMetamodel_toObject;
 }.
 
@@ -245,7 +245,7 @@ Instance MealyMetamodel_ElementSum : Sum MealyMetamodel_Object MealyMetamodel_Cl
 Instance MealyMetamodel_LinkSum : Sum MealyMetamodel_Link MealyMetamodel_Reference :=
 {
 	denoteDatatype := MealyMetamodel_getTypeByReference;
-	toRawData := MealyMetamodel_toReference;
+	unbox := MealyMetamodel_toReference;
 	constructor := MealyMetamodel_toLink;
 }.
 

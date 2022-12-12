@@ -290,7 +290,7 @@ Qed.
   Instance RelationalElementSum : Sum Element ElementKind :=
   {
     denoteDatatype := getTypeByEKind;
-    toRawData := get_E_data;
+    unbox := get_E_data;
     constructor := lift_EKind;
   }.
   
@@ -300,7 +300,7 @@ Qed.
   Instance RelationalLinkSum : Sum Link LinkKind :=
   {
     denoteDatatype := getTypeByLKind;
-    toRawData := get_L_data;
+    unbox := get_L_data;
     constructor := lift_LKind;
   }.
   

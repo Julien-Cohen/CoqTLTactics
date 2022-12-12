@@ -1168,7 +1168,7 @@ Definition Www_getEditorsObjects (ww_arg : Www) (m : DBLPModel) : option (list D
 Instance DBLPMetamodel_ElementSum : Sum DBLPMetamodel_Object DBLPMetamodel_Class :=
 {
 	denoteDatatype := DBLPMetamodel_getTypeByClass;
-	toRawData := DBLPMetamodel_toClass;
+	unbox := DBLPMetamodel_toClass;
 	constructor := DBLPMetamodel_toObject;
 }.
 
@@ -1176,7 +1176,7 @@ Instance DBLPMetamodel_ElementSum : Sum DBLPMetamodel_Object DBLPMetamodel_Class
 Instance DBLPMetamodel_LinkSum : Sum DBLPMetamodel_Link DBLPMetamodel_Reference :=
 {
 	denoteDatatype := DBLPMetamodel_getTypeByReference;
-	toRawData := DBLPMetamodel_toReference;
+	unbox := DBLPMetamodel_toReference;
 	constructor := DBLPMetamodel_toLink;
 }.
 
