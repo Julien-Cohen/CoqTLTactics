@@ -48,7 +48,6 @@ Proof.
   unfold instantiateElementOnPattern.
   unfold evalOutputPatternElementExpr.
   unfold evalIteratorExpr.
-  unfold evalExpr.
   simpl.
   apply (H sm) in H0.
   destruct (f sm). simpl.
