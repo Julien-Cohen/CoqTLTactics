@@ -93,7 +93,7 @@ Definition wrapElement (skinds : list SourceEKind)
     | Some v => Some (elements.(constructor) tk v)
   end.
 
-Definition wrapLink_alt
+Definition wrapLink
   (skinds : list SourceEKind)
   (k : TargetEKind) 
   (r : TargetLKind) 
@@ -106,58 +106,6 @@ Definition wrapLink_alt
       x <- toEData k v ;
       y <- f x ;
       return [links.(constructor) r y].
-
-Fixpoint wrapLink
-  (skinds : list SourceEKind)
-  (k : TargetEKind) 
-  (r : TargetLKind) 
-  (imp : denoteSignature skinds
-           (denoteEDatatype k -> option (denoteLDatatype r)))
-  (selements : list SourceElementType)
-  (v : TargetElementType) {struct skinds}
-  :       
-  
-        option (list TargetLinkType)
-:= 
-
-   match (skinds, selements) as c
-     return (denoteSignature (fst c) (denoteEDatatype k -> option (denoteLDatatype r)) ->
-        option (list TargetLinkType))
-   with
-     
-   | (nil, nil) => 
-       match toEData k v with
-       | Some d =>
-           (fun tr =>  
-             t_d <- tr d ; Some [links.(constructor) r t_d])
- 
-       | None => mismatch
-       end
-  
-                                      
-   | (k1 :: rk, e1 :: re) =>
-       match toEData k1 e1 with
-       | Some d =>
-          fun f => wrapLink rk k r (f d) re v
-
-       | None => mismatch
-
-       end
-
-   | (nil , _ :: _) => mismatch
-                                     
-   | (_ :: _ , nil) => mismatch
-                            
-   end imp .
-
-Lemma correct : forall a b c d e f, wrapLink_alt a b c d e f = wrapLink a b c d e f.
-Proof.
-  unfold wrapLink_alt.
-  induction a ; intros b c d ; destruct e ; intro f ; simpl ; [ | reflexivity | reflexivity | ].
-  +  destruct (toEData b f) ; reflexivity.
-  + destruct (toEData a s) ; [ | reflexivity].
-    apply IHa.
-Qed.
 
 (** ** Use of those generators *)
 
