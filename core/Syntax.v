@@ -20,26 +20,22 @@ Context {tc: TransformationConfiguration}.
 
 (** *** OutputPatternElement *)
 
-Inductive OutputPatternElement : Type :=
-  buildOutputPatternElement :
-    string 
-    -> (nat -> SourceModel -> (list SourceElementType) -> option TargetElementType) 
-    -> (list TraceLink -> nat -> SourceModel -> (list SourceElementType) -> TargetElementType -> option (list TargetLinkType)) -> OutputPatternElement.
+Record OutputPatternElement : Type :=
+  buildOutputPatternElement {
 
-Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
-  match o with
-    buildOutputPatternElement y _ _ => y
-  end.
+    ope_name : 
+      string ; 
 
-Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -> SourceModel -> (list SourceElementType) -> option TargetElementType :=
-  match o with
-    buildOutputPatternElement _ y _ => y
-  end.
+    ope_elementExpr :
+      nat -> SourceModel -> (list SourceElementType) -> option TargetElementType ; 
 
-Definition OutputPatternElement_getLinkExpr (o: OutputPatternElement) :=
-  match o with
-    buildOutputPatternElement _ _ y => y
-      end.
+    ope_linkExpr :
+      list TraceLink -> nat -> SourceModel -> (list SourceElementType) -> TargetElementType -> option (list TargetLinkType)
+
+}.
+
+
+
 
 (** *** Rule *)
 
@@ -55,7 +51,7 @@ Record Rule : Type :=
 (** find an output pattern element in a rule by the given name: *)
 
 Definition Rule_findOutputPatternElement (r: Rule) (name: string) : option OutputPatternElement :=
-  find (fun (o:OutputPatternElement) => beq_string name (OutputPatternElement_getName o))
+  find (fun (o:OutputPatternElement) => beq_string name o.(ope_name))
         r.(r_outputPattern).
 
 (** *** Transformation *)

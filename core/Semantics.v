@@ -46,7 +46,7 @@ Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: lis
 Definition traceElementOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceElementType) (iter: nat)
   : option TraceLink :=
   match (instantiateElementOnPattern o sm sp iter) with
-  | Some e => Some (buildTraceLink (sp, iter, OutputPatternElement_getName o) e)
+  | Some e => Some (buildTraceLink (sp, iter, o.(ope_name)) e)
   | None => None
   end.
 
