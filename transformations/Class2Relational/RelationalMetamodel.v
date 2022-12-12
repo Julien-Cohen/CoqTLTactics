@@ -10,7 +10,6 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require        core.Tactics.
 
-Require Import Coq.Logic.Eqdep_dec.
 
 
 (* Base types *)
@@ -223,6 +222,8 @@ Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t).
   exact (Some c). 
 Defined.
 
+(** Typeclass instances *)
+
 Definition RelationalMM : Metamodel :=
   {|
     ElementType := Element;
@@ -231,60 +232,6 @@ Definition RelationalMM : Metamodel :=
     links_eqdec := beq_Link
   |}.
 
-
-
-(* Generic functions *)
-
-
-Definition getId (r : Element) : nat :=
-  match r with
-  | TableElement c => table_id c
-  | ColumnElement a => column_id a
-  end.
-
-Definition getName (r : Element) : string :=
-  match r with
-  | TableElement c => table_name c
-  | ColumnElement a => column_name a
-  end.
-
-
-Fixpoint getTableColumnsOnLinks (t : Table_t) (l : list Link) : option (list Column_t) :=
-  match l with
-  | (TableColumnLink (Build_TableColumns_t tab c)) :: l1 => if beq_Table tab t then Some c else getTableColumnsOnLinks t l1
-  | _ :: l1 => getTableColumnsOnLinks t l1
-  | nil => None
-  end.
-
-Definition getTableColumns (t : Table_t) (m : Model RelationalMM) : option (list Column_t) :=
-getTableColumnsOnLinks t m.(modelLinks).
-
-Fixpoint getColumnReferenceOnLinks (c : Column_t) (l : list Link) : option Table_t :=
-  match l with
-  | (ColumnReferenceLink (Build_ColumnReference_t col t)) :: l1 => if beq_Column col c then Some t else getColumnReferenceOnLinks c l1
-  | _ :: l1 => getColumnReferenceOnLinks c l1
-  | nil => None
-  end.
-
-Definition getColumnReference (c : Column_t) (m : Model RelationalMM) : option Table_t := getColumnReferenceOnLinks c m.(modelLinks).
-
-Definition bottomRelationalMetamodel_Class (c: ElementKind) : (getTypeByEKind c) :=
-  match c with
-  | Table_K => (Build_Table_t 0 "")
-  | Column_K => (Build_Column_t 0 "")
-  end.
-
-Lemma rel_invert : 
-  forall (t: ElementKind) (t1 t2: getTypeByEKind t), lift_EKind t t1 = lift_EKind t t2 -> t1 = t2.
-Proof.
-  unfold lift_EKind ; intros ; destruct t ; simpl in * ; congruence.
-Qed.
-
-Lemma rel_elink_invert : 
-  forall (t: LinkKind) (t1 t2: getTypeByLKind t), lift_LKind t t1 = lift_LKind t t2 -> t1 = t2.
-Proof.
-  intros. destruct t ; simpl in * ; congruence.
-Qed.
 
   #[export]
   Instance RelationalElementSum : Sum Element ElementKind :=
@@ -313,4 +260,62 @@ Qed.
   }.
 
 Definition RelationalModel := Model RelationalMM.
+
+
+(* General functions (to be used in transformations) *)
+
+
+Definition getId (r : Element) : nat :=
+  match r with
+  | TableElement c => table_id c
+  | ColumnElement a => column_id a
+  end.
+
+Definition getName (r : Element) : string :=
+  match r with
+  | TableElement c => table_name c
+  | ColumnElement a => column_name a
+  end.
+
+
+Fixpoint getTableColumnsOnLinks (t : Table_t) (l : list Link) : option (list Column_t) :=
+  match l with
+  | (TableColumnLink (Build_TableColumns_t tab c)) :: l1 => if beq_Table tab t then Some c else getTableColumnsOnLinks t l1
+  | _ :: l1 => getTableColumnsOnLinks t l1
+  | nil => None
+  end.
+
+Definition getTableColumns (t : Table_t) (m : RelationalModel) : option (list Column_t) :=
+getTableColumnsOnLinks t m.(modelLinks).
+
+Fixpoint getColumnReferenceOnLinks (c : Column_t) (l : list Link) : option Table_t :=
+  match l with
+  | (ColumnReferenceLink (Build_ColumnReference_t col t)) :: l1 => if beq_Column col c then Some t else getColumnReferenceOnLinks c l1
+  | _ :: l1 => getColumnReferenceOnLinks c l1
+  | nil => None
+  end.
+
+Definition getColumnReference (c : Column_t) (m : RelationalModel) : option Table_t := getColumnReferenceOnLinks c m.(modelLinks).
+
+Definition bottomRelationalMetamodel_Class (k: ElementKind) : denoteDatatype k :=
+  match k with
+  | Table_K => (Build_Table_t 0 "")
+  | Column_K => (Build_Column_t 0 "")
+  end.
+
+Lemma rel_invert : 
+  forall (k: ElementKind) (t1 t2: denoteDatatype k),
+    constructor k t1 = constructor k t2 -> t1 = t2.
+Proof.
+  unfold constructor ; simpl.
+  unfold lift_EKind ; intros ; destruct k ; simpl in * ; congruence.
+Qed.
+
+Lemma rel_elink_invert : 
+  forall (k: LinkKind) (t1 t2: denoteDatatype k), 
+    constructor k t1 = constructor k t2 -> t1 = t2.
+Proof.
+  unfold constructor ; simpl.
+  intros. destruct k ; simpl in * ; congruence.
+Qed.
 

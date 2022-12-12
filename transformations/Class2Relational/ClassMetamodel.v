@@ -160,6 +160,7 @@ Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
   end.
 
 
+(* Typeclass Instance *)
 
 Definition ClassMM : Metamodel :=
 {|
@@ -170,9 +171,36 @@ Definition ClassMM : Metamodel :=
 |}.
 
 
+#[export]
+Instance ClassElementSum : Sum Element ElementKind :=
+{
+  denoteDatatype := getTypeByEKind;
+  unbox := get_E_data;
+  constructor := lift_EKind;
+}.
 
 
-(* Generic functions *)
+#[export]
+Instance ClassLinkSum : Sum Link LinkKind :=
+{
+  denoteDatatype := getTypeByLKind;
+  unbox := get_L_data;
+  constructor := lift_LKind;
+}.
+
+
+#[export]
+Instance ClassMetamodel : ModelingMetamodel ClassMM :=
+{ 
+    elements := ClassElementSum;
+    links := ClassLinkSum; 
+}.
+
+Definition ClassModel := Model ClassMM.
+
+
+
+(** General functions (used in transformations) *)
 
 
 Definition getId (c : Element) : nat :=
@@ -199,10 +227,10 @@ Fixpoint getClassAttributesOnLinks (c : Class_t) (l : list Link) : option (list 
 
 
 
-Definition getClassAttributes (c : Class_t) (m : Model ClassMM) : option (list Attribute_t) :=
+Definition getClassAttributes (c : Class_t) (m : ClassModel) : option (list Attribute_t) :=
   getClassAttributesOnLinks c m.(modelLinks).
 
-Definition getClassAttributesElements (c : Class_t) (m : Model ClassMM) : option (list Element) :=
+Definition getClassAttributesElements (c : Class_t) (m : ClassModel) : option (list Element) :=
   match getClassAttributes c m with
   | Some l => Some (map AttributeElement l)
   | None => None
@@ -218,11 +246,11 @@ Fixpoint getAttributeTypeOnLinks (a : Attribute_t) (l : list Link) : option Clas
   | nil => None
   end.
 
-Definition getAttributeType (a : Attribute_t) (m : Model ClassMM) : option Class_t :=
+Definition getAttributeType (a : Attribute_t) (m : ClassModel) : option Class_t :=
   getAttributeTypeOnLinks a m.(modelLinks).
 
 
-Definition getAttributeTypeElement (a : Attribute_t) (m : Model ClassMM) : option Element :=
+Definition getAttributeTypeElement (a : Attribute_t) (m : ClassModel) : option Element :=
   match getAttributeType a m with
   | Some c => Some (ClassElement c)
   | None => None
@@ -234,42 +262,17 @@ Definition defaultInstanceOfClass (c: ElementKind) : (getTypeByEKind c) :=
   | Attribute_K => (Build_Attribute_t 0 false "")
   end.
 
-(* Typeclass Instance *)
-
-#[export]
-Instance ClassElementSum : Sum Element ElementKind :=
-{
-  denoteDatatype := getTypeByEKind;
-  unbox := get_E_data;
-  constructor := lift_EKind;
-}.
-
-
-#[export]
-Instance ClassLinkSum : Sum Link LinkKind :=
-{
-  denoteDatatype := getTypeByLKind;
-  unbox := get_L_data;
-  constructor := lift_LKind;
-}.
 
 
 
-#[export]
-Instance ClassMetamodel : ModelingMetamodel ClassMM :=
-{ 
-    elements := ClassElementSum;
-    links := ClassLinkSum; 
-}.
+(** Useful lemmas *)
 
-Definition ClassModel := Model ClassMM.
-
-
-(* Useful lemmas *)
 Lemma Class_invert : 
-  forall (clec_arg: ElementKind) (t1 t2: getTypeByEKind clec_arg), lift_EKind clec_arg t1 = lift_EKind clec_arg t2 -> t1 = t2.
+  forall (k: ElementKind) (t1 t2: getTypeByEKind k), 
+    constructor k t1 = constructor k t2 ->
+    t1 = t2.
 Proof.
-  intros. destruct clec_arg ; simpl in * ; congruence.
+  intros. destruct k ; simpl in * ; congruence.
 Qed.
 
 
@@ -286,18 +289,20 @@ Qed.
 
 Lemma Class_Element_cast:
   forall a c,
-    get_E_data Class_K a = return c ->
+    unbox Class_K a = return c ->
       ClassElement c = a.
 Proof.
+  unfold unbox ; simpl. 
   unfold get_E_data.
   intros ; destruct a ; congruence.
 Qed.
 
 Lemma Attribute_Element_cast:
   forall a c,
-    get_E_data Attribute_K a = return c ->
+    unbox Attribute_K a = return c ->
       AttributeElement c = a.
 Proof.
+  unfold unbox ; simpl.
   unfold get_E_data.
   intros ; destruct a ; congruence.
 Qed.
