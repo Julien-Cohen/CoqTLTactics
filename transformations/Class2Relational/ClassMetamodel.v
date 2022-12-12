@@ -129,12 +129,6 @@ Definition lift_EKind k : (getTypeByEKind k) -> Element :=
   | Attribute_K => AttributeElement 
   end.
 
-Definition getEKind (c : Element) : ElementKind :=
-   match c with
-   | ClassElement _ => Class_K
-   | AttributeElement _ => Attribute_K
-   end.
-
 Definition get_E_data (k : ElementKind) (c : Element) : option (getTypeByEKind k) :=
   match (k,c) as e return (option (getTypeByEKind (fst e))) with
   | (Class_K , ClassElement v) => Some v 
@@ -157,11 +151,6 @@ Definition lift_LKind k : (getTypeByLKind k) -> Link :=
   end.
 
 
-Definition getLKind (c : Link) : LinkKind :=
-   match c with
-   | ClassAttributeLink _ => ClassAttribute_K
-   | AttributeTypeLink _ => AttributeType_K
-   end.
 
 Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
   match (t,c) as e return (option (getTypeByLKind (fst e))) with

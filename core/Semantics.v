@@ -72,7 +72,7 @@ Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
             (sp: list SourceElementType)
             (iter : nat) : option TargetElementType :=
 let tl := find (fun tl: TraceLink => 
-  (list_beq SourceElementType SourceElement_eqb (TraceLink_getSourcePattern tl) sp) &&
+  (list_beq _ SourceElement_eqb (TraceLink_getSourcePattern tl) sp) &&
   ((TraceLink_getIterator tl) =? iter) &&
   ((TraceLink_getName tl) =? name)%string) tls in
 match tl with

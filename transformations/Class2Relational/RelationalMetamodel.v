@@ -149,6 +149,11 @@ Definition getTypeByEKind (k : ElementKind) : Set :=
   | Column_K => Column_t
   end.
 
+Definition lift_EKind (c: ElementKind) : (getTypeByEKind c) -> Element.
+  destruct c ; [ exact TableElement | exact ColumnElement].
+Defined.
+
+
 Inductive LinkKind : Set :=
   TableColumns_K | ColumnReference_K.
 
@@ -157,10 +162,6 @@ Definition getTypeByLKind (k : LinkKind) : Set :=
   | TableColumns_K => TableColumns_t
   | ColumnReference_K => ColumnReference_t
   end.
-
-Definition lift_EKind (c: ElementKind) : (getTypeByEKind c) -> Element.
-  destruct c ; [ exact TableElement | exact ColumnElement].
-Defined.
 
 Definition lift_LKind (c: LinkKind) : (getTypeByLKind c) -> Link.
   destruct c ; [ exact TableColumnLink | exact ColumnReferenceLink].
@@ -175,17 +176,7 @@ Proof. repeat decide equality. Defined.
 Lemma eqReference_dec : forall (c1:LinkKind) (c2:LinkKind), { c1 = c2 } + { c1 <> c2 }.
 Proof. repeat decide equality. Defined.
 
-Definition getEKind (c : Element) : ElementKind :=
-  match c with
-  | TableElement _ => Table_K
-  | ColumnElement _ => Column_K
-  end.
 
-Definition getLKind (c : Link) : LinkKind :=
-  match c with
-  | TableColumnLink _ => TableColumns_K
-  | ColumnReferenceLink _ => ColumnReference_K
-  end.
 
 
 Definition ClassAttributeTypes (c: ElementKind): Set :=

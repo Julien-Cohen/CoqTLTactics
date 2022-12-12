@@ -268,17 +268,14 @@ Theorem tr_resolveIter_leaf:
     resolveIter tls sm name sp iter = return x ->
       (exists (tl : TraceLink),
         In tl tls /\
-        Is_true (list_beq SourceElementType (@elements_eqdec smm) (TraceLink_getSourcePattern tl) sp) /\
+        Is_true (list_beq _ (@elements_eqdec smm) (TraceLink_getSourcePattern tl) sp) /\
         ((TraceLink_getIterator tl) = iter) /\ 
         ((TraceLink_getName tl) = name)%string /\
         (TraceLink_getTargetElement tl) = x).
 Proof.
 intros.
 unfold resolveIter in H.
-destruct (find (fun tl: TraceLink => 
-(Semantics.list_beq TransformationConfiguration.SourceElementType SourceElement_eqb (@TraceLink_getSourcePattern tc tl) sp) &&
-((TraceLink_getIterator tl) =? iter) &&
-((TraceLink_getName tl) =? name)%string) tls) eqn: find_ca.
+match type of H with context[find ?F tls] => destruct (find F tls) eqn: find_ca end.
 - exists t.
   apply find_some in find_ca.
   destruct find_ca.
