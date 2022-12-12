@@ -82,6 +82,16 @@ Fixpoint dummy (l:list SourceEKind) : denoteSignature l bool:=
 Definition wrap' l a := 
   drop_option_to_bool (wrap l (dummy l) a).
 
+Definition wrapElement_alt (skinds : list SourceEKind) 
+  (tk : TargetEKind) 
+  (imp : denoteSignature skinds (denoteEDatatype tk))
+  (selements : list SourceElementType)  :
+  option TargetElementType := 
+
+  match wrap skinds imp selements with
+    | None => None
+    | Some v => Some (elements.(constructor) tk v)
+  end.
 
 Fixpoint wrapElement 
   (skinds : list SourceEKind) 
@@ -111,6 +121,14 @@ Fixpoint wrapElement
 
                                               
 end imp.
+
+Lemma correct : forall a b c d, wrapElement a b c d = wrapElement_alt a b c d.
+Proof.
+  unfold wrapElement_alt.
+  induction a ; intros b c ; destruct d ; simpl ; [ reflexivity | reflexivity | reflexivity | ].
+  destruct (toEData a s) ; [ | reflexivity].
+  apply IHa.
+Qed.
 
 Fixpoint wrapLink
   (skinds : list SourceEKind)
