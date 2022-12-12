@@ -151,3 +151,4 @@ transformations/Class2Relational/theorems/Table_name_uniqueness.v
 transformations/Families2Persons/theorems/sampleTheorems.v
 
 transformations/Moore2Mealy/theorems/moore2mealy.v
+transformations/Moore2Mealy/theorems/moore2mealy_wiki_moore_semantics.v
