@@ -92,7 +92,7 @@ transformations/Moore2Mealy/MealySemantics.v
 ### prop - mono
 core/properties/monotonicity/Moore2Mealy_monotonicity_witness.v
 core/properties/monotonicity/sampleMoore_monotonicity.v
-# core/properties/monotonicity/Monotonicity.v
+core/properties/monotonicity/Monotonicity.v
 
 ### prop - injective
 core/properties/injectivity/sampleMoore_injectivity.v

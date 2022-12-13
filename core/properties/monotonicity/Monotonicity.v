@@ -25,12 +25,12 @@ Require Import core.modeling.Parser.
 
 
 Definition SourceModel_elem_incl {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
-  incl (allModelElements m1) (allModelElements m2). 
+  incl (modelElements m1) (modelElements m2). 
 
 Definition TargetModel_elem_incl {tc: TransformationConfiguration}  (m1 m2: TargetModel) : Prop := 
-  incl (allModelElements m1) (allModelElements m2). 
+  incl (modelElements m1) (modelElements m2). 
 
-Definition Monotonicity 
+Definition Monotonicity {tc: TransformationConfiguration} 
    (tr: Transformation) :=
 forall sm1 sm2,
     SourceModel_elem_incl sm1 sm2 ->
@@ -40,35 +40,35 @@ Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_witness.
 Require Import core.properties.monotonicity.sampleMoore_monotonicity.
 
 Lemma Moore2Mealy_non_mono_contrapos:
-exists sm1 sm2 : SourceModel,
- SourceModel_elem_incl sm1 sm2 /\
- ~ TargetModel_elem_incl (execute Moore2Mealy sm1) (execute Moore2Mealy sm2).
+  exists sm1 sm2 : SourceModel,
+    SourceModel_elem_incl sm1 sm2 /\
+      ~ TargetModel_elem_incl (execute Moore2Mealy sm1) (execute Moore2Mealy sm2).
 Proof.
-eexists Moore_m1.
-eexists Moore_m2.
-split.
-- unfold SourceModel_elem_incl.
-  simpl.
-  remember (Moore.Build_MooreMetamodel_Object Moore.StateClass
-  (Moore.BuildState "S0" "1")) as elem.
-  unfold incl.
-  intros.
-  destruct H.
-  crush.
-  destruct H.
-- unfold TargetModel_elem_incl.
-  simpl.
-  crush.
-  apply incl_l_nil in H.
-  crush.
+  eexists Moore_m1.
+  eexists Moore_m2.
+  split.
+  - unfold SourceModel_elem_incl.
+    simpl.
+    remember (Moore.Build_MooreMetamodel_Object Moore.StateClass
+                (Moore.BuildState "S0" "1")) as elem.
+    unfold incl.
+    intros.
+    destruct H.
+    crush.
+    destruct H.
+  - unfold TargetModel_elem_incl.
+    simpl.
+    crush.
+    apply incl_l_nil in H.
+    crush.
 Qed.
 
-Theorem Moore2Mealy_non_mono:
+Theorem Moore2Mealy_non_mono  :
     exists tr, Monotonicity tr -> False.
 Proof.
-eexists Moore2Mealy.
-unfold Monotonicity.
-intro mono.
-specialize (Moore2Mealy_non_mono_contrapos) as mono_contrapos.
-crush.
+  eexists Moore2Mealy.
+  unfold Monotonicity.
+  intro mono.
+  specialize (Moore2Mealy_non_mono_contrapos) as mono_contrapos.
+  crush.
 Qed.
