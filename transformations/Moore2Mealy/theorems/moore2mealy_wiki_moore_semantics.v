@@ -11,9 +11,7 @@
      2) mkX for constructors
      3) use ' symbol to represent a tailing list
      4) library function/lemma are prefixed
- * - TODOs:
-     1) ltac for unfold x just once would be nice: 
-        unfold x; fold x.
+
  *)
 
 
@@ -205,8 +203,7 @@ forall (p: P) (q0: Node) (I: list nat),
   List.length (eval p q0 I) > 0.
 Proof.
   intros p q0 I.
-  unfold eval.
-  destruct I as [ | S_I].
+  destruct I as [ | S_I] ; simpl eval.
   - auto.
   - apply Gt.gt_Sn_O.
 Qed.
@@ -264,9 +261,9 @@ Proof.
     intros q0 n hL.
     destruct (search p (mkIPair q0 i)) as [ nd | ] eqn: s_of_P.
     + (* input pair is matched by moore machine *)
-      unfold evalM in hL; fold evalM in hL.
-      unfold evalM; fold evalM.
-      unfold eval; fold eval.
+      simpl evalM in hL.
+      simpl evalM.
+      simpl eval.
       rewrite s_of_P.
       destruct nd.
       apply compile_correct_ca2 in s_of_P.
