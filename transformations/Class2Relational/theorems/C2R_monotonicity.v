@@ -8,103 +8,76 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require Import core.properties.monotonicity.Monotonicity.
 
-Require Import transformations.Class2Relational.Class2Relational.
-Require Import transformations.Class2Relational.ClassMetamodel.
-Require Import transformations.Class2Relational.RelationalMetamodel.
+From transformations.Class2Relational
+  Require Import 
+  Class2Relational
+  ClassMetamodel
+  RelationalMetamodel
+  Tactics.
 
 Require Import core.utils.CpdtTactics.
 
 Theorem All_classes_instantiate_impl:
-  monotonicity _ Class2Relational.
+  Monotonicity Class2Relational.
 Proof.
-  unfold monotonicity.
-  unfold Model_incl. unfold SourceModel_incl.
+  unfold Monotonicity.
+  unfold TargetModel_elem_incl. unfold SourceModel_elem_incl.
   unfold incl.
   simpl.
   intros.
-  destruct H.
+
+  apply in_flat_map.
+  apply in_flat_map in H0. repeat destruct H0.
+  exists x.
+  Tactics.show_singleton.    
   split.
-  - intros.
-    apply in_flat_map.
-    apply in_flat_map in H1. repeat destruct H1.
-    exists x.
-    split.
-    + unfold allTuples in *.
-      simpl in *.
-      unfold prod_cons in *.
-      simpl in *.
-      apply in_app_iff.
-      apply in_app_iff in H1.
-      destruct H1.
-      * left.
-        apply in_flat_map.
-        apply in_flat_map in H1.
-        repeat destruct H1.
-        exists x0.
-        split.
-        apply H.
-        assumption.
-        assumption.
-      * right.
-        assumption.
-    + unfold instantiatePattern in *.
-      apply in_flat_map. apply in_flat_map in H2.
-      repeat destruct H2.
-      exists x0.
-      unfold matchPattern in *.
-      apply filter_In in H2.
-      destruct H2.
-      unfold matchRuleOnPattern in *.
-      unfold Class2Relational, Class2Relational' in H2.
-      simpl in H2. destruct H2.
-      split.
-      * apply filter_In.
-        crush.
-      * crush.
-      * split.
-        -- apply filter_In.
-           crush.
-        -- crush.
-  - intros.
-    apply in_flat_map.
-    apply in_flat_map in H1. repeat destruct H1.
-    exists x.
-    split.
-    + unfold allTuples in *.
-      simpl in *.
-      unfold prod_cons in *.
-      simpl in *.
-      apply in_app_iff.
-      apply in_app_iff in H1.
-      destruct H1.
-      * left.
-        apply in_flat_map.
-        apply in_flat_map in H1.
-        repeat destruct H1.
-        exists x0.
-        split.
-        apply H.
-        assumption.
-        assumption.
-      * right.
-        assumption.
-    + unfold applyPattern in *.
-      apply in_flat_map. apply in_flat_map in H2.
-      repeat destruct H2.
-      exists x0.
-      unfold matchPattern in *.
-      apply filter_In in H2.
-      destruct H2.
-      unfold matchRuleOnPattern in *.
-      unfold Class2Relational, Class2Relational' in H2.
-      simpl in H2. destruct H2.
-      * split.
-        -- apply filter_In.
-           crush.
-        -- rewrite <- H2. rewrite <- H2 in H3.
-           unfold applyRuleOnPattern, applyIterationOnPattern, applyElementOnPattern in *.
-           simpl in *.
-           unfold  ConcreteExpressions.makeElement in *.
-           simpl in *.
-Admitted.
+  { 
+    apply allTuples_incl_length ; [ | simpl ; solve[auto] ].
+    apply incl_singleton.
+    apply H ; clear H.
+    
+    apply Certification.allTuples_incl in H0.
+    apply incl_singleton in H0.
+    assumption.
+  }
+  { 
+    repeat destruct_any.
+    clear IN_I.
+    Tactics.destruct_In_two ;
+    simpl in * ;
+    remove_or_false IN_OP ;
+    subst ope ; simpl in *.
+    
+    { (* first rule *)
+      unfold ConcreteExpressions.makeElement in H1 ; simpl in H1.
+      unfold ConcreteExpressions.wrapElement  in H1 ; simpl in H1.
+      unfold TransformationConfiguration.SourceElementType in e.
+      compute in e.
+      simpl in e.
+      
+      destruct e ; [ | exfalso] ; simpl in *.
+      * injection H1 ; clear H1 ; subst.
+        auto.
+      * discriminate.
+    }
+    { (* second rule *)
+      unfold ConcreteExpressions.makeElement in H1 ; simpl in H1.
+      unfold ConcreteExpressions.wrapElement  in H1.
+      
+      destruct e ; [ exfalso | ] ;simpl in *.
+      * discriminate H1.
+      * injection H1 ; clear H1 ; intros ; subst ; simpl in *.
+        
+        unfold ConcreteExpressions.makeGuard in M.
+        unfold ConcreteExpressions.wrap in M.
+        simpl in M.
+        apply Bool.negb_true_iff in M.
+        
+        destruct a0 ; simpl in *.
+        subst derived.
+        
+        simpl ; auto.
+    }
+  }
+Qed.
            
