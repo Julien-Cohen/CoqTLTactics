@@ -410,7 +410,7 @@ Definition Member_getFamilyDaughterObject (me_arg : Member) (m : FamiliesModel) 
 (* Typeclass Instances *)	
 
 #[export]
-Instance FamiliesMetamodel_ElementSum : Sum FamiliesMetamodel_Object FamiliesMetamodel_Class :=
+Instance FamiliesMetamodel_ElementDenotation : Denotation FamiliesMetamodel_Object FamiliesMetamodel_Class :=
 {
 	denoteDatatype := FamiliesMetamodel_getTypeByClass;
 	unbox := FamiliesMetamodel_toClass;
@@ -418,7 +418,7 @@ Instance FamiliesMetamodel_ElementSum : Sum FamiliesMetamodel_Object FamiliesMet
 }.
 
 #[export]
-Instance FamiliesMetamodel_LinkSum : Sum FamiliesMetamodel_Link FamiliesMetamodel_Reference :=
+Instance FamiliesMetamodel_LinkDenotation : Denotation FamiliesMetamodel_Link FamiliesMetamodel_Reference :=
 {
 	denoteDatatype := FamiliesMetamodel_getTypeByReference;
 	unbox := FamiliesMetamodel_toReference;
@@ -431,8 +431,8 @@ Instance FamiliesMetamodel_LinkSum : Sum FamiliesMetamodel_Link FamiliesMetamode
 Instance FamiliesMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel FamiliesMetamodel_Metamodel_Instance :=
 { 
-    elements := FamiliesMetamodel_ElementSum;
-    links := FamiliesMetamodel_LinkSum; 
+    elements := FamiliesMetamodel_ElementDenotation;
+    links := FamiliesMetamodel_LinkDenotation; 
 }.
 
 (* Useful lemmas *)
@@ -447,10 +447,10 @@ Qed.
 (* Not Used *)
 Definition FamiliesMetamodel_instanceOfEClass : 
   FamiliesMetamodel_Class -> FamiliesMetamodel_Object -> bool :=
-  FamiliesMetamodel_ElementSum.(instanceof).
+  FamiliesMetamodel_ElementDenotation.(instanceof).
 
 
 Definition FamiliesMetamodel_instanceOfEReference : 
   FamiliesMetamodel_Reference -> FamiliesMetamodel_Link -> bool :=
-  FamiliesMetamodel_LinkSum.(instanceof).
+  FamiliesMetamodel_LinkDenotation.(instanceof).
 

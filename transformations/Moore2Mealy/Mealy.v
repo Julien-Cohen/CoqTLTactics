@@ -234,7 +234,7 @@ Definition Transition_getTargetObject (tr_arg : Transition) (m : MealyModel) : o
 (* Typeclass Instances *)	
 
 #[export]
-Instance MealyMetamodel_ElementSum : Sum MealyMetamodel_Object MealyMetamodel_Class :=
+Instance MealyMetamodel_ElementDenotation : Denotation MealyMetamodel_Object MealyMetamodel_Class :=
 {
 	denoteDatatype := MealyMetamodel_getTypeByClass;
 	unbox := MealyMetamodel_toClass;
@@ -242,7 +242,7 @@ Instance MealyMetamodel_ElementSum : Sum MealyMetamodel_Object MealyMetamodel_Cl
 }.
 
 #[export]
-Instance MealyMetamodel_LinkSum : Sum MealyMetamodel_Link MealyMetamodel_Reference :=
+Instance MealyMetamodel_LinkDenotation : Denotation MealyMetamodel_Link MealyMetamodel_Reference :=
 {
 	denoteDatatype := MealyMetamodel_getTypeByReference;
 	unbox := MealyMetamodel_toReference;
@@ -255,8 +255,8 @@ Instance MealyMetamodel_LinkSum : Sum MealyMetamodel_Link MealyMetamodel_Referen
 Instance MealyMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel MealyMetamodel_Metamodel_Instance :=
 { 
-    elements := MealyMetamodel_ElementSum;
-    links := MealyMetamodel_LinkSum; 
+    elements := MealyMetamodel_ElementDenotation;
+    links := MealyMetamodel_LinkDenotation; 
 }.
 
 (* Useful lemmas *)
@@ -272,9 +272,9 @@ Qed.
 (* Not Used *)
 Definition MealyMetamodel_instanceOfEClass :
   MealyMetamodel_Class -> MealyMetamodel_Object -> bool :=
-  MealyMetamodel_ElementSum.(instanceof).
+  MealyMetamodel_ElementDenotation.(instanceof).
 
 Definition MealyMetamodel_instanceOfEReference :
   MealyMetamodel_Reference -> MealyMetamodel_Link -> bool :=
-  MealyMetamodel_LinkSum.(instanceof).
+  MealyMetamodel_LinkDenotation.(instanceof).
 

@@ -233,7 +233,7 @@ Definition Transition_getTargetObject (tr_arg : Transition) (m : MooreModel) : o
 
 (* Typeclass Instances *)	
 #[export]
-Instance MooreMetamodel_ElementSum : Sum MooreMetamodel_Object MooreMetamodel_Class :=
+Instance MooreMetamodel_ElementDenotation : Denotation MooreMetamodel_Object MooreMetamodel_Class :=
 {
 	denoteDatatype := MooreMetamodel_getTypeByClass;
 	unbox := MooreMetamodel_toClass;
@@ -241,7 +241,7 @@ Instance MooreMetamodel_ElementSum : Sum MooreMetamodel_Object MooreMetamodel_Cl
 }.
 
 #[export]
-Instance MooreMetamodel_LinkSum : Sum MooreMetamodel_Link MooreMetamodel_Reference :=
+Instance MooreMetamodel_LinkDenotation : Denotation MooreMetamodel_Link MooreMetamodel_Reference :=
 {
 	denoteDatatype := MooreMetamodel_getTypeByReference;
 	unbox := MooreMetamodel_toReference;
@@ -253,8 +253,8 @@ Instance MooreMetamodel_LinkSum : Sum MooreMetamodel_Link MooreMetamodel_Referen
 Instance MooreMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel MooreMetamodel_Metamodel_Instance :=
 { 
-    elements := MooreMetamodel_ElementSum;
-    links := MooreMetamodel_LinkSum; 
+    elements := MooreMetamodel_ElementDenotation;
+    links := MooreMetamodel_LinkDenotation; 
 }.
 
 (* Useful lemmas *)
@@ -269,9 +269,9 @@ Qed.
 (* Not Used *)
 Definition MooreMetamodel_instanceOfEClass :
   MooreMetamodel_Class -> MooreMetamodel_Object -> bool :=
-  MooreMetamodel_ElementSum.(instanceof).
+  MooreMetamodel_ElementDenotation.(instanceof).
 
 Definition MooreMetamodel_instanceOfEReference :
   MooreMetamodel_Reference -> MooreMetamodel_Link -> bool :=
-  MooreMetamodel_LinkSum.(instanceof).
+  MooreMetamodel_LinkDenotation.(instanceof).
 

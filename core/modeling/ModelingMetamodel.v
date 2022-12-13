@@ -19,11 +19,11 @@ Require Import core.Metamodel.
 
    We call the constructors/terms A and B "kinds".
    
-   The class Sum T K expresses the correspondance between T and K. 
+   The class Denotation T K expresses the correspondance between T and K. 
 *)  
 
 
-Class Sum (T: Type) (K: Type):=
+Class Denotation (T: Type) (K: Type):=
   {
     denoteDatatype: K -> Set;
     unbox: forall (k: K), T -> option (denoteDatatype k);
@@ -40,8 +40,8 @@ Class ModelingMetamodel (mm : Metamodel) :=
     EKind: Type;
     LKind: Type;
 
-    elements: Sum mm.(ElementType) EKind;
-    links: Sum mm.(LinkType) LKind;
+    elements: Denotation mm.(ElementType) EKind;
+    links: Denotation mm.(LinkType) LKind;
     
     (* Denotation *)
     denoteEDatatype: EKind -> Set := elements.(denoteDatatype);

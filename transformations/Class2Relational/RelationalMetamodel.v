@@ -234,7 +234,7 @@ Definition RelationalMM : Metamodel :=
 
 
   #[export]
-  Instance RelationalElementSum : Sum Element ElementKind :=
+  Instance RelationalElementDenotation : Denotation Element ElementKind :=
   {
     denoteDatatype := getTypeByEKind;
     unbox := get_E_data;
@@ -244,7 +244,7 @@ Definition RelationalMM : Metamodel :=
     
 
   #[export]
-  Instance RelationalLinkSum : Sum Link LinkKind :=
+  Instance RelationalLinkDenotation : Denotation Link LinkKind :=
   {
     denoteDatatype := getTypeByLKind;
     unbox := get_L_data;
@@ -255,8 +255,8 @@ Definition RelationalMM : Metamodel :=
   #[export]
   Instance RelationalMetamodel : ModelingMetamodel RelationalMM :=
   { 
-      elements := RelationalElementSum;
-      links := RelationalLinkSum;
+      elements := RelationalElementDenotation;
+      links := RelationalLinkDenotation;
   }.
 
 Definition RelationalModel := Model RelationalMM.

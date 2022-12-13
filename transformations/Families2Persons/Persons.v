@@ -208,7 +208,7 @@ Definition Person_downcastFemale (pe_arg : Person) (m : PersonsModel) : option F
 (* Typeclass Instances *)	
 
 #[export]
-Instance PersonsMetamodel_ElementSum : Sum PersonsMetamodel_Object PersonsMetamodel_Class :=
+Instance PersonsMetamodel_ElementDenotation : Denotation PersonsMetamodel_Object PersonsMetamodel_Class :=
 {
 	denoteDatatype := PersonsMetamodel_getTypeByClass;
 	unbox := PersonsMetamodel_toClass;
@@ -216,7 +216,7 @@ Instance PersonsMetamodel_ElementSum : Sum PersonsMetamodel_Object PersonsMetamo
 }.
 
 #[export]
-Instance PersonsMetamodel_LinkSum : Sum PersonsMetamodel_Link PersonsMetamodel_Reference :=
+Instance PersonsMetamodel_LinkDenotation : Denotation PersonsMetamodel_Link PersonsMetamodel_Reference :=
 {
 	denoteDatatype := PersonsMetamodel_getTypeByReference;
 	unbox := PersonsMetamodel_toReference;
@@ -229,8 +229,8 @@ Instance PersonsMetamodel_LinkSum : Sum PersonsMetamodel_Link PersonsMetamodel_R
 Instance PersonsMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel PersonsMetamodel_Metamodel_Instance :=
 { 
-    elements := PersonsMetamodel_ElementSum;
-    links := PersonsMetamodel_LinkSum; 
+    elements := PersonsMetamodel_ElementDenotation;
+    links := PersonsMetamodel_LinkDenotation; 
 }.
 
 (* Useful lemmas *)
@@ -248,9 +248,9 @@ Qed.
 (* Not Used *)
 Definition PersonsMetamodel_instanceOfEClass :
   PersonsMetamodel_Class ->  PersonsMetamodel_Object -> bool :=
-  PersonsMetamodel_ElementSum.(instanceof).
+  PersonsMetamodel_ElementDenotation.(instanceof).
 
 Definition PersonsMetamodel_instanceOfEReference : 
   PersonsMetamodel_Reference -> PersonsMetamodel_Link -> bool :=
-  PersonsMetamodel_LinkSum.(instanceof).
+  PersonsMetamodel_LinkDenotation.(instanceof).
 

@@ -492,7 +492,7 @@ Definition Clique_getPersonsObjects (cl_arg : Clique) (m : moviesModel) : option
 (* Typeclass Instances *)	
 
 #[export]
-Instance moviesMetamodel_ElementSum : Sum moviesMetamodel_Object moviesMetamodel_Class :=
+Instance moviesMetamodel_ElementDenotation : Denotation moviesMetamodel_Object moviesMetamodel_Class :=
 {
 	denoteDatatype := moviesMetamodel_getTypeByClass;
 	unbox := moviesMetamodel_toClass;
@@ -500,7 +500,7 @@ Instance moviesMetamodel_ElementSum : Sum moviesMetamodel_Object moviesMetamodel
 }.
 
 #[export]
-Instance moviesMetamodel_LinkSum : Sum moviesMetamodel_Link moviesMetamodel_Reference :=
+Instance moviesMetamodel_LinkDenotation : Denotation moviesMetamodel_Link moviesMetamodel_Reference :=
 {
 	denoteDatatype := moviesMetamodel_getTypeByReference;
 	unbox := moviesMetamodel_toReference;
@@ -513,8 +513,8 @@ Instance moviesMetamodel_LinkSum : Sum moviesMetamodel_Link moviesMetamodel_Refe
 Instance moviesMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel moviesMetamodel_Metamodel_Instance :=
 { 
-    elements := moviesMetamodel_ElementSum;
-    links := moviesMetamodel_LinkSum; 
+    elements := moviesMetamodel_ElementDenotation;
+    links := moviesMetamodel_LinkDenotation; 
 }.
 
 (* Useful lemmas *)
@@ -530,9 +530,9 @@ Qed.
 (* Not Used *)
 Definition moviesMetamodel_instanceOfEClass :
   moviesMetamodel_Class -> moviesMetamodel_Object -> bool :=
-  moviesMetamodel_ElementSum.(instanceof).
+  moviesMetamodel_ElementDenotation.(instanceof).
 
 Definition moviesMetamodel_instanceOfEReference :
   moviesMetamodel_Reference -> moviesMetamodel_Link -> bool :=
-  moviesMetamodel_LinkSum.(instanceof).
+  moviesMetamodel_LinkDenotation.(instanceof).
 

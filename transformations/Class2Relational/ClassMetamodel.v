@@ -172,7 +172,7 @@ Definition ClassMM : Metamodel :=
 
 
 #[export]
-Instance ClassElementSum : Sum Element ElementKind :=
+Instance ClassElementDenotation : Denotation Element ElementKind :=
 {
   denoteDatatype := getTypeByEKind;
   unbox := get_E_data;
@@ -181,7 +181,7 @@ Instance ClassElementSum : Sum Element ElementKind :=
 
 
 #[export]
-Instance ClassLinkSum : Sum Link LinkKind :=
+Instance ClassLinkDenotation : Denotation Link LinkKind :=
 {
   denoteDatatype := getTypeByLKind;
   unbox := get_L_data;
@@ -192,8 +192,8 @@ Instance ClassLinkSum : Sum Link LinkKind :=
 #[export]
 Instance ClassMetamodel : ModelingMetamodel ClassMM :=
 { 
-    elements := ClassElementSum;
-    links := ClassLinkSum; 
+    elements := ClassElementDenotation;
+    links := ClassLinkDenotation; 
 }.
 
 Definition ClassModel := Model ClassMM.

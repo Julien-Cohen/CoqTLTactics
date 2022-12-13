@@ -1257,7 +1257,7 @@ Definition Author_getAtomObject (au_arg : Author) (m : ATOMModel) : option (ATOM
 (* Typeclass Instances *)	
 
 #[export]
-Instance ATOMMetamodel_ElementSum : Sum ATOMMetamodel_Object ATOMMetamodel_Class :=
+Instance ATOMMetamodel_ElementDenotation : Denotation ATOMMetamodel_Object ATOMMetamodel_Class :=
 {
 	denoteDatatype := ATOMMetamodel_getTypeByClass;
 	unbox := ATOMMetamodel_toClass;
@@ -1265,7 +1265,7 @@ Instance ATOMMetamodel_ElementSum : Sum ATOMMetamodel_Object ATOMMetamodel_Class
 }.
 
 #[export]
-Instance ATOMMetamodel_LinkSum : Sum ATOMMetamodel_Link ATOMMetamodel_Reference :=
+Instance ATOMMetamodel_LinkDenotation : Denotation ATOMMetamodel_Link ATOMMetamodel_Reference :=
 {
 	denoteDatatype := ATOMMetamodel_getTypeByReference;
 	unbox := ATOMMetamodel_toReference;
@@ -1278,8 +1278,8 @@ Instance ATOMMetamodel_LinkSum : Sum ATOMMetamodel_Link ATOMMetamodel_Reference 
 Instance ATOMMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel ATOMMetamodel_Metamodel_Instance :=
 { 
-    elements := ATOMMetamodel_ElementSum;
-    links := ATOMMetamodel_LinkSum; 
+    elements := ATOMMetamodel_ElementDenotation;
+    links := ATOMMetamodel_LinkDenotation; 
 }.
 
 (* Useful lemmas *)
@@ -1297,9 +1297,9 @@ Qed.
 (* Not Used *)
 Definition ATOMMetamodel_instanceOfEClass : 
   ATOMMetamodel_Class -> ATOMMetamodel_Object -> bool :=
-  ATOMMetamodel_ElementSum.(instanceof).
+  ATOMMetamodel_ElementDenotation.(instanceof).
 
 Definition ATOMMetamodel_instanceOfEReference :
   ATOMMetamodel_Reference -> ATOMMetamodel_Link -> bool :=
-  ATOMMetamodel_LinkSum.(instanceof).
+  ATOMMetamodel_LinkDenotation.(instanceof).
 

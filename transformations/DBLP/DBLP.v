@@ -1165,7 +1165,7 @@ Definition Www_getEditorsObjects (ww_arg : Www) (m : DBLPModel) : option (list D
 (* Typeclass Instances *)	
 
 #[export]
-Instance DBLPMetamodel_ElementSum : Sum DBLPMetamodel_Object DBLPMetamodel_Class :=
+Instance DBLPMetamodel_ElementDenotation : Denotation DBLPMetamodel_Object DBLPMetamodel_Class :=
 {
 	denoteDatatype := DBLPMetamodel_getTypeByClass;
 	unbox := DBLPMetamodel_toClass;
@@ -1173,7 +1173,7 @@ Instance DBLPMetamodel_ElementSum : Sum DBLPMetamodel_Object DBLPMetamodel_Class
 }.
 
 #[export]
-Instance DBLPMetamodel_LinkSum : Sum DBLPMetamodel_Link DBLPMetamodel_Reference :=
+Instance DBLPMetamodel_LinkDenotation : Denotation DBLPMetamodel_Link DBLPMetamodel_Reference :=
 {
 	denoteDatatype := DBLPMetamodel_getTypeByReference;
 	unbox := DBLPMetamodel_toReference;
@@ -1186,8 +1186,8 @@ Instance DBLPMetamodel_LinkSum : Sum DBLPMetamodel_Link DBLPMetamodel_Reference 
 Instance DBLPMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel DBLPMetamodel_Metamodel_Instance :=
 { 
-    elements := DBLPMetamodel_ElementSum;
-    links := DBLPMetamodel_LinkSum; 
+    elements := DBLPMetamodel_ElementDenotation;
+    links := DBLPMetamodel_LinkDenotation; 
 }.
 
 (* Useful lemmas *)
@@ -1204,9 +1204,9 @@ Qed.
 (* Not Used *)
 Definition instanceOfEClass : 
   DBLPMetamodel_Class -> DBLPMetamodel_Object -> bool :=
-  DBLPMetamodel_ElementSum.(instanceof).
+  DBLPMetamodel_ElementDenotation.(instanceof).
   
 
 Definition instanceOfEReference : 
   DBLPMetamodel_Reference -> DBLPMetamodel_Link -> bool :=
-  DBLPMetamodel_LinkSum.(instanceof).
+  DBLPMetamodel_LinkDenotation.(instanceof).

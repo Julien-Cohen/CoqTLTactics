@@ -915,7 +915,7 @@ Definition Category_getItemsObject (ca_arg : Category) (m : RSSModel) : option (
 (* Typeclass Instances *)	
 
 #[export]
-Instance RSSMetamodel_ElementSum : Sum RSSMetamodel_Object RSSMetamodel_Class :=
+Instance RSSMetamodel_ElementDenotation : Denotation RSSMetamodel_Object RSSMetamodel_Class :=
 {
 	denoteDatatype := RSSMetamodel_getTypeByClass;
 	unbox := RSSMetamodel_toClass;
@@ -923,7 +923,7 @@ Instance RSSMetamodel_ElementSum : Sum RSSMetamodel_Object RSSMetamodel_Class :=
 }.
 
 #[export]
-Instance RSSMetamodel_LinkSum : Sum RSSMetamodel_Link RSSMetamodel_Reference :=
+Instance RSSMetamodel_LinkDenotation : Denotation RSSMetamodel_Link RSSMetamodel_Reference :=
 {
 	denoteDatatype := RSSMetamodel_getTypeByReference;
 	unbox := RSSMetamodel_toReference;
@@ -936,8 +936,8 @@ Instance RSSMetamodel_LinkSum : Sum RSSMetamodel_Link RSSMetamodel_Reference :=
 Instance RSSMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel RSSMetamodel_Metamodel_Instance :=
 { 
-    elements := RSSMetamodel_ElementSum;
-    links := RSSMetamodel_LinkSum; 
+    elements := RSSMetamodel_ElementDenotation;
+    links := RSSMetamodel_LinkDenotation; 
 }.
 
 (* Useful lemmas *)
@@ -954,9 +954,9 @@ Qed.
 (* Not Used *)
 Definition RSSMetamodel_instanceOfEClass :
   RSSMetamodel_Class -> RSSMetamodel_Object -> bool :=
-  RSSMetamodel_ElementSum.(instanceof).
+  RSSMetamodel_ElementDenotation.(instanceof).
 
 Definition RSSMetamodel_instanceOfEReference :
   RSSMetamodel_Reference ->  RSSMetamodel_Link -> bool :=
-  RSSMetamodel_LinkSum.(instanceof).
+  RSSMetamodel_LinkDenotation.(instanceof).
 
