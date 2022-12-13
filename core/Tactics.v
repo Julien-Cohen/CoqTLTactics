@@ -251,8 +251,13 @@ End A.
 
 Require Certification.
 
-(** Tactics to transform H : In [e] (allTuples _ cm)
+(** Tactics to transform an hypothesis H : In [e] (allTuples _ cm)
     into H: In (e) (modelElements cm)
 *)
-Ltac in_singleton_allTuples H:=
-  apply Certification.allTuples_incl in H ; apply incl_singleton in H.
+
+Ltac in_singleton_allTuples :=
+  match goal with 
+    [ H : In [_] (allTuples _ _) |- _ ] =>
+      apply Certification.allTuples_incl in H ;
+      apply incl_singleton in H
+  end.
