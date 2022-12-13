@@ -55,35 +55,42 @@ Proof.
     repeat Tactics.destruct_execute.
    
     repeat Tactics.show_singleton.
-    
 
     repeat Tactics.show_origin. 
     
-    Tactics.in_singleton_allTuples IN_E.
-    Tactics.in_singleton_allTuples IN_E0.
-    Tactics.in_singleton_allTuples IN_E1.
+    repeat Tactics.in_singleton_allTuples.
 
-           specialize (PRE a a0 c IN_E IN_E0 IN_E1). clear IN_E IN_E0  IN_E1.
+    specialize (PRE a a0 c IN_E IN_E0 IN_E1). clear IN_E IN_E0  IN_E1.
 
-            destruct a, a0 ; [] ; simpl in *.
-            replace derived with false in *  ; [ | solve [destruct derived ; auto] ].
-            replace derived0 with false in * ; [ | solve [destruct derived0 ; auto] ].
+    (* IN3 *)
+    simpl in IN3.
+    remove_or_false IN3.
+    inversion_clear IN3. 
+    
+    
+    (* IN2 *)
+    destruct a0.
+    replace derived with false in *  ;
+      [ | solve [destruct derived ; auto] ].
+    simpl in IN2.
+    remove_or_false IN2.
+    inversion IN2 ; clear IN2 ; subst. 
 
-            simpl in *.
-
-            remove_or_false IN1.
-            remove_or_false IN2.
-            remove_or_false IN3.
-
-            inversion IN1 ; clear IN1. 
-            inversion IN2 ; clear IN2. 
-            inversion IN3 ; clear IN3. 
-            subst. simpl.
-
-            apply PRE.
-            contradict D.
-            injection D ; clear D ; intros ; subst.
-            reflexivity.
+    
+    (* IN1 *)
+    destruct a.
+    replace derived0 with false in * ; 
+      [ | solve [destruct derived0 ; auto] ].            
+    simpl in IN1.
+    remove_or_false IN1.
+    inversion IN1 ; clear IN1 ; subst. 
+    
+    simpl. simpl in PRE.
+    
+    apply PRE.
+    contradict D.
+    injection D ; clear D ; intros ; subst.
+    reflexivity.
 Qed.
 
  

@@ -50,9 +50,8 @@ Proof.
 
     repeat Tactics.show_origin.
 
+    repeat Tactics.in_singleton_allTuples.
 
-    Tactics.in_singleton_allTuples IN_E.
-    Tactics.in_singleton_allTuples IN_E0.
     specialize (PRE c c0 IN_E IN_E0) ; clear IN_E IN_E0.
     
     simpl in IN1, IN2.

@@ -79,7 +79,7 @@ Proof.
 
   Tactics.show_singleton. 
 
-  Tactics.in_singleton_allTuples IN_E.
+  Tactics.in_singleton_allTuples.
   specialize (P e0 IN_E). 
   
   destruct e0. (* Case analysis on source element type *)

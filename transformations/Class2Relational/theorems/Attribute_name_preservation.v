@@ -36,18 +36,11 @@ Proof.
       exists ([AttributeElement a]).
       split.
       + apply allTuples_incl_length.
-        * unfold incl.
-          intros.
-          apply in_inv in H2.
-          destruct H2.
-          -- rewrite <- H2. assumption.
-          -- contradiction.
+        * apply incl_singleton ; assumption.
         * simpl. lia.
-      + destruct a.
-        simpl in H1.
-        rewrite H1.
+      + destruct a ; simpl in *.
+        subst derived.
         simpl. 
-        left.
-        reflexivity.
+        auto.
     - reflexivity.
 Qed.
