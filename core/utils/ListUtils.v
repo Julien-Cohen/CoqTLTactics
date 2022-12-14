@@ -280,3 +280,7 @@ Proof.
     subst ; assumption.
   + apply H. simpl. auto.
 Qed.
+
+Lemma in_singleton A (a:A) b : a = b -> In a (b::nil).
+  intro ; subst. apply in_eq.
+Qed.

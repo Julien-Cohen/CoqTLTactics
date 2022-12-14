@@ -141,6 +141,8 @@ Ltac destruct_any := first [ destruct_execute | destruct_instantiatePattern | de
 Ltac destruct_In_two :=
   match goal with 
     [ H : In ?X Class2Relational.(Syntax.rules) |- _ ] => 
-      simpl in H ;
+      simpl in H ; 
+      unfold In in H ; (* force it because simpl In can be disabled by Arguments In: simpl never. *)
+
       repeat destruct_or H ; [ | | contradiction H] ; subst X
   end.

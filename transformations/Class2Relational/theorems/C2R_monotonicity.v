@@ -15,7 +15,57 @@ From transformations.Class2Relational
   RelationalMetamodel
   Tactics.
 
-Require Import core.utils.CpdtTactics.
+Ltac inj H := injection H ; clear H ; intros ; subst.
+
+
+Lemma in_allTuples_singleton :
+  forall e t s, 
+    In [e] (allTuples t s) ->
+    In e s.(modelElements).
+Proof.
+  intros e t s IN.
+  apply incl_singleton.
+  eapply Certification.allTuples_incl.
+  exact IN.
+Qed.
+
+Lemma make1 sm e :
+  ConcreteExpressions.makeEmptyGuard [Class_K] sm [e] = true ->
+  exists v, e = ClassElement v. 
+Proof.
+  destruct e ; compute ; intro M ; [ eauto | discriminate].
+Qed.
+
+Lemma make2 sm e:
+  ConcreteExpressions.makeGuard [Attribute_K]
+    (fun (_ : TransformationConfiguration.SourceModel)
+         (a : Attribute_t) => negb (derived a)) sm 
+    [e] = true -> exists v, (e = AttributeElement v /\ v.(derived) = false).
+Proof.
+  destruct e ; [ discriminate | ] ; compute.
+  destruct a.
+  destruct derived ; [ discriminate | ].
+  eauto.
+Qed.
+
+
+
+Ltac deduce_element_kind_from_guard :=
+  let H2 := fresh "D" in
+  let a := fresh "a" in
+  match goal with 
+    [ H :ConcreteExpressions.makeEmptyGuard [Class_K] _ [?e] = true |- _ ] =>
+      apply make1 in H ; destruct H ; subst e
+  | [ H :ConcreteExpressions.makeGuard [Attribute_K]
+    (fun _ atr => negb (derived atr)) _ 
+    [?e] = true |- _ ] =>
+      apply make2 in H ; destruct H as (a & (H & H2)) ; 
+      first[ subst e (* if e was a variable *) 
+             | inj H (* if e was not a variable *) ]
+end.
+
+
+
 
 Theorem All_classes_instantiate_impl:
   Monotonicity Class2Relational.
@@ -23,61 +73,109 @@ Proof.
   unfold Monotonicity.
   unfold TargetModel_elem_incl. unfold SourceModel_elem_incl.
   unfold incl.
-  simpl.
-  intros.
+  intros sm1 sm2 INC a IN.
+
+  Tactics.destruct_execute.
 
   apply in_flat_map.
-  apply in_flat_map in H0. repeat destruct H0.
-  exists x.
+  
   Tactics.show_singleton.    
+  apply in_allTuples_singleton in IN_E.
+
+  apply INC in IN_E ; clear INC.
+  exists ([e]).
   split.
   { 
     apply allTuples_incl_length ; [ | simpl ; solve[auto] ].
     apply incl_singleton.
-    apply H ; clear H.
-    
-    apply Certification.allTuples_incl in H0.
-    apply incl_singleton in H0.
     assumption.
   }
   { 
     repeat destruct_any.
     clear IN_I.
-    Tactics.destruct_In_two ;
-    simpl in * ;
-    remove_or_false IN_OP ;
-    subst ope ; simpl in *.
+
+    (* Two ways of reasonning by case analysis : (1) decompose e, (2) decompose r *)
+    (* Here we first decompose r and then we deduce e. *)
+
+    destruct_In_two ;
+      simpl in IN_OP; 
+      unfold In in IN_OP ;
+      remove_or_false IN_OP ;
+      subst ope  ;  
+      simpl in M ;
+      deduce_element_kind_from_guard ;
+      compute in IN ; inj IN .
     
-    { (* first rule *)
-      unfold ConcreteExpressions.makeElement in H1 ; simpl in H1.
-      unfold ConcreteExpressions.wrapElement  in H1 ; simpl in H1.
-      unfold TransformationConfiguration.SourceElementType in e.
-      compute in e.
-      simpl in e.
-      
-      destruct e ; [ | exfalso] ; simpl in *.
-      * injection H1 ; clear H1 ; subst.
-        auto.
-      * discriminate.
+    { (* first rule *)      
+      compute ; auto.
     }
     { (* second rule *)
-      unfold ConcreteExpressions.makeElement in H1 ; simpl in H1.
-      unfold ConcreteExpressions.wrapElement  in H1.
-      
-      destruct e ; [ exfalso | ] ;simpl in *.
-      * discriminate H1.
-      * injection H1 ; clear H1 ; intros ; subst ; simpl in *.
-        
-        unfold ConcreteExpressions.makeGuard in M.
-        unfold ConcreteExpressions.wrap in M.
-        simpl in M.
-        apply Bool.negb_true_iff in M.
-        
-        destruct a0 ; simpl in *.
-        subst derived.
-        
-        simpl ; auto.
+      (* To compute we need to know the value of a.(derived) *) 
+      destruct a0 ; simpl in * ; subst. 
+      compute ; auto.
     }
   }
 Qed.
-           
+
+Theorem All_classes_instantiate_impl_alt:
+  Monotonicity Class2Relational.
+Proof.
+  unfold Monotonicity.
+  unfold TargetModel_elem_incl. unfold SourceModel_elem_incl.
+  unfold incl.
+  intros sm1 sm2 INC a IN.
+  
+  Tactics.destruct_execute.
+  
+  apply in_flat_map.
+  
+  Tactics.show_singleton.    
+  apply in_allTuples_singleton in IN_E.
+  
+  apply INC in IN_E ; clear INC.
+  exists ([e]).
+  split.
+  { 
+    apply allTuples_incl_length ; [ | simpl ; solve[auto] ].
+    apply incl_singleton.
+    assumption.
+  }
+  { 
+    repeat destruct_any.
+    clear IN_I.
+    
+    (* Two ways of reasonning by case analysis : (1) decompose e, (2) decompose r *)
+    (* Here we first decompose e, and then we decompose r. *)
+
+    
+    destruct e.
+    
+    { (* ClassElement *)
+      Tactics.destruct_In_two ;
+       simpl in IN_OP ;
+       remove_or_false IN_OP ;
+       subst ope ; 
+       compute in IN ; (* optional *)
+       [ inj IN | discriminate IN (*the second rule cannot match *)].
+       simpl ; auto.
+    }
+
+    {
+      (* AttributeElement *)
+      (* To compute we need to know the value of a.(derived) *) 
+      Tactics.destruct_In_two ;
+       simpl in IN_OP ;
+       remove_or_false IN_OP ;
+       subst ope  ;
+       simpl in M ;
+       try deduce_element_kind_from_guard ;
+       compute in IN (* optional *); 
+      [ discriminate IN (* the first rule cannot match *) | inj IN ].
+
+      destruct a1 ; simpl in D ; subst derived.
+      simpl ; auto.
+    }
+  }
+Qed.
+ 
+(** Generalisation ? If the guard depends only on the input element and not on the other elements of the input model, then the transformation s monotonic ? *)
