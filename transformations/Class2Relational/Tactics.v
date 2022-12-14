@@ -51,6 +51,54 @@ Ltac show_origin :=
 
 end.
 
+
+Lemma unify_table_class_lem :
+  forall cm c ta,
+    In (TableElement ta)
+      (instantiatePattern Class2Relational cm [ClassElement c]) ->
+    ta = {| table_id := class_id c; table_name := class_name c |}.
+Proof.
+  intros cm c ta H.
+  compute in H.
+  remove_or_false H.
+  Tactics.inj H.
+  reflexivity.
+Qed.
+
+Ltac unify_table_class_tac H :=
+  match type of H with
+    In (TableElement ?ta) (instantiatePattern Class2Relational _ [ClassElement ?c]) => apply unify_table_class_lem in H ; subst ta
+  end.
+
+Lemma unify_column_attribute_lem : 
+  forall m a c, 
+  In (ColumnElement c)
+          (instantiatePattern Class2Relational m
+             [AttributeElement a]) ->
+  c = {| column_id := a.(attr_id); column_name := a.(attr_name) |} /\ a.(derived) = false.
+Proof.
+  intros m a c H ; destruct a ; simpl.
+  destruct derived ; compute in H ; [ contradiction H | remove_or_false H ].
+  Tactics.inj H.
+  auto.
+Qed.
+
+Ltac unify_column_attribute_tac H :=
+  let H2 := fresh in
+  match type of H with 
+    In (ColumnElement ?c)
+      (instantiatePattern Class2Relational _
+         [AttributeElement ?a]) => apply unify_column_attribute_lem in H ; destruct H as [H2 H] ; subst c
+  end.
+
+Ltac unify_all :=
+  match goal with
+    [ H : In (ColumnElement _) (instantiatePattern Class2Relational _ [AttributeElement _]) |- _ ] =>
+      unify_column_attribute_tac H
+
+   | [ H : In (TableElement _) (instantiatePattern Class2Relational _ [ClassElement _]) |- _ ] => unify_table_class_tac H
+  end.
+
 (** ** Size of patterns *)
 
 Lemma one_to_one : 

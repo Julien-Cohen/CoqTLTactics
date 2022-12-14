@@ -57,39 +57,17 @@ Proof.
     repeat Tactics.show_singleton.
 
     repeat Tactics.show_origin. 
+
+    repeat Tactics.unify_all.
+    simpl. 
     
     repeat Tactics.in_singleton_allTuples.
 
     specialize (PRE a a0 c IN_E IN_E0 IN_E1). clear IN_E IN_E0  IN_E1.
-
-    (* IN3 *)
-    simpl in IN3.
-    remove_or_false IN3.
-    inversion_clear IN3. 
-    
-    
-    (* IN2 *)
-    destruct a0.
-    replace derived with false in *  ;
-      [ | solve [destruct derived ; auto] ].
-    simpl in IN2.
-    remove_or_false IN2.
-    inversion IN2 ; clear IN2 ; subst. 
-
-    
-    (* IN1 *)
-    destruct a.
-    replace derived0 with false in * ; 
-      [ | solve [destruct derived0 ; auto] ].            
-    simpl in IN1.
-    remove_or_false IN1.
-    inversion IN1 ; clear IN1 ; subst. 
-    
-    simpl. simpl in PRE.
     
     apply PRE.
     contradict D.
-    injection D ; clear D ; intros ; subst.
+    subst a0.
     reflexivity.
 Qed.
 

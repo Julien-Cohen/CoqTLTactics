@@ -50,14 +50,12 @@ Proof.
 
     repeat Tactics.show_origin.
 
+    repeat Tactics.unify_all.
+    simpl.
+
     repeat Tactics.in_singleton_allTuples.
 
     specialize (PRE c c0 IN_E IN_E0) ; clear IN_E IN_E0.
-    
-    simpl in IN1, IN2.
-    remove_or_false IN1.
-    remove_or_false IN2.
-    inversion IN1 ; inversion IN2 ; subst ; simpl in *.
     apply PRE.
     contradict D.
     subst ; reflexivity.
