@@ -22,6 +22,8 @@ Ltac dep_inversion H :=
   let H':= fresh H in
   inversion H as [H'] ; apply Eqdep.EqdepTheory.inj_pair2 in H'.
 
+Ltac inj H := injection H ; clear H ; intros ; subst.
+
 
 (** Tactics to deal with boolean equality on generated types. *)
 

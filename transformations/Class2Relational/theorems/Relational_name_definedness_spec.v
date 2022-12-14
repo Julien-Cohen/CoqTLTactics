@@ -29,37 +29,6 @@ Require Import transformations.Class2Relational.RelationalMetamodel.
 
 From transformations.Class2Relational Require Tactics.
 
-(*Ltac unfoldTransformationIn Tr Ht := 
-  unfold Tr in Ht;
-  unfold ConcreteSyntax.parse in Ht; 
-  unfold ConcreteSyntax.parseRule in Ht;
-  unfold ConcreteSyntax.parseOutputPatternElement in Ht;
-  unfold ConcreteSyntax.parseOutputPatternLink in Ht;
-  unfold Expressions.makeGuard in Ht;
-  unfold Expressions.makeElement in Ht;
-  unfold Expressions.makeIterator in Ht;
-  unfold Expressions.makeLink in Ht;
-  repeat (unfold Expressions.wrapOptionElement in Ht);
-  repeat (unfold Expressions.wrapOptionLink in Ht);
-  repeat (unfold Expressions.wrapOption in Ht);
-  simpl in Ht.
-
-Ltac unfoldTransformation Tr := 
-  unfold Tr;
-  unfold ConcreteSyntax.parse; 
-  unfold ConcreteSyntax.parseRule;
-  unfold ConcreteSyntax.parseOutputPatternElement;
-  unfold ConcreteSyntax.parseOutputPatternLink;
-  unfold Expressions.makeGuard;
-  unfold Expressions.makeElement;
-  unfold Expressions.makeIterator;
-  unfold Expressions.makeLink;
-  repeat (unfold Expressions.wrapOptionElement);
-  repeat (unfold Expressions.wrapOptionLink);
-  repeat (unfold Expressions.wrapOption);
-  simpl.*)
-
-
 Theorem Relational_name_definedness (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : RelationalModel) :
   (* transformation *) 
      rm = execute Class2Relational cm ->
@@ -82,25 +51,23 @@ Proof.
   Tactics.in_singleton_allTuples.
   specialize (P e0 IN_E). 
   
+  repeat Tactics.destruct_any.
+
+  clear IN_I.
+
   destruct e0. (* Case analysis on source element type *)
   * (* [Class] *) 
-    repeat Tactics.destruct_any.
-    
+
     Tactics.destruct_In_two ;
       simpl in * ;
       remove_or_false IN_OP ;
-      subst ope ; simpl in *. 
-    ** (* Class2Table *)
-      inversion_clear IN.
+      subst ope ; compute in IN ; 
+      [ Tactics.inj IN | discriminate IN ]. 
       exact P.
-      
-    **  (* Attribute2Column contradict *)
-      exfalso.
-      discriminate IN.
       
   * (* [Attribute] *) 
     destruct a.
-    destruct derived ; repeat Tactics.destruct_any.
+    destruct derived.
     -- (* derived *)
       exfalso. (* no rule can match *)
       Tactics.destruct_In_two ; discriminate M.
@@ -110,14 +77,8 @@ Proof.
       Tactics.destruct_In_two;
         simpl in * ;
         remove_or_false IN_OP ;
-        subst ope ; simpl in *.
-      **  (* Class2Table impossible *)
-        exfalso.
-        discriminate IN.
-        
-      ** (* Attribute2Column *) 
-        simpl in IN ; inversion_clear IN.
-        simpl. 
+        subst ope ; compute in IN ;
+        [ discriminate IN | Tactics.inj IN ] .
         exact P.
 Qed.
 
@@ -131,10 +92,7 @@ Qed.
         ++ contradiction H2. 
       --  contradiction H2.*)
 
-(* Alternative for (* Other patterns *): 
-      apply maxArity_length with (sp:=c::c0::x) (tr:=Class2Relational) (sm:=cm).
-      * unfold maxArity. simpl. omega.
-      * assumption. *)
+
 
 (*Ltac destructPattern sp tr sm h := 
   destruct sp;

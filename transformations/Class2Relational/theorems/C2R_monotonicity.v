@@ -15,7 +15,6 @@ From transformations.Class2Relational
   RelationalMetamodel
   Tactics.
 
-Ltac inj H := injection H ; clear H ; intros ; subst.
 
 
 Lemma in_allTuples_singleton :
@@ -61,7 +60,7 @@ Ltac deduce_element_kind_from_guard :=
     [?e] = true |- _ ] =>
       apply make2 in H ; destruct H as (a & (H & H2)) ; 
       first[ subst e (* if e was a variable *) 
-             | inj H (* if e was not a variable *) ]
+             | Tactics.inj H (* if e was not a variable *) ]
 end.
 
 
@@ -104,7 +103,7 @@ Proof.
       subst ope  ;  
       simpl in M ;
       deduce_element_kind_from_guard ;
-      compute in IN ; inj IN .
+      compute in IN ; Tactics.inj IN .
     
     { (* first rule *)      
       compute ; auto.
@@ -156,7 +155,7 @@ Proof.
        remove_or_false IN_OP ;
        subst ope ; 
        compute in IN ; (* optional *)
-       [ inj IN | discriminate IN (*the second rule cannot match *)].
+       [ Tactics.inj IN | discriminate IN (*the second rule cannot match *)].
        simpl ; auto.
     }
 
@@ -170,7 +169,7 @@ Proof.
        simpl in M ;
        try deduce_element_kind_from_guard ;
        compute in IN (* optional *); 
-      [ discriminate IN (* the first rule cannot match *) | inj IN ].
+      [ discriminate IN (* the first rule cannot match *) | Tactics.inj IN ].
 
       destruct a1 ; simpl in D ; subst derived.
       simpl ; auto.
