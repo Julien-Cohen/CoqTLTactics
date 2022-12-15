@@ -282,11 +282,10 @@ Proof.
         assumption.
     + (* input pair is not matched by moore machine *)
       simpl; simpl in hL.
-      replace (searchM (compile p) (mkIPair q0 i)) with (@None OPairM);
-      replace (searchM (compile p) (mkIPair q0 i)) with (@None OPairM) in hL.
+      destruct (searchM (compile p) (mkIPair q0 i)) eqn: s_of_PM.
+      * apply compile_correct_ca1 in s_of_P.
+        rewrite s_of_P in s_of_PM.
+        inversion s_of_PM.
       * inversion hL.
-      * symmetry. apply compile_correct_ca1. assumption.
-      * inversion hL.
-      * symmetry. apply compile_correct_ca1. assumption.
 Qed.
 
