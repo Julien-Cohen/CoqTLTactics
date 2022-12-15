@@ -48,6 +48,15 @@ Proof.
   Tactics.beq_eq_tac.
 Qed.
 
+Lemma beq_Class_refl : 
+  forall t, beq_Class t t = true.
+Proof.
+  destruct t. unfold beq_Class. simpl.
+  rewrite Nat.eqb_refl.
+  rewrite lem_beq_string_id.
+  reflexivity.
+Qed. 
+
 Lemma lem_beq_Attribute_id:
  forall (a1 a2: Attribute_t),
    beq_Attribute a1 a2 = true -> a1 = a2.

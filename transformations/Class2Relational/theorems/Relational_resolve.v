@@ -35,10 +35,9 @@ Proof.
       
 Qed.
 
-
-Lemma allModelElements_allTuples att (cm:Model ClassMM): 
-  In (AttributeElement att) cm.(modelElements) ->
-  In [AttributeElement att] (allTuples Class2Relational cm).
+Lemma allModelElements_allTuples e (cm:Model ClassMM): 
+  In (e) cm.(modelElements) ->
+  In [e] (allTuples Class2Relational cm).
 Proof. 
   destruct cm ; simpl.
   unfold allTuples ; simpl.
@@ -124,30 +123,6 @@ Proof.
   + auto.
 Qed.
 
-(* nul
-Lemma apply_pattern_attribute id name cm :  
-  applyPattern Class2Relational cm
-    [AttributeElement
-       {|
-         attr_id := id;
-         derived := false;
-         attr_name := name
-       |}] = nil .
-Proof.
-  destruct cm.
-
-  unfold applyPattern. 
-  simpl.
-  rewrite <- List.app_nil_end.
-  simpl flat_map.
-
-
-, Class2Relational ; simpl.
-  unfold Parser.parse, Class2Relational' ; simpl.
-  unfold Parser.parseRule ; simpl.
-  unfold applyRuleOnPattern ; simpl.
-  compute.
-Qed. *)
 
 Lemma getAttributeType_In att m: 
   getAttributeType att m <> None ->
@@ -208,291 +183,381 @@ Proof.
     assumption.
 Qed.
 
+Ltac duplicate H1 H2 := remember H1 as H2 eqn: TMP ; clear TMP.
 
+Lemma truc l t v : 
+  getAttributeTypeOnLinks v l = return t ->
+  exists a,
+    In (AttributeTypeLink a) l /\ a.(source_attribute) = v.
+Proof.
+  
+  induction l ; simpl ; intro G ; [ discriminate | ].
+  destruct a.
+  { (*ClassAttributeLink*)
+    apply IHl in G ; clear IHl.
+    destruct G as (a & (IN_E & E)).
+    exists a.
+    split ; auto.
+  }
+  { (*AttributeTypeLink*)
+    match type of G with (if ?E then _ else _) = _ => destruct E eqn : B  end.
+    { (* true *)
+      Tactics.inj G.
+      exists a.
+      split.
+      left ; reflexivity.
+      apply lem_beq_Attribute_id.
+      exact B.
+    }
+    {
+      (* false *)
+      clear B.
+      apply IHl in G ; clear IHl.
+      destruct G as (aa & (IN_E & E)).
+      exists aa.
+      split ; auto.
+    }
+  }
+Qed.
+
+Lemma truc2 :
+  forall l v (x:Table_t), 
+      In (ColumnReferenceLink {| cr := v ;  ct := x |}) l -> 
+      exists r' : Table_t,
+        getColumnReferenceOnLinks v l = return r'.
+Proof.
+  induction l ; simpl ; intros v x IN ; [ contradict IN | ].
+  destruct_or IN.
+  {
+    subst a.
+    rewrite lem_beq_Column_refl.
+    eauto.
+  }
+  {
+    apply (IHl v) in IN ; auto ; clear IHl ; [].
+    destruct IN as [r G].
+    rewrite G.
+    destruct a ; eauto ; [].
+    destruct c.
+    destruct ( beq_Column cr v) ; eauto.
+  }
+Qed.
+
+Inductive Coherent : TraceLink.TraceLink -> Prop :=
+| cons1 :
+  forall t,
+    Coherent (TraceLink.buildTraceLink 
+                ( [ClassElement t], 0, "tab"%string)
+                (TableElement
+                   {|
+                     table_id := class_id t; table_name := class_name t
+                   |}))
+| cons2 :
+  forall a,
+  Coherent
+    (TraceLink.buildTraceLink ([AttributeElement a], 0, "col"%string)
+       (ColumnElement
+          {|
+            column_id := attr_id a ;
+            column_name :=  attr_name a 
+          |})).
+
+Lemma wf cm :
+  Forall Coherent (trace Class2Relational cm).
+Proof.
+  unfold trace.
+  unfold allTuples.
+  apply Forall_flat_map.
+  simpl.
+  unfold prod_cons.
+  apply Forall_forall.
+  intro l.
+  intro H.
+  apply Forall_flat_map.
+  apply Forall_forall.
+  intro r.
+  intro H2.
+  apply in_app_or in H.
+  destruct_or H.
+  2:{ simpl in *.
+      remove_or_false H.
+      subst l.
+      simpl in *.
+      contradiction.
+  }
+  apply in_flat_map in H.
+  destruct H as (e & H3 & H4).
+  simpl in *.
+  remove_or_false H4.
+  subst l.
+  simpl in *.
+  unfold matchPattern in H2.
+  apply filter_In in H2.
+  destruct H2 as [H4 H5].
+
+  
+  Tactics.destruct_In_two ; simpl in * ; Tactics.deduce_element_kind_from_guard.
+  { repeat constructor. }  
+  { repeat constructor. }  
+Qed.
+
+
+
+Lemma truc5bis l : 
+  Forall Coherent l ->
+  forall t,
+    In (TraceLink.buildTraceLink
+          ([ClassElement t], 0, "tab"%string)
+          (TableElement {| table_id := class_id t; table_name := class_name t |})) l ->
+    exists r1 , 
+      find
+        (fun tl : TraceLink.TraceLink =>
+           (Semantics.list_beq
+              (Metamodel.ElementType
+                 TransformationConfiguration.SourceMetamodel)
+              TransformationConfiguration.SourceElement_eqb
+              (TraceLink.TraceLink_getSourcePattern tl)
+              (singleton (ClassElement t)) &&
+              (TraceLink.TraceLink_getIterator tl =? 0) &&
+              (TraceLink.TraceLink_getName tl =? "tab")%string)%bool) l = 
+        Some (TraceLink.buildTraceLink r1 (TableElement {| table_id := class_id t; table_name := class_name t |})).
+Proof.
+  induction l ; intros C t IN1 ; [ simpl in IN1 ; contradict IN1 | ].
+  simpl.
+  apply in_inv in IN1. 
+  compare a (TraceLink.buildTraceLink ([ClassElement t], 0, "tab"%string)
+          (TableElement
+             {| table_id := class_id t; table_name := class_name t |})). 
+
+
+  { (* case where the class/table is the first element of the list : no induction *)
+    clear IN1 ; intro ; subst a.
+    simpl.
+    unfold TransformationConfiguration.SourceElement_eqb .
+    unfold Metamodel.elements_eqdec.
+    unfold TransformationConfiguration.SourceMetamodel.
+    unfold C2RConfiguration. simpl.
+    rewrite beq_Class_refl. simpl.
+    eauto.
+  }           
+  
+  { (* case where the class/table is not the first element of the list. *)
+    intro D.
+    inversion_clear C ; subst.
+    
+    inversion_clear H.
+    { (* class/table *)
+      destruct_or IN1 ; [ contradict D ; assumption | ].
+
+      destruct (IHl H0 t) ; [  exact IN1 | ].
+      unfold TransformationConfiguration.SourceElement_eqb .
+      unfold Metamodel.elements_eqdec.
+      unfold TransformationConfiguration.SourceMetamodel.
+      unfold C2RConfiguration. simpl.
+      repeat rewrite Bool.andb_true_r.
+      destruct (beq_Class t0 t) eqn:BEQ.
+      {  apply lem_beq_Class_id in BEQ ; subst ; eauto.  }
+      {
+        simpl in H.
+
+        unfold TransformationConfiguration.SourceElement_eqb in H.
+        unfold Metamodel.elements_eqdec.
+        
+        match goal with 
+          [ H : find ?X ?Y = ?Z |- context [find ?A ?B] ] => 
+            replace (find A B) with Z end.
+        { eauto. }
+      }
+    }       
+    { (* attribute/column*)
+      destruct_or IN1.
+      { contradict IN1. exact D. }
+      destruct (IHl H0 t) ; [  exact IN1 | ].
+      unfold TransformationConfiguration.SourceElement_eqb .
+      unfold Metamodel.elements_eqdec.
+      unfold TransformationConfiguration.SourceMetamodel.
+      unfold C2RConfiguration. simpl. 
+      exists x.
+      apply H.
+    }
+  }
+  { repeat decide equality. }
+  { repeat decide equality. }
+
+Qed.            
+        
+
+      
+Lemma truc4bis  l t cm : 
+  Forall Coherent l ->
+  In (TraceLink.buildTraceLink
+        ([ClassElement t], 0, "tab"%string)
+        (TableElement
+           {| table_id := class_id t; table_name := class_name t |})) l ->
+  resolveIter l cm "tab"
+    (singleton (ClassElement t)) 0 = Some (TableElement {| table_id := class_id t; table_name := class_name t |}).
+Proof.
+  unfold resolveIter. 
+  intros C IN1.
+  specialize (truc5bis l C t IN1) ; intro T5 ; clear IN1.
+  
+  destruct T5 as (t1 & IN1).
+  rewrite IN1.
+  unfold TraceLink.TraceLink_getTargetElement.
+  destruct t1.
+  destruct p.
+  reflexivity.
+Qed.
+
+Lemma truc3  e (cm : ClassModel) : 
+  In (ClassElement e) cm.(modelElements) -> 
+  In 
+    (TraceLink.buildTraceLink ([ClassElement e],0,"tab"%string) (TableElement {| table_id := class_id e; table_name := class_name e |})) 
+    (trace Class2Relational cm).
+Proof.
+  intro IN1.
+  unfold trace.
+  apply in_flat_map.
+  exists ([ClassElement e]).
+  split.
+  { apply allModelElements_allTuples ; auto. } 
+  
+  simpl.
+  left.
+  reflexivity.
+Qed.
+
+  
 Theorem Relational_Column_Reference_definedness:
 forall (cm : ClassModel) (rm : RelationalModel), 
+
   (* transformation *) rm = execute Class2Relational cm ->
+
   (* precondition *)  (forall (att : Attribute_t),
     In (AttributeElement att) cm.(modelElements) ->
-        getAttributeType att cm <> None) ->
+        exists (r:Class_t), getAttributeType att cm = Some r /\ In (ClassElement r) cm.(modelElements) (*well formed*) ) ->  
+
   (* postcondition *)  (forall (col: Column_t),
     In (ColumnElement col) rm.(modelElements) ->
-      getColumnReference col rm <> None). 
+      exists r', getColumnReference col rm =Some r'). 
+
 Proof.
   intros cm rm E PRE col I1.
   subst rm.
+  Tactics.destruct_execute.
+  Tactics.show_singleton.
+  Tactics.show_origin.
+  repeat Tactics.destruct_any.
 
-Ltac duplicate H1 H2 := remember H1 as H2 eqn: TMP ; clear TMP.
-
-{
-
-  duplicate I1 I2.
-  destruct col. 
-  eapply transform_attribute_back in I2 ; [ | reflexivity ].
-  rename column_id into i.
-  rename column_name into n.
-
-  duplicate I2 I3.
   
-  apply PRE in I3 ; clear PRE.
-  destruct cm ; simpl in *.
+
+  clear IN_I. 
+  
+  apply allModelElements_allTuples_back in IN_E.
+  
+  specialize (PRE _ IN_E).
+  destruct PRE as (t & (PRE1 & PRE2)).
 
 
-  duplicate I3 I4. 
-  apply getAttributeType_In_back in I4.
-  {
-    clear I1 I2.
-    unfold getAttributeType in I3.
-
-
-  Tactics.destruct_execute.  
-  Tactics.show_singleton.
-  Tactics.show_origin.
-  repeat Tactics.destruct_any.
-
-  unfold getAttributeType in I.
-  destruct cm.
-  unfold getColumnReference ; simpl.
-
-}*)
-Tactics.destruct_execute.
-  Tactics.show_singleton.
-  Tactics.show_origin.
-  repeat Tactics.destruct_any.
-  rename x into r. 
-  rename x0 into n.
-  rename H0 into Hn.
-  match goal with 
-    [ H : context[match ?P with _ => _ end] |- _ ] => destruct P eqn:E 
-  end ; [ | discriminate ].
-  destruct b ; [ clear H1 | discriminate ].
-
-
+  
   unfold getColumnReference.
-  unfold execute ; simpl.
 
-  rename H into Hr.
-  rename H2 into Hop.
-  rename H3 into He. 
-  unfold Expressions.evalOutputPatternElementExpr in He.
+  unfold execute.  simpl. 
+  unfold getAttributeType in IN_E.
 
+  set (z:=r).
 
-  cut (In (AttributeElement a) (allModelElements cm)).
-  {
-    intro IA.
-    specialize (PRE a IA) ; clear IA.
-    
+  Tactics.destruct_In_two ; [ exfalso | ] ; 
+   simpl in IN_OP ; remove_or_false IN_OP ; subst ope ; [ discriminate I1 | Tactics.inj I1]. 
+  
+  clear n.
+  simpl in M.
+  
+  Tactics.deduce_element_kind_from_guard. 
 
-  Tactics.destruct_In_two ; simpl in *.
-  {
-    (* first rule *)
-    exfalso.
-    destruct Hop as [Hop | Hop] ; [ | contradiction].
-    destruct Hn ; [ | contradiction ] ; subst n.
-    subst ope.
-    simpl in He.
-    unfold Expressions.evalExpr in He.
-    unfold ConcreteExpressions.makeElement in He.
-    simpl in He.
-    discriminate.
-  }
-  {
-    (* second rule *)
-    destruct Hop as [Hop | Hop] ; [ | contradiction].        
-    subst ope.
-    simpl in He.
-    destruct Hn ; [ | contradiction ] ; subst n.
-    unfold ConcreteExpressions.makeElement in He.
-    simpl in He.
-    unfold Expressions.evalExpr in He.
-    simpl in He.
-    injection He ; intro ; clear He ; subst col.
-    simpl in *.
-    unfold ConcreteExpressions.makeGuard in E ; simpl in E.
-    injection E ; intro D ; clear E. 
-    
-    contradict PRE.
-(*    Set Printing All. *)
+  
+  destruct a0 ; simpl in *.
+  subst derived ; simpl in *. 
 
-    replace (@allTuples
-           (@tc ClassMetamodel.Object ClassMetamodel.Link ClassMetamodel.EqDec
-              Object Link EqDec) Class2Relational cm) with (@allTuples C2RConfiguration Class2Relational cm) in I.
-    { 
-      revert PRE.
-      revert I.
+  duplicate PRE1 G1.
+  apply truc in PRE1.
+  destruct PRE1 as (v & (IN & E)).
 
-    generalize (allTuples Class2Relational cm).
-    induction l ; [ contradiction  | ]; simpl ; intros .
-    destruct I as [ I | I].
+  eapply truc2 with (x:= {| table_id :=t.(class_id) ;  table_name := t.(class_name) |}) . 
+  { 
+    apply in_flat_map.
+    exists ([AttributeElement {|
+                attr_id := attr_id;
+                derived := false;
+                attr_name := attr_name
+              |}]).
+    split.
     {
-      subst.
-      rewrite getColumnsReferenceOnLinks_app in PRE.
-      match goal with [H:context [ match ?P with | _ => _ end] |- _] => destruct P eqn:? end.
-      discriminate.
-      clear IHl.
-      destruct a.
-      destruct derived ; [ discriminate | ].
-      simpl in *.
-
-      unfold applyPattern in Heqo.
-      compute in Heqo. simpl in Heqo.
+      apply allModelElements_allTuples. exact IN_E.
     }
+    {
 
+      unfold applyPattern.
+    apply in_flat_map.
+    exists z.
+  
+    split.
+    { subst z. simpl. auto. }
+    { 
+      apply tr_applyRuleOnPattern_in ; simpl.
+      exists 0.
+      split ; [ solve [auto] | ].
+      apply tr_applyIterationOnPattern_in.
+      eexists  ; split ; [ solve [subst z ; simpl ; auto] | ].
+      erewrite tr_applyElementOnPattern_leaf ; simpl.
+      2:{
+        unfold ConcreteExpressions.makeElement. 
+        unfold ConcreteExpressions.wrapElement. simpl.
+        reflexivity.
+      }
+
+      rewrite <- app_nil_end. 
+      simpl.
+      
+      unfold Parser.parseOutputPatternElement ; simpl.
+      unfold Parser.parseOutputPatternLink ; simpl.
+      unfold ConcreteExpressions.makeLink ; simpl.
+      unfold ConcreteExpressions.wrapLink ; simpl.
+      unfold getAttributeTypeElement.
+      rewrite G1. simpl.
+
+
+(* on est dans la partie LINK de la seconde règle.*)
+(* les LINK sont calculés une fois que tous les éléments ont été construits. *)
+(* on voit ca dans la trace *)
+      unfold ModelingSemantics.maybeResolve.
+      unfold maybeResolve ; simpl.
+      unfold resolve. 
+
+      apply truc3 in PRE2.
+
+    specialize (truc4bis (trace Class2Relational cm) t cm ) ; 
+        intro T4.
+      specialize (T4 (wf _) PRE2). 
+      
+      match goal with
+        [ |- context [ModelingSemantics.denoteOutput _ ?A ] ] => 
+          replace A with (Some (TableElement {| table_id := class_id t ; table_name := class_name t |})) end.
+      simpl.
+      left.
+      reflexivity.
+    }
+    }
+  }
 Qed.
-(* *)*)
-intros cm rm tr pre.
-intros. 
-rewrite tr.
+     
 
-assert 
-(exists t: Table, 
-  In (ColumnReferenceLink 
-        (Build_ColumnReference col t))
-     (allModelLinks rm)) as HcolInrml.
-{  
-eexists.
-rewrite tr.
-apply tr_execute_in_links.
-
-(* get the sp that corresponds to [col] *)
-
-rewrite tr in H.
-apply tr_execute_in_elements in H.
-destruct H as [sp H].
-destruct H as [HspIncm HcolInInst].
-remember HspIncm as HspIncm_copy.
-clear HeqHspIncm_copy.
-destruct sp as [ | sphd sptl] eqn: sp_ca. (* Case analysis on source pattern *)
-- (* Empty pattern *) contradiction HcolInInst.
-- destruct sptl eqn: sptl_ca.
-  + (* Singleton *) 
-    apply allTuples_incl in HspIncm.
-    unfold incl in HspIncm.
-    specialize (HspIncm sphd).
-    assert (In sphd [sphd]). { left. reflexivity. }
-    specialize (HspIncm H).  
-    destruct sphd as [ sphd_elem | sphd_elem]. (*as [sphd_tp sphd_elem]. 
-    destruct sphd_tp*) (* Case analysis on source element type *)
-    ++ (* [Class] *) simpl in HcolInInst.
-      destruct HcolInInst.
-      +++ inversion H0. (* contradiction in H0 *)
-      +++ crush.
-    ++ (* [Attribute] *) destruct sphd_elem as [attr_id attr_der attr_name] eqn: sphd_elem_attr.
-      destruct attr_der eqn: attr_der_ca. (* Case analysis on attribute derivable *)
-      +++ (* derived *) contradiction HcolInInst.
-      +++ (* not derived *) 
-         exists sp.
-         split.
-         * rewrite <- sp_ca in HspIncm_copy. exact HspIncm_copy.
-         * 
-remember (applyPattern Class2Relational cm sp) as Rapply.
-rename HeqRapply into Happly.
-(*rewrite Happly.*)
-rewrite sp_ca.
-unfold applyPattern.
-unfold applyRuleOnPattern.
-unfold applyIterationOnPattern.
-unfold applyElementOnPattern.
-simpl.
-unfold ConcreteExpressions.makeLink.
-unfold ConcreteExpressions.wrapOptionLink. 
-
-destruct ( 
-(ClassMetamodel.AttributeElement
-   (Build_Attribute attr_id false attr_name))) eqn: link_cast_ca.
-**  (* <> None *)
-    unfold optionToList.
-    simpl.
-(*    unfold maybeBuildColumnReference.
-    unfold ModelingSemantics.maybeResolve.
-    unfold ModelingSemantics.denoteOutput.
-    unfold maybeResolve'.
-    unfold maybeSingleton.
-    unfold option_map.*)
-    destruct (getAttributeTypeObject d cm) eqn: link_expr_cl_ca.
-    *** destruct (resolve' (trace Class2Relational cm) cm "tab"
-(singleton c)) eqn: link_expr_tb_ca.
-        **** destruct (toModelClass TableClass r) eqn: tb_cast_ca.
-             ***** simpl. left. 
-                   simpl in HcolInInst.
-                   destruct HcolInInst eqn: Hinst_ca.
-                   ****** unfold toModelElement  in e.
-                          unfold toSumType   in e.
-                          simpl in e.
-                          unfold toModelLink.
-                          unfold toSumType.
-                          simpl.
-                          clear Hinst_ca.
-                          apply rel_invert in e.
-                          rewrite e.
-                          unfold RelationalMetamodel_toLink.
-                          (* instantiate (1:=d0). *)
-                          admit.
-                   ****** crush.
-             ***** admit. (* contradiction in resolve_ca and cast_ca *)
-        **** admit. (* contradiction in do_ca and resolve_ca *)
-    *** (* contradiction in pre, only if attr in cm_elem *)
-        rename d into attr.
-        inversion link_cast_ca as [attr_ctr].
-        rewrite attr_ctr in HspIncm.
-        specialize (pre attr HspIncm).
-        unfold getAttributeTypeObject in link_expr_cl_ca.
-        apply option_res_dec in pre.
-        destruct pre as [class Hclass]. 
-        rewrite Hclass in link_expr_cl_ca.
-        inversion link_expr_cl_ca.
-** (* x0 <> nil contradiction *)
-   inversion link_cast_ca. 
-  + (* Other patterns *) 
-    rename c into sptlhd.
-    rename l into sptltl.
-    destruct sptlhd as [sptlhd_tp sptlhd_elem].
-    destruct sptlhd_tp eqn: sptlhd_tp_ca.
-    * destruct sphd. destruct c; contradiction HcolInInst.
-    * destruct sphd. destruct c; contradiction HcolInInst.
-}
-
-rewrite <- tr.
-unfold getColumnReference.
-
-induction (allModelLinks rm) as [nil | hd tl].
-- simpl in HcolInrml.
-  destruct HcolInrml.
-  contradiction.
-- destruct hd as [hdtp hdlk].
-  destruct hdtp as [tabcolumns | colref].
-  -- simpl.
-     apply IHtl.
-     simpl in HcolInrml.
-     crush.
-     exists x.
-     exact H1.
-  -- simpl.
-     simpl in HcolInrml.
-     destruct HcolInrml as [tab Htab].
-     destruct Htab.
-     --- destruct hdlk.
-         apply rel_elink_invert in H0.
-         inversion H0.
-         assert (beq_Column col col = true). { admit. }
-         rewrite H1.
-         apply option_res_dec.
-         exists tab.
-         reflexivity.
-     --- destruct hdlk.
-         destruct (beq_Column c col).
-         ---- crush.
-         ---- apply IHtl.
-              exists tab.
-              exact H0.
-
-Admitted.
 
 
 (* demonstrate how to use instaniate in eexist s*)
 Goal exists x, 1 + x = 3.
 Proof.                        (* ⊢ exists x, 1 + x = 3 *)
-  eapply ex_intro.            (* ⊢ 1 + ?42 = 3 *)
+  eexists.                    (* ⊢ 1 + ?42 = 3 *) (* or eapply ex_intro *) 
   simpl.                      (* ⊢ S ?42 = 3 *)
   apply f_equal.              (* ⊢ ?42 = 2 *)
   instantiate (1:=2).         (* place the 1st hold with [2] *)

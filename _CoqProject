@@ -145,7 +145,7 @@ transformations/Class2Relational/theorems/C2R_monotonicity.v
 transformations/Class2Relational/theorems/Column_name_uniqueness.v 
 transformations/Class2Relational/theorems/Relational_name_definedness_spec.v
 transformations/Class2Relational/theorems/Relational_resolve_spec.v
-#transformations/Class2Relational/theorems/Relational_resolve.v
+transformations/Class2Relational/theorems/Relational_resolve.v
 transformations/Class2Relational/theorems/Table_name_uniqueness.v
 
 transformations/Families2Persons/theorems/sampleTheorems.v
