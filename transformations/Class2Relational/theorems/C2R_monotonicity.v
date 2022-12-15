@@ -28,40 +28,6 @@ Proof.
   exact IN.
 Qed.
 
-Lemma make1 sm e :
-  ConcreteExpressions.makeEmptyGuard [Class_K] sm [e] = true ->
-  exists v, e = ClassElement v. 
-Proof.
-  destruct e ; compute ; intro M ; [ eauto | discriminate].
-Qed.
-
-Lemma make2 sm e:
-  ConcreteExpressions.makeGuard [Attribute_K]
-    (fun (_ : TransformationConfiguration.SourceModel)
-         (a : Attribute_t) => negb (derived a)) sm 
-    [e] = true -> exists v, (e = AttributeElement v /\ v.(derived) = false).
-Proof.
-  destruct e ; [ discriminate | ] ; compute.
-  destruct a.
-  destruct derived ; [ discriminate | ].
-  eauto.
-Qed.
-
-
-
-Ltac deduce_element_kind_from_guard :=
-  let H2 := fresh "D" in
-  let a := fresh "a" in
-  match goal with 
-    [ H :ConcreteExpressions.makeEmptyGuard [Class_K] _ [?e] = true |- _ ] =>
-      apply make1 in H ; destruct H ; subst e
-  | [ H :ConcreteExpressions.makeGuard [Attribute_K]
-    (fun _ atr => negb (derived atr)) _ 
-    [?e] = true |- _ ] =>
-      apply make2 in H ; destruct H as (a & (H & H2)) ; 
-      first[ subst e (* if e was a variable *) 
-             | Tactics.inj H (* if e was not a variable *) ]
-end.
 
 
 
