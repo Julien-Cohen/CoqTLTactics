@@ -17,55 +17,38 @@ Require Import transformations.Class2Relational.RelationalMetamodel.
 
 From transformations.Class2Relational Require Tactics.
 
-Lemma getColumnsReferenceOnLinks_app :
-        forall a b c,
-         getColumnReferenceOnLinks c (a++b) = 
-           match getColumnReferenceOnLinks c a with 
-             Some r => Some r 
-           | None => getColumnReferenceOnLinks c b end.
-Proof.
-  induction a ; simpl ; intros b c.
-  + reflexivity.
-  + destruct a.
-  - auto.
-  - destruct c0.
-    destruct (beq_Column cr c).
-    * reflexivity.
-    * auto.
-      
-Qed.
 
+
+
+
+(** *** Utilities on [allTuples] *)
+
+
+(* FIXME : move-me *)
 Lemma allModelElements_allTuples e (cm:Model ClassMM): 
-  In (e) cm.(modelElements) ->
+  In e cm.(modelElements) ->
   In [e] (allTuples Class2Relational cm).
 Proof. 
-  destruct cm ; simpl.
-  unfold allTuples ; simpl.
-  clear.
-  unfold prod_cons.
-  induction modelElements ; intro I ; [ solve [inversion I] | ].
-  simpl.
-  simpl in I.
-  destruct_or I ; [ left | right ].
-  + subst ; auto. 
-  + auto. 
+  intros.
+  apply allTuples_incl_length.
+   + apply incl_singleton. assumption.
+   + compute.  auto.
 Qed.
 
-Lemma allModelElements_allTuples_back att cm: 
-  In [AttributeElement att] (allTuples Class2Relational cm) ->
-  In (AttributeElement att) cm.(modelElements).
+
+(* FIXME : move-me *)
+Lemma allModelElements_allTuples_back e cm: 
+  In [e] (allTuples Class2Relational cm) ->
+  In e cm.(modelElements).
 Proof.
-  destruct cm ; simpl.
-  unfold allTuples ; simpl.
-  clear.
-  unfold prod_cons.
-  induction modelElements ; simpl ; intro I. 
-  + destruct_or I. discriminate. contradiction.
-  + destruct_or I ; [ left | right ].
-    - inversion_clear I ; auto. 
-    - auto.
+  intro.
+  Tactics.in_singleton_allTuples. assumption.
 Qed.
 
+
+(** *** Utilities on transformation of elements *)
+
+(* FIXME : move-me *)
 Lemma transform_attribute : 
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
@@ -91,6 +74,7 @@ Proof.
   + auto. 
 Qed.
 
+(* FIXME : move-me *)
 Lemma transform_attribute_back : 
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
@@ -124,32 +108,28 @@ Proof.
 Qed.
 
 
-Lemma getAttributeType_In att m: 
-  getAttributeType att m <> None ->
-  exists t, 
-    In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks).
+(** *** Utilities on "getters" *)
+
+(* not used *)
+Remark getColumnsReferenceOnLinks_app :
+        forall a b c,
+         getColumnReferenceOnLinks c (a++b) = 
+           match getColumnReferenceOnLinks c a with 
+             Some r => Some r 
+           | None => getColumnReferenceOnLinks c b end.
 Proof.
-  destruct m. simpl.
-  unfold getAttributeType ; simpl.
-  clear modelElements.
-  induction modelLinks ; simpl ; [ congruence | ] ; intro.
-  destruct a.
-  + (* ClassAttibute *)
-    apply IHmodelLinks in H ; clear IHmodelLinks.
-    destruct H.
-    eexists ; right ; exact H.
-  + (* AttributeType *)
-    destruct a.
-    match goal with [ H : context[ if ?P then _ else _ ] |-_ ] => destruct P eqn:? end.
-    -  clear H.
-       apply lem_beq_Attribute_id in Heqb ; subst.
-       eexists ; left ; reflexivity. 
-    - apply IHmodelLinks in H ; clear IHmodelLinks.
-      destruct H.
-      eexists ; right ; exact H.
+  induction a ; simpl ; intros b c.
+  + reflexivity.
+  + destruct a.
+  - auto.
+  - destruct c0.
+    destruct (beq_Column cr c).
+    * reflexivity.
+    * auto.
 Qed.
 
-Lemma getAttributeType_In_back att t (m:Model ClassMM): 
+(* not used *)
+Remark getAttributeType_In_back att t (m:Model ClassMM): 
   In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks) ->
   getAttributeType att m <> None.
 Proof.
@@ -166,31 +146,24 @@ Proof.
     destruct a.
     destruct_or H.
   - injection H ; intros ;  clear H ; subst. simpl.
-    replace (beq_Attribute att att) with true.
+    rewrite beq_Attribute_refl.
     congruence.
-    { clear. destruct att ; unfold beq_Attribute ; simpl.
-      rewrite Nat.eqb_refl ; simpl.
-      rewrite Bool.eqb_reflx ; simpl.
-      rewrite lem_beq_string_id.
-      reflexivity.
-    }
 
   - apply IHmodelLinks in H.
-    
     
     match goal with [ |- context[ if ?P then _ else _ ]  ] => destruct P eqn:? end .
     congruence.
     assumption.
-Qed.
+Qed. 
 
+(* FIXME : move-me *)
 Ltac duplicate H1 H2 := remember H1 as H2 eqn: TMP ; clear TMP.
 
-Lemma truc l t v : 
+Lemma get_in l t v : 
   getAttributeTypeOnLinks v l = return t ->
   exists a,
     In (AttributeTypeLink a) l /\ a.(source_attribute) = v.
 Proof.
-  
   induction l ; simpl ; intro G ; [ discriminate | ].
   destruct a.
   { (*ClassAttributeLink*)
@@ -220,7 +193,7 @@ Proof.
   }
 Qed.
 
-Lemma truc2 :
+Lemma in_get_2 :
   forall l v (x:Table_t), 
       In (ColumnReferenceLink {| cr := v ;  ct := x |}) l -> 
       exists r' : Table_t,
@@ -243,27 +216,53 @@ Proof.
   }
 Qed.
 
-Inductive Coherent : TraceLink.TraceLink -> Prop :=
-| cons1 :
-  forall t,
-    Coherent (TraceLink.buildTraceLink 
-                ( [ClassElement t], 0, "tab"%string)
-                (TableElement
-                   {|
-                     table_id := class_id t; table_name := class_name t
-                   |}))
-| cons2 :
-  forall a,
-  Coherent
-    (TraceLink.buildTraceLink ([AttributeElement a], 0, "col"%string)
-       (ColumnElement
-          {|
-            column_id := attr_id a ;
-            column_name :=  attr_name a 
-          |})).
+(* FIXME : not used anymore. *)
+Lemma getAttributeType_In att m: 
+  getAttributeType att m <> None ->
+  exists t, 
+    In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks).
+Proof.
+  unfold getAttributeType.
+  generalize (modelLinks m). clear.  
+  intros l H.
+  destruct (getAttributeTypeOnLinks att l) eqn:G ; [ clear H | contradiction ].
+  apply get_in in G.
+  destruct G as (a & (G1 & G2)).
+  destruct att.
+  destruct a.
+  simpl in *.
+  subst.
+  eauto.
+Qed. 
 
-Lemma wf cm :
-  Forall Coherent (trace Class2Relational cm).
+(** *** Utilities on traces *)
+
+Inductive CoherentTrace : TraceLink.TraceLink -> Prop :=
+
+ | ct_class :
+   forall t,
+     CoherentTrace 
+       (TraceLink.buildTraceLink 
+          ([ClassElement t], 0, "tab"%string)
+          (TableElement
+             {|
+               table_id := class_id t; 
+               table_name := class_name t
+             |}))
+
+ | ct_attribute :
+   forall a,
+     CoherentTrace
+       (TraceLink.buildTraceLink 
+          ([AttributeElement a], 0, "col"%string)
+          (ColumnElement
+             {|
+               column_id := attr_id a ;
+               column_name :=  attr_name a 
+             |})).
+
+Lemma trace_wf cm :
+  Forall CoherentTrace (trace Class2Relational cm).
 Proof.
   unfold trace.
   unfold allTuples.
@@ -303,8 +302,8 @@ Qed.
 
 
 
-Lemma truc5bis l : 
-  Forall Coherent l ->
+Lemma in_find_5bis l : 
+  Forall CoherentTrace l ->
   forall t,
     In (TraceLink.buildTraceLink
           ([ClassElement t], 0, "tab"%string)
@@ -388,8 +387,8 @@ Qed.
         
 
       
-Lemma truc4bis  l t cm : 
-  Forall Coherent l ->
+Lemma in_resolve_4bis  l t cm : 
+  Forall CoherentTrace l ->
   In (TraceLink.buildTraceLink
         ([ClassElement t], 0, "tab"%string)
         (TableElement
@@ -399,7 +398,7 @@ Lemma truc4bis  l t cm :
 Proof.
   unfold resolveIter. 
   intros C IN1.
-  specialize (truc5bis l C t IN1) ; intro T5 ; clear IN1.
+  specialize (in_find_5bis l C t IN1) ; intro T5 ; clear IN1.
   
   destruct T5 as (t1 & IN1).
   rewrite IN1.
@@ -409,7 +408,7 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma truc3  e (cm : ClassModel) : 
+Lemma in_trace_3  e (cm : ClassModel) : 
   In (ClassElement e) cm.(modelElements) -> 
   In 
     (TraceLink.buildTraceLink ([ClassElement e],0,"tab"%string) (TableElement {| table_id := class_id e; table_name := class_name e |})) 
@@ -421,13 +420,12 @@ Proof.
   exists ([ClassElement e]).
   split.
   { apply allModelElements_allTuples ; auto. } 
-  
-  simpl.
-  left.
-  reflexivity.
+  { compute. left. reflexivity. }
 Qed.
 
   
+(** *** Result *)
+
 Theorem Relational_Column_Reference_definedness:
 forall (cm : ClassModel) (rm : RelationalModel), 
 
@@ -449,17 +447,13 @@ Proof.
   Tactics.show_origin.
   repeat Tactics.destruct_any.
 
-  
-
   clear IN_I. 
   
   apply allModelElements_allTuples_back in IN_E.
   
   specialize (PRE _ IN_E).
   destruct PRE as (t & (PRE1 & PRE2)).
-
-
-  
+ 
   unfold getColumnReference.
 
   unfold execute.  simpl. 
@@ -474,16 +468,15 @@ Proof.
   simpl in M.
   
   Tactics.deduce_element_kind_from_guard. 
-
-  
+ 
   destruct a0 ; simpl in *.
   subst derived ; simpl in *. 
 
   duplicate PRE1 G1.
-  apply truc in PRE1.
+  apply get_in in PRE1.
   destruct PRE1 as (v & (IN & E)).
 
-  eapply truc2 with (x:= {| table_id :=t.(class_id) ;  table_name := t.(class_name) |}) . 
+  eapply in_get_2 with (x:= {| table_id :=t.(class_id) ;  table_name := t.(class_name) |}) . 
   { 
     apply in_flat_map.
     exists ([AttributeElement {|
@@ -510,11 +503,7 @@ Proof.
       apply tr_applyIterationOnPattern_in.
       eexists  ; split ; [ solve [subst z ; simpl ; auto] | ].
       erewrite tr_applyElementOnPattern_leaf ; simpl.
-      2:{
-        unfold ConcreteExpressions.makeElement. 
-        unfold ConcreteExpressions.wrapElement. simpl.
-        reflexivity.
-      }
+      2:{ compute. reflexivity. }
 
       rewrite <- app_nil_end. 
       simpl.
@@ -534,15 +523,17 @@ Proof.
       unfold maybeResolve ; simpl.
       unfold resolve. 
 
-      apply truc3 in PRE2.
+      apply in_trace_3 in PRE2.
 
-    specialize (truc4bis (trace Class2Relational cm) t cm ) ; 
+      specialize (in_resolve_4bis (trace Class2Relational cm) t cm ) ; 
         intro T4.
-      specialize (T4 (wf _) PRE2). 
+      specialize (T4 (trace_wf _) PRE2). 
       
       match goal with
         [ |- context [ModelingSemantics.denoteOutput _ ?A ] ] => 
-          replace A with (Some (TableElement {| table_id := class_id t ; table_name := class_name t |})) end.
+          replace A with 
+          (Some (TableElement {| table_id := class_id t ; table_name := class_name t |}))
+      end.
       simpl.
       left.
       reflexivity.
