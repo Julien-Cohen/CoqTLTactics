@@ -15,17 +15,10 @@ Require Import core.TransformationConfiguration.
 Require Import core.SyntaxCertification.
 Require Import core.Expressions.
 
+
 Section Certification.
 
-
-Context {smm : Metamodel}.
-
-Context {tmm : Metamodel}.
-
-Instance tc : TransformationConfiguration := {
-  SourceMetamodel := smm;
-  TargetMetamodel := tmm;
-}.
+Context {tc : TransformationConfiguration}.
 
 Lemma tr_execute_in_elements :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
@@ -268,7 +261,7 @@ Theorem tr_resolveIter_leaf:
     resolveIter tls sm name sp iter = return x ->
       (exists (tl : TraceLink),
         In tl tls /\
-        Is_true (list_beq _ (@elements_eqdec smm) (TraceLink_getSourcePattern tl) sp) /\
+        Is_true (list_beq _ (@elements_eqdec tc.(SourceMetamodel)) (TraceLink_getSourcePattern tl) sp) /\
         ((TraceLink_getIterator tl) = iter) /\ 
         ((TraceLink_getName tl) = name)%string /\
         (TraceLink_getTargetElement tl) = x).

@@ -257,9 +257,31 @@ Require Certification.
     into H: In (e) (modelElements cm)
 *)
 
+Import Model.
+
+Lemma allModelElements_allTuples_back {tc:TransformationConfiguration} (e:tc.(SourceElementType)) (t:Syntax.Transformation (tc:=tc)) (cm:tc.(SourceModel)) : 
+  In [e] (allTuples t cm) ->
+  In e cm.(modelElements).
+Proof.
+  intro.
+  apply incl_singleton.
+  eapply Certification.allTuples_incl.
+  exact H.
+Qed.
+
 Ltac in_singleton_allTuples :=
   match goal with 
     [ H : In [_] (allTuples _ _) |- _ ] =>
-      apply Certification.allTuples_incl in H ;
-      apply incl_singleton in H
+      apply allModelElements_allTuples_back in H
   end.
+
+Lemma allModelElements_allTuples {tc:TransformationConfiguration} e t cm: 
+  In e cm.(modelElements) ->
+  0 < Syntax.arity t ->
+  In [e] (allTuples t cm).
+Proof. 
+  intros.
+  apply Certification.allTuples_incl_length.
+   + apply incl_singleton. assumption.
+   + compute. auto.
+Qed.

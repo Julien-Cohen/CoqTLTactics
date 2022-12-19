@@ -19,7 +19,7 @@ Theorem tr_FamiliesToPersons :
             (instantiatePattern Families2Persons sm [se])).
 Proof.
     intros.
-    apply (tr_execute_in_elements (smm:=FamiliesMetamodel_Metamodel_Instance) (tmm:=PersonsMetamodel_Metamodel_Instance)) in H.
+    apply (tr_execute_in_elements Families2Persons) in H.
     destruct H.
     destruct H.
     destruct x.

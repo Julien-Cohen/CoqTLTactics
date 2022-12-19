@@ -231,3 +231,15 @@ Ltac destruct_In_two :=
 
       repeat destruct_or H ; [ | | contradiction H] ; subst X
   end.
+
+
+(** *** Utilities on [allTuples] *)
+
+
+Lemma allModelElements_allTuples e (cm:Model ClassMM): 
+  In e cm.(modelElements) ->
+  In [e] (allTuples Class2Relational cm).
+Proof. 
+  intro.
+  apply (Tactics.allModelElements_allTuples (tc:=C2RConfiguration)); auto.
+Qed.

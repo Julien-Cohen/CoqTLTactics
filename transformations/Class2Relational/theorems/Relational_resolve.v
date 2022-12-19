@@ -17,35 +17,6 @@ Require Import transformations.Class2Relational.RelationalMetamodel.
 
 From transformations.Class2Relational Require Tactics.
 
-
-
-
-
-(** *** Utilities on [allTuples] *)
-
-
-(* FIXME : move-me *)
-Lemma allModelElements_allTuples e (cm:Model ClassMM): 
-  In e cm.(modelElements) ->
-  In [e] (allTuples Class2Relational cm).
-Proof. 
-  intros.
-  apply allTuples_incl_length.
-   + apply incl_singleton. assumption.
-   + compute.  auto.
-Qed.
-
-
-(* FIXME : move-me *)
-Lemma allModelElements_allTuples_back e cm: 
-  In [e] (allTuples Class2Relational cm) ->
-  In e cm.(modelElements).
-Proof.
-  intro.
-  Tactics.in_singleton_allTuples. assumption.
-Qed.
-
-
 (** *** Utilities on transformation of elements *)
 
 (* FIXME : move-me *)
@@ -60,7 +31,7 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
   simpl.
-  apply allModelElements_allTuples in H.
+  apply Tactics.allModelElements_allTuples in H.
   revert H ; generalize (allTuples Class2Relational cm).
   induction l ; intro H ; [ solve [inversion H] | simpl ].
   apply List.in_or_app.
@@ -87,7 +58,7 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
   simpl in H.
-  apply allModelElements_allTuples_back.
+  apply Tactics.allModelElements_allTuples_back with (t:=Class2Relational).
   revert H ; generalize (allTuples Class2Relational cm).
   induction l ; intro H ; [ solve [inversion H] | simpl ].
   simpl in H.
@@ -419,7 +390,7 @@ Proof.
   apply in_flat_map.
   exists ([ClassElement e]).
   split.
-  { apply allModelElements_allTuples ; auto. } 
+  { apply Tactics.allModelElements_allTuples ; auto. } 
   { compute. left. reflexivity. }
 Qed.
 
@@ -449,7 +420,7 @@ Proof.
 
   clear IN_I. 
   
-  apply allModelElements_allTuples_back in IN_E.
+  apply Tactics.allModelElements_allTuples_back in IN_E.
   
   specialize (PRE _ IN_E).
   destruct PRE as (t & (PRE1 & PRE2)).
@@ -486,7 +457,7 @@ Proof.
               |}]).
     split.
     {
-      apply allModelElements_allTuples. exact IN_E.
+      apply Tactics.allModelElements_allTuples. exact IN_E.
     }
     {
 
