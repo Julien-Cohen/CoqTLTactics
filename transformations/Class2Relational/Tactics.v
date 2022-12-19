@@ -139,10 +139,10 @@ end.
 (** ** Size of patterns *)
 
 Lemma one_to_one : 
-  Tactics.one_to_one_transformation _ Class2Relational.
+  Tactics.singleton_transformation_a _ Class2Relational.
 Proof.
-  apply Tactics.one_to_one_transformation_parse.
-  unfold Class2Relational' ; unfold Tactics.singleton_pattern_transformation ; simpl ; repeat constructor.
+  apply Tactics.singleton_transformation_parse.
+  unfold Class2Relational' ; unfold Tactics.singleton_transformation_a ; simpl ; repeat constructor.
 Qed.
 
 Lemma instpat_singleton : 

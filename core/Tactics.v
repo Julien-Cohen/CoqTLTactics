@@ -83,37 +83,37 @@ Ltac beq_eq_tac :=
 .
 
 
-(** *** One-to-one rules and transformations *)
+(** *** singleton rules and singleton transformations *)
 
-(** We say a rule is one-to-one rule when it matches singletons. *)
+(** We say an abstract rule is a singleton rule when it matches singletons. *)
 
 Section A.
 
 Variable tc : TransformationConfiguration.
 Variable mtc : ModelingTransformationConfiguration tc.
 
-Definition one_to_one_rule (r: Syntax.Rule (tc:=tc)) : Prop := 
+Definition singleton_rule_a (r: Syntax.Rule (tc:=tc)) : Prop := 
       (forall m, r.(Syntax.r_guard) m nil = false) /\
         (forall m e1 e2 s, r.(Syntax.r_guard) m (e1 :: e2 :: s) = false).
 
 
-Lemma one_to_one_nil_false : 
-  forall a, 
-    one_to_one_rule a ->
+Lemma singleton_nil_false : 
+  forall r, 
+    singleton_rule_a r ->
     forall m,
-      Expressions.evalGuardExpr a m nil = false.
+      Expressions.evalGuardExpr r m nil = false.
 Proof.
-  intros a A m.
-  destruct a.
+  intros r A m.
+  destruct r.
   simpl in *.
   destruct A as [A _]. simpl in A.
   apply A.
 Qed.
 
 
-Lemma one_to_one_two_false : 
+Lemma singleton_two_false : 
   forall a, 
-    one_to_one_rule a ->
+    singleton_rule_a a ->
     forall m e1 e2 r,
       Expressions.evalGuardExpr a m (e1::e2::r) = false.
 Proof.
@@ -127,20 +127,20 @@ Qed.
 (** *** Singleton-pattern rules and transformations *)
 
 
-(** We say a rule has a singleton-pattern when it pattern is a list of size 1. *)
-Definition singleton_pattern_rule (a:ConcreteRule (tc:=tc) (mtc:=mtc)) :=
+(** We say a concrete rule is a singleton rule when it pattern is a list of size 1. *)
+Definition singleton_rule_c (a:ConcreteRule (tc:=tc) (mtc:=mtc)) :=
   match a with 
   | (ConcreteSyntax.Build_ConcreteRule s [m] o o0 l) => True
   | _ => False
   end.
 
-(** A singleton-pattern rule is also a one-to-one rule. *)
+(** A concrete singleton rule gives an abstract singleton rule. *)
 
 
-Lemma one_to_one_rule_parse : 
+Lemma singleton_rule_parse : 
   forall a, 
-    singleton_pattern_rule a ->
-    one_to_one_rule (Parser.parseRule a).
+    singleton_rule_c a ->
+    singleton_rule_a (Parser.parseRule a).
 Proof.
   intros a H.
   destruct a ; simpl in H.
@@ -167,73 +167,73 @@ Proof.
 Qed.
 
 
-(** We say a transformation is one-to-one when its rules are one-to-one. *)
+(** We say an abstract transformation is singleton transformation when its rules are singleton rules. *)
 
-Definition one_to_one_transformation (t:Syntax.Transformation) : Prop :=
-  List.Forall one_to_one_rule t.(Syntax.rules).
+Definition singleton_transformation_a (t:Syntax.Transformation) : Prop :=
+  List.Forall singleton_rule_a t.(Syntax.rules).
 
 
-(** We say a transformation has singleton-patterns when its rules have singleton-patterns. *) 
+(** We say a concrete transformation is a singleton rule when its rules are singleton rules. *) 
 
-Definition singleton_pattern_transformation t := 
+Definition singleton_transformation_c t := 
   match t with 
     ConcreteSyntax.transformation l =>
-      Forall singleton_pattern_rule l
+      Forall singleton_rule_c l
   end.
 
-(** A singleton-pattern transformation is also a one-to-one transformation. *)
+(** A concrete singleton transformation gives an abstract singleton transformation. *)
 
-Lemma one_to_one_transformation_parse : 
+Lemma singleton_transformation_parse : 
   forall t,
-    singleton_pattern_transformation t ->
-    one_to_one_transformation (Parser.parse t).
+    singleton_transformation_c t ->
+    singleton_transformation_a (Parser.parse t).
 Proof.
   intros t H ; destruct t.
-  unfold singleton_pattern_transformation in H.
+  unfold singleton_transformation_c in H.
   unfold Parser.parse ; simpl.
   induction l ; simpl.
   { constructor. }
   { inversion_clear H.
     constructor. 
-    { apply one_to_one_rule_parse ; assumption. }
+    { apply singleton_rule_parse ; assumption. }
     { apply IHl ; assumption. }
   }
 Qed.
 
-(** *** Properties on [instantiatePattern] for one-to-one transformations *)
+(** *** Properties on [instantiatePattern] for singleton transformations *)
 
 Lemma instpat_nil : 
   forall t, 
-    one_to_one_transformation t ->
+    singleton_transformation_a t ->
     forall m,
       instantiatePattern t m nil = nil.
 Proof.
   intro t ; destruct t ; simpl.
-  unfold one_to_one_transformation ; simpl.
+  unfold singleton_transformation_a ; simpl.
   unfold instantiatePattern ; simpl.
   unfold matchPattern ; simpl.
   induction rules ; intros A m ; inversion_clear A ; simpl ; [reflexivity | ].
-  rewrite one_to_one_nil_false ; auto.
+  rewrite singleton_nil_false ; auto.
 Qed.
 
 Lemma instpat_two : 
   forall t, 
-    one_to_one_transformation t ->
+    singleton_transformation_a t ->
     forall m e1 e2 r,
       instantiatePattern t m (e1 :: e2 :: r) = nil.
 Proof.
   intros t ; destruct t ; simpl.
-  unfold one_to_one_transformation ; simpl.
+  unfold singleton_transformation_a ; simpl.
   unfold instantiatePattern ; simpl.
   unfold matchPattern ; simpl.
   induction rules ; intros A m e1 e2 r; inversion_clear A ; simpl ; [reflexivity | ].
-  rewrite one_to_one_two_false ; auto.
+  rewrite singleton_two_false ; auto.
 Qed.
 
 
 Lemma instpat_singleton : 
   forall t, 
-    one_to_one_transformation t ->
+    singleton_transformation_a t ->
     forall m a,
       instantiatePattern t m a <> nil ->
       exists b, a = b::nil.
