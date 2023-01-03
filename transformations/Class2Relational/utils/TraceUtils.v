@@ -105,7 +105,7 @@ Lemma in_find_5bis t :
       find (source_compare ([ClassElement c], 0, "tab")) t = 
         Some (buildTraceLink r1 (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |})).
 Proof.
-  induction t ; intros C c IN1 ; [ simpl in IN1 ; contradict IN1 | ].
+  induction t ; intros WF c IN1 ; [ simpl in IN1 ; contradict IN1 | ].
   simpl find.
   apply in_inv in IN1. 
   (* destruct or IN1 does not help here because in the "right" case we need to know that the "left" case is false. *) 
@@ -130,44 +130,29 @@ Proof.
   }  
   { (* case where the class/table is not the first element of the list. *)
     intro D.
-    inversion_clear C ; subst.
-    
+    destruct_or IN1 ; [ contradict D ; assumption | ].
+
+    inversion_clear WF.
+    destruct (IHt H0 c) ; [  exact IN1 | ].
+
     inversion_clear H.
     { (* class/table *)
-      destruct_or IN1 ; [ contradict D ; assumption | ].
+      
+      unfold source_compare at 1 ; simpl.
+      unfold TransformationConfiguration.SourceElement_eqb ; simpl.
 
-      destruct (IHt H0 c) ; [  exact IN1 | ].
-      unfold source_compare.
-      unfold TransformationConfiguration.SourceElement_eqb .
-      unfold Metamodel.elements_eqdec.
-      unfold TransformationConfiguration.SourceMetamodel.
-      unfold C2RConfiguration. simpl.
       repeat rewrite Bool.andb_true_r.
       destruct (beq_Class c0 c) eqn:BEQ.
       {  apply lem_beq_Class_id in BEQ ; subst ; eauto.  }
       {
-        simpl in H.
-
-        unfold TransformationConfiguration.SourceElement_eqb in H.
-        unfold Metamodel.elements_eqdec.
-        
-        match goal with 
-          [ H : find ?X ?Y = ?Z |- context [find ?A ?B] ] => 
-            replace (find A B) with Z end.
-        { eauto. }
+        rewrite H1.
+        eauto. 
       }
     }       
     { (* attribute/column*)
-      destruct_or IN1.
-      { contradict IN1. exact D. }
-      destruct (IHt H0 c) ; [  exact IN1 | ].
-      unfold source_compare.
-      unfold TransformationConfiguration.SourceElement_eqb .
-      unfold Metamodel.elements_eqdec.
-      unfold TransformationConfiguration.SourceMetamodel.
-      unfold C2RConfiguration. simpl. 
-      exists x.
-      apply H.
+      simpl.
+      rewrite H1.
+      eauto.
     }
   }
   { repeat decide equality. }
@@ -190,10 +175,7 @@ Proof.
   intros C IN1.
   specialize (in_find_5bis t C c IN1) ; intro T5 ; clear IN1.
   destruct T5 as (t1 & IN1).
-  unfold TransformationConfiguration.SourceModel in cm.
-  unfold TransformationConfiguration.SourceMetamodel in cm.
-  simpl in cm.
-(* Set Printing All. *)
+  (* Set Printing All. *)
   unfold TransformationConfiguration.SourceElementType ; simpl.
   rewrite IN1.
   simpl target.
