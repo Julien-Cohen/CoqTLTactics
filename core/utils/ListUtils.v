@@ -281,6 +281,8 @@ Proof.
   + apply H. simpl. auto.
 Qed.
 
-Lemma in_singleton A (a:A) b : a = b -> In a (b::nil).
-  intro ; subst. apply in_eq.
+Lemma in_singleton A (a:A) b : a = b <-> In a (b::nil).
+  split. 
+  + intro ; subst. apply in_eq.
+  + simpl. intro H. PropUtils.remove_or_false H. auto.
 Qed.
