@@ -95,17 +95,6 @@ Proof.
 Qed.
 
 
-Notation match_source s  :=
-  (fun (t:TraceLink) => 
-     match s with (e,i,n) =>
-                    ((Semantics.list_beq _
-                        TransformationConfiguration.SourceElement_eqb
-                        (TraceLink_getSourcePattern t)
-                        e) 
-                     && beq_nat (TraceLink_getIterator t) i
-                     && String.eqb (TraceLink_getName t) n)%bool
-     end).
-
 Lemma in_find_5bis t : 
   wf t ->
   forall c,
@@ -113,12 +102,14 @@ Lemma in_find_5bis t :
           ([ClassElement c], 0, "tab")
           (TableElement {| table_id := c.(class_id); table_name := c.(class_name)  |})) t ->
     exists r1 , 
-      find (match_source ([ClassElement c], 0, "tab")) t = 
+      find (source_compare ([ClassElement c], 0, "tab")) t = 
         Some (buildTraceLink r1 (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |})).
 Proof.
   induction t ; intros C c IN1 ; [ simpl in IN1 ; contradict IN1 | ].
-  simpl.
+  simpl find.
   apply in_inv in IN1. 
+  (* destruct or IN1 does not help here because in the "right" case we need to know that the "left" case is false. *) 
+
   compare a (buildTraceLink ([ClassElement c], 0, "tab")
           (TableElement
              {| table_id := c.(class_id); table_name := c.(class_name) |})). 
@@ -126,15 +117,17 @@ Proof.
 
   { (* case where the class/table is the first element of the list : no induction *)
     clear IN1 ; intro ; subst a.
-    simpl.
-    unfold TransformationConfiguration.SourceElement_eqb .
-    unfold Metamodel.elements_eqdec.
-    unfold TransformationConfiguration.SourceMetamodel.
-    unfold C2RConfiguration. simpl.
-    rewrite beq_Class_refl. simpl.
-    eauto.
-  }           
-  
+    rewrite source_compare_refl.
+    solve [eauto].
+    unfold TransformationConfiguration.SourceElement_eqb ; simpl.
+    { (* reflexivity *)
+      (* FIXME : add reflexivity as a constraint in Metamodels *)
+      clear.
+      destruct a.
+      apply beq_Class_refl. 
+      apply beq_Attribute_refl.
+    }           
+  }  
   { (* case where the class/table is not the first element of the list. *)
     intro D.
     inversion_clear C ; subst.
@@ -144,6 +137,7 @@ Proof.
       destruct_or IN1 ; [ contradict D ; assumption | ].
 
       destruct (IHt H0 c) ; [  exact IN1 | ].
+      unfold source_compare.
       unfold TransformationConfiguration.SourceElement_eqb .
       unfold Metamodel.elements_eqdec.
       unfold TransformationConfiguration.SourceMetamodel.
@@ -167,6 +161,7 @@ Proof.
       destruct_or IN1.
       { contradict IN1. exact D. }
       destruct (IHt H0 c) ; [  exact IN1 | ].
+      unfold source_compare.
       unfold TransformationConfiguration.SourceElement_eqb .
       unfold Metamodel.elements_eqdec.
       unfold TransformationConfiguration.SourceMetamodel.
@@ -188,19 +183,20 @@ Lemma in_resolve_4bis t c cm :
         ([ClassElement c], 0, "tab")
         (TableElement
            {| table_id := c.(class_id); table_name := c.(class_name) |})) t ->
-  resolveIter t cm "tab" (singleton (ClassElement c)) 0 = 
+  resolveIter t cm "tab" [ClassElement c] 0 = 
     Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}).
 Proof.
   unfold resolveIter. 
-  (* FIXME : in resolveIter, introduce match_source *)
   intros C IN1.
   specialize (in_find_5bis t C c IN1) ; intro T5 ; clear IN1.
   destruct T5 as (t1 & IN1).
-  unfold singleton.
+  unfold TransformationConfiguration.SourceModel in cm.
+  unfold TransformationConfiguration.SourceMetamodel in cm.
+  simpl in cm.
+(* Set Printing All. *)
+  unfold TransformationConfiguration.SourceElementType ; simpl.
   rewrite IN1.
-  unfold TraceLink_getTargetElement.
-  destruct t1.
-  destruct p.
+  simpl target.
   reflexivity.
 Qed.
 

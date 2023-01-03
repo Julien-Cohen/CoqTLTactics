@@ -71,14 +71,10 @@ Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
 Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
             (sp: list SourceElementType)
             (iter : nat) : option TargetElementType :=
-let tl := find (fun tl: TraceLink => 
-  (list_beq _ SourceElement_eqb (TraceLink_getSourcePattern tl) sp) &&
-  ((TraceLink_getIterator tl) =? iter) &&
-  ((TraceLink_getName tl) =? name)%string) tls in
-match tl with
-  | Some tl' => Some (TraceLink_getTargetElement tl')
+  match find (source_compare (sp,iter,name)) tls with
+  | Some tl' => Some (tl'.(target))
   | None => None
-end.
+  end.
 
 Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
   (sp: list SourceElementType) : option TargetElementType :=

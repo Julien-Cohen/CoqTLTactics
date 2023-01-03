@@ -286,3 +286,21 @@ Lemma in_singleton A (a:A) b : a = b <-> In a (b::nil).
   + intro ; subst. apply in_eq.
   + simpl. intro H. PropUtils.remove_or_false H. auto.
 Qed.
+
+Set Implicit Arguments.
+Scheme Equality for list.
+
+Lemma list_beq_refl {A} : 
+  forall (f:A->A->bool),
+    (forall a, f a a = true) ->
+    forall s, list_beq f s s = true.
+Proof.
+  intros f .
+  induction s.
+  reflexivity.
+  simpl.
+  rewrite H.
+  rewrite IHs.
+  reflexivity.
+Qed.
+

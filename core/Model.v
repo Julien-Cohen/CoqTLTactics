@@ -1,8 +1,7 @@
 Set Implicit Arguments.
 Require Import List.
-Scheme Equality for list.
 
-Require ListUtils.
+Require Import ListUtils.
 
 Require Import Metamodel.
 

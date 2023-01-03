@@ -26,7 +26,7 @@ Instance CoqTLSyntax :
       TraceLink_getSourcePattern := TraceLink_getSourcePattern;
       TraceLink_getIterator := TraceLink_getIterator;
       TraceLink_getName := TraceLink_getName;
-      TraceLink_getTargetElement := TraceLink_getTargetElement;    
+      TraceLink_getTargetElement := target ;    
       
       evalOutputPatternElementExpr := evalOutputPatternElementExpr;
       evalIteratorExpr := evalIteratorExpr;

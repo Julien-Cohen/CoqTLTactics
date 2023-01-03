@@ -51,7 +51,7 @@ Notation beq_is_eq f := (forall a b, f a b = true -> a = b).
 Lemma lem_list_beq_eq {T} : 
   forall (f:T->T->bool),
     beq_is_eq f ->
-    beq_is_eq (core.Model.list_beq f).
+    beq_is_eq (core.utils.ListUtils.list_beq f).
 Proof.
   intros f C.
   induction a ; intro b ; destruct b ; simpl ; first [ discriminate | reflexivity | idtac ] ; [].
@@ -65,7 +65,7 @@ Create HintDb beq_eq_database.
 
 Ltac list_eqb_eq_tac :=
   match goal with
-  | [ H : core.Model.list_beq _ _ _ = true |- _] => apply lem_list_beq_eq in H ; [ subst | solve[auto with beq_eq_database]]
+  | [ H : core.utils.ListUtils.list_beq _ _ _ = true |- _] => apply lem_list_beq_eq in H ; [ subst | solve[auto with beq_eq_database]]
   end.
 
 
