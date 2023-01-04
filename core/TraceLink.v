@@ -25,17 +25,17 @@ Record TraceLink : Type :=
       target : TargetElementType 
     }.
 
-Definition TraceLink_getSourcePattern (tl: TraceLink):=
+Definition getSourcePattern (tl: TraceLink):=
   match tl.(source) with 
     (sp, i, n)  => sp
   end.
 
-Definition TraceLink_getIteration (tl: TraceLink):=
+Definition getIteration (tl: TraceLink):=
   match tl.(source) with 
     (sp, i, n)  => i
   end.
 
-Definition TraceLink_getName (tl: TraceLink):=
+Definition getName (tl: TraceLink):=
   match tl.(source) with 
      (sp, i, n) => n
   end.
@@ -46,9 +46,9 @@ Open Scope bool_scope.
 Definition source_compare (s:(list SourceElementType) * nat * string) (t:TraceLink) : bool :=
   match s with 
     (e,i,n) =>
-      list_beq tc.(SourceElement_eqb) (TraceLink_getSourcePattern t) e
-      && Nat.eqb (TraceLink_getIteration t) i
-      && String.eqb (TraceLink_getName t) n
+      list_beq tc.(SourceElement_eqb) (getSourcePattern t) e
+      && Nat.eqb (getIteration t) i
+      && String.eqb (getName t) n
   end.
 
 
@@ -62,9 +62,9 @@ Proof.
   intros a b.
   destruct a. destruct p.
   unfold source_compare.
-  unfold TraceLink_getSourcePattern ; simpl.
-  unfold TraceLink_getIteration ; simpl.
-  unfold TraceLink_getName ; simpl.
+  unfold getSourcePattern ; simpl.
+  unfold getIteration ; simpl.
+  unfold getName ; simpl.
   rewrite list_beq_refl ; [ | exact R].
   rewrite NPeano.Nat.eqb_refl.
   rewrite String.eqb_refl. 

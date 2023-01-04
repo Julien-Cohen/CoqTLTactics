@@ -23,9 +23,9 @@ Instance CoqTLSyntax :
 
       Rule_getOutputPatternElements := r_outputPattern;
 
-      TraceLink_getSourcePattern := TraceLink_getSourcePattern;
-      TraceLink_getIteration := TraceLink_getIteration;
-      TraceLink_getName := TraceLink_getName;
+      TraceLink_getSourcePattern := TraceLink.getSourcePattern;
+      TraceLink_getIteration := TraceLink.getIteration;
+      TraceLink_getName := TraceLink.getName;
       TraceLink_getTargetElement := target ;    
       
       evalOutputPatternElementExpr := evalOutputPatternElementExpr;
