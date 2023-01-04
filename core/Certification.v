@@ -262,7 +262,7 @@ Theorem tr_resolveIter_leaf:
       (exists (tl : TraceLink),
         In tl tls /\
         Is_true (list_beq _ (@elements_eqdec tc.(SourceMetamodel)) (TraceLink_getSourcePattern tl) sp) /\
-        ((TraceLink_getIterator tl) = iter) /\ 
+        ((TraceLink_getIteration tl) = iter) /\ 
         ((TraceLink_getName tl) = name)%string /\
         tl.(target) = x).
 Proof.

@@ -30,7 +30,7 @@ Definition TraceLink_getSourcePattern (tl: TraceLink):=
     (sp, i, n)  => sp
   end.
 
-Definition TraceLink_getIterator (tl: TraceLink):=
+Definition TraceLink_getIteration (tl: TraceLink):=
   match tl.(source) with 
     (sp, i, n)  => i
   end.
@@ -47,7 +47,7 @@ Definition source_compare (s:(list SourceElementType) * nat * string) (t:TraceLi
   match s with 
     (e,i,n) =>
       list_beq tc.(SourceElement_eqb) (TraceLink_getSourcePattern t) e
-      && Nat.eqb (TraceLink_getIterator t) i
+      && Nat.eqb (TraceLink_getIteration t) i
       && String.eqb (TraceLink_getName t) n
   end.
 
@@ -63,7 +63,7 @@ Proof.
   destruct a. destruct p.
   unfold source_compare.
   unfold TraceLink_getSourcePattern ; simpl.
-  unfold TraceLink_getIterator ; simpl.
+  unfold TraceLink_getIteration ; simpl.
   unfold TraceLink_getName ; simpl.
   rewrite list_beq_refl ; [ | exact R].
   rewrite NPeano.Nat.eqb_refl.

@@ -70,7 +70,7 @@ Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: Model
        (exists (tl : TraceLink),
          In tl tls /\
          Is_true (list_beq SourceElementType SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
-         ((TraceLink_getIterator tl) = iter) /\ 
+         ((TraceLink_getIteration tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
          (toEData k (TraceLink_getTargetElement tl) = Some x));
 

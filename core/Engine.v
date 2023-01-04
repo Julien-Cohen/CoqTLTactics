@@ -51,7 +51,7 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
     Rule_getOutputPatternElements: Rule -> list OutputPatternElement;
 
     TraceLink_getSourcePattern: TraceLink -> list SourceElementType;
-    TraceLink_getIterator: TraceLink -> nat;
+    TraceLink_getIteration: TraceLink -> nat;
     TraceLink_getName: TraceLink -> string;
     TraceLink_getTargetElement: TraceLink -> TargetElementType;    
 
@@ -226,7 +226,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
        (exists (tl : TraceLink),
          In tl tls /\
          Is_true (list_beq SourceElementType SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
-         ((TraceLink_getIterator tl) = iter) /\ 
+         ((TraceLink_getIteration tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
          (TraceLink_getTargetElement tl) = x);
          
