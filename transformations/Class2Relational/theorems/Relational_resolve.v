@@ -220,12 +220,14 @@ forall (cm : ClassModel) (rm : RelationalModel),
   (* transformation *) rm = execute Class2Relational cm ->
 
   (* precondition *)  (forall (att : Attribute_t),
-    In (AttributeElement att) cm.(modelElements) ->
-        exists (r:Class_t), getAttributeType att cm = Some r /\ In (ClassElement r) cm.(modelElements) (*well formed*) ) ->  
+      In (AttributeElement att) cm.(modelElements) ->
+      exists (r:Class_t), 
+        getAttributeType att cm = Some r 
+        /\ In (ClassElement r) cm.(modelElements) (* well-formed *) ) ->  
 
-  (* postcondition *)  (forall (col: Column_t),
-    In (ColumnElement col) rm.(modelElements) ->
-      exists r', getColumnReference col rm =Some r'). 
+    (* postcondition *)  forall (col: Column_t),
+      In (ColumnElement col) rm.(modelElements) ->
+      exists r', getColumnReference col rm =Some r'. 
 
 Proof.
   intros cm rm E PRE col I1.
@@ -245,27 +247,28 @@ Proof.
   unfold getColumnReference.
 
   unfold execute.  simpl. 
-  unfold getAttributeType in IN_E.
 
   set (z:=r).
 
   Tactics.destruct_In_two ; [ exfalso | ] ; 
    simpl in IN_OP ; remove_or_false IN_OP ; subst ope ; [ discriminate I1 | Tactics.inj I1]. 
   
-  clear n.
+  clear n. 
   simpl in M.
   
-  Tactics.deduce_element_kind_from_guard. 
+  Tactics.deduce_element_kind_from_guard. (* M *)
  
-  destruct a0 ; simpl in *.
+  destruct a0 ; simpl in *. (* derived a0 = false *)
   subst derived ; simpl in *. 
 
   duplicate PRE1 G1.
   apply get_in in PRE1.
   destruct PRE1 as (v & (IN & E)).
 
-  eapply in_get_2 with (x:= {| table_id :=t.(class_id) ;  table_name := t.(class_name) |}) . 
-  { 
+  eapply in_get_2 
+    with (x:= {| table_id :=t.(class_id) ;  
+                table_name := t.(class_name) |}) . 
+
     apply in_flat_map.
     exists ([AttributeElement {|
                 attr_id := attr_id;
@@ -273,9 +276,7 @@ Proof.
                 attr_name := attr_name
               |}]).
     split.
-    {
-      apply Tactics.allModelElements_allTuples. exact IN_E.
-    }
+    { apply Tactics.allModelElements_allTuples. exact IN_E. }
     {
 
       unfold applyPattern.
@@ -296,36 +297,19 @@ Proof.
       rewrite <- app_nil_end. 
       simpl.
       
-      unfold Parser.parseOutputPatternElement ; simpl.
       unfold Parser.parseOutputPatternLink ; simpl.
       unfold ConcreteExpressions.makeLink ; simpl.
       unfold ConcreteExpressions.wrapLink ; simpl.
       unfold getAttributeTypeElement.
       rewrite G1. simpl.
 
-
-(* on est dans la partie LINK de la seconde règle.*)
-(* les LINK sont calculés une fois que tous les éléments ont été construits. *)
-(* on voit ca dans la trace *)
       unfold ModelingSemantics.maybeResolve.
       unfold singleton.
       rewrite TraceUtils.in_maybeResolve_trace ; [ | assumption ].
 
       simpl. left. reflexivity. 
     }
-    }
   }
 Qed.
      
 
-
-
-(* demonstrate how to use instaniate in eexist s*)
-Goal exists x, 1 + x = 3.
-Proof.                        (* ⊢ exists x, 1 + x = 3 *)
-  eexists.                    (* ⊢ 1 + ?42 = 3 *) (* or eapply ex_intro *) 
-  simpl.                      (* ⊢ S ?42 = 3 *)
-  apply f_equal.              (* ⊢ ?42 = 2 *)
-  instantiate (1:=2).         (* place the 1st hold with [2] *)
-  reflexivity.                (* proof completed *)
-Qed.
