@@ -308,23 +308,10 @@ Proof.
 (* les LINK sont calculés une fois que tous les éléments ont été construits. *)
 (* on voit ca dans la trace *)
       unfold ModelingSemantics.maybeResolve.
-      unfold maybeResolve ; simpl.
-      unfold resolve. 
+      unfold singleton.
+      rewrite TraceUtils.in_maybeResolve_trace ; [ | assumption ].
 
-      apply TraceUtils.in_trace_3 in PRE2.
-
-      specialize (TraceUtils.in_resolve_4bis (trace Class2Relational cm) t cm ) ; 
-        intro T4.
-      specialize (T4 (TraceUtils.trace_wf _) PRE2). 
-      
-      match goal with
-        [ |- context [ModelingSemantics.denoteOutput _ ?A ] ] => 
-          replace A with 
-          (Some (TableElement {| table_id := class_id t ; table_name := class_name t |}))
-      end.
-      simpl.
-      left.
-      reflexivity.
+      simpl. left. reflexivity. 
     }
     }
   }

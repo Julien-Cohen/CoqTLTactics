@@ -95,7 +95,8 @@ Proof.
 Qed.
 
 
-Lemma in_find_5bis t : 
+(* local lemma *)
+Lemma in_find t : 
   wf t ->
   forall c,
     In (buildTraceLink
@@ -162,7 +163,7 @@ Qed.
         
 
       
-Lemma in_resolve_4bis t c cm : 
+Lemma in_resolve t c cm : 
   wf t ->
   In (buildTraceLink
         ([ClassElement c], 0, "tab")
@@ -173,7 +174,7 @@ Lemma in_resolve_4bis t c cm :
 Proof.
   unfold resolveIter. 
   intros C IN1.
-  specialize (in_find_5bis t C c IN1) ; intro T5 ; clear IN1.
+  specialize (in_find t C c IN1) ; intro T5 ; clear IN1.
   destruct T5 as (t1 & IN1).
   (* Set Printing All. *)
   unfold TransformationConfiguration.SourceElementType ; simpl.
@@ -182,7 +183,8 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma in_trace_3 c (cm : ClassModel) : 
+
+Lemma in_trace c (cm : ClassModel) : 
   In (ClassElement c) cm.(modelElements) -> 
   In 
     (buildTraceLink 
@@ -203,4 +205,18 @@ Proof.
   split.
   { apply Tactics.allModelElements_allTuples ; auto. } 
   { compute. left. reflexivity. }
+Qed.
+
+
+Lemma in_maybeResolve_trace c (cm : ClassModel) :
+  In (ClassElement c) cm.(modelElements) -> 
+  maybeResolve (trace Class2Relational cm) cm "tab" (Some [ClassElement c])  = 
+    Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}).
+Proof.
+  intro H.
+  unfold maybeResolve.
+  unfold resolve.
+  apply in_resolve.
+  + apply trace_wf.
+  + apply in_trace ; exact H.
 Qed.

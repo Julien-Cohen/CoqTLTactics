@@ -58,13 +58,10 @@ Lemma source_compare_refl :
   forall a b, 
     source_compare a {| source := a ; target := b |} = true.
 Proof.
-  intro R.    
-  intros a b.
-  destruct a. destruct p.
-  unfold source_compare.
-  unfold getSourcePattern ; simpl.
-  unfold getIteration ; simpl.
-  unfold getName ; simpl.
+  intros R a b.
+  destruct a as ((l & i) & n). 
+  simpl.
+  unfold getSourcePattern, getIteration, getName ; simpl.
   rewrite list_beq_refl ; [ | exact R].
   rewrite NPeano.Nat.eqb_refl.
   rewrite String.eqb_refl. 
