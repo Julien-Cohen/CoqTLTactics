@@ -145,27 +145,23 @@ Proof.
   unfold Class2Relational' ; unfold Tactics.singleton_transformation_a ; simpl ; repeat constructor.
 Qed.
 
-Lemma instpat_singleton : 
-  forall m a, instantiatePattern Class2Relational m a <> nil ->
-              exists b, a = b::nil.
-Proof.
-  apply Tactics.instpat_singleton.
-  apply one_to_one.
-Qed.
+Hint Resolve one_to_one : singleton_rules.
 
 (** Tactics to make appear that a sucessfully matched pattern is a singleton. *) 
 
 Ltac show_singleton :=
-  let TMP := fresh in
+  let TMP1 := fresh "TMP" in
+  let TMP2 := fresh "TMP" in
   let E := fresh "e" in
   match goal with 
     [H:In ?B (instantiatePattern Class2Relational ?M ?A) |- _ ] =>
   
       specialize (in_not_nil B (instantiatePattern Class2Relational M A) H) ;
       intro TMP ;
-      apply instpat_singleton in TMP ;
-      destruct TMP as [E TMP];
-      subst A (* This [subst] ensures that if A is not a variable, this tactics fails. *)
+      destruct (Tactics.instpat_singleton _ Class2Relational _ _ TMP1) as [ E TMP2 ];
+      [ solve [auto with singleton_rules]
+      | clear TMP1 ; subst A (* This [subst] ensures that if A is not a variable, this tactics fails. *) ]
+
   end.
 
 (** ** Destructors *)

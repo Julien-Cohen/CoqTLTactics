@@ -232,19 +232,18 @@ Qed.
 
 
 Lemma instpat_singleton : 
-  forall t, 
-    singleton_transformation_a t ->
-    forall m a,
+  forall t m a , 
       instantiatePattern t m a <> nil ->
+      singleton_transformation_a t ->
       exists b, a = b::nil.
 Proof.
-  intros t A m a B.
+  intros t m a H1 H2.
   destruct a ; [ exfalso | ].
-  { contradict B ; apply instpat_nil ; assumption. }
+  { contradict H1 ; apply instpat_nil ; assumption. }
   {
     destruct a ; eauto ; [].    
     exfalso.
-    contradict B; apply instpat_two ; assumption. 
+    contradict H1; apply instpat_two ; assumption. 
   }
 Qed.
 
