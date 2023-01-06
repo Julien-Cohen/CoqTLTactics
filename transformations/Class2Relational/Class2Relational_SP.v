@@ -14,6 +14,10 @@ Require Import Class2Relational.RelationalMetamodel.
 
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
+
+
+(** This transformation contains rule arity > 1 *)
+
 (* module Class2Relational; 
    create OUT : RelationalMetamodel from IN : ClassMetamodel;
 
@@ -23,18 +27,19 @@ Require Import core.modeling.ModelingTransformationConfiguration.
        to 
          tab: Table (
            id <- c.id,
-           name <- c.name,
-           columns <- c.attributes->collect(a | thisModule.resolve(a, 'col'))
+           name <- c.name
          )
     }
     rule Attribute2Column {
         from 
-          a : Attribute (not a.derived)
+          a : Attribute,
+          c : Class
+          (not a.derived and a.type = c)
         to 
           col: Column (
             id <- a.id,
             name <- a.name,
-            reference <- thisModule.resolve(a.type, 'tab')
+            reference <- thisModule.resolve(c, 'tab')
           )
     }
    } *)
@@ -48,8 +53,8 @@ Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2R
   Build_ModelingTransformationConfiguration C2RConfiguration ClassMetamodel RelationalMetamodel.
 
 Open Scope coqtl.
-
-Definition Class2Relational' :=
+  
+Definition Class2Relational_SP' :=
   transformation
   [
     rule "Class2Table"
@@ -57,26 +62,23 @@ Definition Class2Relational' :=
 
     to [ ELEM "tab" ::: Table_K  
         << fun _ _ c => Build_Table_t c.(class_id) c.(class_name) >>
-        <<< LINK TableColumns_K //
-               fun tls _ m c t =>
-                  maybeBuildTableColumns t
-                    (maybeResolveAll tls m "col" Column_K 
-                       (maybeSingletons (getClassAttributesElements c m)))
-        >>> ]
+      ]
     ;
     rule "Attribute2Column"
-    from [Attribute_K]
-    where (fun _ a => negb a.(derived))
+    from [Attribute_K ; Class_K]
+    where (fun m a cl => 
+            andb (negb (derived a)) 
+            (is_option_eq (getAttributeType a m) cl beq_Class))
     to [ ELEM "col" ::: Column_K 
-        << fun _ _ a => Build_Column_t a.(attr_id) a.(attr_name) >>
+        << fun _ _ a cl => Build_Column_t a.(attr_id) a.(attr_name) >>
         <<< LINK ColumnReference_K //
-               fun tls _ m a c =>
+               fun tls _ m a cl c =>
                   maybeBuildColumnReference c
                     (maybeResolve tls m "tab" Table_K 
-                       (maybeSingleton (getAttributeTypeElement a m)))
+                       (maybeSingleton (Some (ClassElement cl))))
         >>> ]
   ].
 
-Definition Class2Relational := parse Class2Relational'.
+Definition Class2Relational_SP := parse Class2Relational_SP'.
 
 Close Scope coqtl.

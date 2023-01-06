@@ -57,6 +57,9 @@ transformations/Class2Relational/utils/TraceUtils.v
 transformations/Class2Relational/Tactics.v
 transformations/Class2Relational/tests/PersonModel.v
 transformations/Class2Relational/tests/PersonTest.v
+transformations/Class2Relational/Class2Relational_SP_Abstract.v
+transformations/Class2Relational/Class2Relational_SP.v
+transformations/Class2Relational/tests/PersonTest_SP.v
 
 transformations/TT2BDD/TT.v
 transformations/TT2BDD/BDD.v
@@ -87,6 +90,7 @@ transformations/Moore2Mealy/Moore2Mealy.v
 transformations/Moore2Mealy/tests/sampleMoore.v
 transformations/Moore2Mealy/MooreSemantics.v
 transformations/Moore2Mealy/MealySemantics.v
+
 
 # Engine proofs
 
