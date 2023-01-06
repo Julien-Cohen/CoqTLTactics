@@ -28,23 +28,17 @@ forall (cm : ClassModel) (rm : RelationalModel),
     (* transformation *)
     rm = execute Class2Relational cm ->
     (* precondition *)
-    (forall (at1: Attribute_t) (at2: Attribute_t)  (* (cl: Class_t) (ats: list Attribute_t)*),
+    (forall (at1: Attribute_t) (at2: Attribute_t),
         In (AttributeElement at1) cm.(modelElements) ->
         In (AttributeElement at2) cm.(modelElements) ->
-(*         In (ClassElement cl) cm.(modelElements) ->
-       getClassAttributes cl cm = Some ats ->
-        In at1 ats ->
-        In at2 ats ->*)
+
         at1 <> at2 ->
         attr_name at1 <> attr_name at2) ->
     (* postcondition *)
-    (forall (co1: Column_t) (co2: Column_t)  (*（ta: Table_t）(cos: list Column)*),
+    (forall (co1: Column_t) (co2: Column_t),
         In (ColumnElement co1) rm.(modelElements) ->
         In (ColumnElement co2) rm.(modelElements) ->
-(*        In (TableElement ta) rm.(modelElements) ->
-        getTableColumns ta rm = Some cos ->
-        In co1 cos ->
-        In co2 cos ->*)
+
         co1 <> co2 ->
         column_name co1 <> column_name co2).
 Proof.
