@@ -57,7 +57,6 @@ transformations/Class2Relational/utils/TraceUtils.v
 transformations/Class2Relational/Tactics.v
 transformations/Class2Relational/tests/PersonModel.v
 transformations/Class2Relational/tests/PersonTest.v
-transformations/Class2Relational/Class2Relational_arity_Abstract.v
 transformations/Class2Relational/Class2Relational_arity.v
 transformations/Class2Relational/tests/PersonTest_arity.v
 
