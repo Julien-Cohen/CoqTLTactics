@@ -51,7 +51,7 @@ Instance C2RConfiguration : TransformationConfiguration :=
 Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration :=
    Build_ModelingTransformationConfiguration C2RConfiguration ClassMetamodel RelationalMetamodel.
 
-Definition Class2Relational_SP :=
+Definition Class2Relational_arity :=
   buildTransformation 2
     [
       buildRule "Class2Table"

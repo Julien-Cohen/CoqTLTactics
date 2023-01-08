@@ -8,7 +8,7 @@ Require Import core.modeling.ConcreteSyntax.
 Require Import core.utils.Utils.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
-Require Import transformations.Class2Relational.Class2Relational_SP.
+Require Import transformations.Class2Relational.Class2Relational_arity.
 Require Import transformations.Class2Relational.tests.PersonModel.
 
 (* Expected output (short):
@@ -16,4 +16,4 @@ Require Import transformations.Class2Relational.tests.PersonModel.
       Column id=1 name='parent' reference='Person'
 *)
 
-Compute ((execute Class2Relational_SP PersonModel) ).
+Compute ((execute Class2Relational_arity PersonModel) ).

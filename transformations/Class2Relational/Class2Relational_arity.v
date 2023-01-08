@@ -54,7 +54,7 @@ Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2R
 
 Open Scope coqtl.
   
-Definition Class2Relational_SP' :=
+Definition Class2Relational_arity' :=
   transformation
   [
     rule "Class2Table"
@@ -79,6 +79,6 @@ Definition Class2Relational_SP' :=
         >>> ]
   ].
 
-Definition Class2Relational_SP := parse Class2Relational_SP'.
+Definition Class2Relational_arity := parse Class2Relational_arity'.
 
 Close Scope coqtl.
