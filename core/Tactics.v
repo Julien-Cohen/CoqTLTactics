@@ -11,7 +11,7 @@ Require Import core.modeling.Parser.
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
 
-(** General purpose tactics *)
+(** * General purpose tactics *)
 
 Ltac destruct_match :=
   match goal with 
@@ -25,7 +25,7 @@ Ltac dep_inversion H :=
 Ltac inj H := injection H ; clear H ; intros ; subst.
 
 
-(** Tactics to deal with boolean equality on generated types. *)
+(** * Tactics to deal with boolean equality on generated types. *)
 
 (** (When we have generated a boolean equality function [eqb] on a type [T], [beq_eq_tac] proves that [forall (a:T) (b:T), eqb a b = true => a = b]. *)
 
@@ -83,9 +83,11 @@ Ltac beq_eq_tac :=
 .
 
 
-(** *** singleton rules and singleton transformations *)
+(** * Singleton rules and singleton transformations *)
 
-(** We say an abstract rule is a singleton rule when it matches singletons. *)
+(** *** Abstract rules *)
+
+(** We say an abstract rule is a singleton rule when it matches only singletons. *)
 
 Section A.
 
@@ -124,8 +126,7 @@ Proof.
   apply A.
 Qed.
 
-(** *** Singleton-pattern rules and transformations *)
-
+(** *** Concrete rule *)
 
 (** We say a concrete rule is a singleton rule when it pattern is a list of size 1. *)
 Definition singleton_rule_c (a:ConcreteRule (tc:=tc) (mtc:=mtc)) :=
@@ -134,8 +135,8 @@ Definition singleton_rule_c (a:ConcreteRule (tc:=tc) (mtc:=mtc)) :=
   | _ => False
   end.
 
-(** A concrete singleton rule gives an abstract singleton rule. *)
 
+(** A concrete singleton rule gives an abstract singleton rule. *)
 
 Lemma singleton_rule_parse : 
   forall a, 
@@ -166,6 +167,7 @@ Proof.
   }
 Qed.
 
+(** *** Transformations (abstract and concrete *)
 
 (** We say an abstract transformation is singleton transformation when its rules are singleton rules. *)
 
@@ -200,7 +202,7 @@ Proof.
   }
 Qed.
 
-(** *** Properties on [instantiatePattern] for singleton transformations *)
+(** ** Properties on [instantiatePattern] for singleton transformations *)
 
 Lemma instpat_nil : 
   forall t, 
@@ -287,7 +289,7 @@ Qed.
 
 
 
-(** Tactics to make appear that a sucessfully matched pattern is a singleton. *) 
+(** Tactics to make appear that a sucessfully matched pattern is a singleton. The property that the given transformation is a single_transformation must be registered in the [singleton_rules] hintbase.*) 
 
 Ltac show_singleton :=
   let TMP1 := fresh "N" in
