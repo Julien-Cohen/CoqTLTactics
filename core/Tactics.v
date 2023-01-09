@@ -284,3 +284,26 @@ Proof.
    + apply incl_singleton. assumption.
    + compute. auto.
 Qed.
+
+
+
+(** Tactics to make appear that a sucessfully matched pattern is a singleton. *) 
+
+Ltac show_singleton :=
+  let TMP1 := fresh "N" in
+  let TMP2 := fresh "TMP2" in
+  let TMP3 := fresh "TMP3" in
+  let E := fresh "e" in
+  match goal with 
+    [H:In ?B (instantiatePattern _ ?M ?A) |- _ ] =>
+  
+      specialize (in_not_nil B (instantiatePattern _ M A) H) ;
+      intro TMP1 ; 
+      specialize (instpat_singleton _ _ _ _ TMP1) ;
+      intro TMP3 ; 
+      destruct TMP3 as [ E TMP2] ; 
+      [ solve [auto with singleton_rules]
+      | subst A (* This [subst] ensures that if A is not a variable, this tactics fails. *) ]
+       
+  end.
+

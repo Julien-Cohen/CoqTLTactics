@@ -147,22 +147,6 @@ Qed.
 
 Hint Resolve one_to_one : singleton_rules.
 
-(** Tactics to make appear that a sucessfully matched pattern is a singleton. *) 
-
-Ltac show_singleton :=
-  let TMP1 := fresh "TMP" in
-  let TMP2 := fresh "TMP" in
-  let E := fresh "e" in
-  match goal with 
-    [H:In ?B (instantiatePattern Class2Relational ?M ?A) |- _ ] =>
-  
-      specialize (in_not_nil B (instantiatePattern Class2Relational M A) H) ;
-      intro TMP ;
-      destruct (Tactics.instpat_singleton _ Class2Relational _ _ TMP1) as [ E TMP2 ];
-      [ solve [auto with singleton_rules]
-      | clear TMP1 ; subst A (* This [subst] ensures that if A is not a variable, this tactics fails. *) ]
-
-  end.
 
 (** ** Destructors *)
 

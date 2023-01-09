@@ -47,7 +47,7 @@ Proof.
 
     repeat Tactics.destruct_execute.
    
-    repeat Tactics.show_singleton.
+    repeat core.Tactics.show_singleton.
 
     repeat Tactics.show_origin. 
 
