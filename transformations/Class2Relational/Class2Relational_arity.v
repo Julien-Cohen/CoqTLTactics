@@ -2,7 +2,6 @@ Require Import String.
 Require Import List.
 
 Require Import core.utils.Utils.
-
 Require Import core.modeling.ConcreteSyntax.
 Require Import core.modeling.ModelingSemantics.
 Require Import core.modeling.ModelingMetamodel.
@@ -27,7 +26,8 @@ Require Import core.modeling.ModelingTransformationConfiguration.
        to 
          tab: Table (
            id <- c.id,
-           name <- c.name
+           name <- c.name,
+           columns <- c.attributes->collect(a | thisModule.resolve([a, c], 'col'))
          )
     }
     rule Attribute2Column {
@@ -53,8 +53,8 @@ Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2R
   Build_ModelingTransformationConfiguration C2RConfiguration ClassMetamodel RelationalMetamodel.
 
 Open Scope coqtl.
-  
-Definition Class2Relational_SP' :=
+
+Definition Class2Relational_arity' :=
   transformation
   [
     rule "Class2Table"
@@ -62,6 +62,14 @@ Definition Class2Relational_SP' :=
 
     to [ ELEM "tab" ::: Table_K  
         << fun _ _ c => Build_Table_t c.(class_id) c.(class_name) >>
+        <<< LINK TableColumns_K //
+               fun tls _ m c t =>
+                  maybeBuildTableColumns t
+                    (maybeResolveAll tls m "col" Column_K 
+                      (maybeTuples
+                        (getClassAttributesElements c m) 
+                        [(ClassElement c)]))
+        >>>
       ]
     ;
     rule "Attribute2Column"
@@ -79,6 +87,6 @@ Definition Class2Relational_SP' :=
         >>> ]
   ].
 
-Definition Class2Relational_SP := parse Class2Relational_SP'.
+Definition Class2Relational_arity := parse Class2Relational_arity'.
 
 Close Scope coqtl.
