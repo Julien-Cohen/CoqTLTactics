@@ -66,7 +66,7 @@ Proof.
 Qed.
 
 Lemma tr_instantiateRuleOnPattern_in :
-forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
+forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -425,12 +425,10 @@ Proof.
     repeat destruct H0.
     exists x0.
     auto.
-    exact tr.
   - intros.
     repeat destruct H.
     destruct H0.
     apply tr_instantiateRuleOnPattern_in.
-    exact tr.
     exists x.
     split.
     + assumption.

@@ -150,59 +150,6 @@ Hint Resolve one_to_one : singleton_rules.
 
 (** ** Destructors *)
 
-Ltac destruct_execute :=
-  let H2 := fresh "IN_E" in
-  let e := fresh "sp" in
-  match goal with 
-    [ H : In _ ( (execute Class2Relational _).(modelElements)) |- _ ] =>
-      rewrite (core.Certification.tr_execute_in_elements Class2Relational) in H ;
-      destruct H as [e [H2 H]]
-  end.
-
-Ltac destruct_instantiatePattern :=
-  let H2 := fresh "IN_R" in
-  let e := fresh "r" in
-  match goal with 
-    [ H : In _ (instantiatePattern Class2Relational _ _) |- _ ] =>
-      rewrite (core.Certification.tr_instantiatePattern_in Class2Relational) in H ;
-      destruct H as [e [H2 H]]
-  end.
-
-Ltac destruct_matchPattern :=
-  let H2 := fresh "M" in
-  match goal with 
-    [ H : In _ (matchPattern Class2Relational _ _) |- _ ] =>
-      rewrite (core.Certification.tr_matchPattern_in Class2Relational) in H ;
-      destruct H as [H H2]
-  end.
-
-Ltac destruct_instantiateRuleOnPattern :=
-  let H2 := fresh "IN_I" in
-  let e := fresh "n" in
-  match goal with 
-    [ H : In _ (instantiateRuleOnPattern _ _ _) |- _ ] =>
-      rewrite (core.Certification.tr_instantiateRuleOnPattern_in Class2Relational) in H ;
-      destruct H as [e [H2 H]]
-  end.
-
-Ltac destruct_instantiateIterationOnPattern :=
-  let H2 := fresh "IN_OP" in
-  let e := fresh "ope" in
-  match goal with 
-    [ H : In _ (instantiateIterationOnPattern _ _ _ _) |- _ ] =>
-      apply core.Certification.tr_instantiateIterationOnPattern_in in H ;
-      destruct H as [e [H2 H]]
-  end.
-
-Ltac unfold_instantiateElementOnPattern :=
-  match goal with 
-    [ H : context[instantiateElementOnPattern _ _ _ _] |- _ ] => 
-      rewrite core.Certification.tr_instantiateElementOnPattern_leaf in H 
-  end.
-
-
-Ltac destruct_any := first [ destruct_execute | destruct_instantiatePattern | destruct_matchPattern | destruct_instantiateRuleOnPattern | destruct_instantiateIterationOnPattern | unfold_instantiateElementOnPattern ].
-
 Ltac destruct_In_two :=
   match goal with 
     [ H : In ?X Class2Relational.(Syntax.rules) |- _ ] => 

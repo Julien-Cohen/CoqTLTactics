@@ -150,7 +150,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** instantiateRuleOnPattern *)
 
     tr_instantiateRuleOnPattern_in :
-    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
+    forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
       In te (instantiateRuleOnPattern r sm sp) <->
       (exists (i: nat),
           In i (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -280,12 +280,10 @@ Proof.
     destruct H2.
     exists x, x0, x1.
     crush.
-    exact tr.
   * intros. repeat destruct H. destruct H0, H1, H2.
     exists x, x0.
     crush.
     apply tr_instantiateRuleOnPattern_in.
-    exact tr.
     exists x1.
     crush.
 Qed.

@@ -56,7 +56,7 @@ Proof.
     assumption.
   }
   { 
-    repeat destruct_any.
+    repeat Tactics.destruct_any.
     clear IN_I.
 
     (* Two ways of reasonning by case analysis : (1) decompose e, (2) decompose r *)
@@ -106,7 +106,7 @@ Proof.
     assumption.
   }
   { 
-    repeat destruct_any.
+    repeat Tactics.destruct_any.
     clear IN_I.
     
     (* Two ways of reasonning by case analysis : (1) decompose e, (2) decompose r *)
