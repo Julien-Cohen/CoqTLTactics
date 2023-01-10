@@ -15,13 +15,21 @@ Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
 
+From transformations.Class2Relational 
+  Require ClassMetamodelProperties RelationalMetamodelProperties.
+
 From transformations.Class2Relational Require Tactics.
+
+
+(* FIXME : move-me *)
+Ltac duplicate H1 H2 := remember H1 as H2 eqn: TMP ; clear TMP.
+
 
 (** *** Utilities on transformation of elements *)
 
 (* FIXME : move-me *)
 (* NOT USED *)
-Lemma transform_attribute : 
+Lemma transform_attribute_fw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
   (* precondition *)  forall id name,
@@ -48,7 +56,7 @@ Qed.
 
 (* FIXME : move-me *)
 (* NOT USED *)
-Lemma transform_attribute_back : 
+Lemma transform_attribute_bw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
   (* precondition *)  forall id name,
@@ -80,135 +88,6 @@ Proof.
   + auto.
 Qed.
 
-
-(** *** Utilities on "getters" *)
-
-(* not used *)
-Remark getColumnsReferenceOnLinks_app :
-        forall a b c,
-         getColumnReferenceOnLinks c (a++b) = 
-           match getColumnReferenceOnLinks c a with 
-             Some r => Some r 
-           | None => getColumnReferenceOnLinks c b end.
-Proof.
-  induction a ; simpl ; intros b c.
-  + reflexivity.
-  + destruct a.
-  - auto.
-  - destruct c0.
-    destruct (beq_Column cr c).
-    * reflexivity.
-    * auto.
-Qed.
-
-(* not used *)
-Remark getAttributeType_In_back att t (m:Model ClassMM): 
-  In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks) ->
-  getAttributeType att m <> None.
-Proof.
-  destruct m. simpl.
-  unfold getAttributeType ; simpl.
-  clear modelElements.
-  induction modelLinks ; simpl ; [ congruence | ] ; intro.
-  destruct a.
-  + (* ClassAttibute *)
-    destruct_or H ; [discriminate|].
-    apply IHmodelLinks in H ; clear IHmodelLinks.
-    exact H.
-  + (* AttributeType *)
-    destruct a.
-    destruct_or H.
-  - injection H ; intros ;  clear H ; subst. simpl.
-    rewrite beq_Attribute_refl.
-    congruence.
-
-  - apply IHmodelLinks in H.
-    
-    match goal with [ |- context[ if ?P then _ else _ ]  ] => destruct P eqn:? end .
-    congruence.
-    assumption.
-Qed. 
-
-(* FIXME : move-me *)
-Ltac duplicate H1 H2 := remember H1 as H2 eqn: TMP ; clear TMP.
-
-Lemma get_in l t v : 
-  getAttributeTypeOnLinks v l = return t ->
-  exists a,
-    In (AttributeTypeLink a) l /\ a.(source_attribute) = v.
-Proof.
-  induction l ; simpl ; intro G ; [ discriminate | ].
-  destruct a.
-  { (*ClassAttributeLink*)
-    apply IHl in G ; clear IHl.
-    destruct G as (a & (IN_E & E)).
-    exists a.
-    split ; auto.
-  }
-  { (*AttributeTypeLink*)
-    match type of G with (if ?E then _ else _) = _ => destruct E eqn : B  end.
-    { (* true *)
-      Tactics.inj G.
-      exists a.
-      split.
-      left ; reflexivity.
-      apply lem_beq_Attribute_id.
-      exact B.
-    }
-    {
-      (* false *)
-      clear B.
-      apply IHl in G ; clear IHl.
-      destruct G as (aa & (IN_E & E)).
-      exists aa.
-      split ; auto.
-    }
-  }
-Qed.
-
-Lemma in_get_2 :
-  forall l v (x:Table_t), 
-      In (ColumnReferenceLink {| cr := v ;  ct := x |}) l -> 
-      exists r' : Table_t,
-        getColumnReferenceOnLinks v l = return r'.
-Proof.
-  induction l ; simpl ; intros v x IN ; [ contradict IN | ].
-  destruct_or IN.
-  {
-    subst a.
-    rewrite lem_beq_Column_refl.
-    eauto.
-  }
-  {
-    apply (IHl v) in IN ; auto ; clear IHl ; [].
-    destruct IN as [r G].
-    rewrite G.
-    destruct a ; eauto ; [].
-    destruct c.
-    destruct ( beq_Column cr v) ; eauto.
-  }
-Qed.
-
-(* FIXME : not used anymore. *)
-Lemma getAttributeType_In att m: 
-  getAttributeType att m <> None ->
-  exists t, 
-    In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks).
-Proof.
-  unfold getAttributeType.
-  generalize (modelLinks m). clear.  
-  intros l H.
-  destruct (getAttributeTypeOnLinks att l) eqn:G ; [ clear H | contradiction ].
-  apply get_in in G.
-  destruct G as (a & (G1 & G2)).
-  destruct att.
-  destruct a.
-  simpl in *.
-  subst.
-  eauto.
-Qed. 
-
-
   
 (** *** Result *)
 
@@ -229,8 +108,8 @@ forall (cm : ClassModel) (rm : RelationalModel),
       In (ColumnElement col) rm.(modelElements) ->
       exists r', getColumnReference col rm =Some r'. 
 
-Proof.
-  intros cm rm E PRE col I1.
+Proof. 
+  intros cm rm E PRE.  intros col I1.
   subst rm.
   Tactics.destruct_execute.
   Tactics.show_singleton.
@@ -262,10 +141,12 @@ Proof.
   subst derived ; simpl in *. 
 
   duplicate PRE1 G1.
-  apply get_in in PRE1.
-  destruct PRE1 as (v & (IN & E)).
+  apply ClassMetamodelProperties.get_in in PRE1.
 
-  eapply in_get_2 
+  specialize (TraceUtils.in_maybeResolve_trace_2 t cm PRE2 ) ; intros (R & I).
+
+
+  eapply RelationalMetamodelProperties.in_get_2_right 
     with (x:= {| table_id :=t.(class_id) ;  
                 table_name := t.(class_name) |}) . 
 
@@ -305,7 +186,7 @@ Proof.
 
       unfold ModelingSemantics.maybeResolve.
       unfold singleton.
-      rewrite TraceUtils.in_maybeResolve_trace ; [ | assumption ].
+      rewrite R. 
 
       simpl. left. reflexivity. 
     }

@@ -15,3 +15,8 @@ Ltac remove_or_false H :=
   match type of H with 
     _ \/ False => destruct H as [ H | H ] ; [ | contradiction] 
   end. 
+
+Ltac remove_or_false_auto :=
+  match goal with 
+    [ H : _ \/ False |- _ ] => remove_or_false H
+  end.

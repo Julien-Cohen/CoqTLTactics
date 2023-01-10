@@ -15,7 +15,14 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 Ltac destruct_match :=
   match goal with 
-     [ |- context[match ?P with | _ => _ end]] => destruct P end. 
+     [ |- context[match ?P with | _ => _ end]] => destruct P 
+  end. 
+
+Ltac destruct_if_hyp :=
+  let E := fresh "E" in
+ match goal with
+        [ H : context[if ?B then _ else _] |- _ ] => destruct B eqn:E 
+ end.
 
 (* To replace the [inversion] tactics on equalities on a dependant type constructor. *)
 Ltac dep_inversion H := 
@@ -318,8 +325,13 @@ Ltac destruct_execute :=
   let H2 := fresh "IN_E" in
   let e := fresh "sp" in
   match goal with 
+
     [ H : In _ ( (execute ?T _).(modelElements)) |- _ ] =>
       rewrite (core.Certification.tr_execute_in_elements T) in H ;
+      destruct H as [e [H2 H]]
+
+    | [ H : In _ ( (execute ?T _).(modelLinks)) |- _ ] =>
+      rewrite (core.Certification.tr_execute_in_links T) in H ;
       destruct H as [e [H2 H]]
   end.
 
@@ -370,7 +382,36 @@ Ltac unfold_instantiateElementOnPattern :=
       rewrite core.Certification.tr_instantiateElementOnPattern_leaf in H 
   end.
 
+Ltac destruct_apply_pattern :=
+  let R := fresh "r" in
+  let IN1 := fresh "IN_R" in
+  let IN2 := fresh "IN" in
 
+  match goal with 
+    [ H : In _ (applyPattern ?T _ _) |- _ ] => 
+      apply core.Certification.tr_applyPattern_in in H ; 
+      destruct H as (R & (IN1 & IN2))
+end.
+
+Ltac destruct_applyRuleOnPattern :=
+  let N := fresh "n" in 
+  let IN1 := fresh "IN" in 
+  let IN2 := fresh "IN" in 
+  match goal with
+    [ H : In _ (applyRuleOnPattern _ _ _ _) |- _ ] =>
+      apply core.Certification.tr_applyRuleOnPattern_in in H ;
+      destruct H as (N & (IN1 & IN2))
+  end.
+
+Ltac destruct_applyIterationOnPattern :=
+  let p := fresh "p" in
+  let IN1 := fresh "IN" in
+  let IN2 := fresh "IN" in
+  match goal with
+    [ H : In _ (applyIterationOnPattern _ _ _ _ _ ) |- _ ] =>
+      apply core.Certification.tr_applyIterationOnPattern_in in H ;
+      destruct H as (p & (IN1 & IN2))
+  end.
 
 Ltac destruct_any := 
   first [ 
@@ -379,5 +420,8 @@ Ltac destruct_any :=
     | destruct_matchPattern 
     | destruct_instantiateRuleOnPattern 
     | destruct_instantiateIterationOnPattern 
-    | unfold_instantiateElementOnPattern ].
+    | unfold_instantiateElementOnPattern 
+    | destruct_apply_pattern 
+    | destruct_applyRuleOnPattern 
+    | destruct_applyIterationOnPattern ].
 

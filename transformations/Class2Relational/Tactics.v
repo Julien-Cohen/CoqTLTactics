@@ -106,6 +106,18 @@ Proof.
   destruct e ; compute ; intro M ; [ eauto | discriminate].
 Qed.
 
+Lemma make1_alt sm e :
+  ConcreteExpressions.makeEmptyGuard [Class_K] sm e = true ->
+  exists v, e = [ClassElement v]. 
+Proof.
+  destruct e ; intro H. 
+  + discriminate H.  
+  + destruct e.
+    - apply make1 in H. destruct H ; subst ; eauto.
+    - compute in  H. 
+      destruct s ; discriminate .
+Qed.
+
 Lemma make2 sm e:
   ConcreteExpressions.makeGuard [Attribute_K]
     (fun (_ : TransformationConfiguration.SourceModel)
@@ -118,6 +130,22 @@ Proof.
   eauto.
 Qed.
 
+Lemma make2_alt sm e:
+  ConcreteExpressions.makeGuard [Attribute_K]
+    (fun (_ : TransformationConfiguration.SourceModel)
+         (a : Attribute_t) => negb (derived a)) sm 
+    e = true -> exists v, (e = [AttributeElement v] /\ v.(derived) = false).
+Proof.
+  destruct e ; intro.
+  + discriminate H.
+  + destruct e.
+  - apply make2 in H.
+    destruct H as (? & (? & ?)) ; subst.
+    eauto.
+  - compute in H. 
+    destruct s ; discriminate H.
+Qed.
+
 
 
 Ltac deduce_element_kind_from_guard :=
@@ -127,12 +155,23 @@ Ltac deduce_element_kind_from_guard :=
     [ H :ConcreteExpressions.makeEmptyGuard [Class_K] _ [?e] = true |- _ ] =>
       apply make1 in H ; destruct H ; subst e
 
+    | [ H :ConcreteExpressions.makeEmptyGuard [Class_K] _ ?e = true |- _ ] =>
+      apply make1_alt in H ; destruct H ; subst e
+
+
   | [ H :ConcreteExpressions.makeGuard [Attribute_K]
     (fun _ atr => negb (derived atr)) _ 
     [?e] = true |- _ ] =>
       apply make2 in H ; destruct H as (a & (H & H2)) ; 
       first[ subst e (* if e was a variable *) 
              | Tactics.inj H (* if e was not a variable *) ]
+
+  | [ H :ConcreteExpressions.makeGuard [Attribute_K]
+    (fun _ atr => negb (derived atr)) _ 
+    ?e = true |- _ ] =>
+      apply make2_alt in H ; destruct H as (a & (H & H2)) ; 
+      (*first[*) subst e (* if e was a variable *) 
+             (*| Tactics.inj H (* if e was not a variable *) ]*)
 end.
 
 
