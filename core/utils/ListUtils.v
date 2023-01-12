@@ -3,6 +3,8 @@ Require Import EqNat.
 Require Import core.utils.CpdtTactics.
 Require Import Lia.
 
+Require PropUtils BoolUtils.
+
 Definition set_eq {A:Type} (t1 t2: list A) := incl t1 t2 /\ incl t2 t1.
 
 
@@ -93,6 +95,18 @@ Definition optionToList {A:Type} (o: option A) : list A :=
   | Some a => a :: nil
   | None => nil
   end.
+
+Lemma in_optionToList {A}:
+  forall (a:A) b,
+    In a (optionToList b) -> b = Some a.
+Proof.
+  intros a b IN.
+  destruct b ; simpl in IN.
+  + PropUtils.remove_or_false_auto.
+    congruence.
+  + contradiction.
+Qed.
+
 
 Definition optionListToList {A:Type} (o: option (list A)) : list A :=
   match o with
@@ -301,12 +315,27 @@ Lemma list_beq_refl {A} :
     (forall a, f a a = true) ->
     forall s, list_beq f s s = true.
 Proof.
-  intros f .
+  intro f.
   induction s.
   reflexivity.
   simpl.
   rewrite H.
   rewrite IHs.
   reflexivity.
+Qed.
+
+
+Lemma list_beq_correct {A} : 
+  forall (f:A->A->bool),
+    (forall a b , f a b = true -> a = b) ->
+    forall s1 s2 , list_beq f s1 s2 = true -> s1 = s2.
+Proof.
+  intros f H.
+  induction s1 ; destruct s2 ; simpl ; intro E. 
+  + reflexivity.
+  + discriminate.
+  + discriminate.
+  + BoolUtils.destruct_conjunctions.
+    f_equal ; auto.
 Qed.
 

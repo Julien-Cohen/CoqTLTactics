@@ -56,42 +56,74 @@ Definition wf t : Prop :=
 Lemma trace_wf cm :
   wf (trace Class2Relational cm).
 Proof.
-  unfold trace.
-  unfold allTuples.
   unfold wf.
-  apply Forall_flat_map.
-  simpl.
-  unfold prod_cons.
   apply Forall_forall.
-  intro l.
-  intro H.
-  apply Forall_flat_map.
-  apply Forall_forall.
-  intro r.
-  intro H2.
+  intros l H.  
+  Tactics.destruct_trace.
+  Tactics.destruct_tracePattern.
 
   (* remove [nil] in H (l cannot be nil)*)
   apply in_app_or in H.
   destruct_or H.
   2:{ 
-    apply ListUtils.in_singleton in H ; subst l. 
+    simpl in *.
+    PropUtils.remove_or_false_auto.
+    subst.
     simpl in *. contradiction.
   }
   (* done *)
 
-  apply in_flat_map in H.
-  destruct H as (e & H3 & H4).
-  simpl map in H4.
-  apply ListUtils.in_singleton in H4 ; subst l.
-
-  unfold matchPattern in H2.
-  apply filter_In in H2.
-  destruct H2 as [H4 H5].
-
+  Tactics.destruct_matchPattern.
   
-  Tactics.destruct_In_two ; simpl in * ; Tactics.deduce_element_kind_from_guard.
-  { (* rule 1 *) compute. constructor. constructor. constructor. }  
-  { (* rule 2 *) compute. constructor. constructor. constructor. }  
+  Tactics.destruct_In_two ; simpl in * ;
+  repeat PropUtils.remove_or_false_auto ; subst ;
+  Tactics.deduce_element_kind_from_guard. 
+  { (* rule 1 *) 
+    compute in IN0. 
+    PropUtils.remove_or_false_auto. 
+    subst l. constructor. 
+  }  
+  { (* rule 2 *)
+    compute in IN0.
+    PropUtils.remove_or_false_auto. 
+    subst l. constructor.
+  }  
+Qed.
+
+
+
+(* General result (does not depend on Class2Relational) *)
+(* FIXME : MOVE-ME *)
+Lemma in_trace_in_models cm t :
+  forall a b s i ,
+    In (buildTraceLink ([a],i,s) b ) (trace t cm) ->
+    In a cm.(modelElements) /\In b (execute t cm).(modelElements).
+Proof.
+  intros a b s i IN.
+  unfold execute ; simpl.
+
+  Tactics.destruct_trace_max.
+
+  unfold traceElementOnPattern in IN3.
+  Tactics.monadInv IN3.
+  Tactics.duplicate IN IN5.
+  Tactics.in_singleton_allTuples.
+  split ; [ assumption | ].
+  unfold instantiatePattern.
+  apply in_flat_map.
+  exists ([a]) ; split ; [ assumption | ].
+  apply in_flat_map.
+  exists r.
+  split ; [ assumption | ].
+  unfold instantiateRuleOnPattern.
+  apply in_flat_map.
+  exists i ; split ; [ assumption | ].
+  unfold instantiateRuleOnPattern.
+  unfold instantiateIterationOnPattern.
+  apply in_flat_map.
+  exists e ; split ; [ assumption | ].
+  rewrite IN3.
+  compute ; auto.
 Qed.
 
 
@@ -208,70 +240,16 @@ Proof.
 Qed.
 
 
-Lemma in_maybeResolve_trace c (cm : ClassModel) :
-  In (ClassElement c) cm.(modelElements) -> 
-  maybeResolve (trace Class2Relational cm) cm "tab" (Some [ClassElement c])  = 
-    Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}).
-Proof.
-  intro H.
-  unfold maybeResolve.
-  unfold resolve.
-  apply in_resolve.
-  + apply trace_wf.
-  + apply in_trace ; exact H.
-Qed.
-
-
-(* General result (does not depend on Class2Relational) *)
-(* FIXME : MOVE-ME *)
-
-Lemma truc cm t :
-  forall a b s i ,
-    In (buildTraceLink ([a],i,s) b ) (trace t cm) ->
-    In b (execute t cm).(modelElements).
-Proof.
-  intros a b s i  I.
-  unfold execute ; simpl.
-  apply in_flat_map.
-  unfold instantiatePattern.
-  unfold trace in I.
-   apply in_flat_map in I.
-   destruct I as (p & (I1 & I2)). 
-   exists p.
-   split ; [ exact I1 | ].
-   apply in_flat_map.
-   unfold tracePattern in I2.
-   apply in_flat_map in I2.
-   destruct I2 as (r & (I3 & I4)). 
-   exists r.
-   split ; [ exact I3 | ] .
-   unfold traceRuleOnPattern in I4.
-   unfold instantiateRuleOnPattern.
-   apply in_flat_map in I4.
-   destruct I4 as (n & (IN5 & IN6)).
-   apply in_flat_map.
-   exists n.
-   split ; [ exact IN5 | ].
-   unfold traceIterationOnPattern in IN6.
-   unfold instantiateIterationOnPattern.
-   apply in_flat_map in IN6.
-   destruct IN6 as (pe & (IN7 & IN8)).
-   apply in_flat_map.
-   exists pe.
-   split ; [ exact IN7 | ].
-   unfold traceElementOnPattern in IN8.
-   destruct (instantiateElementOnPattern pe cm p n) eqn:H ; [ | contradict IN8 ].
-   simpl optionToList in *.
-   apply in_singleton.
-   apply in_singleton in IN8.
-   congruence.
-Qed.
-
-
 Lemma in_maybeResolve_trace_2 c (cm : ClassModel) :
+  
   In (ClassElement c) cm.(modelElements) -> 
-  maybeResolve (trace Class2Relational cm) cm "tab" (Some [ClassElement c])  = 
-    Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}) /\ In (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}) (execute Class2Relational cm).(modelElements).
+  
+  maybeResolve (trace Class2Relational cm) cm "tab" (Some [ClassElement c])  =  
+    Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}) 
+  
+  /\ In 
+       (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}) 
+       (execute Class2Relational cm).(modelElements).
 Proof.
   intro H.
   unfold maybeResolve.
@@ -279,6 +257,6 @@ Proof.
   apply in_trace in H.
   rewrite in_resolve ; [ | solve [apply trace_wf] | exact H ].
   + split ; [ reflexivity | ].
-    eapply truc ; exact H.
+    apply in_trace_in_models in H ; destruct H ; assumption.
 Qed.
 

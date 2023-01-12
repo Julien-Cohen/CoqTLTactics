@@ -31,6 +31,23 @@ Ltac dep_inversion H :=
 
 Ltac inj H := injection H ; clear H ; intros ; subst.
 
+Ltac monadInv H :=
+  let N := fresh "E" in
+
+  match type of H with 
+    _ <- ?E ; Some _ = Some _ => 
+      destruct E eqn:N ;
+      [ Tactics.inj H | discriminate H ] ; 
+      let N2 := fresh H in
+      rename N into N2
+
+ | _ <- ?E ; _ = Some _ => 
+      destruct E eqn:N ;
+      [  | discriminate H ]
+   end.
+  
+Ltac duplicate H1 H2 := remember H1 as H2 eqn:TMP ; clear TMP.
+
 
 (** * Tactics to deal with boolean equality on generated types. *)
 
@@ -43,15 +60,12 @@ Ltac basetype_eqb_eq_tac :=
   | [ H : beq_string _ _ = true |- _ ] => apply lem_beq_string_eq2 in H ; subst 
 end.
 
-Import Bool. (* for "&&" notation *)
 
 Ltac composedtype_eqb_eq_tac :=
   match goal  with [ H : ?f ?a ?b = true |- _ ]  => unfold f in H  ; (* unfold the boolean equality function *)
   destruct a , b ; simpl in H end ;  
-  repeat ( (* destruct conjunctions *)
-      match goal with   
-        [ H : ?e && _ = true |- _ ] => apply Bool.andb_true_iff in H ; destruct H  
-      end).
+  destruct_conjunctions
+.
 
 Notation beq_is_eq f := (forall a b, f a b = true -> a = b).
 
@@ -267,7 +281,7 @@ Require Certification.
 
 Import Model.
 
-Lemma allModelElements_allTuples_back {tc:TransformationConfiguration} (e:tc.(SourceElementType)) (t:Syntax.Transformation (tc:=tc)) (cm:tc.(SourceModel)) : 
+Lemma allModelElements_allTuples_back {tc:TransformationConfiguration} (t:Syntax.Transformation (tc:=tc)) (e:tc.(SourceElementType))  (cm:tc.(SourceModel)) : 
   In [e] (allTuples t cm) ->
   In e cm.(modelElements).
 Proof.
@@ -279,8 +293,8 @@ Qed.
 
 Ltac in_singleton_allTuples :=
   match goal with 
-    [ H : In [_] (allTuples _ _) |- _ ] =>
-      apply allModelElements_allTuples_back in H
+    [ H : In [_] (allTuples ?T _) |- _ ] =>
+      apply allModelElements_allTuples_back with (t:=T) in H
   end.
 
 Lemma allModelElements_allTuples {tc:TransformationConfiguration} e t cm: 
@@ -413,6 +427,80 @@ Ltac destruct_applyIterationOnPattern :=
       destruct H as (p & (IN1 & IN2))
   end.
 
+(* on traces *)
+Ltac destruct_trace :=
+  let p:= fresh "p" in
+  let IN := fresh "IN" in
+  match goal with 
+    [ H: In _ (trace _ _ ) |- _ ] => 
+      unfold trace in H ;
+      apply in_flat_map in H ; 
+      destruct H as (p & (H & IN))
+  end.
+
+Ltac destruct_tracePattern :=
+  let p:= fresh "r" in
+  let IN := fresh "IN" in
+  match goal with 
+    [ H: In _ (tracePattern _ _ _) |- _ ] => 
+      unfold tracePattern in H ;
+      apply in_flat_map in H ; 
+      destruct H as (p & (H & IN))
+  end.
+
+
+Ltac destruct_traceRuleOnPattern :=
+  let p:= fresh "i" in
+  let IN := fresh "IN" in
+  match goal with 
+    [ H: In _ (traceRuleOnPattern _ _ _) |- _ ] => 
+      unfold traceRuleOnPattern in H ;
+      apply in_flat_map in H ; 
+      destruct H as (p & (H & IN))
+  end.
+
+Ltac destruct_traceIterationOnPattern :=
+  let p:= fresh "e" in
+  let IN := fresh "IN" in
+  match goal with 
+    [ H: In _ (traceIterationOnPattern _ _ _ _) |- _ ] => 
+      unfold traceIterationOnPattern in H ;
+      apply in_flat_map in H ; 
+      destruct H as (p & (H & IN))
+  end.
+
+
+
+Ltac destruct_in_optionToList :=
+  let TMP := fresh "TMP" in
+  match goal with 
+    [ H : In _ (optionToList ?E) |- _ ] => apply in_optionToList in H
+  end.
+
+Lemma in_optionListToList {A} : forall (a:A) b,
+    In a (optionListToList b) ->
+    exists l, (b = Some l /\ In a l).
+Proof.
+  intros a b H.
+  destruct b ; simpl in H ; [ | contradiction ]. 
+  eauto.
+Qed.
+
+Ltac destruct_in_optionListToList :=
+  let M := fresh "M" in
+  match goal with 
+    [ H : In _ (optionListToList ?E) |- _ ] => apply in_optionListToList in H ;   destruct H as (l & (M & H))
+  end.
+
+
+Ltac destruct_trace_max := 
+  destruct_trace ; 
+  destruct_tracePattern ; 
+  destruct_traceRuleOnPattern ; 
+  destruct_traceIterationOnPattern ; 
+  destruct_in_optionToList .
+
+
 Ltac destruct_any := 
   first [ 
       destruct_execute 
@@ -423,5 +511,11 @@ Ltac destruct_any :=
     | unfold_instantiateElementOnPattern 
     | destruct_apply_pattern 
     | destruct_applyRuleOnPattern 
-    | destruct_applyIterationOnPattern ].
+    | destruct_applyIterationOnPattern 
+
+    | destruct_trace
+    | destruct_tracePattern 
+    | destruct_traceRuleOnPattern
+    | destruct_traceIterationOnPattern 
+    | destruct_in_optionToList].
 

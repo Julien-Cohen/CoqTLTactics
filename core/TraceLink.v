@@ -68,6 +68,28 @@ Proof.
   reflexivity.
 Qed.
 
+(* Not Used *)
+(* The requirement is too strong for the general case *)
+Lemma source_compare_correct :
+  (forall a b : Metamodel.ElementType SourceMetamodel,
+  Metamodel.elements_eqdec SourceMetamodel a b = true -> a = b) ->
+  forall a b,
+    source_compare a b = true -> b.(source) = a.
+Proof.
+  intro H1.
+  unfold source_compare.
+  intros a b H2 ; destruct a ; destruct p ; destruct b.
+  simpl. destruct source0 ; simpl in *.
+  BoolUtils.destruct_conjunctions.
+  destruct p ; simpl in *.
+  apply EqNat.beq_nat_true in H2 ; subst .
+  apply String.eqb_eq in H0 ; subst.
+  apply list_beq_correct in H ; subst.
+  + reflexivity.
+  + exact H1. 
+Qed.
+
+
 End TraceLink.
 
 Arguments TraceLink {_}.

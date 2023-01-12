@@ -9,7 +9,7 @@ Require Import transformations.Class2Relational.ClassMetamodel.
 From transformations.Class2Relational Require Tactics.
 
 
-Lemma get_in l t v : 
+Lemma getAttributeTypeOnLinks_in l t v : 
   getAttributeTypeOnLinks v l = return t ->
     In (AttributeTypeLink {| source_attribute  := v ; a_type := t |}) l.
 Proof.
@@ -43,7 +43,7 @@ Corollary getAttributeType_In_right att m t:
     In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks).
 Proof.
   unfold getAttributeType.
-  apply get_in. 
+  apply getAttributeTypeOnLinks_in. 
 Qed. 
 
 (* not used *)
@@ -73,6 +73,17 @@ Proof.
     congruence.
     assumption.
 Qed. 
+
+Corollary getAttributeType_In_left_2 att t (m:Model ClassMM): 
+  In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks) ->
+  exists r, getAttributeType att m = Some r.
+Proof.
+  intro H.
+  apply getAttributeType_In_left in H.
+  destruct (getAttributeType att m).
+  + eauto.
+  + contradiction.
+Qed.
 
 
 (** *** Well formed models. *)
@@ -133,7 +144,7 @@ Definition wf_classmodel_types_exist (cm:ClassModel) :=
     In (ClassElement c) cm.(modelElements).
 
     
-Lemma get_ex cm :
+Lemma getAttributeType_classex cm :
   wf_classmodel_types_exist cm ->
   forall att r, 
     getAttributeType att cm = Some r ->
@@ -145,3 +156,21 @@ Proof.
   apply getAttributeType_In_right  in H ; []. 
   exact H.
 Qed.
+
+Lemma getAttributeType_In_left_3 att t (m:Model ClassMM): 
+  wf_classmodel_unique_attribute_types m ->
+  In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks) ->
+  getAttributeType att m = Some t.
+Proof.
+
+  intros WF H.
+  Tactics.duplicate H G.
+  apply getAttributeType_In_left in G.
+  destruct (getAttributeType att m) eqn:E ; [ clear G | contradiction ].
+  apply getAttributeType_In_right in E.
+
+  f_equal.
+  
+  eapply WF ; eassumption.
+Qed.
+ 

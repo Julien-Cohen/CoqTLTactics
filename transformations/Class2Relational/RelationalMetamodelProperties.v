@@ -70,8 +70,7 @@ Qed.
 Lemma in_get_2_left :
   forall (l: list Link) col t, 
     getColumnReferenceOnLinks col l = return t -> 
-    exists x,
-    In (ColumnReferenceLink {| cr := col ;  ct := x |}) l  
+    In (ColumnReferenceLink {| cr := col ;  ct := t |}) l  
       .
 Proof.
   induction l ; simpl ; intros c r IN ; [ discriminate IN | ].
@@ -79,7 +78,7 @@ Proof.
   destruct a.
   { (* table *)
     apply IHl in IN.
-    destruct IN as [x IN] ; exists x ; right ; exact IN.
+    right ; exact IN.
   }    
   { (* columns *)
     destruct c0.
@@ -87,11 +86,11 @@ Proof.
     {
       Tactics.inj IN.
       apply lem_beq_Column_id in E ; subst cr.
-      eexists ; left ; reflexivity.
+      left ; reflexivity.
     }
     {
       apply IHl in IN.
-      destruct IN as [x IN] ; exists x ; right ; exact IN.
+      right ; exact IN.
     }
   }
 Qed.
@@ -99,7 +98,7 @@ Qed.
 
 (** * well formedness  *)
 
-Definition wf_target cm :=
+Definition wf_all_table_references_exist (rm:RelationalModel) :=
   forall col r, 
-    getColumnReference col cm =Some r ->
-    In (TableElement r) cm.(modelElements).
+    In (ColumnReferenceLink {| cr := col ;  ct := r |}) rm.(modelLinks) ->
+    In (TableElement r) rm.(modelElements).
