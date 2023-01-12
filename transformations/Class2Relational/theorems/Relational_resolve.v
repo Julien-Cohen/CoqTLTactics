@@ -16,7 +16,7 @@ Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
 
 From transformations.Class2Relational 
-  Require ClassMetamodelProperties RelationalMetamodelProperties.
+  Require ClassModelProperties RelationalModelProperties.
 
 From transformations.Class2Relational Require Tactics.
 From transformations.Class2Relational Require TraceUtils.
@@ -165,9 +165,9 @@ forall (col: Column_t),
 Lemma wf_stable cm rm :
   rm = execute Class2Relational cm ->
   all_attributes_are_typed cm ->
-  ClassMetamodelProperties.wf_classmodel_types_exist cm ->
-  ClassMetamodelProperties.wf_classmodel_unique_attribute_types cm ->
-  RelationalMetamodelProperties.wf_all_table_references_exist rm.
+  ClassModelProperties.wf_classmodel_types_exist cm ->
+  ClassModelProperties.wf_classmodel_unique_attribute_types cm ->
+  RelationalModelProperties.wf_all_table_references_exist rm.
 Proof.
   intros T C_WF1 C_WF2 C_WF3.
   intros r t R_IN1.
@@ -267,7 +267,7 @@ Proof.
     
     Tactics.duplicate C_IN1 C_IN2.
     apply C_WF1 in C_IN2 ; destruct C_IN2 as (t & C_IN2).
-    rewrite ClassMetamodelProperties.getAttributeType_In_left_3 with (t:=t) in E0 ;
+    rewrite ClassModelProperties.getAttributeType_In_left_3 with (t:=t) in E0 ;
       [ | exact C_WF3 | exact C_IN2]. 
     Tactics.inj E0.    
  
@@ -300,7 +300,7 @@ Qed.
 Theorem Relational_Column_Reference_definedness_aux:
 forall (cm : ClassModel) (rm : RelationalModel), 
 
-  (* well-formed *) ClassMetamodelProperties.wf_classmodel_types_exist cm ->
+  (* well-formed *) ClassModelProperties.wf_classmodel_types_exist cm ->
 
   (* transformation *) rm = execute Class2Relational cm ->
 
@@ -354,7 +354,7 @@ Proof.
     intros (R & I).
 
 
-  apply ClassMetamodelProperties.getAttributeType_In_left_2 in G1 ;
+  apply ClassModelProperties.getAttributeType_In_left_2 in G1 ;
     destruct G1 as [r G1].
 
   exists{| table_id := r.(class_id); table_name := r.(class_name) |}.
@@ -400,7 +400,7 @@ Proof.
 
       unfold ModelingSemantics.maybeResolve.
 
-      apply ClassMetamodelProperties.getAttributeType_classex in G1 ; [ | exact WF2].
+      apply ClassModelProperties.getAttributeType_classex in G1 ; [ | exact WF2].
 
       apply TraceUtils.in_maybeResolve_trace_2 in G1.
       destruct G1 as (G11 & G12).
@@ -420,7 +420,7 @@ Qed.
 Theorem Relational_Column_Reference_definedness:
 forall (cm : ClassModel) (rm : RelationalModel), 
 
-(* well-formed *) ClassMetamodelProperties.wf_classmodel_types_exist cm ->
+(* well-formed *) ClassModelProperties.wf_classmodel_types_exist cm ->
 
   (* transformation *) rm = execute Class2Relational cm ->
 
@@ -454,10 +454,10 @@ Proof.
   specialize (H _ IN_E).
   destruct H as (c & G1). 
   Tactics.duplicate G1 IN_C.
-  apply ClassMetamodelProperties.getAttributeType_In_right in IN_C.
+  apply ClassModelProperties.getAttributeType_In_right in IN_C.
   eapply WF in IN_C.
   Tactics.duplicate G1 IN2. (* test *)
-  apply ClassMetamodelProperties.getAttributeType_In_right in IN2.
+  apply ClassModelProperties.getAttributeType_In_right in IN2.
   unfold getColumnReference.
 
   unfold execute.  simpl. 
@@ -476,12 +476,12 @@ Proof.
   subst derived ; simpl in *. 
 
   Tactics.duplicate G1 G2. (* à quoi sert de garder PRE1 ? *)
-  apply ClassMetamodelProperties.getAttributeTypeOnLinks_in in G1.
+  apply ClassModelProperties.getAttributeTypeOnLinks_in in G1.
 
   specialize (TraceUtils.in_maybeResolve_trace_2 c cm IN_C ) ; intros (R & I).
 
 
-  eapply RelationalMetamodelProperties.in_get_2_right 
+  eapply RelationalModelProperties.in_get_2_right 
     with (x:= {| table_id := c.(class_id) ;  
                 table_name := c.(class_name) |}) . 
 
@@ -534,7 +534,7 @@ Qed.
 Theorem Relational_Column_Reference_definedness_altproof:
   forall (cm : ClassModel) (rm : RelationalModel), 
     
-    (* well-formed *) ClassMetamodelProperties.wf_classmodel_types_exist cm ->
+    (* well-formed *) ClassModelProperties.wf_classmodel_types_exist cm ->
     
     (* transformation *) rm = execute Class2Relational cm ->
     
@@ -555,7 +555,7 @@ Proof.
     unfold all_columns_have_a_reference in WT.
     apply WT in IN1.
     destruct IN1 as (r & IN2).
-    apply RelationalMetamodelProperties.in_get_2_right_2.
+    apply RelationalModelProperties.in_get_2_right_2.
     eauto.
   }
   {
@@ -565,7 +565,7 @@ Proof.
     intros att IN2.
     apply PRE in IN2.
     destruct IN2 as (r & G).
-    apply ClassMetamodelProperties.getAttributeType_In_right in G.
+    apply ClassModelProperties.getAttributeType_In_right in G.
     eauto.
   }
 Qed.
@@ -575,10 +575,10 @@ Corollary Relational_Column_Reference_definedness_2:
   forall (cm : ClassModel) (rm : RelationalModel), 
     
     (* well-formed (1/2) *) 
-    ClassMetamodelProperties.wf_classmodel_types_exist cm ->
+    ClassModelProperties.wf_classmodel_types_exist cm ->
     
     (* well-formed (2/2) *) 
-    ClassMetamodelProperties.wf_classmodel_unique_attribute_types cm ->
+    ClassModelProperties.wf_classmodel_unique_attribute_types cm ->
     
     (* transformation *) 
     rm = execute Class2Relational cm ->
@@ -610,12 +610,12 @@ Proof.
       intros att IN2.
       apply WF3 in IN2.
       destruct IN2 as (r2 & G2).
-      apply ClassMetamodelProperties.getAttributeType_In_right in G2.
+      apply ClassModelProperties.getAttributeType_In_right in G2.
       eauto.
     }
     {
       (* comes from G *)
-      apply RelationalMetamodelProperties.in_get_2_left.
+      apply RelationalModelProperties.in_get_2_left.
       exact G.
     }
   }

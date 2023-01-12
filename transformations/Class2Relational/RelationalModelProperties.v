@@ -7,7 +7,7 @@ Require Import core.Model.
 Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
-Require Import transformations.Class2Relational.ClassMetamodelProperties.
+
 
 From transformations.Class2Relational Require Tactics.
 
