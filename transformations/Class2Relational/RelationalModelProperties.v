@@ -4,16 +4,16 @@ Require Import List.
 Require Import core.utils.Utils.
 Require Import core.Model.
 
-Require Import transformations.Class2Relational.Class2Relational.
-Require Import transformations.Class2Relational.ClassMetamodel.
-Require Import transformations.Class2Relational.RelationalMetamodel.
+From transformations.Class2Relational
+  Require Import Class2Relational ClassMetamodel RelationalMetamodel.
 
 
 From transformations.Class2Relational Require Tactics.
 
 
 (** *** Utilities on "getters" *)
-(* not used *)
+
+(* Not Used *)
 Remark getColumnsReferenceOnLinks_app :
         forall a b c,
          getColumnReferenceOnLinks c (a++b) = 
@@ -31,8 +31,8 @@ Proof.
     * auto.
 Qed.
 
-
-Lemma in_get_2_right :
+(* Used *)
+Lemma in_getColumnReferenceOnLinks_right :
   forall (l: list Link) v (x:Table_t),
     In (ColumnReferenceLink {| cr := v ;  ct := x |}) l -> 
       exists r' : Table_t,
@@ -55,7 +55,8 @@ Proof.
   }
 Qed.
 
-Corollary in_get_2_right_2 :
+(* Used *)
+Corollary in_getColumnReferenceOnLinks_right_2 :
   forall (l: list Link) v, 
       (exists (x:Table_t), In (ColumnReferenceLink {| cr := v ;  ct := x |}) l) -> 
       exists r' : Table_t,
@@ -63,11 +64,12 @@ Corollary in_get_2_right_2 :
 Proof.
   intros. 
   destruct H.
-  eapply in_get_2_right.
+  eapply in_getColumnReferenceOnLinks_right.
   exact H.
 Qed.
 
-Lemma in_get_2_left :
+(* Used *)
+Lemma in_getColumnReferenceOnLinks_left :
   forall (l: list Link) col t, 
     getColumnReferenceOnLinks col l = return t -> 
     In (ColumnReferenceLink {| cr := col ;  ct := t |}) l  
@@ -96,9 +98,11 @@ Proof.
 Qed.
 
 
-(** * well formedness  *)
+(** * Well Formedness  *)
 
+(* Used *)
 Definition wf_all_table_references_exist (rm:RelationalModel) :=
   forall col r, 
     In (ColumnReferenceLink {| cr := col ;  ct := r |}) rm.(modelLinks) ->
     In (TableElement r) rm.(modelElements).
+

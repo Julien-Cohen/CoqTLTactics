@@ -4,12 +4,12 @@ Require Import List.
 Require Import core.utils.Utils.
 Require Import core.Model.
 
-Require Import transformations.Class2Relational.ClassMetamodel.
+From transformations.Class2Relational Require Import ClassMetamodel.
 
 From transformations.Class2Relational Require Tactics.
 
-
-Lemma getAttributeTypeOnLinks_in l t v : 
+(* Used *)
+Lemma getAttributeTypeOnLinks_In_right l t v : 
   getAttributeTypeOnLinks v l = return t ->
     In (AttributeTypeLink {| source_attribute  := v ; a_type := t |}) l.
 Proof.
@@ -37,17 +37,17 @@ Proof.
 Qed.
 
 
-(* FIXME : not used anymore. *)
+(* Used *)
 Corollary getAttributeType_In_right att m t: 
   getAttributeType att m = Some t ->
     In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks).
 Proof.
   unfold getAttributeType.
-  apply getAttributeTypeOnLinks_in. 
+  apply getAttributeTypeOnLinks_In_right. 
 Qed. 
 
-(* not used *)
-Remark getAttributeType_In_left att t (m:Model ClassMM): 
+(* Used *)
+Lemma getAttributeType_In_left att t (m:Model ClassMM): 
   In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks) ->
   getAttributeType att m <> None.
 Proof.
@@ -74,6 +74,7 @@ Proof.
     assumption.
 Qed. 
 
+(* Used *)
 Corollary getAttributeType_In_left_2 att t (m:Model ClassMM): 
   In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks) ->
   exists r, getAttributeType att m = Some r.
@@ -86,13 +87,16 @@ Proof.
 Qed.
 
 
-(** *** Well formed models. *)
+(** * Well formed models (definitions) *)
 
-(* Probablement pas necessaire. *)
+
+(* Not Used *)
 Definition wf_classmodel_nodup (cm:ClassModel) : Prop :=
    List.NoDup cm.(modelElements).
 
-(* identifiants uniques (classes) *)
+
+(** Unique identifiers (classes) *)
+(* Not Used *)
 Definition wf_classmodel_unique_class_id (cm:ClassModel) : Prop :=
   forall c1 c2,
   In (ClassElement c1) cm.(modelElements) ->
@@ -100,26 +104,30 @@ Definition wf_classmodel_unique_class_id (cm:ClassModel) : Prop :=
           c1 <> c2 ->
           c1.(class_id) <> c2.(class_id).
 
-(* Deux classes différentes ont des noms différents. *)
+
+(** Two different classes have different names. *)
+(* Not Used *)
 Definition wf_classmodel_unique_class_names (cm:ClassModel) :=
   forall i1 i2 n1 n2,
   In (ClassElement {| class_id := i1 ; class_name := n1 |}) cm.(modelElements) ->
   In (ClassElement {| class_id := i2 ; class_name := n2 |}) cm.(modelElements) ->
           i1 <> i2 ->
           n1 <> n2.
-(* Remarque : le nom de classe pourrait servir d'identifiant unique. *)
+(** Remark : the class name could be used as a unique identifier. *)
 
 
-(* Un attribut (d'une classe) n'a qu'un type (encodé dans les liens). *)
+(** An attribute (of a class) has only one type (encoded in the links). *)
+(* Used *)
 Definition wf_classmodel_unique_attribute_types (cm:ClassModel) :=
   forall attr c1 c2,
   In (AttributeTypeLink {| source_attribute := attr ; a_type := c1 |}) cm.(modelLinks) ->
   In (AttributeTypeLink {| source_attribute := attr ; a_type := c2 |}) cm.(modelLinks) ->
           c1 = c2. 
-(* Rappel : Si deux attributs de classes différentes ont le même nom, ils auront des id différents et sont donc diffrent au sens de = / <> *)
-(* Remarque : ci-dessus rien ne contraint c1/c2 à être dans cm.(modelElements). Voir ci-dessous pour une telle contrainte.  *)
+(** Reminder : If two attributes of different classes have the same name, they will have different identifiers are so they are different with respect to = and <> *)
+(** Remark : Above, nothing forces c1/c2 to be in cm.(modelElements). See below for such a constraint.  *)
 
-(* Les attributs de chaque classe sont définis dans un seul lien ClassAttributeLink (et pas par petits bouts) *)
+(** The attributes of each class are defined in a single link ClassAttributeLink (and not by small bits). *)
+(* Not Used *)
 Definition wf_classmodel_unique_attribute_link (cm:ClassModel) :=
   forall a1 a2,
   In (ClassAttributeLink a1) cm.(modelLinks) ->
@@ -127,7 +135,9 @@ Definition wf_classmodel_unique_attribute_link (cm:ClassModel) :=
   a1 <> a2 ->
   a1.(source_class) <> a2.(source_class).
 
-(* une classe n'a pas deux fois le même attribut (le nom et l'identifiant doivent être différents) *)
+
+(** A class does not contains two times the same attribute (same name and identifier) *)
+(* Not Used. *)
 Definition wf_classmodel_unique_attribute_per_class (cm:ClassModel) :=
   forall c l a1 a2,
   In (ClassAttributeLink {| source_class := c ; attrs := l |}) cm.(modelLinks) ->
@@ -136,15 +146,21 @@ Definition wf_classmodel_unique_attribute_per_class (cm:ClassModel) :=
   a1 <> a2 ->
   a1.(attr_id) <> a2.(attr_id) /\ a1.(attr_name) <> a2.(attr_name).
 
-(** Remarque : On peut avoir plusieurs attributs de même nom (attachés à des classes différentes). *)
 
+(** Remark : We can have several attributes with the same name (attached to different classes). *)
+
+
+(* Used *)
 Definition wf_classmodel_types_exist (cm:ClassModel) :=
   forall attr c,
     In (AttributeTypeLink {| source_attribute := attr ; a_type := c |}) cm.(modelLinks)  ->
     In (ClassElement c) cm.(modelElements).
 
-    
-Lemma getAttributeType_classex cm :
+
+(** * Results on well-formed models *)
+
+(* Used *)    
+Lemma getAttributeType_classex_right cm :
   wf_classmodel_types_exist cm ->
   forall att r, 
     getAttributeType att cm = Some r ->
@@ -157,6 +173,8 @@ Proof.
   exact H.
 Qed.
 
+
+(* Used *)
 Lemma getAttributeType_In_left_3 att t (m:Model ClassMM): 
   wf_classmodel_unique_attribute_types m ->
   In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks) ->

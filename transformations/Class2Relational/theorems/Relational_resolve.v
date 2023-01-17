@@ -24,8 +24,7 @@ From transformations.Class2Relational Require TraceUtils.
 
 (** *** Utilities on transformation of elements *)
 
-(* FIXME : move-me *)
-(* NOT USED *)
+(* FIXME : not used here but could be useful elsewhere. *)
 Lemma transform_attribute_fw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
@@ -50,6 +49,8 @@ Proof.
     reflexivity.
   + auto. 
 Qed.
+
+
 Lemma transform_class_fw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
@@ -77,8 +78,8 @@ Proof.
     (* Remark : exactly the same script as above. *)
 Qed.
 
-(* FIXME : move-me *)
-(* NOT USED *)
+
+(* FIXME : not used here but could be useful elsewhere. *)
 Lemma transform_attribute_bw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
@@ -112,6 +113,7 @@ Proof.
   + auto.
 Qed.
 
+(* FIXME : not used here but could be useful elsewhere. *)
 Lemma transform_class_bw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
@@ -183,7 +185,7 @@ Proof.
   
   clear IN0.
   
-  (* on a besoin de savoir quelle règle a été appliquée pour progresser dans le calcul *)
+  (* we need to know which rule has been applied to preogress in the computation *)
   Tactics.destruct_In_two ; simpl in * ; 
   remove_or_false_auto ; subst ; simpl in * ;
   Tactics.deduce_element_kind_from_guard ; simpl in * ;
@@ -400,7 +402,7 @@ Proof.
 
       unfold ModelingSemantics.maybeResolve.
 
-      apply ClassModelProperties.getAttributeType_classex in G1 ; [ | exact WF2].
+      apply ClassModelProperties.getAttributeType_classex_right in G1 ; [ | exact WF2].
 
       apply TraceUtils.in_maybeResolve_trace_2 in G1.
       destruct G1 as (G11 & G12).
@@ -476,12 +478,12 @@ Proof.
   subst derived ; simpl in *. 
 
   Tactics.duplicate G1 G2. (* à quoi sert de garder PRE1 ? *)
-  apply ClassModelProperties.getAttributeTypeOnLinks_in in G1.
+  apply ClassModelProperties.getAttributeTypeOnLinks_In_right in G1.
 
   specialize (TraceUtils.in_maybeResolve_trace_2 c cm IN_C ) ; intros (R & I).
 
 
-  eapply RelationalModelProperties.in_get_2_right 
+  eapply RelationalModelProperties.in_getColumnReferenceOnLinks_right 
     with (x:= {| table_id := c.(class_id) ;  
                 table_name := c.(class_name) |}) . 
 
@@ -555,7 +557,7 @@ Proof.
     unfold all_columns_have_a_reference in WT.
     apply WT in IN1.
     destruct IN1 as (r & IN2).
-    apply RelationalModelProperties.in_get_2_right_2.
+    apply RelationalModelProperties.in_getColumnReferenceOnLinks_right_2.
     eauto.
   }
   {
@@ -615,7 +617,7 @@ Proof.
     }
     {
       (* comes from G *)
-      apply RelationalModelProperties.in_get_2_left.
+      apply RelationalModelProperties.in_getColumnReferenceOnLinks_left.
       exact G.
     }
   }
