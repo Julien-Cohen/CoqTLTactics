@@ -91,12 +91,14 @@ Qed.
 
 
 (* Not Used *)
+(* Could be added to Model.v, set semantics for ModelElement list *)
 Definition wf_classmodel_nodup (cm:ClassModel) : Prop :=
    List.NoDup cm.(modelElements).
 
 
 (** Unique identifiers (classes) *)
 (* Not Used *)
+(* Could be generated from Class.ecore *)
 Definition wf_classmodel_unique_class_id (cm:ClassModel) : Prop :=
   forall c1 c2,
   In (ClassElement c1) cm.(modelElements) ->
@@ -107,6 +109,7 @@ Definition wf_classmodel_unique_class_id (cm:ClassModel) : Prop :=
 
 (** Two different classes have different names. *)
 (* Not Used *)
+(* Could be generated from Class.ecore, "unique" property for name in Class.ecore, defaults true*)
 Definition wf_classmodel_unique_class_names (cm:ClassModel) :=
   forall i1 i2 n1 n2,
   In (ClassElement {| class_id := i1 ; class_name := n1 |}) cm.(modelElements) ->
@@ -116,7 +119,7 @@ Definition wf_classmodel_unique_class_names (cm:ClassModel) :=
 (** Remark : the class name could be used as a unique identifier. *)
 
 
-(** An attribute (of a class) has only one type (encoded in the links). *)
+(** An attribute (of a class) can not have more than one type (encoded in the links), default multiplicty for type in Class.ecore *)
 (* Used *)
 Definition wf_classmodel_unique_attribute_types (cm:ClassModel) :=
   forall attr c1 c2,
@@ -128,16 +131,18 @@ Definition wf_classmodel_unique_attribute_types (cm:ClassModel) :=
 
 (** The attributes of each class are defined in a single link ClassAttributeLink (and not by small bits). *)
 (* Not Used *)
+(* A generic version could be added to Model.v, well-formedness of links *)
 Definition wf_classmodel_unique_attribute_link (cm:ClassModel) :=
-  forall a1 a2,
+  forall (a1 a2: ClassAttributes_t),
   In (ClassAttributeLink a1) cm.(modelLinks) ->
   In (ClassAttributeLink a2) cm.(modelLinks) ->
   a1 <> a2 ->
   a1.(source_class) <> a2.(source_class).
 
 
-(** A class does not contains two times the same attribute (same name and identifier) *)
+(** A class does not contain two times the same attribute (same name and identifier) *)
 (* Not Used. *)
+(* Could be generated from Class.ecore, unique attribute of "attributes" in Class.ecore, defaults true*)
 Definition wf_classmodel_unique_attribute_per_class (cm:ClassModel) :=
   forall c l a1 a2,
   In (ClassAttributeLink {| source_class := c ; attrs := l |}) cm.(modelLinks) ->
@@ -151,6 +156,9 @@ Definition wf_classmodel_unique_attribute_per_class (cm:ClassModel) :=
 
 
 (* Used *)
+(* A generic version could be added to Model.v, well-formedness of links *)
+(* Also for source model element of the link *)
+
 Definition wf_classmodel_types_exist (cm:ClassModel) :=
   forall attr c,
     In (AttributeTypeLink {| source_attribute := attr ; a_type := c |}) cm.(modelLinks)  ->
