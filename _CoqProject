@@ -65,6 +65,7 @@ transformations/Class2Relational_TUPLE_SP/RelationalMetamodel.v
 transformations/Class2Relational_TUPLE_SP/tests/PersonModel.v
 transformations/Class2Relational_TUPLE_SP/tests/PersonTest_TUPLE_SP.v
 transformations/Class2Relational_TUPLE_SP/Class2Relational_TUPLE_SP.v
+transformations/Class2Relational_TUPLE_SP/Tactics.v
 
 transformations/TT2BDD/TT.v
 transformations/TT2BDD/BDD.v
