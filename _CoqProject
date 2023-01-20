@@ -56,7 +56,7 @@ transformations/Class2Relational/RelationalModelProperties.v
 transformations/Class2Relational/Class2RelationalAbstract.v
 transformations/Class2Relational/Class2Relational.v
 transformations/Class2Relational/utils/TraceUtils.v
-transformations/Class2Relational/Tactics.v
+transformations/Class2Relational/C2RTactics.v
 transformations/Class2Relational/tests/PersonModel.v
 transformations/Class2Relational/tests/PersonTest.v
 

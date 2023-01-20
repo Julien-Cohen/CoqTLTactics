@@ -209,3 +209,15 @@ Proof.
   intro.
   apply (Tactics.allModelElements_allTuples (tc:=C2RConfiguration)); auto.
 Qed.
+
+Lemma in_allTuples_singleton :
+  forall e t s, 
+    In [e] (allTuples t s) ->
+    In e s.(modelElements).
+Proof.
+  intros e t s IN.
+  apply incl_singleton.
+  eapply Certification.allTuples_incl.
+  exact IN.
+Qed.
+

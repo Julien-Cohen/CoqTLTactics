@@ -18,8 +18,8 @@ Require Import transformations.Class2Relational.RelationalMetamodel.
 From transformations.Class2Relational 
   Require ClassModelProperties RelationalModelProperties.
 
-From transformations.Class2Relational Require Tactics.
-From transformations.Class2Relational Require TraceUtils.
+From transformations.Class2Relational 
+  Require C2RTactics  TraceUtils.
 
 
 (** *** Utilities on transformation of elements *)
@@ -36,7 +36,7 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
   simpl.
-  apply Tactics.allModelElements_allTuples in H.
+  apply C2RTactics.allModelElements_allTuples in H.
   revert H ; generalize (allTuples Class2Relational cm).
   induction l ; intro H ; [ solve [inversion H] | simpl ].
   apply List.in_or_app.
@@ -62,7 +62,7 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
   simpl.
-  apply Tactics.allModelElements_allTuples in H.
+  apply C2RTactics.allModelElements_allTuples in H.
   revert H ; generalize (allTuples Class2Relational cm).
   induction l ; intro H ; [ solve [inversion H] | simpl ].
   apply List.in_or_app.
@@ -101,7 +101,7 @@ Proof.
 
   destruct_or H ; [ left | right ].
   + Tactics.show_singleton.
-    Tactics.show_origin.
+    C2RTactics.show_origin.
     f_equal.
     f_equal.
     destruct a.
@@ -135,7 +135,7 @@ Proof.
 
   destruct_or H ; [ left | right ].
   + Tactics.show_singleton.
-    Tactics.show_origin.
+    C2RTactics.show_origin.
     f_equal.
     f_equal.
     destruct c.
@@ -187,9 +187,9 @@ Proof.
   clear IN0.
   
   (* we need to know which rule has been applied to preogress in the computation *)
-  Tactics.destruct_In_two ; simpl in * ; 
+  C2RTactics.destruct_In_two ; simpl in * ; 
   remove_or_false_auto ; subst ; simpl in * ;
-  Tactics.deduce_element_kind_from_guard ; simpl in * ;
+  C2RTactics.deduce_element_kind_from_guard ; simpl in * ;
   [ | ].
   { (* first rule : impossible *)
     exfalso. clear C_IN1. 
@@ -308,7 +308,7 @@ Proof.
   subst rm.
   repeat Tactics.destruct_execute.
   repeat Tactics.show_singleton.
-  repeat Tactics.show_origin.
+  repeat C2RTactics.show_origin.
   repeat Tactics.destruct_any.
 
   (* we have lost IN1 : In (ColumnElement col)
@@ -331,13 +331,13 @@ Proof.
 
   set (z:=r).
 
-  Tactics.destruct_In_two ; [ exfalso | ] ; 
+  C2RTactics.destruct_In_two ; [ exfalso | ] ; 
    simpl in IN_OP ; remove_or_false IN_OP ; subst ope ; [ discriminate IN1 | Tactics.inj IN1]. 
   
   clear n. 
   simpl in M.
   
-  Tactics.deduce_element_kind_from_guard. (* M *)
+  C2RTactics.deduce_element_kind_from_guard. (* M *)
  
   destruct a0 ; simpl in *. (* derived a0 = false *)
   subst derived ; simpl in *. 
@@ -361,7 +361,7 @@ Proof.
                attr_name := attr_name
              |}]).
   split.
-  { apply Tactics.allModelElements_allTuples. exact IN_E. }
+  { apply C2RTactics.allModelElements_allTuples. exact IN_E. }
   {
     
     unfold applyPattern.
@@ -434,7 +434,7 @@ Proof.
 
   repeat Tactics.destruct_execute.
   repeat Tactics.show_singleton.
-  repeat Tactics.show_origin.
+  repeat C2RTactics.show_origin.
   repeat Tactics.destruct_any.
 
   (* we have lost IN1 : In (ColumnElement col)
@@ -459,13 +459,13 @@ Proof.
 
   set (z:=r).
 
-  Tactics.destruct_In_two ; [ exfalso | ] ; 
+  C2RTactics.destruct_In_two ; [ exfalso | ] ; 
    simpl in IN_OP ; remove_or_false IN_OP ; subst ope ; [ discriminate IN1 | Tactics.inj IN1]. 
   
   clear n. 
   simpl in M.
   
-  Tactics.deduce_element_kind_from_guard. (* M *)
+  C2RTactics.deduce_element_kind_from_guard. (* M *)
  
   destruct a0 ; simpl in *. (* derived a0 = false *)
   subst derived ; simpl in *. 
@@ -487,7 +487,7 @@ Proof.
                 attr_name := attr_name
               |}]).
     split.
-    { apply Tactics.allModelElements_allTuples. exact IN_E. }
+    { apply C2RTactics.allModelElements_allTuples. exact IN_E. }
     {
 
       unfold applyPattern.

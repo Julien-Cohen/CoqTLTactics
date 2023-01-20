@@ -4,9 +4,11 @@ Require Import List.
 Require Import core.utils.Utils.
 Require Import core.Model.
 
-From transformations.Class2Relational Require Import ClassMetamodel.
+From transformations.Class2Relational 
+  Require Import ClassMetamodel.
 
-From transformations.Class2Relational Require Tactics.
+From transformations.Class2Relational 
+  Require C2RTactics.
 
 (* Used *)
 Lemma getAttributeTypeOnLinks_In_right l t v : 

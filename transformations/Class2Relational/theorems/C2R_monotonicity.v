@@ -13,20 +13,8 @@ From transformations.Class2Relational
   Class2Relational
   ClassMetamodel
   RelationalMetamodel
-  Tactics.
+  C2RTactics.
 
-
-
-Lemma in_allTuples_singleton :
-  forall e t s, 
-    In [e] (allTuples t s) ->
-    In e s.(modelElements).
-Proof.
-  intros e t s IN.
-  apply incl_singleton.
-  eapply Certification.allTuples_incl.
-  exact IN.
-Qed.
 
 
 
@@ -116,7 +104,7 @@ Proof.
     destruct e.
     
     { (* ClassElement *)
-      Tactics.destruct_In_two ;
+      C2RTactics.destruct_In_two ;
        simpl in IN_OP ;
        remove_or_false IN_OP ;
        subst ope ; 
@@ -128,7 +116,7 @@ Proof.
     {
       (* AttributeElement *)
       (* To compute we need to know the value of a.(derived) *) 
-      Tactics.destruct_In_two ;
+      C2RTactics.destruct_In_two ;
        simpl in IN_OP ;
        remove_or_false IN_OP ;
        subst ope  ;

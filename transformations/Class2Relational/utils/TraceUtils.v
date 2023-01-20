@@ -17,7 +17,8 @@ Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
 
-From transformations.Class2Relational Require Tactics.
+From transformations.Class2Relational 
+  Require C2RTactics.
 
 Import TraceLink.
 
@@ -75,9 +76,9 @@ Proof.
 
   Tactics.destruct_matchPattern.
   
-  Tactics.destruct_In_two ; simpl in * ;
+  C2RTactics.destruct_In_two ; simpl in * ;
   repeat PropUtils.remove_or_false_auto ; subst ;
-  Tactics.deduce_element_kind_from_guard. 
+  C2RTactics.deduce_element_kind_from_guard. 
   { (* rule 1 *) 
     compute in IN0. 
     PropUtils.remove_or_false_auto. 
@@ -235,7 +236,7 @@ Proof.
   apply in_flat_map.
   exists ([ClassElement c]).
   split.
-  { apply Tactics.allModelElements_allTuples ; auto. } 
+  { apply C2RTactics.allModelElements_allTuples ; auto. } 
   { compute. left. reflexivity. }
 Qed.
 

@@ -8,7 +8,8 @@ From transformations.Class2Relational
   Require Import Class2Relational ClassMetamodel RelationalMetamodel.
 
 
-From transformations.Class2Relational Require Tactics.
+From transformations.Class2Relational 
+  Require C2RTactics.
 
 
 (** *** Utilities on "getters" *)

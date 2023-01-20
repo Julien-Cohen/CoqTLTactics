@@ -21,7 +21,8 @@ Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
 
-From transformations.Class2Relational Require Tactics.
+From transformations.Class2Relational 
+  Require C2RTactics.
 
 Theorem Column_name_uniqueness:
 forall (cm : ClassModel) (rm : RelationalModel), 
@@ -49,9 +50,9 @@ Proof.
    
     repeat core.Tactics.show_singleton.
 
-    repeat Tactics.show_origin. 
+    repeat C2RTactics.show_origin. 
 
-    repeat Tactics.unify_all.
+    repeat C2RTactics.unify_all.
     simpl. 
     
     repeat Tactics.in_singleton_allTuples.

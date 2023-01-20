@@ -27,7 +27,8 @@ Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
 
-From transformations.Class2Relational Require Tactics.
+From transformations.Class2Relational 
+  Require C2RTactics.
 
 Theorem Relational_name_definedness (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : RelationalModel) :
   (* transformation *) 
@@ -58,7 +59,7 @@ Proof.
   destruct e0. (* Case analysis on source element type *)
   * (* [Class] *) 
 
-    Tactics.destruct_In_two ;
+    C2RTactics.destruct_In_two ;
       simpl in * ;
       remove_or_false IN_OP ;
       subst ope ; compute in IN ; 
@@ -70,11 +71,11 @@ Proof.
     destruct derived.
     -- (* derived *)
       exfalso. (* no rule can match *)
-      Tactics.destruct_In_two ; discriminate M.
+      C2RTactics.destruct_In_two ; discriminate M.
 
              
     -- (* not derived *) 
-      Tactics.destruct_In_two;
+      C2RTactics.destruct_In_two;
         simpl in * ;
         remove_or_false IN_OP ;
         subst ope ; compute in IN ;
