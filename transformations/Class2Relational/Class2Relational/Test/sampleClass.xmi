@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xmi:XMI xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:Class="http://Class/1.0">
+  <Class:Class
+      name="Family">
+    <attributes
+        derived="false"
+        name="name"/>
+    <attributes
+        derived="false"
+        name="members"
+        type="/1"/>
+  </Class:Class>
+  <Class:Class
+      name="Person">
+    <attributes
+        derived="false"
+        name="firstName"/>
+    <attributes
+        derived="false"
+        name="closestFriend"
+        type="/1"/>
+    <attributes
+        name="fullName"/>
+  </Class:Class>
+</xmi:XMI>
