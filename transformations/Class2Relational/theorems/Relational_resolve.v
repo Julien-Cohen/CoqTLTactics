@@ -175,13 +175,14 @@ Proof.
   intros r t R_IN1.
   subst rm.
   
-  Tactics.destruct_execute.
+  repeat core.Tactics.destruct_any.
+
   rename IN_E into C_IN1.
 
   destruct t.
   apply transform_class_fw with (cm:=cm) ; [ reflexivity | ]. (* FIXME : don't want to destruct t to be able to apply transform_class_fw. *)
 
-  repeat Tactics.destruct_any.
+
   
   clear IN0.
   
@@ -191,14 +192,8 @@ Proof.
   Tactics.deduce_element_kind_from_guard ; simpl in * ;
   [ | ].
   { (* first rule : impossible *)
-    exfalso.
+    exfalso. clear C_IN1. 
 
-    (* Set Printing All.*)
-
-    eapply Tactics.allModelElements_allTuples_back with (t:=Class2Relational) in C_IN1 ;
-    (* FIXME : the tactics does not work*)
-      simpl in *.
-    repeat Tactics.destruct_any.
     unfold Parser.parseOutputPatternElement in IN2 ; simpl in *. 
     unfold applyElementOnPattern in IN2 ; simpl in IN2.
         
@@ -210,9 +205,7 @@ Proof.
     unfold ConcreteExpressions.wrapLink in M ; simpl in M.
      
     Tactics.monadInv M.
-    unfold maybeBuildTableColumns in M.
     
-    Tactics.monadInv M.
     apply in_singleton in IN2 ; discriminate IN2.
   }
   {
@@ -222,7 +215,7 @@ Proof.
     eapply Tactics.allModelElements_allTuples_back with (t:=Class2Relational) in C_IN1 ;
     (* FIXME : the tactics does not work*)
       simpl in *.
-    repeat Tactics.destruct_any.
+
     unfold Parser.parseOutputPatternElement in IN2 ; simpl in *. 
     unfold applyElementOnPattern in IN2 ; simpl in IN2.
         
@@ -253,7 +246,7 @@ Proof.
     toEDataT M.
     destruct t ; unfold toEData in M ; simpl in M ; Tactics.inj M.
 
-    destruct a (* FIXME *). simpl in D ; subst derived.
+    destruct a (* FIXME *). simpl in D ; subst derived. 
 
     unfold maybeResolve in E ; 
       Tactics.monadInv E.
@@ -261,16 +254,16 @@ Proof.
     unfold maybeSingleton in E0.
     unfold option_map in E0 ;
       Tactics.monadInv E0.
+    unfold singleton in E ; simpl in E.
 
     unfold getAttributeTypeElement in E0.
     Tactics.monadInv E0.
 
-    unfold singleton in E ; simpl in E.
-    
-    Tactics.duplicate C_IN1 C_IN2.
-    apply C_WF1 in C_IN2 ; destruct C_IN2 as (t & C_IN2).
-    rewrite ClassModelProperties.getAttributeType_In_left_3 with (t:=t) in E0 ;
-      [ | exact C_WF3 | exact C_IN2]. 
+
+    apply C_WF1 in C_IN1 ; destruct C_IN1 as (t & C_IN1).
+
+    rewrite ClassModelProperties.getAttributeType_In_left_wf with (t:=t) in E0 ;
+      [ | exact C_WF3 | exact C_IN1]. 
     Tactics.inj E0.    
  
     unfold resolve in E.
@@ -281,7 +274,7 @@ Proof.
     destruct t ; simpl in * ; subst.  
 
     apply find_some in E ; simpl in *.
-    destruct E as (T_IN1 & T_IN2).
+    destruct E as (T_IN1 & _). (* discard *)
     
     specialize (TraceUtils.trace_wf cm) ; intro T_WF.
     unfold TraceUtils.wf in T_WF.
@@ -295,8 +288,8 @@ Proof.
   }
 Qed.
 
-(** *** Result *)
 
+(** *** Results *)
 
 
 Theorem Relational_Column_Reference_definedness_aux:
@@ -356,7 +349,7 @@ Proof.
     intros (R & I).
 
 
-  apply ClassModelProperties.getAttributeType_In_left_2 in G1 ;
+  apply ClassModelProperties.getAttributeType_In_left in G1 ; (* here we should exploit getAttributeType_In_left_wf *)
     destruct G1 as [r G1].
 
   exists{| table_id := r.(class_id); table_name := r.(class_name) |}.
@@ -422,7 +415,7 @@ Qed.
 Theorem Relational_Column_Reference_definedness:
 forall (cm : ClassModel) (rm : RelationalModel), 
 
-(* well-formed *) ClassModelProperties.wf_classmodel_types_exist cm ->
+  (* well-formed *) ClassModelProperties.wf_classmodel_types_exist cm ->
 
   (* transformation *) rm = execute Class2Relational cm ->
 

@@ -24,6 +24,12 @@ Ltac destruct_if_hyp :=
         [ H : context[if ?B then _ else _] |- _ ] => destruct B eqn:E 
  end.
 
+Ltac destruct_if_goal :=
+  let E := fresh "E" in
+ match goal with
+        [ |- context[if ?B then _ else _] ] => destruct B eqn:E 
+ end.
+
 (* To replace the [inversion] tactics on equalities on a dependant type constructor. *)
 Ltac dep_inversion H := 
   let H':= fresh H in

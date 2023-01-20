@@ -49,12 +49,12 @@ Qed.
 (* Used *)
 Lemma getAttributeType_In_left att t (m:Model ClassMM): 
   In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks) ->
-  getAttributeType att m <> None.
+  exists r, getAttributeType att m = Some r.
 Proof.
   destruct m. simpl.
   unfold getAttributeType ; simpl.
   clear modelElements.
-  induction modelLinks ; simpl ; [ congruence | ] ; intro.
+  induction modelLinks ; simpl ; [ contradiction | ] ; intro.
   destruct a.
   + (* ClassAttibute *)
     destruct_or H ; [discriminate|].
@@ -63,27 +63,16 @@ Proof.
   + (* AttributeType *)
     destruct a.
     destruct_or H.
-  - injection H ; intros ;  clear H ; subst. simpl.
-    rewrite beq_Attribute_refl.
-    congruence.
-
-  - apply IHmodelLinks in H.
+    - Tactics.inj H. simpl.
+      rewrite beq_Attribute_refl.
+      solve [eauto].
+      
+    - apply IHmodelLinks in H.
     
-    match goal with [ |- context[ if ?P then _ else _ ]  ] => destruct P eqn:? end .
-    congruence.
-    assumption.
-Qed. 
-
-(* Used *)
-Corollary getAttributeType_In_left_2 att t (m:Model ClassMM): 
-  In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks) ->
-  exists r, getAttributeType att m = Some r.
-Proof.
-  intro H.
-  apply getAttributeType_In_left in H.
-  destruct (getAttributeType att m).
-  + eauto.
-  + contradiction.
+      Tactics.destruct_if_goal.
+      * solve[eauto].
+      * assumption.
+  
 Qed.
 
 
@@ -183,7 +172,7 @@ Qed.
 
 
 (* Used *)
-Lemma getAttributeType_In_left_3 att t (m:Model ClassMM): 
+Lemma getAttributeType_In_left_wf att t (m:Model ClassMM): 
   wf_classmodel_unique_attribute_types m ->
   In (AttributeTypeLink {| source_attribute := att ; a_type := t |}) m.(modelLinks) ->
   getAttributeType att m = Some t.
@@ -192,8 +181,9 @@ Proof.
   intros WF H.
   Tactics.duplicate H G.
   apply getAttributeType_In_left in G.
-  destruct (getAttributeType att m) eqn:E ; [ clear G | contradiction ].
-  apply getAttributeType_In_right in E.
+  
+  destruct G as [r G] ; rewrite G.
+  apply getAttributeType_In_right in G.
 
   f_equal.
   
