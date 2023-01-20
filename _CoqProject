@@ -59,8 +59,12 @@ transformations/Class2Relational/utils/TraceUtils.v
 transformations/Class2Relational/Tactics.v
 transformations/Class2Relational/tests/PersonModel.v
 transformations/Class2Relational/tests/PersonTest.v
-transformations/Class2Relational/Class2Relational_arity.v
-transformations/Class2Relational/tests/PersonTest_arity.v
+
+transformations/Class2Relational_TUPLE_SP/ClassMetamodel.v
+transformations/Class2Relational_TUPLE_SP/RelationalMetamodel.v
+transformations/Class2Relational_TUPLE_SP/tests/PersonModel.v
+transformations/Class2Relational_TUPLE_SP/tests/PersonTest_TUPLE_SP.v
+transformations/Class2Relational_TUPLE_SP/Class2Relational_TUPLE_SP.v
 
 transformations/TT2BDD/TT.v
 transformations/TT2BDD/BDD.v
@@ -158,3 +162,4 @@ transformations/Families2Persons/theorems/sampleTheorems.v
 
 transformations/Moore2Mealy/theorems/moore2mealy.v
 transformations/Moore2Mealy/theorems/moore2mealy_wiki_moore_semantics.v
+

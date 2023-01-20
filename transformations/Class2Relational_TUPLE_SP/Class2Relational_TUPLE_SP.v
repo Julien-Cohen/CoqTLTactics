@@ -7,13 +7,11 @@ Require Import core.modeling.ModelingSemantics.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
-
-Require Import Class2Relational.ClassMetamodel.
-Require Import Class2Relational.RelationalMetamodel.
-
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
 
+Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
+Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
 
 (** This transformation contains rule arity > 1 *)
 
@@ -54,7 +52,7 @@ Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2R
 
 Open Scope coqtl.
 
-Definition Class2Relational_arity' :=
+Definition Class2Relational_TUPLE_SP' :=
   transformation
   [
     rule "Class2Table"
@@ -87,6 +85,6 @@ Definition Class2Relational_arity' :=
         >>> ]
   ].
 
-Definition Class2Relational_arity := parse Class2Relational_arity'.
+Definition Class2Relational_TUPLE_SP := parse Class2Relational_TUPLE_SP'.
 
 Close Scope coqtl.
