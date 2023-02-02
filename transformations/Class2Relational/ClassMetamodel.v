@@ -271,10 +271,15 @@ Definition getAttributeType (a : Attribute_t) (m : ClassModel) : option Class_t 
 
 
 Definition getAttributeTypeElement (a : Attribute_t) (m : ClassModel) : option Element :=
-  match getAttributeType a m with
-  | Some c => Some (ClassElement c)
-  | None => None
-  end.
+  option_map ClassElement (getAttributeType a m).
+
+Ltac inv_getAttributeTypeElement H :=
+   match type of H with 
+     getAttributeTypeElement _ _ = Some _ =>
+       unfold getAttributeTypeElement in H ;
+       OptionUtils.monadInv H
+   end.
+
 
 Definition defaultInstanceOfClass (c: ElementKind) : (getTypeByEKind c) :=
   match c with

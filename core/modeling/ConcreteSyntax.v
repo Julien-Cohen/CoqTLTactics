@@ -160,3 +160,55 @@ Notation "'A' [ i | j ]" := (i + j).
 
 Definition Truc := A [ 1 | 2 ] . 
 *)
+
+
+(** *** Some tactics to unfold accessors *)
+
+Ltac simpl_link_accessors H :=
+  match type of H with 
+  | context[
+        o_OutRefKind (link _ _ _ _)] =>
+      unfold o_OutRefKind in H
+  | context[
+        o_outpat (link _ _ _ _)] =>
+      unfold o_outpat in H
+  end.
+
+Ltac simpl_cr_accessors H :=
+  match type of H with 
+  | context[
+        r_name (Build_ConcreteRule _ _ _ _ _)] =>
+      unfold r_name in H
+                                        
+  | context[
+        r_InKinds (Build_ConcreteRule _ _ _ _ _)] =>
+      unfold r_InKinds in H
+                                           
+  | context[
+        r_guard (Build_ConcreteRule _ _ _ _ _)] =>
+      unfold r_guard in H
+                                         
+  | context[
+        r_iter (Build_ConcreteRule _ _ _ _ _)] =>
+      unfold r_iter in H
+                                        
+  | context[
+        r_outpat (Build_ConcreteRule _ _ _ _ _)] =>
+      unfold r_outpat in H
+  end.
+
+Ltac simpl_elem_accessors H :=
+  match type of H with 
+  | context[
+        e_OutKind (elem _ _ _ _ _)] =>
+      unfold e_OutKind in H
+  | context[
+        e_name (elem _ _ _ _ _)] =>
+      unfold e_name in H
+  | context[
+        e_outpat (elem _ _ _ _ _)] =>
+      unfold e_outpat in H
+  | context[
+        e_outlink (elem _ _ _ _ _)] =>
+      unfold e_outlink in H
+  end.

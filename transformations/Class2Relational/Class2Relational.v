@@ -49,10 +49,9 @@ Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2R
 
 Open Scope coqtl.
 
-Definition Class2Relational' :=
-  transformation
-  [
-    rule "Class2Table"
+
+Definition R1 : ConcreteRule := 
+  rule "Class2Table"
     from [Class_K]
 
     to [ ELEM "tab" ::: Table_K  
@@ -62,9 +61,10 @@ Definition Class2Relational' :=
                   maybeBuildTableColumns t
                     (maybeResolveAll tls m "col" Column_K 
                        (maybeSingletons (getClassAttributesElements c m)))
-        >>> ]
-    ;
-    rule "Attribute2Column"
+                    >>> ].
+
+Definition R2 : ConcreteRule :=
+  rule "Attribute2Column"
     from [Attribute_K]
     where (fun _ a => negb a.(derived))
     to [ ELEM "col" ::: Column_K 
@@ -74,8 +74,10 @@ Definition Class2Relational' :=
                   maybeBuildColumnReference c
                     (maybeResolve tls m "tab" Table_K 
                        (maybeSingleton (getAttributeTypeElement a m)))
-        >>> ]
-  ].
+        >>> ].
+
+Definition Class2Relational' :=
+  transformation  [ R1 ; R2 ].
 
 Definition Class2Relational := parse Class2Relational'.
 

@@ -18,59 +18,52 @@ From transformations.Class2Relational
 
 
 
+Require Elements.
 
-
-Theorem All_classes_instantiate_impl:
+Theorem All_classes_instantiate_impl_third_proof:
   Monotonicity Class2Relational.
 Proof.
+  (* In this proof I use the same script an in other proofs, but I need to use some lemmas, that I don't need in the two first proofs. Why ? *)
+  
+
   unfold Monotonicity.
   unfold TargetModel_elem_incl. unfold SourceModel_elem_incl.
   unfold incl.
   intros sm1 sm2 INC a IN.
 
-  Tactics.destruct_execute.
+  (* (0) *)
+  Tactics.chain_destruct_in_modelElements_execute.
 
-  apply in_flat_map.
+  clear IN_I.
+
+  (* (1)  *)
+  C2RTactics.choose_rule ; [ | ] ;
+
+  (* (2)  *) 
+  C2RTactics.progress_in_guard M ;
+
+
+  (* (3) make the ouput-pattern-element appear *)
+  C2RTactics.progress_in_ope IN_OP ope ;
   
-  Tactics.show_singleton.    
-  apply in_allTuples_singleton in IN_E.
-
-  apply INC in IN_E ; clear INC.
-  exists ([e]).
-  split.
-  { 
-    apply allTuples_incl_length ; [ | simpl ; solve[auto] ].
-    apply incl_singleton.
-    assumption.
+  (* (4) make the matched element appear *)
+  C2RTactics.progress_in_evalOutput IN.
+  {
+    apply in_allTuples_singleton in IN_E.
+    apply INC in IN_E.
+    destruct x.
+    eapply Elements.transform_class_fw (* why ? *) ; eauto.
   }
-  { 
-    repeat Tactics.destruct_any.
-    clear IN_I.
-
-    (* Two ways of reasonning by case analysis : (1) decompose e, (2) decompose r *)
-    (* Here we first decompose r and then we deduce e. *)
-
-    destruct_In_two ;
-      simpl in IN_OP; 
-      unfold In in IN_OP ;
-      remove_or_false IN_OP ;
-      subst ope  ;  
-      simpl in M ;
-      deduce_element_kind_from_guard ;
-      compute in IN ; Tactics.inj IN .
-    
-    { (* first rule *)      
-      compute ; auto.
-    }
-    { (* second rule *)
-      (* To compute we need to know the value of a.(derived) *) 
-      destruct a0 ; simpl in * ; subst. 
-      compute ; auto.
-    }
-  }
+  {
+    apply in_allTuples_singleton in IN_E.
+    destruct a0 ; simpl in D ; subst derived.
+    apply INC in IN_E.
+    eapply Elements.transform_attribute_fw (* why ? *) ; eauto.
+  }    
 Qed.
 
-Theorem All_classes_instantiate_impl_alt:
+
+Theorem All_classes_instantiate_impl_second_proof:
   Monotonicity Class2Relational.
 Proof.
   unfold Monotonicity.
@@ -104,7 +97,7 @@ Proof.
     destruct e.
     
     { (* ClassElement *)
-      C2RTactics.destruct_In_two ;
+      C2RTactics.choose_rule ;
        simpl in IN_OP ;
        remove_or_false IN_OP ;
        subst ope ; 
@@ -116,7 +109,7 @@ Proof.
     {
       (* AttributeElement *)
       (* To compute we need to know the value of a.(derived) *) 
-      C2RTactics.destruct_In_two ;
+      C2RTactics.choose_rule ;
        simpl in IN_OP ;
        remove_or_false IN_OP ;
        subst ope  ;
@@ -130,5 +123,59 @@ Proof.
     }
   }
 Qed.
+
+
+Theorem All_classes_instantiate_impl:
+  Monotonicity Class2Relational.
+Proof.
+  unfold Monotonicity.
+  unfold TargetModel_elem_incl. unfold SourceModel_elem_incl.
+  unfold incl.
+  intros sm1 sm2 INC a IN.
+
+  Tactics.destruct_execute.
+
+  apply in_flat_map.
+  
+  Tactics.show_singleton.    
+  apply in_allTuples_singleton in IN_E.
+
+  apply INC in IN_E ; clear INC.
+  exists ([e]).
+  split.
+  { 
+    apply allTuples_incl_length ; [ | simpl ; solve[auto] ].
+    apply incl_singleton.
+    assumption.
+  }
+  { 
+    repeat Tactics.destruct_any.
+    clear IN_I.
+
+    (* Two ways of reasonning by case analysis : (1) decompose e, (2) decompose r *)
+    (* Here we first decompose r and then we deduce e. *)
+
+    choose_rule ;
+      simpl in IN_OP; 
+      unfold In in IN_OP ;
+      remove_or_false IN_OP ;
+      subst ope  ;  
+      simpl in M ;
+      deduce_element_kind_from_guard ;
+      compute in IN ; Tactics.inj IN .
+    
+    { (* first rule *)      
+      compute ; auto.
+    }
+    { (* second rule *)
+      (* To compute we need to know the value of a.(derived) *) 
+      destruct a0 ; simpl in * ; subst. 
+      compute ; auto.
+    }
+  }
+Qed.
+
  
 (** Generalisation ? If the guard depends only on the input element and not on the other elements of the input model, then the transformation s monotonic ? *)
+
+

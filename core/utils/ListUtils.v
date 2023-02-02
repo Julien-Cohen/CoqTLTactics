@@ -3,7 +3,7 @@ Require Import EqNat.
 Require Import core.utils.CpdtTactics.
 Require Import Lia.
 
-Require PropUtils BoolUtils.
+Require PropUtils BoolUtils OptionUtils.
 
 Definition set_eq {A:Type} (t1 t2: list A) := incl t1 t2 /\ incl t2 t1.
 
@@ -90,6 +90,9 @@ Definition listToListList {A : Type} (l : list A) : list (list A) :=
 Definition hasLength {A : Type} (l : list A) (n: nat): bool :=
   beq_nat (Datatypes.length l) n.
 
+
+(** options *)
+
 Definition optionToList {A:Type} (o: option A) : list A :=
   match o with
   | Some a => a :: nil
@@ -112,6 +115,23 @@ Definition optionListToList {A:Type} (o: option (list A)) : list A :=
   match o with
   | Some a => a
   | None => nil
+  end.
+
+Lemma in_optionListToList {A} : forall (a:A) b,
+    In a (optionListToList b) ->
+    exists l, (b = Some l /\ In a l).
+Proof.
+  intros a b H.
+  destruct b ; simpl in H ; [ | contradiction ]. 
+  eauto.
+Qed.
+
+Ltac destruct_in_optionListToList H :=
+  match type of H with
+  | In _ (optionListToList ?E) =>
+      let M := fresh "IN" in
+      apply in_optionListToList in H;
+      destruct H as (l, (H, M))
   end.
 
 Definition optionList2List {A : Type} (l:list (option A)) : list A :=
@@ -160,6 +180,16 @@ Definition singleton {A: Type} (a: A) : list A := a::nil.
 
 Definition maybeSingleton {A: Type} (a : option A) : option (list A) :=
   option_map singleton a.
+
+
+Ltac inv_maybeSingleton H :=
+   match type of H with
+   | maybeSingleton _ = Some _ =>
+       unfold maybeSingleton in H ;
+       unfold option_map in H ;
+       OptionUtils.monadInv H
+   end.
+ 
 
 Definition singletons {A: Type} (l : list A) : list (list A) :=
   listToListList l.
@@ -222,6 +252,13 @@ Proof.
   split; intros; specialize (H X Y x y f B); symmetry in H.
   - rewrite H. rewrite lem_in_flat_map_exists. reflexivity.
   - rewrite H. rewrite lem_in_flat_map_exists. reflexivity.
+Qed.
+
+Lemma flat_map_singleton {A} {B} (f:A->list B) (e:A):
+  flat_map f (e::nil) = f e.
+Proof.
+  simpl.
+  apply app_nil_r.
 Qed.
 
 Lemma filter_nil:
@@ -288,7 +325,6 @@ Fixpoint count_occ_b {A} (f:A->A->bool) l e :=
   end.
 
 
-Require PropUtils.
 
 Lemma incl_singleton :
   forall {T} (a:T) b, List.In a b <-> incl (a::nil)  b .

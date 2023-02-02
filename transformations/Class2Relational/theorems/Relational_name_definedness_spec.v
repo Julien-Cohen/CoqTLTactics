@@ -30,6 +30,51 @@ Require Import transformations.Class2Relational.RelationalMetamodel.
 From transformations.Class2Relational 
   Require C2RTactics.
 
+Theorem Relational_name_definedness_alt_proof (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : RelationalModel) :
+  (* transformation *) 
+     rm = execute Class2Relational cm ->
+  (* precondition *)   
+     (forall (c1 : ClassMetamodel.Element), 
+         In c1 cm.(modelElements) -> 
+            (ClassMetamodel.getName c1 <> ""%string)) ->
+  (* postcondition *) 
+     (forall (e : RelationalMetamodel.Element), 
+         In e rm.(modelElements) -> 
+            (RelationalMetamodel.getName e <> ""%string)). 
+Proof.
+  intros T P e IN; intros.
+  subst rm.
+
+
+  (* (0) *)
+  Tactics.chain_destruct_in_modelElements_execute.
+
+  clear IN_I.
+
+  (* (1) *)
+  C2RTactics.choose_rule ; [ | ];
+  
+  (* (2) *)
+  C2RTactics.progress_in_guard M ;
+
+  (* (3) *)
+  C2RTactics.progress_in_ope IN_OP ope ;
+  
+  (* (4.E) *)
+  C2RTactics.progress_in_evalOutput IN.
+  
+  {
+    apply C2RTactics.in_allTuples_singleton in IN_E.
+    apply P in IN_E.
+    apply IN_E.
+  }
+  {
+    apply C2RTactics.in_allTuples_singleton in IN_E.
+    apply P in IN_E.
+    apply IN_E.
+  }
+Qed.
+
 Theorem Relational_name_definedness (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : RelationalModel) :
   (* transformation *) 
      rm = execute Class2Relational cm ->
@@ -49,7 +94,7 @@ Proof.
 
   Tactics.show_singleton. 
 
-  Tactics.in_singleton_allTuples.
+  Tactics.in_singleton_allTuples IN_E.
   specialize (P e0 IN_E). 
   
   repeat Tactics.destruct_any.
@@ -59,7 +104,7 @@ Proof.
   destruct e0. (* Case analysis on source element type *)
   * (* [Class] *) 
 
-    C2RTactics.destruct_In_two ;
+    C2RTactics.choose_rule ;
       simpl in * ;
       remove_or_false IN_OP ;
       subst ope ; compute in IN ; 
@@ -71,11 +116,11 @@ Proof.
     destruct derived.
     -- (* derived *)
       exfalso. (* no rule can match *)
-      C2RTactics.destruct_In_two ; discriminate M.
+      C2RTactics.choose_rule ; discriminate M.
 
              
     -- (* not derived *) 
-      C2RTactics.destruct_In_two;
+      C2RTactics.choose_rule;
         simpl in * ;
         remove_or_false IN_OP ;
         subst ope ; compute in IN ;

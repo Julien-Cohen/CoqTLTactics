@@ -1,7 +1,6 @@
 Require Import String.
-Require Import Coq.Logic.Eqdep_dec.
-Require Import Arith.
-Require Import Coq.Arith.Gt.
+
+
 Require Import Coq.Arith.EqNat.
 Require Import List.
 
@@ -53,79 +52,95 @@ Inductive CoherentTraceLink : TraceLink -> Prop :=
 Definition wf t : Prop := 
   List.Forall CoherentTraceLink t.
 
+
 (** Traces built by the Class2Relational transformation are well-formed. *)
+
+
 Lemma trace_wf cm :
   wf (trace Class2Relational cm).
 Proof.
   unfold wf.
   apply Forall_forall.
   intros l H.  
-  Tactics.destruct_trace.
-  Tactics.destruct_tracePattern.
 
-  (* remove [nil] in H (l cannot be nil)*)
-  apply in_app_or in H.
-  destruct_or H.
-  2:{ 
-    simpl in *.
-    PropUtils.remove_or_false_auto.
-    subst.
-    simpl in *. contradiction.
-  }
-  (* done *)
+  (* (0) *)
+  Tactics.chain_destruct_in_trace H.
+  Tactics.destruct_in_matchPattern IN0.
 
-  Tactics.destruct_matchPattern.
-  
-  C2RTactics.destruct_In_two ; simpl in * ;
-  repeat PropUtils.remove_or_false_auto ; subst ;
-  C2RTactics.deduce_element_kind_from_guard. 
+  (* 1 *)
+  C2RTactics.choose_rule ;
+  (* 2 *)
+  C2RTactics.progress_in_guard M ; 
+  (* 3 *)
+  C2RTactics.progress_in_ope IN2 e ;
+
+  (* 4.L *)
+  C2RTactics.progress_in_traceElementOnPattern H ;
+
+  (* 5 *)
+  simpl in IN1 ; PropUtils.remove_or_false IN1 ; subst i. 
+
   { (* rule 1 *) 
-    compute in IN0. 
-    PropUtils.remove_or_false_auto. 
-    subst l. constructor. 
+    constructor 1. 
   }  
   { (* rule 2 *)
-    compute in IN0.
-    PropUtils.remove_or_false_auto. 
-    subst l. constructor.
+    constructor 2.
   }  
 Qed.
 
 
-
-(* General result (does not depend on Class2Relational) *)
+(** General results (do not depend on Class2Relational) *)
 (* FIXME : MOVE-ME *)
-Lemma in_trace_in_models cm t :
+
+Lemma in_trace_in_models_source cm t :
   forall a b s i ,
     In (buildTraceLink ([a],i,s) b ) (trace t cm) ->
-    In a cm.(modelElements) /\In b (execute t cm).(modelElements).
+    In a cm.(modelElements) .
 Proof.
   intros a b s i IN.
+
+  Tactics.chain_destruct_in_trace IN.
+ 
+  C2RTactics.unfold_traceElementOnPattern IN.
+  eapply C2RTactics.in_allTuples_singleton ; exact IN0.
+Qed.
+
+(* FIXME : MOVE-ME *)
+Lemma in_trace_in_models_target cm t :
+  forall s e,
+    In s (trace t cm) ->
+    e = s.(target) ->
+    In e (execute t cm).(modelElements).
+Proof.
+  intros s e IN E ; subst e.
+  destruct s as (a & b).
+  destruct a as ((a & i) & s).
+
+  Tactics.chain_destruct_in_trace IN.
+
+  C2RTactics.unfold_traceElementOnPattern IN.
+
   unfold execute ; simpl.
-
-  Tactics.destruct_trace_max.
-
-  unfold traceElementOnPattern in IN3.
-  Tactics.monadInv IN3.
-  Tactics.duplicate IN IN5.
-  Tactics.in_singleton_allTuples.
-  split ; [ assumption | ].
+  
   unfold instantiatePattern.
   apply in_flat_map.
-  exists ([a]) ; split ; [ assumption | ].
+  exists a ; split ; [ exact IN0 | ].
+
   apply in_flat_map.
-  exists r.
-  split ; [ assumption | ].
+  exists r ;  split ; [ exact IN1 | ].
+
   unfold instantiateRuleOnPattern.
   apply in_flat_map.
-  exists i ; split ; [ assumption | ].
-  unfold instantiateRuleOnPattern.
+  exists i ; split ; [ exact IN2 | ].
+
   unfold instantiateIterationOnPattern.
   apply in_flat_map.
-  exists e ; split ; [ assumption | ].
-  rewrite IN3.
+  exists e ; split ; [ exact IN3 | ].
+
+  rewrite IN.
   compute ; auto.
 Qed.
+
 
 
 (* local lemma *)
@@ -134,10 +149,14 @@ Lemma in_find t :
   forall c,
     In (buildTraceLink
           ([ClassElement c], 0, "tab")
-          (TableElement {| table_id := c.(class_id); table_name := c.(class_name)  |})) t ->
+          (TableElement {| table_id := c.(class_id); 
+                          table_name := c.(class_name)  |})) t ->
     exists r1 , 
       find (source_compare ([ClassElement c], 0, "tab")) t = 
-        Some (buildTraceLink r1 (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |})).
+        Some 
+          (buildTraceLink r1 
+             (TableElement {| table_id := c.(class_id); 
+                             table_name := c.(class_name) |})).
 Proof.
   induction t ; intros WF c IN1 ; [ simpl in IN1 ; contradict IN1 | ].
   simpl find.
@@ -152,15 +171,17 @@ Proof.
   { (* case where the class/table is the first element of the list : no induction *)
     clear IN1 ; intro ; subst a.
     rewrite source_compare_refl.
-    solve [eauto].
-    unfold TransformationConfiguration.SourceElement_eqb ; simpl.
-    { (* reflexivity *)
-      (* FIXME : add reflexivity as a constraint in Metamodels *)
-      clear.
-      destruct a.
-      apply beq_Class_refl. 
-      apply beq_Attribute_refl.
-    }           
+    { solve [eauto]. }
+    { 
+      unfold TransformationConfiguration.SourceElement_eqb ; simpl.
+      { (* reflexivity *)
+        (* FIXME : add reflexivity as a constraint in Metamodels *)
+        clear.
+        destruct a.
+        apply beq_Class_refl. 
+        apply beq_Attribute_refl.
+      }           
+    }
   }  
   { (* case where the class/table is not the first element of the list. *)
     intro D.
@@ -217,6 +238,7 @@ Proof.
 Qed.
 
 
+
 Lemma in_trace c (cm : ClassModel) : 
   In (ClassElement c) cm.(modelElements) -> 
   In 
@@ -232,8 +254,9 @@ Lemma in_trace c (cm : ClassModel) :
     (trace Class2Relational cm).
 Proof.
   intro IN1.
-  unfold trace.
-  apply in_flat_map.
+
+  Tactics.destruct_in_trace_G.
+
   exists ([ClassElement c]).
   split.
   { apply C2RTactics.allModelElements_allTuples ; auto. } 
@@ -257,7 +280,7 @@ Proof.
   unfold resolve.
   apply in_trace in H.
   rewrite in_resolve ; [ | solve [apply trace_wf] | exact H ].
-  + split ; [ reflexivity | ].
-    apply in_trace_in_models in H ; destruct H ; assumption.
+  split ; [ reflexivity | ].
+  eapply in_trace_in_models_target in H ; eauto. 
 Qed.
 

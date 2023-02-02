@@ -71,14 +71,12 @@ Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
 Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
             (sp: list SourceElementType)
             (iter : nat) : option TargetElementType :=
-  match find (source_compare (sp,iter,name)) tls with
-  | Some tl' => Some (tl'.(target))
-  | None => None
-  end.
+  option_map target (find (source_compare (sp,iter,name)) tls) .
 
 Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
   (sp: list SourceElementType) : option TargetElementType :=
   resolveIter tr sm name sp 0.
+
 
 Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
   (sps: list(list SourceElementType)) (iter: nat)
@@ -91,17 +89,15 @@ Definition resolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
 
 Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
   (sp: option (list SourceElementType)) : option TargetElementType :=
-  match sp with 
-  | Some sp' => resolve tr sm name sp'
-  | None => None
-  end.
+  sp' <- sp ;
+  resolve tr sm name sp' .
+
 
 Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
   (sp: option (list (list SourceElementType))) : option (list TargetElementType) :=
-  match sp with 
-  | Some sp' => resolveAll tr sm name sp'
-  | None => None
-  end.
+  sp' <- sp ; 
+  resolveAll tr sm name sp'.
+
 
 (** * Apply **)
 
@@ -135,3 +131,30 @@ Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   |}.
 
 End Semantics.
+
+(** Some tactics *)
+
+(* tactics need to be outside the section to be visible *)
+Ltac inv_maybeResolve H := 
+  OptionUtils.monadInvN maybeResolve H.
+
+Ltac inv_maybeResolveAll H := 
+  OptionUtils.monadInvN maybeResolveAll H.
+
+
+Ltac inv_resolve H :=
+  match type of H with
+  | resolve _ _ _ _ = Some _ =>
+      unfold resolve in H ; 
+      OptionUtils.monadInvN resolveIter H
+  end.
+
+Ltac progress_maybeResolve H :=
+  match type of H with 
+    maybeResolve _ _ _ _ = Some _ =>
+      inv_maybeResolve H ;
+      inv_resolve H ; 
+      apply List.find_some in H ; 
+      let N := fresh H in
+      destruct H as (H & N)
+end.

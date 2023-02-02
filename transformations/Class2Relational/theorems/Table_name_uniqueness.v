@@ -25,6 +25,69 @@ From transformations.Class2Relational
 
 
 
+Theorem Table_name_uniqueness_alt_proof:
+forall (cm : ClassModel) (rm : RelationalModel), 
+(* transformation *) 
+    rm = execute Class2Relational cm ->
+(* precondition *)   
+(forall (c1: Class_t) (c2: Class_t), 
+    In (ClassElement c1) cm.(modelElements) -> 
+    In (ClassElement c2) cm.(modelElements) -> 
+    c1 <> c2 -> 
+    class_name c1 <> class_name c2) ->
+(* postcondition *)  
+(forall (t1: Table_t) (t2: Table_t), 
+    In (TableElement t1) rm.(modelElements) -> 
+    In (TableElement t2) rm.(modelElements) -> 
+    t1 <> t2 -> 
+    table_name t1 <> table_name t2).
+Proof.
+  intros cm rm E PRE t1 t2 IN1 IN2 D.
+  subst rm.
+  
+  
+  
+  (* (0) *)
+  Tactics.chain_destruct_in_modelElements_execute.
+  
+  clear IN_I.
+  
+  (* (1) *)
+  C2RTactics.choose_rule ; [ |  ];
+  
+  (* (2) *)
+  C2RTactics.progress_in_guard M ;
+
+  (* (3) *)
+  C2RTactics.progress_in_ope IN_OP ope ;
+  
+  (* (4.E) *)
+  C2RTactics.progress_in_evalOutput IN1.
+
+  (* (0) *)
+  Tactics.chain_destruct_in_modelElements_execute.
+
+  clear IN_I.
+
+  (* (1) *)
+  C2RTactics.choose_rule ; [ |  ];
+  
+  (* (2) *)
+  C2RTactics.progress_in_guard M ;
+
+  (* (3) *)
+  C2RTactics.progress_in_ope IN_OP ope ;
+  
+  (* (4.E) *)
+  C2RTactics.progress_in_evalOutput IN2.
+
+  simpl in *.
+  
+  repeat Tactics.in_singleton_allTuples_auto.
+  eapply PRE ; eauto.
+  contradict D ; subst ; reflexivity.
+Qed.
+
 Theorem Table_name_uniqueness:
 forall (cm : ClassModel) (rm : RelationalModel), 
 (* transformation *) 
@@ -52,13 +115,11 @@ Proof.
     repeat C2RTactics.show_origin.
 
     repeat C2RTactics.unify_all.
-    simpl.
 
-    repeat Tactics.in_singleton_allTuples.
+    simpl in *.
 
-    specialize (PRE c c0 IN_E IN_E0) ; clear IN_E IN_E0.
-    apply PRE.
-    contradict D.
-    subst ; reflexivity.
+    repeat Tactics.in_singleton_allTuples_auto.
+    eapply PRE ; eauto.
+    contradict D ; subst ; reflexivity.
 Qed.
 

@@ -19,135 +19,7 @@ From transformations.Class2Relational
   Require ClassModelProperties RelationalModelProperties.
 
 From transformations.Class2Relational 
-  Require C2RTactics  TraceUtils.
-
-
-(** *** Utilities on transformation of elements *)
-
-(* FIXME : not used here but could be useful elsewhere. *)
-Lemma transform_attribute_fw : 
-  forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational cm ->
-  (* precondition *)  forall id name,
-    In (AttributeElement {| attr_id:= id ; derived := false ; attr_name := name|}) cm.(modelElements) ->
-  (* postcondition *) 
-    In (ColumnElement {| column_id := id; column_name := name |}) (rm.(modelElements)). 
-Proof.
-  intros cm rm H ; subst.
-  intros i n H.
-  simpl.
-  apply C2RTactics.allModelElements_allTuples in H.
-  revert H ; generalize (allTuples Class2Relational cm).
-  induction l ; intro H ; [ solve [inversion H] | simpl ].
-  apply List.in_or_app.
-  simpl in H.
-  destruct_or H ; [ left | right ].
-  + subst.
-    clear IHl.
-    compute.
-    left.
-    reflexivity.
-  + auto. 
-Qed.
-
-
-Lemma transform_class_fw : 
-  forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational cm ->
-  (* precondition *)  forall id name,
-    In (ClassElement {| class_id:= id ; class_name := name|}) cm.(modelElements) ->
-  (* postcondition *) 
-    In (TableElement {| table_id := id; table_name := name |}) (rm.(modelElements)). 
-Proof.
-  intros cm rm H ; subst.
-  intros i n H.
-  simpl.
-  apply C2RTactics.allModelElements_allTuples in H.
-  revert H ; generalize (allTuples Class2Relational cm).
-  induction l ; intro H ; [ solve [inversion H] | simpl ].
-  apply List.in_or_app.
-  simpl in H.
-  destruct_or H ; [ left | right ].
-  + subst.
-    clear IHl.
-    compute.
-    left.
-    reflexivity.
-  + auto. 
-
-    (* Remark : exactly the same script as above. *)
-Qed.
-
-
-(* FIXME : not used here but could be useful elsewhere. *)
-Lemma transform_attribute_bw : 
-  forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational cm ->
-  (* precondition *)  forall id name,
-      In (ColumnElement {| column_id := id; column_name := name |}) (rm.(modelElements)) ->
-  (* postcondition *) 
-    In (AttributeElement {| attr_id:= id ; derived := false ; attr_name := name|}) (cm.(modelElements))
-. 
-Proof.
-  intros cm rm H ; subst.
-  intros i n H.
-  simpl in H.
-(*  Tactics.in_singleton_allTuples. FIXME : does not work*)
-  apply Tactics.allModelElements_allTuples_back with (t:=Class2Relational).
-  revert H ; generalize (allTuples Class2Relational cm).
-  induction l ; intro H ; [ solve [inversion H] | simpl ].
-  simpl in H.
-  apply List.in_app_or in H.
-
-  destruct_or H ; [ left | right ].
-  + Tactics.show_singleton.
-    C2RTactics.show_origin.
-    f_equal.
-    f_equal.
-    destruct a.
-    destruct derived ; compute in H.
-    - contradiction.
-    - remove_or_false H.
-      injection H ; intros ;subst ; clear H.
-      reflexivity.
-  + auto.
-Qed.
-
-(* FIXME : not used here but could be useful elsewhere. *)
-Lemma transform_class_bw : 
-  forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational cm ->
-  (* precondition *)  forall id name,
-      In (TableElement {| table_id := id; table_name := name |}) (rm.(modelElements)) ->
-  (* postcondition *) 
-    In (ClassElement {| class_id:= id ; class_name := name|}) (cm.(modelElements))
-. 
-Proof.
-  (* Remark : (nearly) same script as above. *)
-  intros cm rm H ; subst.
-  intros i n H.
-  simpl in H.
-  apply Tactics.allModelElements_allTuples_back with (t:=Class2Relational).
-  revert H ; generalize (allTuples Class2Relational cm).
-  induction l ; intro H ; [ solve [inversion H] | simpl ].
-  simpl in H.
-  apply List.in_app_or in H.
-
-  destruct_or H ; [ left | right ].
-  + Tactics.show_singleton.
-    C2RTactics.show_origin.
-    f_equal.
-    f_equal.
-    destruct c.
-    compute in H.
-    remove_or_false H.
-      injection H ; intros ;subst ; clear H.
-      reflexivity.
-  + auto.
-Qed.
-
-
-
+  Require C2RTactics TraceUtils Elements.
 
 
 (** Concepts under focus in this module *)
@@ -164,6 +36,73 @@ forall (col: Column_t),
       exists r', In (ColumnReferenceLink {| cr := col ;  ct := r' |}) rm.(modelLinks).
   
 
+(** Some tactics *)
+
+
+(* same as Tactics.destruct_in_optionListToList but switches the names of the produced hypothsesis *)
+
+Lemma optionListToList_Some {A} :
+  forall (a: list A), optionListToList (Some a) = a.
+Proof.
+  reflexivity.
+Qed.
+
+Ltac unfold_evalOutputPatternElementExpr H :=
+  unfold Expressions.evalOutputPatternElementExpr in H ;
+  unfold Syntax.ope_elementExpr in H.
+
+Ltac unfold_evalOutputPatternLinkExpr H :=
+  unfold Expressions.evalOutputPatternLinkExpr in H ;
+  unfold Syntax.ope_linkExpr in H.
+
+Ltac unfold_maybeResolveAll H :=
+  unfold ModelingSemantics.maybeResolveAll in H ;
+  unfold Semantics.maybeResolveAll in H.
+
+Ltac progress_in_applyElementOnPattern H :=
+    unfold applyElementOnPattern in H ;
+    unfold_evalOutputPatternElementExpr H ;
+
+    C2RTactics.unfold_make_element H ;
+    ListUtils.destruct_in_optionListToList H ;
+    
+    unfold_evalOutputPatternLinkExpr H ;
+    rewrite flat_map_singleton in H ; 
+    
+    C2RTactics.unfold_make_link H  ; 
+    
+    simpl constructor in H ;
+    
+    cbv match in H ;
+    Tactics.simpl_accessors_any H  ;
+    Tactics.inj H.
+
+Ltac suite H :=
+  ListUtils.destruct_in_optionListToList H ;
+  OptionUtils.monadInv H.
+
+
+Ltac toEDataT H :=
+   match type of H with
+     toEData Table_K ?E = Some _ => destruct E ; [ | discriminate H] 
+   end.
+
+ 
+ Ltac progress_in_maybeBuildColumnReference H := 
+  match type of H with 
+  | maybeBuildColumnReference _ _ = Some _ =>
+     inv_maybeBuildColumnReference H ; 
+     unfold ModelingSemantics.maybeResolve in H  ;
+     ModelingSemantics.inv_denoteOutput H ; 
+     toEDataT H ;
+     C2RTactics.unfold_toEData H ;
+     Tactics.inj H
+  end.
+
+ 
+
+(** important lemma *)
+
 Lemma wf_stable cm rm :
   rm = execute Class2Relational cm ->
   all_attributes_are_typed cm ->
@@ -175,121 +114,41 @@ Proof.
   intros r t R_IN1.
   subst rm.
   
-  repeat core.Tactics.destruct_any.
+  (* (0) *)
+  Tactics.chain_destruct_in_modelLinks_execute R_IN1.
 
-  rename IN_E into C_IN1.
-
-  destruct t.
-  apply transform_class_fw with (cm:=cm) ; [ reflexivity | ]. (* FIXME : don't want to destruct t to be able to apply transform_class_fw. *)
-
-
-  
   clear IN0.
+
+  (* (1) We need to know which rule has been applied to progress in the computation. *)
+  C2RTactics.choose_rule ; [ | ] ; 
+
+  (* (2) Now we can progress in the guard. This will make appears the shape of sp, which will ease the unfolding of [outputPattern] *)
+  C2RTactics.progress_in_guard M ;
+
+  (* (3) *)
+  C2RTactics.progress_in_ope IN p ; 
   
-  (* we need to know which rule has been applied to preogress in the computation *)
-  C2RTactics.destruct_In_two ; simpl in * ; 
-  remove_or_false_auto ; subst ; simpl in * ;
-  C2RTactics.deduce_element_kind_from_guard ; simpl in * ;
-  [ | ].
-  { (* first rule : impossible *)
-    exfalso. clear C_IN1. 
+  (* (4.L) now we can progress in IN2. *)
+  progress_in_applyElementOnPattern IN2 ;
+  suite IN ;
+  apply in_singleton in IN0 ; 
+  first [ discriminate IN0 (* discard rules that do not match *)
+        | Tactics.inj IN0 ]. 
 
-    unfold Parser.parseOutputPatternElement in IN2 ; simpl in *. 
-    unfold applyElementOnPattern in IN2 ; simpl in IN2.
-        
-    rewrite app_nil_r in IN2.
-    Tactics.destruct_in_optionListToList.
-    
-    unfold Parser.parseOutputPatternLink in M ; simpl in M.
-    unfold ConcreteExpressions.makeLink in M ; simpl in M.
-    unfold ConcreteExpressions.wrapLink in M ; simpl in M.
-     
-    Tactics.monadInv M.
-    
-    apply in_singleton in IN2 ; discriminate IN2.
-  }
-  {
-    (* second rule *)
-
-    (* Set Printing All.*)
-    eapply Tactics.allModelElements_allTuples_back with (t:=Class2Relational) in C_IN1 ;
-    (* FIXME : the tactics does not work*)
-      simpl in *.
-
-    unfold Parser.parseOutputPatternElement in IN2 ; simpl in *. 
-    unfold applyElementOnPattern in IN2 ; simpl in IN2.
-        
-    rewrite app_nil_r in IN2.
-    Tactics.destruct_in_optionListToList.
-    
-    unfold Parser.parseOutputPatternLink in M ; simpl in M.
-    unfold ConcreteExpressions.makeLink in M ; simpl in M.
-    unfold ConcreteExpressions.wrapLink in M ; simpl in M ;
-      Tactics.monadInv M.
-
-    apply in_singleton in IN2 ; Tactics.inj IN2.
-    
-    unfold maybeBuildColumnReference in M ; 
-      Tactics.monadInv M.
-
-    unfold ModelingSemantics.maybeResolve in M ;
-      simpl in M.
-
-    unfold ModelingSemantics.denoteOutput in M ; 
-      Tactics.monadInv M.
-
-    Ltac toEDataT H :=
-      match type of H with
-        toEData Table_K ?E = Some _ => destruct E ; [ | discriminate H] 
-      end.
-
-    toEDataT M.
-    destruct t ; unfold toEData in M ; simpl in M ; Tactics.inj M.
-
-    destruct a (* FIXME *). simpl in D ; subst derived. 
-
-    unfold maybeResolve in E ; 
-      Tactics.monadInv E.
+  progress_in_maybeBuildColumnReference IN.
   
-    unfold maybeSingleton in E0.
-    unfold option_map in E0 ;
-      Tactics.monadInv E0.
-    unfold singleton in E ; simpl in E.
-
-    unfold getAttributeTypeElement in E0.
-    Tactics.monadInv E0.
-
-
-    apply C_WF1 in C_IN1 ; destruct C_IN1 as (t & C_IN1).
-
-    rewrite ClassModelProperties.getAttributeType_In_left_wf with (t:=t) in E0 ;
-      [ | exact C_WF3 | exact C_IN1]. 
-    Tactics.inj E0.    
- 
-    unfold resolve in E.
-    unfold resolveIter in E ;
-      Tactics.monadInv E.
-
-
-    destruct t ; simpl in * ; subst.  
-
-    apply find_some in E ; simpl in *.
-    destruct E as (T_IN1 & _). (* discard *)
-    
-    specialize (TraceUtils.trace_wf cm) ; intro T_WF.
-    unfold TraceUtils.wf in T_WF.
-    eapply List.Forall_forall in T_WF ; [ | exact T_IN1 ].
-    inversion T_WF ; subst.
-    destruct c ; subst ; simpl in *.
-    
-    eapply TraceUtils.in_trace_in_models in T_IN1 ; 
-      destruct T_IN1 as (IN1 & IN2). 
-    destruct c0 ; assumption.
-  }
+  core.Semantics.progress_maybeResolve E. 
+  
+  ListUtils.inv_maybeSingleton E0.
+  
+  inv_getAttributeTypeElement E0.
+  
+  eapply TraceUtils.in_trace_in_models_target ; eauto. 
+  
 Qed.
 
 
-(** *** Results *)
+(** *** Main Results *)
 
 
 Theorem Relational_Column_Reference_definedness_aux:
@@ -306,17 +165,29 @@ forall (cm : ClassModel) (rm : RelationalModel),
 Proof. 
   intros cm rm  WF2 E PRE.  intros col IN1. 
   subst rm.
-  repeat Tactics.destruct_execute.
-  repeat Tactics.show_singleton.
-  repeat C2RTactics.show_origin.
+
+  (* 0 *)
+  Tactics.destruct_in_modelElements_execute IN1.
   repeat Tactics.destruct_any.
 
-  (* we have lost IN1 : In (ColumnElement col)
-          (modelElements (execute Class2Relational cm)) *)
+  (* (1) *)
+  C2RTactics.choose_rule.
+    
+    {
+      (* (2) *)   C2RTactics.progress_in_guard M.
+      (* (3) *)   C2RTactics.progress_in_ope IN_OP ope.
+      (* (4.E) *) C2RTactics.progress_in_evalOutput IN1.
+    }
 
-  clear IN_I. 
-  
-  apply Tactics.allModelElements_allTuples_back in IN_E.
+    {
+      (* (2) *)   C2RTactics.progress_in_guard M.
+      (* (3) *)   C2RTactics.progress_in_ope IN_OP ope.
+      (* (4.E) *) C2RTactics.progress_in_evalOutput IN1.
+    
+
+      clear IN_I.   clear n. 
+
+      apply Tactics.allModelElements_allTuples_back with (t:=Class2Relational) (* fixme *) in IN_E.
   
   Tactics.duplicate PRE H.
 
@@ -325,31 +196,18 @@ Proof.
   Tactics.duplicate G1 IN_C ; apply WF2 in IN_C.  
   
   Tactics.duplicate G1 IN2. 
-  unfold getColumnReference.
 
-  unfold execute.  simpl. 
+  unfold execute ;  simpl. 
 
-  set (z:=r).
-
-  C2RTactics.destruct_In_two ; [ exfalso | ] ; 
-   simpl in IN_OP ; remove_or_false IN_OP ; subst ope ; [ discriminate IN1 | Tactics.inj IN1]. 
-  
-  clear n. 
-  simpl in M.
-  
-  C2RTactics.deduce_element_kind_from_guard. (* M *)
- 
-  destruct a0 ; simpl in *. (* derived a0 = false *)
+  destruct a ; simpl in *. (* derived a = false *)
   subst derived ; simpl in *. 
 
-  Tactics.duplicate G1 G2. (* à quoi sert de garder PRE1 ? *)
-
+  Tactics.duplicate G1 G2. 
 
   specialize (TraceUtils.in_maybeResolve_trace_2 c cm IN_C ) ; 
     intros (R & I).
 
-
-  apply ClassModelProperties.getAttributeType_In_left in G1 ; (* here we should exploit getAttributeType_In_left_wf *)
+  apply ClassModelProperties.getAttributeType_In_left in G1 ; (* here we should exploit ClassModelProperties.getAttributeType_In_left_wf *)
     destruct G1 as [r G1].
 
   exists{| table_id := r.(class_id); table_name := r.(class_name) |}.
@@ -363,19 +221,18 @@ Proof.
   split.
   { apply C2RTactics.allModelElements_allTuples. exact IN_E. }
   {
-    
     unfold applyPattern.
     apply in_flat_map.
-    exists z.
+    exists (Parser.parseRule R2).
     
     split.
-    { subst z. simpl. auto. }
+    { simpl. auto. }
     { 
       apply tr_applyRuleOnPattern_in ; simpl.
       exists 0.
       split ; [ solve [auto] | ].
       apply tr_applyIterationOnPattern_in.
-      eexists  ; split ; [ solve [subst z ; simpl ; auto] | ].
+      eexists  ; split ; [ solve [simpl ; auto] | ].
       erewrite tr_applyElementOnPattern_leaf ; simpl.
       2:{ compute. reflexivity. }
 
@@ -387,11 +244,7 @@ Proof.
       unfold ConcreteExpressions.wrapLink ; simpl.
       unfold getAttributeTypeElement.
      
-      
-
       rewrite G1.
-
-
 
       unfold ModelingSemantics.maybeResolve.
 
@@ -409,7 +262,9 @@ Proof.
       reflexivity.
     }
   }
+}
 Qed.
+
 
 
 Theorem Relational_Column_Reference_definedness:
@@ -432,17 +287,30 @@ Proof.
   intros cm rm WF E PRE.  intros col IN1.
   subst rm.
 
-  repeat Tactics.destruct_execute.
-  repeat Tactics.show_singleton.
-  repeat C2RTactics.show_origin.
+  (* 0 *)
+  Tactics.destruct_in_modelElements_execute IN1.
   repeat Tactics.destruct_any.
+
+  (* (1) *)
+  C2RTactics.choose_rule.
+    
+    {
+      (* (2) *)   C2RTactics.progress_in_guard M.
+      (* (3) *)   C2RTactics.progress_in_ope IN_OP ope.
+      (* (4.E) *) C2RTactics.progress_in_evalOutput IN1.
+    }
+
+    {
+      (* (2) *)   C2RTactics.progress_in_guard M.
+      (* (3) *)   C2RTactics.progress_in_ope IN_OP ope.
+      (* (4.E) *) C2RTactics.progress_in_evalOutput IN1.
 
   (* we have lost IN1 : In (ColumnElement col)
           (modelElements (execute Class2Relational cm)) *)
 
-  clear IN_I. 
+  clear IN_I ; clear n. 
   
-  apply Tactics.allModelElements_allTuples_back in IN_E.
+  apply Tactics.allModelElements_allTuples_back with (t:=Class2Relational) (* fixme *) in IN_E.
   
   Tactics.duplicate PRE H.
 
@@ -455,19 +323,10 @@ Proof.
   apply ClassModelProperties.getAttributeType_In_right in IN2.
   unfold getColumnReference.
 
-  unfold execute.  simpl. 
+  unfold execute ; simpl. 
 
-  set (z:=r).
-
-  C2RTactics.destruct_In_two ; [ exfalso | ] ; 
-   simpl in IN_OP ; remove_or_false IN_OP ; subst ope ; [ discriminate IN1 | Tactics.inj IN1]. 
-  
-  clear n. 
-  simpl in M.
-  
-  C2RTactics.deduce_element_kind_from_guard. (* M *)
  
-  destruct a0 ; simpl in *. (* derived a0 = false *)
+  destruct a ; simpl in *. (* derived a0 = false *)
   subst derived ; simpl in *. 
 
   Tactics.duplicate G1 G2. (* à quoi sert de garder PRE1 ? *)
@@ -492,16 +351,16 @@ Proof.
 
       unfold applyPattern.
     apply in_flat_map.
-    exists z.
+    exists (Parser.parseRule R2).
   
     split.
-    { subst z. simpl. auto. }
+    { simpl. auto. }
     { 
       apply tr_applyRuleOnPattern_in ; simpl.
       exists 0.
       split ; [ solve [auto] | ].
       apply tr_applyIterationOnPattern_in.
-      eexists  ; split ; [ solve [subst z ; simpl ; auto] | ].
+      eexists  ; split ; [ solve [ simpl ; auto] | ].
       erewrite tr_applyElementOnPattern_leaf ; simpl.
       2:{ compute. reflexivity. }
 
@@ -519,6 +378,7 @@ Proof.
       rewrite R. 
 
       simpl. left. reflexivity. 
+    }
     }
   }
 Qed.
@@ -614,7 +474,5 @@ Proof.
       exact G.
     }
   }
-  {
-    eapply Relational_Column_Reference_definedness ; eassumption.
-  }
+  { eapply Relational_Column_Reference_definedness ; eassumption. }
 Qed.

@@ -55,3 +55,10 @@ Definition parse(ct: ConcreteTransformation) : Transformation :=
 
 End Parser.
 
+(** Some tactics. *)
+
+Ltac unfold_parseRule H:=
+  unfold parseRule in H ; 
+  unfold parseOutputPatternElement in H ; 
+  unfold parseOutputPatternLinks in H ; 
+  unfold parseOutputPatternLink in H.

@@ -16,7 +16,7 @@ Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
 
 
-Theorem Attribute_name_preservation:
+Theorem Attribute_name_preservation_fw:
     forall (rm : RelationalModel) (cm: ClassModel),
         (* transformation *)
         rm = execute Class2Relational cm ->

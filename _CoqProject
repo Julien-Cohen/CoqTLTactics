@@ -149,6 +149,7 @@ core/Certification.v
 
 # User proofs
 
+transformations/Class2Relational/theorems/Elements.v
 transformations/Class2Relational/theorems/All_classes_instantiate_impl.v
 transformations/Class2Relational/theorems/All_classes_match_impl.v
 transformations/Class2Relational/theorems/Attribute_name_preservation.v

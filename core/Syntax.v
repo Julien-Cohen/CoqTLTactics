@@ -72,3 +72,41 @@ Arguments buildRule {_}.
 
 Arguments buildOutputPatternElement {_}.
 (* end hide *)
+
+
+(** *** Some tactics to unfold accessors *)
+
+Ltac simpl_r_accessors H :=
+  match type of H with 
+  | context[
+        r_name (buildRule _ _ _ _)] =>
+      unfold r_name in H
+                                
+  | context[
+        r_guard (buildRule _ _ _ _)] =>
+      unfold r_guard in H
+                                 
+  | context[
+        r_iterator (buildRule _ _ _ _)] =>
+      unfold r_iterator in H
+                                    
+  | context[
+        r_outputPattern (buildRule _ _ _ _)] =>
+      unfold r_outputPattern in H
+                                         
+  end.
+
+
+Ltac simpl_ope_accessors H :=
+  match type of H with 
+  | context[
+        ope_name (buildOutputPatternElement _ _ _)] =>
+      unfold ope_name in H
+  | context[
+        ope_elementExpr (buildOutputPatternElement _ _ _)] =>
+      unfold ope_elementExpr in H
+  | context[
+        ope_linkExpr (buildOutputPatternElement _ _ _)] =>
+      unfold ope_linkExpr in H
+  end.
+

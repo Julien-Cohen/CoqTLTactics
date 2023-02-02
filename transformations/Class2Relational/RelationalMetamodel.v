@@ -23,16 +23,27 @@ Record TableColumns_t := { tab : Table_t ; cols : list Column_t }.
 Record ColumnReference_t := { cr : Column_t ; ct : Table_t }.
 
 Definition maybeBuildColumnReference (c: Column_t) (t: option Table_t) : option ColumnReference_t :=
-  match t with
-  | Some t' => Some (Build_ColumnReference_t c t')
-  | _ => None
-  end.  
+  option_map (Build_ColumnReference_t c) t.
+
+ Ltac inv_maybeBuildColumnReference H := 
+    match type of H with 
+    | maybeBuildColumnReference _ _ = Some _ =>
+        unfold maybeBuildColumnReference in H ; 
+        OptionUtils.monadInv H
+    end.
+
 
 Definition maybeBuildTableColumns (t: Table_t) (c: option (list Column_t)) : option TableColumns_t :=
-  match c with
-  | Some c' => Some (Build_TableColumns_t t c')
-  | _ => None
-  end.  
+  option_map (Build_TableColumns_t t) c.
+
+Ltac inv_maybeBuildTableColumns H := 
+    match type of H with 
+    | maybeBuildTableColumns _ _ = Some _ =>
+        unfold maybeBuildTableColumns in H ; 
+        OptionUtils.monadInv H
+    end.
+
+
 
 (* Equality *)
   
