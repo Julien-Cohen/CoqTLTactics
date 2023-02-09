@@ -32,19 +32,19 @@ Proof.
   intros sm1 sm2 INC a IN.
 
   (* (0) *)
-  Tactics.chain_destruct_in_modelElements_execute.
+  Tactics.chain_destruct_in_modelElements_execute IN.
 
-  clear IN_I.
+  clear IN_IT.
 
   (* (1)  *)
-  C2RTactics.choose_rule ; [ | ] ;
+  Tactics.progress_in_In_rules IN_M ; [ | ] ;
 
   (* (2)  *) 
   C2RTactics.progress_in_guard M ;
 
 
   (* (3) make the ouput-pattern-element appear *)
-  C2RTactics.progress_in_ope IN_OP ope ;
+  C2RTactics.progress_in_ope IN_OP ;
   
   (* (4) make the matched element appear *)
   C2RTactics.progress_in_evalOutput IN.
@@ -97,7 +97,7 @@ Proof.
     destruct e.
     
     { (* ClassElement *)
-      C2RTactics.choose_rule ;
+      Tactics.progress_in_In_rules IN_R ;
        simpl in IN_OP ;
        remove_or_false IN_OP ;
        subst ope ; 
@@ -109,7 +109,7 @@ Proof.
     {
       (* AttributeElement *)
       (* To compute we need to know the value of a.(derived) *) 
-      C2RTactics.choose_rule ;
+      Tactics.progress_in_In_rules IN_R ;
        simpl in IN_OP ;
        remove_or_false IN_OP ;
        subst ope  ;
@@ -155,7 +155,7 @@ Proof.
     (* Two ways of reasonning by case analysis : (1) decompose e, (2) decompose r *)
     (* Here we first decompose r and then we deduce e. *)
 
-    choose_rule ;
+    Tactics.progress_in_In_rules IN_R ;
       simpl in IN_OP; 
       unfold In in IN_OP ;
       remove_or_false IN_OP ;

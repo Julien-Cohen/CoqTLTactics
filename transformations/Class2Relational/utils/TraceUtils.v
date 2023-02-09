@@ -65,14 +65,14 @@ Proof.
 
   (* (0) *)
   Tactics.chain_destruct_in_trace H.
-  Tactics.destruct_in_matchPattern IN0.
+  Tactics.destruct_in_matchPattern IN0 M.
 
   (* 1 *)
-  C2RTactics.choose_rule ;
+  Tactics.progress_in_In_rules IN0 ;
   (* 2 *)
   C2RTactics.progress_in_guard M ; 
   (* 3 *)
-  C2RTactics.progress_in_ope IN2 e ;
+  C2RTactics.progress_in_ope IN2 ;
 
   (* 4.L *)
   C2RTactics.progress_in_traceElementOnPattern H ;
@@ -117,6 +117,7 @@ Proof.
   destruct a as ((a & i) & s).
 
   Tactics.chain_destruct_in_trace IN.
+(*  Tactics.destruct_in_matchPattern IN1 M. (keep matchPattern for later) *)
 
   C2RTactics.unfold_traceElementOnPattern IN.
 

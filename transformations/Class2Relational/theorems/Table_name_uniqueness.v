@@ -48,35 +48,35 @@ Proof.
   
   
   (* (0) *)
-  Tactics.chain_destruct_in_modelElements_execute.
+  Tactics.chain_destruct_in_modelElements_execute IN1.
   
-  clear IN_I.
+  clear IN_IT.
   
   (* (1) *)
-  C2RTactics.choose_rule ; [ |  ];
+  Tactics.progress_in_In_rules IN_M ; [ |  ];
   
   (* (2) *)
   C2RTactics.progress_in_guard M ;
 
   (* (3) *)
-  C2RTactics.progress_in_ope IN_OP ope ;
+  C2RTactics.progress_in_ope IN_OP ;
   
   (* (4.E) *)
   C2RTactics.progress_in_evalOutput IN1.
 
   (* (0) *)
-  Tactics.chain_destruct_in_modelElements_execute.
+  Tactics.chain_destruct_in_modelElements_execute IN2.
 
-  clear IN_I.
+  clear IN_IT.
 
   (* (1) *)
-  C2RTactics.choose_rule ; [ |  ];
+  Tactics.progress_in_In_rules IN_M ; [ |  ];
   
   (* (2) *)
   C2RTactics.progress_in_guard M ;
 
   (* (3) *)
-  C2RTactics.progress_in_ope IN_OP ope ;
+  C2RTactics.progress_in_ope IN_OP ;
   
   (* (4.E) *)
   C2RTactics.progress_in_evalOutput IN2.

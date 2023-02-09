@@ -7,15 +7,17 @@ Require Import core.Semantics.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
-Require Import transformations.Class2Relational.Class2Relational.
-Require Import transformations.Class2Relational.ClassMetamodel.
-Require Import transformations.Class2Relational.RelationalMetamodel.
 
 From transformations.Class2Relational 
-  Require ClassModelProperties RelationalModelProperties.
+  Require
+  ClassModelProperties 
+  RelationalModelProperties
+  C2RTactics
+  Class2Relational.
 
-From transformations.Class2Relational 
-  Require C2RTactics  TraceUtils.
+
+Import Class2Relational ClassMetamodel RelationalMetamodel.
+
 
 
 
@@ -92,12 +94,12 @@ Proof.
   intros i n H.
 
   (* (0) *)
-  Tactics.chain_destruct_in_modelElements_execute.
-  clear IN_I.
+  Tactics.chain_destruct_in_modelElements_execute H.
+  clear IN_IT.
 
   (* (1) To progress in M and H, we need to know ope, and so we need to know r. Exploit IN_R. *)
 
-  C2RTactics.choose_rule ; [ exfalso | ] ;
+  Tactics.progress_in_In_rules IN_M ; [ exfalso | ] ;
 
   (* (2) Now to progress in M or H we need to know ope. Exploit M (guard). *) 
 
@@ -105,7 +107,7 @@ Proof.
 
 
   (* (3) make the ouput-pattern-element appear *)
-  C2RTactics.progress_in_ope IN_OP ope ;
+  C2RTactics.progress_in_ope IN_OP ;
   
   (* (4.E) make the matched element appear *)
   C2RTactics.progress_in_evalOutput H.
@@ -129,18 +131,18 @@ Proof.
   intros i n H.
 
   (* (0) *)
-  Tactics.chain_destruct_in_modelElements_execute.
+  Tactics.chain_destruct_in_modelElements_execute H.
 
-  clear IN_I.
+  clear IN_IT.
 
   (* (1) *)
-  C2RTactics.choose_rule ; [ | exfalso ];
+   Tactics.progress_in_In_rules IN_M ; [ | exfalso ] ; 
   
   (* (2) *)
   C2RTactics.progress_in_guard M ;
 
   (* (3) *)
-  C2RTactics.progress_in_ope IN_OP ope ;
+  C2RTactics.progress_in_ope IN_OP ;
   
   (* (4.E) *)
   C2RTactics.progress_in_evalOutput H.

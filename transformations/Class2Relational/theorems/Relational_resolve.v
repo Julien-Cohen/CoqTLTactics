@@ -117,16 +117,16 @@ Proof.
   (* (0) *)
   Tactics.chain_destruct_in_modelLinks_execute R_IN1.
 
-  clear IN0.
+  clear IN.
 
   (* (1) We need to know which rule has been applied to progress in the computation. *)
-  C2RTactics.choose_rule ; [ | ] ; 
+  Tactics.progress_in_In_rules IN_MATCH ; [ | ] ; 
 
   (* (2) Now we can progress in the guard. This will make appears the shape of sp, which will ease the unfolding of [outputPattern] *)
   C2RTactics.progress_in_guard M ;
 
   (* (3) *)
-  C2RTactics.progress_in_ope IN p ; 
+  C2RTactics.progress_in_ope IN1 ; 
   
   (* (4.L) now we can progress in IN2. *)
   progress_in_applyElementOnPattern IN2 ;
@@ -171,17 +171,17 @@ Proof.
   repeat Tactics.destruct_any.
 
   (* (1) *)
-  C2RTactics.choose_rule.
+  Tactics.progress_in_In_rules IN_R.
     
     {
       (* (2) *)   C2RTactics.progress_in_guard M.
-      (* (3) *)   C2RTactics.progress_in_ope IN_OP ope.
+      (* (3) *)   C2RTactics.progress_in_ope IN_OP.
       (* (4.E) *) C2RTactics.progress_in_evalOutput IN1.
     }
 
     {
       (* (2) *)   C2RTactics.progress_in_guard M.
-      (* (3) *)   C2RTactics.progress_in_ope IN_OP ope.
+      (* (3) *)   C2RTactics.progress_in_ope IN_OP.
       (* (4.E) *) C2RTactics.progress_in_evalOutput IN1.
     
 
@@ -292,17 +292,17 @@ Proof.
   repeat Tactics.destruct_any.
 
   (* (1) *)
-  C2RTactics.choose_rule.
+  Tactics.progress_in_In_rules IN_R.
     
     {
       (* (2) *)   C2RTactics.progress_in_guard M.
-      (* (3) *)   C2RTactics.progress_in_ope IN_OP ope.
+      (* (3) *)   C2RTactics.progress_in_ope IN_OP.
       (* (4.E) *) C2RTactics.progress_in_evalOutput IN1.
     }
 
     {
       (* (2) *)   C2RTactics.progress_in_guard M.
-      (* (3) *)   C2RTactics.progress_in_ope IN_OP ope.
+      (* (3) *)   C2RTactics.progress_in_ope IN_OP.
       (* (4.E) *) C2RTactics.progress_in_evalOutput IN1.
 
   (* we have lost IN1 : In (ColumnElement col)

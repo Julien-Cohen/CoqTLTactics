@@ -352,6 +352,7 @@ Ltac destruct_in_modelLinks_execute H :=
       rewrite (core.Certification.tr_execute_in_links T) in H;
       destruct H as [e [H2 H]]                                           end.     
 
+(* deprecated *)
 Ltac destruct_execute :=
   match goal with 
 
@@ -363,67 +364,95 @@ Ltac destruct_execute :=
   end.
 
 
-Ltac destruct_instantiatePattern :=
+Ltac destruct_instantiatePattern H IN_MATCH_NEWNAME :=
+  match type of H with 
+    In _ (instantiatePattern ?T _ _) =>
+      let e := fresh "r" in
+      rewrite (core.Certification.tr_instantiatePattern_in T) in H ;
+      destruct H as [e [IN_MATCH_NEWNAME H]]
+  end.
+
+Ltac destruct_instantiatePattern_auto :=
   match goal with 
     [ H : In _ (instantiatePattern ?T _ _) |- _ ] =>
       let H2 := fresh "IN_R" in
       let e := fresh "r" in
-      rewrite (core.Certification.tr_instantiatePattern_in T) in H ;
-      destruct H as [e [H2 H]]
+      destruct_instantiatePattern H H2
   end.
 
 
-Ltac destruct_in_matchPattern H :=
-  let H2 := fresh "M" in
+Ltac destruct_in_matchPattern H NEWNAME :=
   match type of H with 
     | In _ (matchPattern ?T _ _)  =>
       rewrite (core.Certification.tr_matchPattern_in T) in H ;
-      destruct H as [H H2]
+      destruct H as [H NEWNAME]
   end.
 
 Ltac destruct_in_matchPattern_auto :=
   match goal with 
     [ H : In _ (matchPattern _ _ _) |- _ ] =>
       let H2 := fresh "M" in
-      destruct_in_matchPattern H
+      destruct_in_matchPattern H H2
   end.
 
 
 
-Ltac destruct_instantiateRuleOnPattern :=
-  let H2 := fresh "IN_I" in
-  let e := fresh "n" in
+Ltac destruct_instantiateRuleOnPattern H IN_IT_NEWNAME:=
+  match type of H with 
+    In _ (instantiateRuleOnPattern _ _ _) =>
+      let e := fresh "n" in
+      rewrite (core.Certification.tr_instantiateRuleOnPattern_in) in H ;
+      destruct H as [e [IN_IT_NEWNAME H]]
+  end.
+
+Ltac destruct_instantiateRuleOnPattern_auto :=
   match goal with 
     [ H : In _ (instantiateRuleOnPattern _ _ _) |- _ ] =>
-      rewrite (core.Certification.tr_instantiateRuleOnPattern_in) in H ;
-      destruct H as [e [H2 H]]
+      let H2 := fresh "IN_I" in
+      destruct_instantiateRuleOnPattern H H2
   end.
 
 
-Ltac destruct_instantiateIterationOnPattern :=
+Ltac destruct_instantiateIterationOnPattern H NEWNAME :=
+  match type of H with 
+    In _ (instantiateIterationOnPattern _ _ _ _) =>
+      let e := fresh "ope" in
+      apply core.Certification.tr_instantiateIterationOnPattern_in in H ;
+      destruct H as [e [NEWNAME H]]
+  end.
+Ltac destruct_instantiateIterationOnPattern_auto :=
   match goal with 
     [ H : In _ (instantiateIterationOnPattern _ _ _ _) |- _ ] =>
       let H2 := fresh "IN_OP" in
-      let e := fresh "ope" in
-      apply core.Certification.tr_instantiateIterationOnPattern_in in H ;
-      destruct H as [e [H2 H]]
+      destruct_instantiateIterationOnPattern H H2
   end.
 
 
-Ltac unfold_instantiateElementOnPattern :=
-  match goal with 
-    [ H : context[instantiateElementOnPattern _ _ _ _] |- _ ] => 
+Ltac unfold_instantiateElementOnPattern H :=
+  match type of H with 
+    context[instantiateElementOnPattern _ _ _ _] => 
       rewrite core.Certification.tr_instantiateElementOnPattern_leaf in H 
   end.
 
-Ltac destruct_apply_pattern :=
+Ltac unfold_instantiateElementOnPattern_auto :=
   match goal with 
-    [ H : In _ (applyPattern ?T _ _) |- _ ] => 
+    [ H : context[instantiateElementOnPattern _ _ _ _] |- _ ] => 
+      unfold_instantiateElementOnPattern H 
+  end.
+
+Ltac destruct_apply_pattern H IN_MATCH_NEWNAME :=
+  match type of H with 
+    In _ (applyPattern _ _ _) => 
       let R := fresh "r" in
-      let IN1 := fresh "IN_R" in
-      let IN2 := fresh "IN" in
       apply core.Certification.tr_applyPattern_in in H ; 
-      destruct H as (R & (IN1 & IN2))
+      destruct H as (R & (IN_MATCH_NEWNAME & H))
+end.
+
+Ltac destruct_apply_pattern_auto :=
+  match goal with 
+    [ H : In _ (applyPattern _ _ _) |- _ ] => 
+      let IN1 := fresh "IN_MATCH" in
+      destruct_apply_pattern H IN1
 end.
 
 Ltac destruct_applyRuleOnPattern :=
@@ -446,7 +475,7 @@ Ltac destruct_applyIterationOnPattern :=
       destruct H as (p & (IN1 & IN2))
   end.
 
-(* on traces *)
+(** On traces. *)
 Ltac destruct_trace H :=
   match type of H with 
   | In _ (trace _ _ )  => 
@@ -520,30 +549,38 @@ Ltac chain_destruct_in_trace H :=
 Ltac destruct_any := 
   first [ 
       destruct_execute 
-    | destruct_instantiatePattern 
+    | destruct_instantiatePattern_auto 
     | destruct_in_matchPattern_auto 
-    | destruct_instantiateRuleOnPattern 
-    | destruct_instantiateIterationOnPattern 
-    | unfold_instantiateElementOnPattern 
-    | destruct_apply_pattern 
+    | destruct_instantiateRuleOnPattern_auto 
+    | destruct_instantiateIterationOnPattern_auto 
+    | unfold_instantiateElementOnPattern_auto 
+    | destruct_apply_pattern_auto 
     | destruct_applyRuleOnPattern 
     | destruct_applyIterationOnPattern 
     | destruct_in_optionToList
     ].
 
+Ltac chain_destruct_in_modelElements_execute H :=
+  let NEW1 := fresh "IN_M" 
+  in
+  let NEW2 := fresh "IN_IT" 
+  in
+  let NEW3 := fresh "IN_OP" 
+  in
+  let NEW4 := fresh "M" 
+  in
+  destruct_in_modelElements_execute H ; 
+  destruct_instantiatePattern H NEW1 ;
+  destruct_instantiateRuleOnPattern H NEW2 ;
+  destruct_instantiateIterationOnPattern H NEW3 ;
+  unfold_instantiateElementOnPattern H ;
+  destruct_in_matchPattern NEW1 NEW4.
+
 Ltac chain_destruct_in_modelLinks_execute H :=
   destruct_in_modelLinks_execute H ;
-  destruct_apply_pattern ;
+  destruct_apply_pattern_auto ; (* FIXME *)
   destruct_applyRuleOnPattern ;
   destruct_applyIterationOnPattern ; 
-  destruct_in_matchPattern_auto.
-
-Ltac chain_destruct_in_modelElements_execute :=
-  destruct_execute ; 
-  destruct_instantiatePattern ;
-  destruct_instantiateRuleOnPattern ;
-  destruct_instantiateIterationOnPattern ;
-  unfold_instantiateElementOnPattern ;
   destruct_in_matchPattern_auto.
 
 
@@ -553,6 +590,16 @@ Ltac simpl_accessors_any H :=
         | ConcreteSyntax.simpl_link_accessors H
         | Syntax.simpl_r_accessors H 
         | Syntax.simpl_ope_accessors H]. 
+
+Ltac progress_in_In_rules H :=
+  match type of H with 
+    In ?R (Syntax.rules _) =>
+      simpl Syntax.rules in H ;
+      progress repeat unfold_In_cons H ;
+      subst R
+  end.
+
+
 
 (** Tactics to progress in the goal (not in the hypothesis) *)
 

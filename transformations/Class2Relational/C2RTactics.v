@@ -201,26 +201,6 @@ Hint Resolve one_to_one : singleton_rules.
 
 (** ** Destructors *)
 
-Lemma in_rules : forall r, 
-    In r (Syntax.rules Class2Relational) ->
-    r = core.modeling.Parser.parseRule Class2Relational.R1 \/ r = core.modeling.Parser.parseRule Class2Relational.R2.
-Proof.
-  unfold Class2Relational.
-  unfold Class2Relational'.
-  simpl.
-  intros ; auto.
-  repeat destruct_or H ; [ auto | auto | contradiction ].
-Qed.
-
-
-Ltac choose_rule :=
-  match goal with 
-    [ H : In ?X Class2Relational.(Syntax.rules) |- _ ] => 
-      apply in_rules in H ;
-      destruct_or H ; 
-      subst X
-  end.
-
 
 (** *** Utilities on [allTuples] *)
 
@@ -257,14 +237,17 @@ Ltac progress_in_guard H :=
   deduce_element_kind_from_guard.
 
 
-Ltac progress_in_ope H ope :=
-  first [ progress unfold R1 in H | progress unfold R2 in H ] ;
-  Parser.unfold_parseRule H ; 
-  Tactics.simpl_accessors_any H ;
-  unfold map in H ; 
-  Tactics.simpl_accessors_any H ;
-  apply in_singleton in H ;
-  subst ope.
+Ltac progress_in_ope H :=
+  match type of H with 
+    In ?ope _ =>
+      first [ progress unfold R1 in H | progress unfold R2 in H ] ;
+      Parser.unfold_parseRule H ; 
+      Tactics.simpl_accessors_any H ;
+      unfold map in H ; 
+      Tactics.simpl_accessors_any H ;
+      apply in_singleton in H ;
+      subst ope
+  end.
 
 
 Ltac progress_in_evalOutput H :=
@@ -284,7 +267,7 @@ Ltac unfold_traceElementOnPattern H :=
 
 Ltac progress_in_traceElementOnPattern H := 
   unfold_traceElementOnPattern H ;
-  Tactics.unfold_instantiateElementOnPattern ; 
+  Tactics.unfold_instantiateElementOnPattern H ; 
   C2RTactics.progress_in_evalOutput H.
 
 
