@@ -69,6 +69,62 @@ Fixpoint wrap
 (** Example : wrap [k1;k2;k3] f [C1 e1; C2 e2 ;C4 e2] = None (k3 and C4 do not match) *)
 
 
+Lemma wrap_inv_nil T b c (e:T) : 
+  wrap nil b c  = Some e ->
+  b = e /\ c = nil.
+Proof.
+  destruct c ; simpl. 
+  { intro H ; injection H ; intro ; subst ; split ; auto. }
+  { intro ; discriminate. }
+Qed.
+
+Lemma wrap_inv_nil_nil T b (e:T) : 
+  wrap nil b nil  = Some e ->
+  b = e .
+Proof.
+ simpl. 
+ intro H ; inj H ; auto. 
+Qed.
+
+(* FIXME : move-me *)
+Ltac destruct_match :=
+  match goal with 
+     [ |- context[match ?P with | _ => _ end]] => destruct P eqn:?
+  end. 
+
+Lemma wrap_inv_cons T a b c d (e:T) : 
+  wrap (cons a b) c d  = Some e ->
+  exists a' b' x,
+    d = cons a' b' /\ toEData a a' = Some x /\ wrap b (c x) b' = return e.
+Proof.
+  destruct d ; simpl.
+  { intro H ; discriminate H. }
+  {
+    destruct_match ; simpl.
+    {
+
+      intros.  
+      eexists ; eexists ; eexists.
+      repeat (split ; eauto).
+    }
+    { intro H ; discriminate H. }
+  }
+Qed.
+
+Lemma wrap_inv_cons_cons T a b c a' b' (e:T) : 
+  wrap (cons a b) c (cons a' b') = Some e ->
+  exists x, 
+    toEData a a' = Some x /\ wrap b (c x) b' = return e.
+Proof.
+  simpl.
+  destruct_match ; simpl.
+  {
+    intros.  
+    eexists.
+    repeat (split ; eauto).
+  }
+  { intro H ; discriminate H. }
+Qed.
 
 
 
@@ -77,6 +133,8 @@ Definition drop_option_to_bool a :=
   | None => false
   | Some b => b
   end.
+
+
 
 (** wrap' only does the typecheck. It is a particular case of wrap wher the imp function does nothing. *)
 Definition wrap' l a := 
@@ -148,3 +206,57 @@ Definition makeLink (l : list SourceEKind) (k : TargetEKind) (r : TargetLKind)
   fun mt it sm => wrapLink l k r (imp mt it sm).
 
 End ConcreteExpressions.
+
+
+Ltac monadInv H :=
+  match type of H with
+    drop_option_to_bool ?E = true =>
+      let b := fresh "b" in
+      let TMP := fresh "TMP" in
+      assert (TMP : E = Some true) ;
+      [ destruct E ; unfold drop_option_to_bool in H ; 
+        [ f_equal ; exact H 
+        | discriminate H ] 
+      | clear H ; rename TMP into H ]
+
+  end.
+
+Ltac exploit_toEData H :=
+  match type of H with
+  | toEData _ _ = Some ?V =>
+      compute in H ; first [ inj H | discriminate H] ; try subst V
+  | toEData _ ?e = Some ?V =>
+      destruct e ; compute in H ; first [ inj H | discriminate H] ; try subst V
+  end.
+
+ Ltac wrap_inv H :=
+   match type of H with
+   | ConcreteExpressions.wrap (cons _ _) _ (cons _ _) = Some (*?V*) _ =>
+       let e := fresh "e" in
+       let sp := fresh "sp" in 
+       let t:= fresh "t" in 
+       let T_e := fresh "T_e" in
+       apply ConcreteExpressions.wrap_inv_cons_cons in H ;
+       destruct H as (t & T_e & H) ; 
+       exploit_toEData T_e (*;
+       try subst V*)
+   | ConcreteExpressions.wrap (cons _ _) _ ?SP = Some (*?V*) _ =>
+       let e := fresh "e" in
+       let sp := fresh "sp" in 
+       let t:= fresh "t" in 
+       let T_e := fresh "T_e" in
+       apply ConcreteExpressions.wrap_inv_cons in H ;
+       destruct H as (e & sp & t & E & T_e & H) ; 
+       exploit_toEData T_e ;
+       try subst SP  (*;
+       try subst V*)
+   | ConcreteExpressions.wrap nil _ nil = Some ?V =>
+       apply ConcreteExpressions.wrap_inv_nil_nil in H ;
+       try first [subst V | try inj H ]
+   | ConcreteExpressions.wrap nil _ ?SP = Some ?V =>
+       let E := fresh "E" in 
+       apply ConcreteExpressions.wrap_inv_nil in H ;
+       destruct H as [H E];
+       try subst SP ;
+       try first [subst V | try inj H]
+   end.

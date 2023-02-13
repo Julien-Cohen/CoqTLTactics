@@ -37,26 +37,26 @@ Proof.
   clear IN_IT.
 
   (* (1)  *)
-  Tactics.progress_in_In_rules IN_M ; [ | ] ;
+  Tactics.progress_in_In_rules IN_RULE ; [ | ] ;
 
   (* (2)  *) 
-  C2RTactics.progress_in_guard M ;
+  C2RTactics.progress_in_guard MATCH_GUARD ;
 
 
   (* (3) make the ouput-pattern-element appear *)
-  C2RTactics.progress_in_ope IN_OP ;
+  Tactics.progress_in_ope IN_OP ; 
   
   (* (4) make the matched element appear *)
-  C2RTactics.progress_in_evalOutput IN.
+  Tactics.exploit_evaloutpat IN.
   {
     apply in_allTuples_singleton in IN_E.
     apply INC in IN_E.
-    destruct x.
+    destruct t.
     eapply Elements.transform_class_fw (* why ? *) ; eauto.
   }
   {
     apply in_allTuples_singleton in IN_E.
-    destruct a0 ; simpl in D ; subst derived.
+    destruct t ; simpl in D ; subst derived.
     apply INC in IN_E.
     eapply Elements.transform_attribute_fw (* why ? *) ; eauto.
   }    
@@ -102,7 +102,7 @@ Proof.
        remove_or_false IN_OP ;
        subst ope ; 
        compute in IN ; (* optional *)
-       [ Tactics.inj IN | discriminate IN (*the second rule cannot match *)].
+       [ PropUtils.inj IN | discriminate IN (*the second rule cannot match *)].
        simpl ; auto.
     }
 
@@ -116,7 +116,7 @@ Proof.
        simpl in M ;
        try deduce_element_kind_from_guard ;
        compute in IN (* optional *); 
-      [ discriminate IN (* the first rule cannot match *) | Tactics.inj IN ].
+      [ discriminate IN (* the first rule cannot match *) | PropUtils.inj IN ].
 
       destruct a1 ; simpl in D ; subst derived.
       simpl ; auto.
@@ -162,7 +162,7 @@ Proof.
       subst ope  ;  
       simpl in M ;
       deduce_element_kind_from_guard ;
-      compute in IN ; Tactics.inj IN .
+      compute in IN ; PropUtils.inj IN .
     
     { (* first rule *)      
       compute ; auto.

@@ -1,5 +1,6 @@
 Require Import String.
 Require Import NotationUtils.
+Require PropUtils.
 
 Definition is_option_eq 
   {A: Type} (oe : option A) 
@@ -24,25 +25,22 @@ Instance ValueString : ValueOption string := {
 }.
 
 
-Local Ltac inj H := injection H ; clear H ; intros ; subst.
-
-
-
 Ltac monadInv H :=
-  let N := fresh "E" in
-  
   match type of H with 
 
   |  _ <- ?E ; Some _ = Some _ => 
-      destruct E eqn:N ;
-      [ inj H | discriminate H ] ; 
-      let N2 := fresh H in
-      rename N into N2
-             
+       let N := fresh "EQ" in
+       
+       destruct E eqn:N ; 
+       [ PropUtils.inj H | discriminate H];
+       rename N into H
+         
   | _ <- ?E ; _ = Some _ => 
+      let N := fresh "E" in
+
       destruct E eqn:N ;
       [  | discriminate H ]
-
+        
   | option_map _ _ = Some _ =>
       unfold option_map in H ; monadInv H
 

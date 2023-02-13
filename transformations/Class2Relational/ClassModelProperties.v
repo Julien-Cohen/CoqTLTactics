@@ -24,7 +24,7 @@ Proof.
   { (*AttributeTypeLink*)
     Tactics.destruct_if_hyp.
     { (* true *)
-      Tactics.inj G.
+      PropUtils.inj G.
       apply lem_beq_Attribute_id in E.
       destruct a ; subst ; simpl in *.
       left ; reflexivity.
@@ -65,7 +65,7 @@ Proof.
   + (* AttributeType *)
     destruct a.
     destruct_or H.
-    - Tactics.inj H. simpl.
+    - PropUtils.inj H. simpl.
       rewrite beq_Attribute_refl.
       solve [eauto].
       

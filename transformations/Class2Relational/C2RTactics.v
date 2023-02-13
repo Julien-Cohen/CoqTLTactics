@@ -61,7 +61,7 @@ Proof.
   intros cm c ta H.
   compute in H.
   remove_or_false H.
-  Tactics.inj H.
+  PropUtils.inj H.
   reflexivity.
 Qed.
 
@@ -81,7 +81,7 @@ Lemma unify_column_attribute_lem :
 Proof.
   intros m a c H ; destruct a ; simpl.
   destruct derived ; compute in H ; [ contradiction H | remove_or_false H ].
-  Tactics.inj H.
+  PropUtils.inj H.
   auto.
 Qed.
 
@@ -176,7 +176,7 @@ Ltac deduce_element_kind_from_guard :=
       apply make2 in H ; destruct H as (a & (H & H2)) ; 
       first[ 
           subst e (* if e was a variable *) 
-        | Tactics.inj H (* if e was not a variable *) 
+        | PropUtils.inj H (* if e was not a variable *) 
         ]
 
   | [ H :ConcreteExpressions.makeGuard [Attribute_K] (fun _ atr => negb (derived atr)) _  ?e = true |- _ ] =>
@@ -237,27 +237,6 @@ Ltac progress_in_guard H :=
   deduce_element_kind_from_guard.
 
 
-Ltac progress_in_ope H :=
-  match type of H with 
-    In ?ope _ =>
-      first [ progress unfold R1 in H | progress unfold R2 in H ] ;
-      Parser.unfold_parseRule H ; 
-      Tactics.simpl_accessors_any H ;
-      unfold map in H ; 
-      Tactics.simpl_accessors_any H ;
-      apply in_singleton in H ;
-      subst ope
-  end.
-
-
-Ltac progress_in_evalOutput H :=
-  unfold Expressions.evalOutputPatternElementExpr in H ;
-  Tactics.simpl_accessors_any H ;
-  unfold ConcreteExpressions.makeElement in H ;
-  unfold ConcreteExpressions.wrapElement in H ;
-  OptionUtils.monadInv H ;
-  simpl ConcreteExpressions.wrap in H ;
-  first [ discriminate | Tactics.inj H ].
 
 Ltac unfold_traceElementOnPattern H :=
   match type of H with
@@ -268,7 +247,7 @@ Ltac unfold_traceElementOnPattern H :=
 Ltac progress_in_traceElementOnPattern H := 
   unfold_traceElementOnPattern H ;
   Tactics.unfold_instantiateElementOnPattern H ; 
-  C2RTactics.progress_in_evalOutput H.
+  Tactics.progress_in_evalOutput H.
 
 
 Ltac unfold_toEData H :=

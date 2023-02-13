@@ -67,7 +67,7 @@ Ltac progress_in_applyElementOnPattern H :=
     ListUtils.destruct_in_optionListToList H ;
     
     unfold_evalOutputPatternLinkExpr H ;
-    rewrite flat_map_singleton in H ; 
+    try rewrite flat_map_singleton in H ; 
     
     C2RTactics.unfold_make_link H  ; 
     
@@ -75,7 +75,7 @@ Ltac progress_in_applyElementOnPattern H :=
     
     cbv match in H ;
     Tactics.simpl_accessors_any H  ;
-    Tactics.inj H.
+    PropUtils.inj H.
 
 Ltac suite H :=
   ListUtils.destruct_in_optionListToList H ;
@@ -96,7 +96,7 @@ Ltac toEDataT H :=
      ModelingSemantics.inv_denoteOutput H ; 
      toEDataT H ;
      C2RTactics.unfold_toEData H ;
-     Tactics.inj H
+     PropUtils.inj H
   end.
 
  
@@ -117,6 +117,7 @@ Proof.
   (* (0) *)
   Tactics.chain_destruct_in_modelLinks_execute R_IN1.
 
+  (* (5) *)
   clear IN.
 
   (* (1) We need to know which rule has been applied to progress in the computation. *)
@@ -126,14 +127,22 @@ Proof.
   C2RTactics.progress_in_guard M ;
 
   (* (3) *)
-  C2RTactics.progress_in_ope IN1 ; 
+  Tactics.progress_in_ope IN1 ; 
   
   (* (4.L) now we can progress in IN2. *)
-  progress_in_applyElementOnPattern IN2 ;
+  unfold Parser.parseOutputPatternElement in IN2 ;
+  Tactics.simpl_accessors_any IN2 ;
+  unfold Parser.parseOutputPatternLinks in IN2 ;
+  unfold Parser.parseOutputPatternLink in IN2 ;
+  simpl in IN2 ;
+  progress_in_applyElementOnPattern IN2 ; try rewrite List.app_nil_r in IN ; 
   suite IN ;
   apply in_singleton in IN0 ; 
   first [ discriminate IN0 (* discard rules that do not match *)
-        | Tactics.inj IN0 ]. 
+        | PropUtils.inj IN0 ]. 
+
+  (* (6) *)
+  clear IN_E.
 
   progress_in_maybeBuildColumnReference IN.
   
@@ -167,27 +176,28 @@ Proof.
   subst rm.
 
   (* 0 *)
-  Tactics.destruct_in_modelElements_execute IN1.
-  repeat Tactics.destruct_any.
+  Tactics.chain_destruct_in_modelElements_execute IN1.
 
   (* (1) *)
-  Tactics.progress_in_In_rules IN_R.
+  Tactics.progress_in_In_rules IN_RULE.
     
     {
-      (* (2) *)   C2RTactics.progress_in_guard M.
-      (* (3) *)   C2RTactics.progress_in_ope IN_OP.
-      (* (4.E) *) C2RTactics.progress_in_evalOutput IN1.
+      (* (2) *)  (* C2RTactics.progress_in_guard MATCH_GUARD.*)
+      (* (3) *)   Tactics.progress_in_ope IN_OP.
+      (* (4.E) *) Tactics.exploit_evaloutpat IN1.
     }
 
     {
-      (* (2) *)   C2RTactics.progress_in_guard M.
-      (* (3) *)   C2RTactics.progress_in_ope IN_OP.
-      (* (4.E) *) C2RTactics.progress_in_evalOutput IN1.
+      (* (2) *)   C2RTactics.progress_in_guard MATCH_GUARD.
+      (* (3) *)   Tactics.progress_in_ope IN_OP.
+      (* (4.E) *) Tactics.exploit_evaloutpat IN1.
     
 
-      clear IN_I.   clear n. 
+      (* (5) *)
+      clear IN_IT.   clear n. 
 
-      apply Tactics.allModelElements_allTuples_back with (t:=Class2Relational) (* fixme *) in IN_E.
+      (* (6) *)
+      Semantics.exploit_in_allTuples IN_E.
   
   Tactics.duplicate PRE H.
 
@@ -199,7 +209,7 @@ Proof.
 
   unfold execute ;  simpl. 
 
-  destruct a ; simpl in *. (* derived a = false *)
+  destruct t ; simpl in *. (* derived a = false *)
   subst derived ; simpl in *. 
 
   Tactics.duplicate G1 G2. 
@@ -288,29 +298,30 @@ Proof.
   subst rm.
 
   (* 0 *)
-  Tactics.destruct_in_modelElements_execute IN1.
-  repeat Tactics.destruct_any.
+  Tactics.chain_destruct_in_modelElements_execute IN1.
 
   (* (1) *)
-  Tactics.progress_in_In_rules IN_R.
+  Tactics.progress_in_In_rules IN_RULE.
     
     {
-      (* (2) *)   C2RTactics.progress_in_guard M.
-      (* (3) *)   C2RTactics.progress_in_ope IN_OP.
-      (* (4.E) *) C2RTactics.progress_in_evalOutput IN1.
+      (* (2) *)   C2RTactics.progress_in_guard MATCH_GUARD.
+      (* (3) *)   Tactics.progress_in_ope IN_OP.
+      (* (4.E) *) Tactics.exploit_evaloutpat IN1.
     }
 
     {
-      (* (2) *)   C2RTactics.progress_in_guard M.
-      (* (3) *)   C2RTactics.progress_in_ope IN_OP.
-      (* (4.E) *) C2RTactics.progress_in_evalOutput IN1.
+      (* (2) *)   C2RTactics.progress_in_guard MATCH_GUARD.
+      (* (3) *)   Tactics.progress_in_ope IN_OP.
+      (* (4.E) *) Tactics.exploit_evaloutpat IN1.
 
   (* we have lost IN1 : In (ColumnElement col)
           (modelElements (execute Class2Relational cm)) *)
 
-  clear IN_I ; clear n. 
+      (* (5) *)
+  clear IN_IT ; clear n. 
   
-  apply Tactics.allModelElements_allTuples_back with (t:=Class2Relational) (* fixme *) in IN_E.
+  (* (6) *)
+  Semantics.exploit_in_allTuples IN_E.
   
   Tactics.duplicate PRE H.
 
@@ -326,7 +337,7 @@ Proof.
   unfold execute ; simpl. 
 
  
-  destruct a ; simpl in *. (* derived a0 = false *)
+  destruct t ; simpl in *. (* derived a0 = false *)
   subst derived ; simpl in *. 
 
   Tactics.duplicate G1 G2. (* à quoi sert de garder PRE1 ? *)

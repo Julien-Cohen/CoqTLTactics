@@ -20,7 +20,8 @@ Require Import transformations.Class2Relational_TUPLE_SP.Class2Relational_TUPLE_
 Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
 Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
 
-(* From transformations.Class2Relational Require Tactics. *)
+        
+
 
 Theorem Table_name_uniqueness:
 forall (cm : ClassModel) (rm : RelationalModel), 
@@ -42,24 +43,84 @@ Proof.
     intros cm rm E PRE t1 t2 IN1 IN2 D.
     subst rm.
 
-    repeat Tactics.destruct_execute.
+
+    (* (0) *)
+    Tactics.chain_destruct_in_modelElements_execute IN1.
+
+    (* (5) *)
+    clear IN_IT.
+    
+    (* (1) *)
+    Tactics.progress_in_In_rules IN_RULE ; [ |  ]. 
+    2:{
+      
+      (* (2) *)
+      clear MATCH_GUARD.
+
+      (* (3) *)
+      Tactics.progress_in_ope IN_OP.
+
+      (* (4.E) *)
+      Tactics.exploit_evaloutpat IN1.
+
+    }
 
 
-(*
-    repeat Tactics.show_singleton.
+    { 
+      (* (2) *)
+      clear MATCH_GUARD. 
 
-    repeat Tactics.show_origin.
+      (* (3) *)
+      Tactics.progress_in_ope IN_OP.
 
-    repeat Tactics.unify_all.
-    simpl.
+      (* (4.E) *)
+      Tactics.exploit_evaloutpat IN1 ;
 
-    repeat Tactics.in_singleton_allTuples.
+      (* (6) *)
+      Semantics.exploit_in_allTuples IN_E.
 
-    specialize (PRE c c0 IN_E IN_E0) ; clear IN_E IN_E0.
-    apply PRE.
-    contradict D.
-    subst ; reflexivity.
+      
+      (* 0 *)
+      Tactics.chain_destruct_in_modelElements_execute IN2.
+
+      (* (5) *)
+      clear IN_IT.
+      
+      (* (1) *)
+      Tactics.progress_in_In_rules IN_RULE ; [ |  ]. 
+      
+      2:{
+        (* (2) *)
+        clear MATCH_GUARD.
+
+        (* (3) *)
+        Tactics.progress_in_ope IN_OP.
+
+        (* (4.E) *)
+        Tactics.exploit_evaloutpat IN2.
+        
+      }
+      
+      
+      { 
+        (* (2) *)
+        clear MATCH_GUARD ;
+        
+        (* (3) *)
+        Tactics.progress_in_ope IN_OP ;
+
+        (* (4.E) *)
+        Tactics.exploit_evaloutpat IN2 ;
+
+        (* (6) *)
+        Semantics.exploit_in_allTuples IN_E0 ; [].
+        
+        subst.
+        simpl.
+        
+        apply PRE ; auto.
+        contradict D ; subst ; reflexivity.
+      }
+    }
 Qed.
-*)
-Admitted.
 

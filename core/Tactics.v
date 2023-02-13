@@ -35,8 +35,6 @@ Ltac dep_inversion H :=
   let H':= fresh H in
   inversion H as [H'] ; apply Eqdep.EqdepTheory.inj_pair2 in H'.
 
-Ltac inj H := injection H ; clear H ; intros ; subst.
-
   
 Ltac duplicate H1 H2 := remember H1 as H2 eqn:TMP ; clear TMP.
 
@@ -272,28 +270,6 @@ Require Certification.
 *)
 
 Import Model.
-
-Lemma allModelElements_allTuples_back {tc:TransformationConfiguration} (t:Syntax.Transformation (tc:=tc)) (e:tc.(SourceElementType))  (cm:tc.(SourceModel)) : 
-  In [e] (allTuples t cm) ->
-  In e cm.(modelElements).
-Proof.
-  intro.
-  apply incl_singleton.
-  eapply Certification.allTuples_incl.
-  exact H.
-Qed.
-
-Ltac in_singleton_allTuples H :=
-  match type of H with 
-    | In [_] (allTuples ?T _) =>
-      apply allModelElements_allTuples_back with (t:=T) in H
-  end.
-
-Ltac in_singleton_allTuples_auto :=
-  match goal with 
-    [ H : In [_] (allTuples _ _) |- _ ] =>
-      in_singleton_allTuples H
-  end.
 
 Lemma allModelElements_allTuples {tc:TransformationConfiguration} e t cm: 
   In e cm.(modelElements) ->
@@ -567,14 +543,17 @@ Ltac chain_destruct_in_modelElements_execute H :=
   in
   let NEW3 := fresh "IN_OP" 
   in
-  let NEW4 := fresh "M" 
+  let NEW4 := fresh "MATCH_GUARD" 
+  in
+  let NEW_IN_RULE := fresh "IN_RULE"
   in
   destruct_in_modelElements_execute H ; 
   destruct_instantiatePattern H NEW1 ;
   destruct_instantiateRuleOnPattern H NEW2 ;
   destruct_instantiateIterationOnPattern H NEW3 ;
   unfold_instantiateElementOnPattern H ;
-  destruct_in_matchPattern NEW1 NEW4.
+  destruct_in_matchPattern NEW1 NEW4 ;
+  rename NEW1 into NEW_IN_RULE.
 
 Ltac chain_destruct_in_modelLinks_execute H :=
   destruct_in_modelLinks_execute H ;
@@ -600,6 +579,64 @@ Ltac progress_in_In_rules H :=
   end.
 
 
+Ltac exploit_evaloutpat_1 H :=
+  match type of H with 
+    Expressions.evalOutputPatternElementExpr _ _ _ _ = Some _ =>
+      simpl in H ;
+      unfold ConcreteExpressions.makeElement in H ;
+      unfold ConcreteExpressions.wrapElement in H ; 
+      OptionUtils.monadInv H ;
+      try discriminate
+  end.
+
+Ltac exploit_evaloutpat H :=
+  exploit_evaloutpat_1 H ;
+  repeat ConcreteExpressions.wrap_inv H.
+
+(** Deprecated : use [exploit_evaloutpat_2] above. *)
+Ltac progress_in_evalOutput H :=
+  unfold Expressions.evalOutputPatternElementExpr in H ;
+  Tactics.simpl_accessors_any H ;
+  unfold ConcreteExpressions.makeElement in H ;
+  unfold ConcreteExpressions.wrapElement in H ;
+  OptionUtils.monadInv H ;
+  repeat ConcreteExpressions.wrap_inv H ;
+  try discriminate.
+
+Ltac progress_in_ope H :=
+  match type of H with 
+  | In ?ope (Syntax.r_outputPattern (Parser.parseRule (ConcreteSyntax.Build_ConcreteRule _ _ _ _ _ ))) => 
+ 
+      unfold Parser.parseRule in H ;
+      unfold Syntax.r_outputPattern in H ; 
+      unfold ConcreteSyntax.r_outpat in H ;
+      unfold List.map in H ;
+      progress repeat unfold_In_cons H ;
+      subst ope 
+            
+  | In ?ope (Syntax.r_outputPattern (Parser.parseRule ?E)) =>
+       progress unfold E in H ; (* for the case where a rule is defined outsoide the transformation *)
+      progress_in_ope H (* recursion *)
+
+  | In ?ope (Syntax.r_outputPattern (Parser.parseRule _)) =>
+      fail "ConcreteRule must be unfolded"
+  end.
+
+Ltac exploit_in_it H :=
+  match type of H with
+  | In ?I (seq _ (Expressions.evalIteratorExpr (Parser.parseRule (ConcreteSyntax.Build_ConcreteRule _ _ _ _ _ )) _ _)) => 
+      unfold Parser.parseRule in H ; 
+      unfold Expressions.evalIteratorExpr in H ; 
+      unfold Syntax.r_iterator in H ; 
+      unfold ConcreteSyntax.r_iter in H ;
+      simpl seq in H ;
+      repeat unfold_In_cons H ;
+      subst I
+  | In _ (seq _ (Expressions.evalIteratorExpr (Parser.parseRule ?E) _ _)) => 
+      progress unfold E in H ; 
+      exploit_in_it H (* recursion *)
+  end.
+  
 
 (** Tactics to progress in the goal (not in the hypothesis) *)
 

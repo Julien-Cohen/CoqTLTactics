@@ -67,18 +67,20 @@ Proof.
   Tactics.chain_destruct_in_trace H.
   Tactics.destruct_in_matchPattern IN0 M.
 
+  
+
   (* 1 *)
   Tactics.progress_in_In_rules IN0 ;
   (* 2 *)
-  C2RTactics.progress_in_guard M ; 
+  C2RTactics.progress_in_guard M  ; 
   (* 3 *)
-  C2RTactics.progress_in_ope IN2 ;
+  Tactics.progress_in_ope IN2 ;
 
-  (* 4.L *)
-  C2RTactics.progress_in_traceElementOnPattern H ;
+  (* 4.L *) (* fixme *)
+  unfold Parser.parseOutputPatternElement in H ; simpl in H  ; C2RTactics.progress_in_traceElementOnPattern H  ;
 
   (* 5 *)
-  simpl in IN1 ; PropUtils.remove_or_false IN1 ; subst i. 
+  Tactics.exploit_in_it IN1.
 
   { (* rule 1 *) 
     constructor 1. 

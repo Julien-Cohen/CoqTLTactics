@@ -45,28 +45,61 @@ Proof.
     intros cm rm E PRE co1 co2 IN1 IN2 D.
     subst rm.
 
-    (* repeat Tactics.destruct_execute.
+
+    (* (0) *)
+    Tactics.chain_destruct_in_modelElements_execute IN1.
    
-    repeat core.Tactics.show_singleton.
-
-    repeat Tactics.show_origin. 
-
-    repeat Tactics.unify_all.
-    simpl. 
+    (* (1) *)
+    Tactics.progress_in_In_rules IN_RULE ; [ | ] ; 
     
-    repeat Tactics.in_singleton_allTuples.
+    (* (2) *)
+    (*C2RTactics.progress_in_guard MATCH_GUARD;*)
 
-    specialize (PRE a a0 IN_E IN_E0). clear IN_E IN_E0.
+    (* (3) *)
+    Tactics.progress_in_ope IN_OP ; 
+    
+    (* (4) *)
+    Tactics.exploit_evaloutpat IN1 ; 
 
-    apply PRE.
-    contradict D.
-    subst a0.
-    reflexivity.
-Qed. *)
+    (* (5) *)
+    clear IN_IT ;
+    
+    (* (6) *)
+    exploit_in_allTuples IN_E ; [].
 
-Admitted.
+    
 
- 
+
+
+    (* (0) *)
+    Tactics.chain_destruct_in_modelElements_execute IN2.
+    
+    (* (1) *)
+    Tactics.progress_in_In_rules IN_RULE ; [ | ]; 
+    
+    (* (2) *)
+    (*C2RTactics.progress_in_guard MATCH_GUARD;*)
+    
+    (* (3) *)
+    Tactics.progress_in_ope IN_OP ; 
+    
+    (* (4) *)
+    Tactics.exploit_evaloutpat IN2 ; 
+
+    (* (5) *)
+    clear IN_IT ;
+
+    (* (6) *)
+    exploit_in_allTuples IN_E1 ; [].
+        
+    simpl.
+
+    eapply PRE ; eauto.
+    
+    contradict D. subst. reflexivity.
+
+Qed.
+
 
 
   

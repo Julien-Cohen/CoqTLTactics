@@ -158,3 +158,17 @@ Ltac progress_maybeResolve H :=
       let N := fresh H in
       destruct H as (H & N)
 end.
+
+Ltac exploit_in_allTuples H :=
+  match type of H with 
+    In _ (allTuples _ _) => 
+      unfold allTuples in H ; 
+      apply tuples_up_to_n_incl in H ;
+      incl_inv H
+  end.
+
+Ltac in_allTuples_auto :=
+  match goal with 
+    [ H : In _ (allTuples _ _) |- _ ] =>
+       exploit_in_allTuples H
+  end.

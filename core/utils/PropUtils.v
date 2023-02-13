@@ -20,3 +20,6 @@ Ltac remove_or_false_auto :=
   match goal with 
     [ H : _ \/ False |- _ ] => remove_or_false H
   end.
+
+
+Ltac inj H := injection H ; clear H ; intros ; subst.

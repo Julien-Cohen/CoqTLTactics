@@ -63,7 +63,7 @@ Proof.
   intros cm c ta H.
   compute in H.
   remove_or_false H.
-  Tactics.inj H.
+  PropUtils.inj H.
   reflexivity.
 Qed.
 
@@ -92,7 +92,7 @@ Proof.
     { simpl in H. 
       destruct (beq_Class cl c0) eqn: ca.
       { simpl in H. remove_or_false H.
-        Tactics.inj H. split.
+        PropUtils.inj H. split.
         reflexivity. split. reflexivity.
         apply lem_beq_Class_id in ca.
         rewrite ca. reflexivity. }

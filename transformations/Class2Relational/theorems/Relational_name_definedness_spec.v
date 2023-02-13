@@ -52,91 +52,30 @@ Proof.
   clear IN_IT.
 
   (* (1) *)
-  Tactics.progress_in_In_rules IN_M ; [ | ];
+  Tactics.progress_in_In_rules IN_RULE ; [ | ];
   
   (* (2) *)
-  C2RTactics.progress_in_guard M ;
+  C2RTactics.progress_in_guard MATCH_GUARD ;
 
   (* (3) *)
-  C2RTactics.progress_in_ope IN_OP ;
+  Tactics.progress_in_ope IN_OP ;
   
-  (* (4.E) *)
-  C2RTactics.progress_in_evalOutput IN.
-  
+  (* (4.E) *)  
+  Tactics.exploit_evaloutpat IN ;
+
+  (* (6) *)
+  Semantics.exploit_in_allTuples IN_E.
+
   {
-    apply C2RTactics.in_allTuples_singleton in IN_E.
     apply P in IN_E.
     apply IN_E.
   }
   {
-    apply C2RTactics.in_allTuples_singleton in IN_E.
     apply P in IN_E.
     apply IN_E.
   }
 Qed.
 
-Theorem Relational_name_definedness (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : RelationalModel) :
-  (* transformation *) 
-     rm = execute Class2Relational cm ->
-  (* precondition *)   
-     (forall (c1 : ClassMetamodel.Element), 
-         In c1 cm.(modelElements) -> 
-            (ClassMetamodel.getName c1 <> ""%string)) ->
-  (* postcondition *) 
-     (forall (e : RelationalMetamodel.Element), 
-         In e rm.(modelElements) -> 
-            (RelationalMetamodel.getName e <> ""%string)). 
-Proof.
-  intros T P e IN; intros.
-  subst rm.
-
-  Tactics.destruct_execute.
-
-  Tactics.show_singleton. 
-
-  Tactics.in_singleton_allTuples IN_E.
-  specialize (P e0 IN_E). 
-  
-  repeat Tactics.destruct_any.
-
-  clear IN_I.
-
-  destruct e0. (* Case analysis on source element type *)
-  * (* [Class] *) 
-
-    Tactics.progress_in_In_rules IN_R ;
-      simpl in * ;
-      remove_or_false IN_OP ;
-      subst ope ; compute in IN ; 
-      [ Tactics.inj IN | discriminate IN ]. 
-      exact P.
-      
-  * (* [Attribute] *) 
-    destruct a.
-    destruct derived.
-    -- (* derived *)
-      exfalso. (* no rule can match *)
-      Tactics.progress_in_In_rules IN_R ; discriminate M.
-
-             
-    -- (* not derived *) 
-      Tactics.progress_in_In_rules IN_R;
-        simpl in * ;
-        remove_or_false IN_OP ;
-        subst ope ; compute in IN ;
-        [ discriminate IN | Tactics.inj IN ] .
-        exact P.
-Qed.
-
-(* Alternative for (* [Attribute] *):
-      unfold instantiatePattern in H2. 
-      unfold matchPattern in H2.
-      unfold matchRuleOnPattern in H2. simpl in H2.
-      destruct (negb (getAttributeDerived c0)). 
-      -- simpl in H2. destruct H2. 
-        ++ rewrite <- H2. simpl. simpl in H0. assumption.
-        ++ contradiction H2. 
-      --  contradiction H2.*)
 
 
 
@@ -158,34 +97,4 @@ Qed.
   ].*)
   
 
-Ltac destruct_rule Hrule :=
-  repeat (destruct Hrule as [Hrule | Hrule]; try contradiction Hrule); destruct Hrule.
 
-Ltac destruct_pattern Hinst sp :=
-  repeat (let se := fresh "se" in
-          destruct sp as [ | se sp ];
-          [ | destruct se as [[] ?] eqn:?];
-          try contradiction Hinst);
-  destruct Hinst as [Hinst | []]; simpl in Hinst.
-
-(* 
-
-Theorem Relational_name_definedness':
-forall (cm : ClassModel) (rm : RelationalModel),
-  (* transformation *) rm = execute Class2Relational cm ->
-  (* precondition *)   (forall (c1 : ClassMetamodel_Element), In c1 (allModelElements cm) -> (ClassMetamodel_getName c1 <> ""%string)) ->
-  (* postcondition *)  (forall (t1 : RelationalMetamodel_Element), In t1 (allModelElements rm) -> (RelationalMetamodel_getName t1 <> ""%string)).
-Proof.
-  intros. subst rm.
-  destruct_execute H1 sp Hin Hinst. (* t1 comes from a pattern sp *)
-  apply allTuples_incl in Hin. (* sp is made of source model elements *)
-  destruct_instantiatePattern Hinst r Hr Hinst. (* sp matches a rule r *)
-  destruct_matchPattern Hr Hr Hmatch. (* r comes from the transformation *)
-  clear Hmatch. (* Hmatch is not used for this proof *)
-  destruct_rule Hr; (* case analysis on rules *)
-    destruct_pattern Hinst sp. (* retrieve the source pattern for each rule *)
-  - (* Class2Table *) specialize (H0 se). crush.
-  - (* Attribute2Column *) specialize (H0 se). crush.
-Qed.
-
-*)

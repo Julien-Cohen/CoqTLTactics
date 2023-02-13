@@ -65,7 +65,7 @@ transformations/Class2Relational_TUPLE_SP/RelationalMetamodel.v
 transformations/Class2Relational_TUPLE_SP/tests/PersonModel.v
 transformations/Class2Relational_TUPLE_SP/tests/PersonTest_TUPLE_SP.v
 transformations/Class2Relational_TUPLE_SP/Class2Relational_TUPLE_SP.v
-transformations/Class2Relational_TUPLE_SP/Tactics.v
+transformations/Class2Relational_TUPLE_SP/C2RTactics.v
 
 transformations/TT2BDD/TT.v
 transformations/TT2BDD/BDD.v
@@ -159,6 +159,9 @@ transformations/Class2Relational/theorems/Relational_name_definedness_spec.v
 transformations/Class2Relational/theorems/Relational_resolve_spec.v
 transformations/Class2Relational/theorems/Relational_resolve.v
 transformations/Class2Relational/theorems/Table_name_uniqueness.v
+
+transformations/Class2Relational_TUPLE_SP/theorems/Table_name_uniqueness.v
+transformations/Class2Relational_TUPLE_SP/theorems/Column_name_uniqueness.v
 
 transformations/Families2Persons/theorems/sampleTheorems.v
 

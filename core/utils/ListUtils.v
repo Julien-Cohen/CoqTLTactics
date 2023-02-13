@@ -325,16 +325,35 @@ Fixpoint count_occ_b {A} (f:A->A->bool) l e :=
   end.
 
 
+Ltac incl_inv H :=
+      match type of H with
+      | incl nil _ =>
+          clear H
+      | incl (cons _ _) _ =>
+          let IN := fresh H in
+          apply List.incl_cons_inv in H ; 
+          destruct H as [H IN] ;
+          incl_inv IN (* recursion *)
+      end.
+
+Ltac unfold_In_cons H :=
+  match type of H with
+  | In _ (cons _ _) => 
+      apply List.in_inv in H ;
+      PropUtils.destruct_or H
+  | In _ nil => inversion H
+  end.
+
 
 Lemma incl_singleton :
   forall {T} (a:T) b, List.In a b <-> incl (a::nil)  b .
 Proof.
-  unfold incl. intros. 
-  split ; intro H.
-  + intros. 
-    simpl in H0 ; PropUtils.remove_or_false H0.
-    subst ; assumption.
-  + apply H. simpl. auto.
+  intros ; split ; intro H.
+  + unfold incl.
+    intros e H2.
+    repeat unfold_In_cons H2.
+    subst. exact H.
+  + incl_inv H. exact H. 
 Qed.
 
 Lemma in_singleton A (a:A) b : a = b <-> In a (b::nil).
@@ -375,10 +394,3 @@ Proof.
     f_equal ; auto.
 Qed.
 
-Ltac unfold_In_cons H :=
-  match type of H with
-  | In _ (cons _ _) => 
-      apply List.in_inv in H ;
-      PropUtils.destruct_or H
-  | In _ nil => inversion H
-  end.

@@ -87,7 +87,7 @@ Proof.
     destruct c0.
     destruct(beq_Column cr c) eqn:E.
     {
-      Tactics.inj IN.
+      PropUtils.inj IN.
       apply lem_beq_Column_id in E ; subst cr.
       left ; reflexivity.
     }
