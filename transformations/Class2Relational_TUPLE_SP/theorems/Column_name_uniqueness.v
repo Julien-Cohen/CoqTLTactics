@@ -46,50 +46,48 @@ Proof.
     subst rm.
 
 
-    (* (0) *)
+    (* (1) *)
     Tactics.chain_destruct_in_modelElements_execute IN1.
    
-    (* (1) *)
+    (* (2) *)
     Tactics.progress_in_In_rules IN_RULE ; [ | ] ; 
     
-    (* (2) *)
-    (*C2RTactics.progress_in_guard MATCH_GUARD;*)
-
     (* (3) *)
     Tactics.progress_in_ope IN_OP ; 
-    
+
     (* (4) *)
+    clear MATCH_GUARD ;
+
+    (* (5.E) *)
     Tactics.exploit_evaloutpat IN1 ; 
 
-    (* (5) *)
+    (* (6) *)
     clear IN_IT ;
     
-    (* (6) *)
+    (* (7) *)
     exploit_in_allTuples IN_E ; [].
 
-    
 
 
-
-    (* (0) *)
+    (* (1) *)
     Tactics.chain_destruct_in_modelElements_execute IN2.
     
-    (* (1) *)
-    Tactics.progress_in_In_rules IN_RULE ; [ | ]; 
-    
     (* (2) *)
-    (*C2RTactics.progress_in_guard MATCH_GUARD;*)
+    Tactics.progress_in_In_rules IN_RULE ; [ | ]; 
     
     (* (3) *)
     Tactics.progress_in_ope IN_OP ; 
-    
+
     (* (4) *)
+    clear  MATCH_GUARD ;
+    
+    (* (5) *)
     Tactics.exploit_evaloutpat IN2 ; 
 
-    (* (5) *)
+    (* (6) *)
     clear IN_IT ;
 
-    (* (6) *)
+    (* (7) *)
     exploit_in_allTuples IN_E1 ; [].
         
     simpl.

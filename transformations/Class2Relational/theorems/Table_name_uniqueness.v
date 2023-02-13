@@ -45,46 +45,51 @@ Proof.
   intros cm rm E PRE t1 t2 IN1 IN2 D.
   subst rm.
   
-  
-  
-  (* (0) *)
-  Tactics.chain_destruct_in_modelElements_execute IN1.
-  
-  (* (5) *)
-  clear IN_IT.
-  
+    
   (* (1) *)
-  Tactics.progress_in_In_rules IN_RULE ; [ |  ];
-  
+  Tactics.chain_destruct_in_modelElements_execute IN1.
+
   (* (2) *)
+  Tactics.progress_in_In_rules IN_RULE ; [ |  ];
+
+  (* (3) *)
+  Tactics.progress_in_ope IN_OP ;
+
+  (* (4) *)
   C2RTactics.progress_in_guard MATCH_GUARD ;
 
-  (* (3) *)
-  Tactics.progress_in_ope IN_OP ;
   
-  (* (4.E) *)
-  Tactics.exploit_evaloutpat IN1 ; subst ; [].
-
-
-  (* (0) *)
-  Tactics.chain_destruct_in_modelElements_execute IN2.
-
-  (* (5) *)
-  clear IN_IT.
-
-  (* (1) *)
-  Tactics.progress_in_In_rules IN_RULE ; [ |  ];
-  
-  (* (2) *)
-(*  C2RTactics.progress_in_guard MATCH_GUARD ;*)
-
-  (* (3) *)
-  Tactics.progress_in_ope IN_OP ;
-  
-  (* (4.E) *) 
-  Tactics.exploit_evaloutpat IN2.
+  (* (5.E) *)
+  Tactics.exploit_evaloutpat IN1 ; subst ; [] ;
 
   (* (6) *)
+  Tactics.exploit_in_it IN_IT ;
+  
+  (* (7) *)
+  Semantics.in_allTuples_auto.
+
+
+  (* (1) *)
+  Tactics.chain_destruct_in_modelElements_execute IN2.
+
+  (* (2) *)
+  Tactics.progress_in_In_rules IN_RULE ; [ |  ];
+
+  (* (3) *)
+  Tactics.progress_in_ope IN_OP ;
+
+  (* (4) *)
+  (* useless here *)
+  C2RTactics.progress_in_guard MATCH_GUARD ;
+  
+  (* (5.E) *) 
+  Tactics.exploit_evaloutpat IN2 ;
+
+  (* (6) *)
+  (* useless here *)
+  Tactics.exploit_in_it IN_IT ;
+
+  (* (7) *)
   repeat Semantics.in_allTuples_auto.
 
   simpl in *.

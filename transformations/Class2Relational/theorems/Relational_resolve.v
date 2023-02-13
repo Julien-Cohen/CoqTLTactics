@@ -114,37 +114,41 @@ Proof.
   intros r t R_IN1.
   subst rm.
   
-  (* (0) *)
+  (* (1) *)
   Tactics.chain_destruct_in_modelLinks_execute R_IN1.
 
-  (* (5) *)
-  clear IN.
 
   (* (1) We need to know which rule has been applied to progress in the computation. *)
   Tactics.progress_in_In_rules IN_MATCH ; [ | ] ; 
 
-  (* (2) Now we can progress in the guard. This will make appears the shape of sp, which will ease the unfolding of [outputPattern] *)
-  C2RTactics.progress_in_guard M ;
-
   (* (3) *)
   Tactics.progress_in_ope IN1 ; 
+
+  (* (4) Now we can progress in the guard. *)
+  C2RTactics.progress_in_guard M ;
+
   
-  (* (4.L) now we can progress in IN2. *)
+  (* (5.L) now we can progress in IN2. *)
   unfold Parser.parseOutputPatternElement in IN2 ;
   Tactics.simpl_accessors_any IN2 ;
   unfold Parser.parseOutputPatternLinks in IN2 ;
   unfold Parser.parseOutputPatternLink in IN2 ;
   simpl in IN2 ;
-  progress_in_applyElementOnPattern IN2 ; try rewrite List.app_nil_r in IN ; 
-  suite IN ;
-  apply in_singleton in IN0 ; 
-  first [ discriminate IN0 (* discard rules that do not match *)
-        | PropUtils.inj IN0 ]. 
+  progress_in_applyElementOnPattern IN2 ; try rewrite List.app_nil_r in IN0 ; 
+  suite IN0 ; 
 
   (* (6) *)
-  clear IN_E.
+  Tactics.exploit_in_it IN ;
 
-  progress_in_maybeBuildColumnReference IN.
+
+  repeat ListUtils.unfold_In_cons IN1 ; 
+  first [ discriminate IN1 (* discard rules that do not match *)
+        | PropUtils.inj IN1 ] ; 
+
+  (* (7) *)
+  Semantics.exploit_in_allTuples IN_E.
+
+  progress_in_maybeBuildColumnReference IN0.
   
   core.Semantics.progress_maybeResolve E. 
   
@@ -175,28 +179,31 @@ Proof.
   intros cm rm  WF2 E PRE.  intros col IN1. 
   subst rm.
 
-  (* 0 *)
+  (* 1 *)
   Tactics.chain_destruct_in_modelElements_execute IN1.
 
-  (* (1) *)
-  Tactics.progress_in_In_rules IN_RULE.
+  (* (2) *)
+  Tactics.progress_in_In_rules IN_RULE ;
+
+  (* (3) *)   Tactics.progress_in_ope IN_OP.
+  
     
     {
-      (* (2) *)  (* C2RTactics.progress_in_guard MATCH_GUARD.*)
-      (* (3) *)   Tactics.progress_in_ope IN_OP.
-      (* (4.E) *) Tactics.exploit_evaloutpat IN1.
+      
+      (* (4) *)  (* C2RTactics.progress_in_guard MATCH_GUARD.*)
+      (* (5.E) *) Tactics.exploit_evaloutpat IN1.
     }
 
     {
-      (* (2) *)   C2RTactics.progress_in_guard MATCH_GUARD.
-      (* (3) *)   Tactics.progress_in_ope IN_OP.
-      (* (4.E) *) Tactics.exploit_evaloutpat IN1.
+
+      (* (4) *)   C2RTactics.progress_in_guard MATCH_GUARD.
+      (* (5.E) *) Tactics.exploit_evaloutpat IN1.
     
 
-      (* (5) *)
+      (* (6) *)
       clear IN_IT.   clear n. 
 
-      (* (6) *)
+      (* (7) *)
       Semantics.exploit_in_allTuples IN_E.
   
   Tactics.duplicate PRE H.
@@ -292,35 +299,33 @@ forall (cm : ClassModel) (rm : RelationalModel),
     (* postcondition *)  forall (col: Column_t),
       In (ColumnElement col) rm.(modelElements) ->
       exists r', getColumnReference col rm =Some r'. 
-
 Proof. 
   intros cm rm WF E PRE.  intros col IN1.
   subst rm.
 
-  (* 0 *)
+  (* (1) *)
   Tactics.chain_destruct_in_modelElements_execute IN1.
 
-  (* (1) *)
-  Tactics.progress_in_In_rules IN_RULE.
-    
-    {
-      (* (2) *)   C2RTactics.progress_in_guard MATCH_GUARD.
-      (* (3) *)   Tactics.progress_in_ope IN_OP.
-      (* (4.E) *) Tactics.exploit_evaloutpat IN1.
-    }
+  (* (2) *)
+  Tactics.progress_in_In_rules IN_RULE ;
+  
+  (* (3) *)
+  Tactics.progress_in_ope IN_OP ;  
 
-    {
-      (* (2) *)   C2RTactics.progress_in_guard MATCH_GUARD.
-      (* (3) *)   Tactics.progress_in_ope IN_OP.
-      (* (4.E) *) Tactics.exploit_evaloutpat IN1.
+  (* (4) *) 
+  C2RTactics.progress_in_guard MATCH_GUARD ;
+  
+  (* (5.E) *)
+  Tactics.exploit_evaloutpat IN1 ; [].
+
 
   (* we have lost IN1 : In (ColumnElement col)
           (modelElements (execute Class2Relational cm)) *)
 
-      (* (5) *)
-  clear IN_IT ; clear n. 
-  
   (* (6) *)
+  Tactics.exploit_in_it IN_IT.  
+  
+  (* (7) *)
   Semantics.exploit_in_allTuples IN_E.
   
   Tactics.duplicate PRE H.
@@ -350,17 +355,17 @@ Proof.
     with (x:= {| table_id := c.(class_id) ;  
                 table_name := c.(class_name) |}) . 
 
-    apply in_flat_map.
-    exists ([AttributeElement {|
-                attr_id := attr_id;
-                derived := false;
-                attr_name := attr_name
-              |}]).
-    split.
-    { apply C2RTactics.allModelElements_allTuples. exact IN_E. }
-    {
-
-      unfold applyPattern.
+  apply in_flat_map.
+  exists ([AttributeElement {|
+               attr_id := attr_id;
+               derived := false;
+               attr_name := attr_name
+             |}]).
+  split.
+  { apply C2RTactics.allModelElements_allTuples. exact IN_E. }
+  {
+    
+    unfold applyPattern.
     apply in_flat_map.
     exists (Parser.parseRule R2).
   
@@ -390,8 +395,8 @@ Proof.
 
       simpl. left. reflexivity. 
     }
-    }
   }
+  
 Qed.
      
 

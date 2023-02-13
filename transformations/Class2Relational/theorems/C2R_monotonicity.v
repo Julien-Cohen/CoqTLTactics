@@ -31,31 +31,35 @@ Proof.
   unfold incl.
   intros sm1 sm2 INC a IN.
 
-  (* (0) *)
+  (* (1) *)
   Tactics.chain_destruct_in_modelElements_execute IN.
 
-  clear IN_IT.
-
-  (* (1)  *)
+  (* (2)  *)
   Tactics.progress_in_In_rules IN_RULE ; [ | ] ;
-
-  (* (2)  *) 
-  C2RTactics.progress_in_guard MATCH_GUARD ;
 
 
   (* (3) make the ouput-pattern-element appear *)
   Tactics.progress_in_ope IN_OP ; 
+
+  (* (4)  *) 
+  C2RTactics.progress_in_guard MATCH_GUARD ;
+
   
-  (* (4) make the matched element appear *)
-  Tactics.exploit_evaloutpat IN.
+  (* (5) make the matched element appear *)
+  Tactics.exploit_evaloutpat IN ;
+  
+  (* (6) *)
+  clear IN_IT ;
+
+  (* 7 *)
+   Semantics.exploit_in_allTuples IN_E.
+
   {
-    apply in_allTuples_singleton in IN_E.
     apply INC in IN_E.
     destruct t.
     eapply Elements.transform_class_fw (* why ? *) ; eauto.
   }
   {
-    apply in_allTuples_singleton in IN_E.
     destruct t ; simpl in D ; subst derived.
     apply INC in IN_E.
     eapply Elements.transform_attribute_fw (* why ? *) ; eauto.

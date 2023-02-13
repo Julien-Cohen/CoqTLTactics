@@ -46,24 +46,26 @@ Proof.
   subst rm.
 
 
-  (* (0) *)
+  (* (1) *)
   Tactics.chain_destruct_in_modelElements_execute IN.
 
-  clear IN_IT.
-
-  (* (1) *)
-  Tactics.progress_in_In_rules IN_RULE ; [ | ];
-  
   (* (2) *)
-  C2RTactics.progress_in_guard MATCH_GUARD ;
+  Tactics.progress_in_In_rules IN_RULE ; [ | ];
 
   (* (3) *)
   Tactics.progress_in_ope IN_OP ;
+
+  (* (4) *)
+  C2RTactics.progress_in_guard MATCH_GUARD ;
+
   
-  (* (4.E) *)  
+  (* (5.E) *)  
   Tactics.exploit_evaloutpat IN ;
 
   (* (6) *)
+  clear IN_IT ;
+
+  (* (7) *)
   Semantics.exploit_in_allTuples IN_E.
 
   {

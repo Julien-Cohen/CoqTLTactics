@@ -93,30 +93,31 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
 
-  (* (0) *)
+  (* (1) *)
   Tactics.chain_destruct_in_modelElements_execute H.
 
-  (* (5) *)
-  clear IN_IT.
-
-  (* (1) To progress in M and H, we need to know ope, and so we need to know r. Exploit IN_RULE. *)
-
+  (* (2) *)
   Tactics.progress_in_In_rules IN_RULE ; [ exfalso | ] ;
 
-  (* (2) Now to progress in M or H we need to know ope. Exploit M (guard). *) 
-
-  C2RTactics.progress_in_guard MATCH_GUARD ;
 
   (* (3) make the ouput-pattern-element appear *)
   Tactics.progress_in_ope IN_OP ; 
   
-  (* (4.E) make the matched element appear *)
-  unfold Parser.parseOutputPatternElement in H ; Tactics.progress_in_evalOutput H. (*inj H.*)
+  (* (4) *) 
+  (* needed here to get that derived = false *)
+  C2RTactics.progress_in_guard MATCH_GUARD ;
+
+  (* (5.E) make the matched element appear *)
+  unfold Parser.parseOutputPatternElement in H ; Tactics.progress_in_evalOutput H ;
 
   (* (6) *)
+  (* not useful here *) 
+  Tactics.exploit_in_it IN_IT ;
+
+  (* (7) *)
   Semantics.exploit_in_allTuples IN_E.
   
-  destruct t. simpl in D. subst derived.  exact IN_E.
+  destruct t. simpl in D. subst derived.  simpl. exact IN_E.
   
 Qed.
 
@@ -133,25 +134,26 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
 
-  (* (0) *)
+  (* (1) *)
   Tactics.chain_destruct_in_modelElements_execute H.
 
-  (* (5) *)
-  clear IN_IT.
-
-  (* (1) *)
-  Tactics.progress_in_In_rules IN_RULE ; [ | exfalso ] ; 
-  
   (* (2) *)
-  C2RTactics.progress_in_guard MATCH_GUARD ;
+  Tactics.progress_in_In_rules IN_RULE ; [ | exfalso ] ; 
 
   (* (3) *)
-  unfold R1 in IN_OP ; unfold R2 in IN_OP ; Tactics.progress_in_ope IN_OP ;
+  Tactics.progress_in_ope IN_OP ;
   
-  (* (4.E) *)
-  unfold Parser.parseOutputPatternElement in H ; Tactics.exploit_evaloutpat H.
+  (* (4) *)
+  C2RTactics.progress_in_guard MATCH_GUARD ;
+
+  (* (5.E) *)
+  unfold Parser.parseOutputPatternElement in H ; Tactics.exploit_evaloutpat H ;
 
   (* (6) *)
+  (* not useful here *) 
+  Tactics.exploit_in_it IN_IT ;
+  
+  (* (7) *)
   Semantics.exploit_in_allTuples IN_E.
   
   destruct t ; exact IN_E.
