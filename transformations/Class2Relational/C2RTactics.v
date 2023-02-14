@@ -37,166 +37,16 @@ Proof.
 Qed.
 
 
-Ltac show_origin :=
-  let newclassname := fresh "c" in
-  let newattributename := fresh "a" in 
-  let TMP := fresh in
-  match goal with 
-   
-   [ H : In (TableElement ?a) (instantiatePattern Class2Relational ?b [?c]) |- _ ] =>
-      destruct (tables_come_from_classes a b c H) as [newclassname TMP]; subst c
-
- | [ H : In (ColumnElement ?a) (instantiatePattern Class2Relational ?b [?c]) |- _ ] =>
-      destruct (columns_come_from_attributes a b c H) as [newattributename TMP]; subst c
-
-end.
 
 
-Lemma unify_table_class_lem :
-  forall cm c ta,
-    In (TableElement ta)
-      (instantiatePattern Class2Relational cm [ClassElement c]) ->
-    ta = {| table_id := class_id c; table_name := class_name c |}.
-Proof.
-  intros cm c ta H.
-  compute in H.
-  remove_or_false H.
-  PropUtils.inj H.
-  reflexivity.
-Qed.
 
-Ltac unify_table_class_tac H :=
+Ltac negb_inv H :=
   match type of H with
-    In (TableElement ?ta) (instantiatePattern Class2Relational _ [ClassElement ?c]) => 
-      apply unify_table_class_lem in H ;
-      subst ta
+    negb (derived _) = true => 
+      apply Bool.negb_true_iff in H
   end.
+  
 
-Lemma unify_column_attribute_lem : 
-  forall m a c, 
-  In (ColumnElement c)
-          (instantiatePattern Class2Relational m
-             [AttributeElement a]) ->
-  c = {| column_id := a.(attr_id); column_name := a.(attr_name) |} /\ a.(derived) = false.
-Proof.
-  intros m a c H ; destruct a ; simpl.
-  destruct derived ; compute in H ; [ contradiction H | remove_or_false H ].
-  PropUtils.inj H.
-  auto.
-Qed.
-
-
-Ltac unify_column_attribute_tac H :=
-  match type of H with 
-    In (ColumnElement ?c)
-      (instantiatePattern Class2Relational _
-         [AttributeElement ?a]) => 
-      let H2 := fresh in
-      apply unify_column_attribute_lem in H ;
-      destruct H as [H2 H] ;
-      subst c
-  end.
-
-
-Ltac unify_all :=
-  match goal with
-    [ H : In (ColumnElement _) (instantiatePattern Class2Relational _ [AttributeElement _]) |- _ ] =>
-      unify_column_attribute_tac H
-
-   | [ H : In (TableElement _) (instantiatePattern Class2Relational _ [ClassElement _]) |- _ ] => 
-       unify_table_class_tac H
-  end.
-
-
-Lemma make1 sm e :
-  ConcreteExpressions.makeEmptyGuard [Class_K] sm [e] = true ->
-  exists v, e = ClassElement v. 
-Proof.
-  destruct e ; compute ; intro M ; [ eauto | discriminate].
-Qed.
-
-
-Lemma make1_alt sm e :
-  ConcreteExpressions.makeEmptyGuard [Class_K] sm e = true ->
-  exists v, e = [ClassElement v]. 
-Proof.
-  destruct e ; intro H. 
-  + discriminate H.  
-  + destruct e.
-    - apply make1 in H. destruct H ; subst ; eauto.
-    - compute in  H. 
-      destruct s ; discriminate .
-Qed.
-
-
-Lemma make2 sm e:
-  ConcreteExpressions.makeGuard [Attribute_K]
-    (fun (_ : TransformationConfiguration.SourceModel)
-         (a : Attribute_t) => negb (derived a)) sm 
-    [e] = true -> exists v, (e = AttributeElement v /\ v.(derived) = false).
-Proof.
-  destruct e ; [ discriminate | ] ; compute.
-  destruct a.
-  destruct derived ; [ discriminate | ].
-  eauto.
-Qed.
-
-
-Lemma make2_alt sm e:
-  ConcreteExpressions.makeGuard [Attribute_K]
-    (fun (_ : TransformationConfiguration.SourceModel)
-         (a : Attribute_t) => negb (derived a)) sm 
-    e = true -> exists v, (e = [AttributeElement v] /\ v.(derived) = false).
-Proof.
-  destruct e ; intro.
-  + discriminate H.
-  + destruct e.
-  - apply make2 in H.
-    destruct H as (? & (? & ?)) ; subst.
-    eauto.
-  - compute in H. 
-    destruct s ; discriminate H.
-Qed.
-
-
-Ltac deduce_element_kind_from_guard :=
-  let H2 := fresh "D" in
-  let a := fresh "a" in
-  match goal with 
-    [ H :ConcreteExpressions.makeEmptyGuard [Class_K] _ [?e] = true |- _ ] =>
-      apply make1 in H ; destruct H ; subst e
-
-    | [ H :ConcreteExpressions.makeEmptyGuard [Class_K] _ ?e = true |- _ ] =>
-      apply make1_alt in H ; destruct H ; subst e
-
-
-  | [ H :ConcreteExpressions.makeGuard [Attribute_K]
-    (fun _ atr => negb (derived atr)) _ 
-    [?e] = true |- _ ] =>
-      apply make2 in H ; destruct H as (a & (H & H2)) ; 
-      first[ 
-          subst e (* if e was a variable *) 
-        | PropUtils.inj H (* if e was not a variable *) 
-        ]
-
-  | [ H :ConcreteExpressions.makeGuard [Attribute_K] (fun _ atr => negb (derived atr)) _  ?e = true |- _ ] =>
-      apply make2_alt in H ;
-      destruct H as (a & (H & H2)) ; 
-       subst e (* if e was a variable *) 
-             
-end.
-
-
-(** ** Size of patterns *)
-
-Lemma one_to_one : 
-  Tactics.singleton_transformation_a _ Class2Relational.
-Proof.
-  apply Tactics.singleton_transformation_parse.
-  unfold Class2Relational' ; unfold Tactics.singleton_transformation_a ; simpl ; repeat constructor.
-Qed.
-
-Hint Resolve one_to_one : singleton_rules.
 
 
 (** ** Destructors *)
@@ -226,16 +76,6 @@ Proof.
 Qed.
 
 (** *** January tactics *)
-
-
-Ltac progress_in_guard H :=
-  first [ progress unfold R1 in H | progress unfold R2 in H ] ;
-  Parser.unfold_parseRule H ; 
-  Tactics.simpl_accessors_any H ;
-  unfold Expressions.evalGuardExpr in H ;
-  Tactics.simpl_accessors_any H ;
-  deduce_element_kind_from_guard.
-
 
 
 Ltac unfold_traceElementOnPattern H :=

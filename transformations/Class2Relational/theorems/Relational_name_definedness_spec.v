@@ -56,9 +56,8 @@ Proof.
   Tactics.progress_in_ope IN_OP ;
 
   (* (4) *)
-  C2RTactics.progress_in_guard MATCH_GUARD ;
+  Tactics.exploit_evalGuard MATCH_GUARD ;
 
-  
   (* (5.E) *)  
   Tactics.exploit_evaloutpat IN ;
 

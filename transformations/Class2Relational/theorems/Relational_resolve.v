@@ -125,7 +125,7 @@ Proof.
   Tactics.progress_in_ope IN1 ; 
 
   (* (4) Now we can progress in the guard. *)
-  C2RTactics.progress_in_guard M ;
+  Tactics.exploit_evalGuard M ;
 
   
   (* (5.L) now we can progress in IN2. *)
@@ -190,13 +190,13 @@ Proof.
     
     {
       
-      (* (4) *)  (* C2RTactics.progress_in_guard MATCH_GUARD.*)
+      (* (4) *)  (* Tactics.exploit_evalGuard MATCH_GUARD.*)
       (* (5.E) *) Tactics.exploit_evaloutpat IN1.
     }
 
     {
 
-      (* (4) *)   C2RTactics.progress_in_guard MATCH_GUARD.
+      (* (4) *)   Tactics.exploit_evalGuard MATCH_GUARD.
       (* (5.E) *) Tactics.exploit_evaloutpat IN1.
     
 
@@ -216,7 +216,9 @@ Proof.
 
   unfold execute ;  simpl. 
 
-  destruct t ; simpl in *. (* derived a = false *)
+  C2RTactics.negb_inv MATCH_GUARD.
+
+  destruct t0 ; simpl in *. (* derived a = false *)
   subst derived ; simpl in *. 
 
   Tactics.duplicate G1 G2. 
@@ -313,7 +315,7 @@ Proof.
   Tactics.progress_in_ope IN_OP ;  
 
   (* (4) *) 
-  C2RTactics.progress_in_guard MATCH_GUARD ;
+  Tactics.exploit_evalGuard MATCH_GUARD ;
   
   (* (5.E) *)
   Tactics.exploit_evaloutpat IN1 ; [].
@@ -341,8 +343,8 @@ Proof.
 
   unfold execute ; simpl. 
 
- 
-  destruct t ; simpl in *. (* derived a0 = false *)
+  C2RTactics.negb_inv MATCH_GUARD.
+  destruct t0 ; simpl in *. (* derived a0 = false *)
   subst derived ; simpl in *. 
 
   Tactics.duplicate G1 G2. (* à quoi sert de garder PRE1 ? *)

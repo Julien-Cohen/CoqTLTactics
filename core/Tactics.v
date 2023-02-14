@@ -171,7 +171,6 @@ Proof.
       destruct (toEData e e1) ; reflexivity.
     }
     { unfold makeEmptyGuard.  
-      unfold wrap'.
       unfold wrap.
       destruct (toEData e e1) ; reflexivity.
     }
@@ -637,6 +636,24 @@ Ltac exploit_in_it H :=
       exploit_in_it H (* recursion *)
   end.
   
+Ltac exploit_evalGuard H :=
+    match type of H with
+      | Expressions.evalGuardExpr (Parser.parseRule (ConcreteSyntax.Build_ConcreteRule _ _ _ _ _)) _ _ = true => 
+          unfold Parser.parseRule in H ;
+          unfold Expressions.evalGuardExpr in H ; 
+          unfold Syntax.r_guard in H ; 
+          unfold ConcreteSyntax.r_guard in H ; 
+          unfold ConcreteSyntax.r_InKinds in H ; 
+          first [ progress unfold ConcreteExpressions.makeEmptyGuard in H  
+                | progress unfold ConcreteExpressions.makeGuard in H] ;
+            
+          ConcreteExpressions.monadInv H ;
+          repeat ConcreteExpressions.wrap_inv H 
+      
+    | Expressions.evalGuardExpr (Parser.parseRule ?R) _ _ = true =>
+          progress unfold R in H ;
+          exploit_evalGuard H (* recursion *)
+    end.
 
 (** Tactics to progress in the goal (not in the hypothesis) *)
 

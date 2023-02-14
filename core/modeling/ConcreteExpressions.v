@@ -135,11 +135,6 @@ Definition drop_option_to_bool a :=
   end.
 
 
-
-(** wrap' only does the typecheck. It is a particular case of wrap wher the imp function does nothing. *)
-Definition wrap' l a := 
-  drop_option_to_bool (wrap l (dummy l true) a).
-
 Definition wrapElement 
   (skinds : list SourceEKind) 
   (tk : TargetEKind) 
@@ -178,7 +173,7 @@ Definition makeGuard
   fun sm s => drop_option_to_bool (wrap l (imp sm) s).
 
 Definition makeEmptyGuard (l : list SourceEKind) : GuardFunction :=
-  fun _ => wrap' l.
+  fun _ => fun a => drop_option_to_bool (wrap l (dummy l true) a).
 
 Definition IteratorFunction : Type :=
   SourceModel -> (list SourceElementType) -> option nat.
@@ -229,6 +224,13 @@ Ltac exploit_toEData H :=
       destruct e ; compute in H ; first [ inj H | discriminate H] ; try subst V
   end.
 
+
+Ltac dummy_inv H :=
+  match type of H with 
+    | ConcreteExpressions.dummy _ true _ = true =>
+        clear H
+  end.
+
  Ltac wrap_inv H :=
    match type of H with
    | ConcreteExpressions.wrap (cons _ _) _ (cons _ _) = Some (*?V*) _ =>
@@ -252,11 +254,11 @@ Ltac exploit_toEData H :=
        try subst V*)
    | ConcreteExpressions.wrap nil _ nil = Some ?V =>
        apply ConcreteExpressions.wrap_inv_nil_nil in H ;
-       try first [subst V | try inj H ]
+       try first [subst V | inj H | dummy_inv H ]
    | ConcreteExpressions.wrap nil _ ?SP = Some ?V =>
        let E := fresh "E" in 
        apply ConcreteExpressions.wrap_inv_nil in H ;
        destruct H as [H E];
        try subst SP ;
-       try first [subst V | try inj H]
+       try first [subst V | inj H | dummy_inv H ]
    end.

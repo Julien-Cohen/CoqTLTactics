@@ -53,7 +53,8 @@ Proof.
     Tactics.progress_in_ope IN_OP ;
 
     (* (4) *)
-    clear MATCH_GUARD ;
+    (* not useful here *)
+    Tactics.exploit_evalGuard MATCH_GUARD ;
 
     (* (5.E) *)
     Tactics.exploit_evaloutpat IN1 ; [] ;
@@ -75,7 +76,8 @@ Proof.
     Tactics.progress_in_ope IN_OP ;         
 
     (* (4) *)
-    clear MATCH_GUARD ;
+    (* not useful here *)
+    Tactics.exploit_evalGuard MATCH_GUARD ;
     
     (* (5.E) *)
     Tactics.exploit_evaloutpat IN2 ; [] ;

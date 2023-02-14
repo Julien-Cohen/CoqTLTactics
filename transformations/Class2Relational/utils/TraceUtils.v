@@ -70,7 +70,7 @@ Proof.
   (* 2 *)
   Tactics.progress_in_In_rules IN0 ;
   (* 4 *)
-  C2RTactics.progress_in_guard M  ; 
+  Tactics.exploit_evalGuard M  ; 
   (* 3 *)
   Tactics.progress_in_ope IN2 ;
 

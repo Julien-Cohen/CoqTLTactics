@@ -99,14 +99,13 @@ Proof.
   (* (2) *)
   Tactics.progress_in_In_rules IN_RULE ; [ exfalso | ] ;
 
-
   (* (3) make the ouput-pattern-element appear *)
-  Tactics.progress_in_ope IN_OP ; 
-  
+  Tactics.progress_in_ope IN_OP ;
+
   (* (4) *) 
   (* needed here to get that derived = false *)
-  C2RTactics.progress_in_guard MATCH_GUARD ;
-
+  Tactics.exploit_evalGuard MATCH_GUARD ; 
+  
   (* (5.E) make the matched element appear *)
   unfold Parser.parseOutputPatternElement in H ; Tactics.progress_in_evalOutput H ;
 
@@ -116,8 +115,10 @@ Proof.
 
   (* (7) *)
   Semantics.exploit_in_allTuples IN_E.
-  
-  destruct t. simpl in D. subst derived.  simpl. exact IN_E.
+  C2RTactics.negb_inv MATCH_GUARD.
+
+  destruct t0 ; simpl in *. subst derived. 
+  exact IN_E.
   
 Qed.
 
@@ -144,7 +145,8 @@ Proof.
   Tactics.progress_in_ope IN_OP ;
   
   (* (4) *)
-  C2RTactics.progress_in_guard MATCH_GUARD ;
+  (* not useful here *)
+  Tactics.exploit_evalGuard MATCH_GUARD ; 
 
   (* (5.E) *)
   unfold Parser.parseOutputPatternElement in H ; Tactics.exploit_evaloutpat H ;
@@ -156,6 +158,6 @@ Proof.
   (* (7) *)
   Semantics.exploit_in_allTuples IN_E.
   
-  destruct t ; exact IN_E.
+  destruct t0 ; exact IN_E.
 
 Qed.
