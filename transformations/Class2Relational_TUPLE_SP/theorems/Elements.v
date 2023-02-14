@@ -37,17 +37,13 @@ Proof.
   simpl.
   apply C2RTactics.allModelElements_allTuples in H.
   revert H ; generalize (allTuples Class2Relational_TUPLE_SP cm).
-  induction l ; intro H ; [ solve [inversion H] | simpl ].
-  apply List.in_or_app.
-  simpl in H.
-  destruct_or H ; [ left | right ].
-  + subst.
-    clear IHl.
-    compute.
-    (*left.
-    reflexivity.
-  + auto.*) 
-(* This result is false for this trnasformation *)
+
+  intros s H.
+  apply List.in_flat_map.
+  eexists ; split ; [exact H | clear H ].
+  simpl ; auto.
+
+(* This result is false for this transformation *)
 Abort.
 
 
@@ -64,20 +60,13 @@ Proof.
   simpl.
   apply C2RTactics.allModelElements_allTuples in H.
   revert H ; generalize (allTuples Class2Relational_TUPLE_SP cm).
-  induction l ; intro H ; [ solve [inversion H] | simpl ].
-  apply List.in_or_app.
-  simpl in H.
-  destruct_or H ; [ left | right ].
-  + subst.
-    clear IHl.
-    compute.
-    left.
-    reflexivity.
-  + auto. 
 
-    (* Remark : exactly the same script as above. *)
+  intros s H.
+  apply List.in_flat_map.
+  eexists ; split ; [exact H | clear H ].
+  simpl ; auto.
+
 Qed.
-
 
 
 
