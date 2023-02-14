@@ -23,28 +23,90 @@ Import Class2Relational_TUPLE_SP ClassMetamodel RelationalMetamodel.
 
 (** *** Utilities on transformation of elements *)
 
+Lemma in_allTuples_2 :
+      forall a b m t,
+        t.(Syntax.arity) >= 2 ->
+        In a (modelElements m) ->
+        In b (modelElements m) ->
+        In [a;b] (allTuples t m).
+Proof.
+  intros until t ; intros HA IN1 IN2.
+  unfold allTuples.
+  apply TupleUtils.tuples_up_to_n_incl_length.
+  {
+    apply List.incl_cons ; auto.
+    apply List.incl_cons ; auto.
+    apply List.incl_nil_l.
+  }
+  {
+    simpl.
+    auto with arith.
+  }
+Qed.
 
 Lemma transform_attribute_fw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational_TUPLE_SP cm ->
-  (* precondition *)  forall id name,
-    In (AttributeElement {| attr_id:= id ; derived := false ; attr_name := name|}) cm.(modelElements) ->
+  (* precondition *)  forall id name id_c name_c,
+    In (AttributeElement {| attr_id:= id ; derived := false ; attr_name := name|}) cm.(modelElements) ->    
+    In (ClassElement {| class_id:= id_c ; class_name := name_c |}) cm.(modelElements) ->
+    getAttributeType
+      {| attr_id := id; derived := false; attr_name := name |} cm = Some {| class_id := id_c; class_name := name_c |} ->
   (* postcondition *) 
     In (ColumnElement {| column_id := id; column_name := name |}) (rm.(modelElements)). 
 Proof.
   intros cm rm H ; subst.
-  intros i n H.
+  intros i n i2 n2 H1 H2 H3.
   simpl.
-  apply C2RTactics.allModelElements_allTuples in H.
-  revert H ; generalize (allTuples Class2Relational_TUPLE_SP cm).
 
-  intros s H.
   apply List.in_flat_map.
-  eexists ; split ; [exact H | clear H ].
-  simpl ; auto.
+  exists ([AttributeElement
+            {| attr_id := i; derived := false; attr_name := n |} ; ClassElement {| class_id := i2; class_name := n2 |} ]).
+  split. 
+  { 
+    apply in_allTuples_2 ; auto.
+  }
+  {
+    unfold instantiatePattern.
+    apply List.in_flat_map.
 
-(* This result is false for this transformation *)
-Abort.
+    match eval cbv beta iota fix 
+            delta [Class2Relational_TUPLE_SP 
+                     Class2Relational_TUPLE_SP'
+                     Parser.parse
+                     List.nth_error
+                     Syntax.rules
+                     List.map
+                     ConcreteSyntax.ConcreteTransformation_getConcreteRules] 
+          in (List.nth_error Class2Relational_TUPLE_SP.(Syntax.rules) 1 (* second rule *)) 
+    with 
+    | Some ?r => remember r as R ; exists R
+    | None => fail
+    | ?other => remember other as R 
+    end.
+
+    split ; [  | ]. 
+    { 
+      unfold matchPattern ; simpl.
+      
+      unfold ConcreteExpressions.makeGuard ; simpl.
+      rewrite H3 ; simpl.
+      rewrite beq_Class_refl. 
+      subst R ; apply in_eq.
+    }
+
+    {
+      unfold instantiateRuleOnPattern.
+      simpl.
+      unfold Expressions.evalIteratorExpr.
+      rewrite HeqR at 2 ; simpl.
+      rewrite List.app_nil_r.
+      unfold instantiateIterationOnPattern ; simpl.
+      rewrite HeqR ; unfold Syntax.r_outputPattern ; simpl.
+      auto.
+    }
+  }
+Qed.
 
 
 Lemma transform_class_fw : 
