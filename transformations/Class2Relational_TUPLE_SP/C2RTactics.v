@@ -217,7 +217,7 @@ Ltac destruct_In_two :=
       unfold In in H ; (* force it because simpl In can be disabled by Arguments In: simpl never. *)
 
       repeat destruct_or H ; [ | | contradiction H] ; subst X
-  end.
+  end.*)
 
 
 (** *** Utilities on [allTuples] *)
@@ -225,8 +225,24 @@ Ltac destruct_In_two :=
 
 Lemma allModelElements_allTuples e (cm:Model ClassMM): 
   In e cm.(modelElements) ->
-  In [e] (allTuples Class2Relational cm).
+  In [e] (allTuples Class2Relational_TUPLE_SP cm).
 Proof. 
   intro.
   apply (Tactics.allModelElements_allTuples (tc:=C2RConfiguration)); auto.
-Qed. *)
+  compute.
+  auto.
+Qed. 
+
+(** Specific tactics for this transformation. *)
+Ltac exploit_guard H := 
+  match type of H with
+    andb (negb _) (is_option_eq _ _ _) = true =>
+      apply eq_sym in H ; 
+      apply Bool.andb_true_eq in H ;
+      let NEW := fresh H in
+      destruct H as [H NEW] ;
+      apply eq_sym in H ;
+      apply eq_sym in NEW ; 
+      apply Bool.negb_true_iff in H ;
+      OptionUtils.is_option_eq_inv NEW
+  end.

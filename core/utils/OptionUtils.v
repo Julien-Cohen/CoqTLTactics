@@ -10,6 +10,27 @@ Definition is_option_eq
   | None => false
   end.
   
+Lemma is_option_eq_true :
+  forall T (a:option T) b c, 
+  is_option_eq a b c = true ->
+  exists r, a = Some r /\ c b r = true .
+Proof.
+  unfold is_option_eq.
+  intros T a b c H.
+  destruct a ; [ | discriminate ].
+  eauto.
+Qed.
+
+Ltac is_option_eq_inv H :=
+  match type of H with
+    | is_option_eq ?A _ _ = true =>
+        apply is_option_eq_true in H ;
+        let NEW := fresh H in
+        destruct H as (? & (H & NEW))
+end.
+        
+
+
 Definition valueOption {A: Type} (a: option A) (default: A) : A := 
   match a with
     | None => default

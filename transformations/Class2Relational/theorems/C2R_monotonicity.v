@@ -17,8 +17,8 @@ From transformations.Class2Relational
 
 
 
-
-Require Elements.
+From transformations.Class2Relational.theorems
+  Require Elements.
 
 Theorem All_classes_instantiate_impl :
   Monotonicity Class2Relational.

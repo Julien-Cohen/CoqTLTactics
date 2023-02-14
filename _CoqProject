@@ -162,6 +162,7 @@ transformations/Class2Relational/theorems/Table_name_uniqueness.v
 
 transformations/Class2Relational_TUPLE_SP/theorems/Table_name_uniqueness.v
 transformations/Class2Relational_TUPLE_SP/theorems/Column_name_uniqueness.v
+transformations/Class2Relational_TUPLE_SP/theorems/Elements.v
 
 transformations/Families2Persons/theorems/sampleTheorems.v
 
