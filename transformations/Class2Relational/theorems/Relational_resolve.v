@@ -117,38 +117,38 @@ Proof.
   (* (1) *)
   Tactics.chain_destruct_in_modelLinks_execute R_IN1.
 
-
-  (* (1) We need to know which rule has been applied to progress in the computation. *)
-  Tactics.progress_in_In_rules IN_MATCH ; [ | ] ; 
+  (* (2) *)
+  Tactics.progress_in_In_rules IN_RULE ; [ | ] ; 
 
   (* (3) *)
-  Tactics.progress_in_ope IN1 ; 
+  Tactics.progress_in_ope IN_OUTPAT ; 
 
   (* (4) Now we can progress in the guard. *)
-  Tactics.exploit_evalGuard M ;
+  Tactics.exploit_evalGuard MATCH_RULE ;
 
   
-  (* (5.L) now we can progress in IN2. *)
-  unfold Parser.parseOutputPatternElement in IN2 ;
-  Tactics.simpl_accessors_any IN2 ;
-  unfold Parser.parseOutputPatternLinks in IN2 ;
-  unfold Parser.parseOutputPatternLink in IN2 ;
-  simpl in IN2 ;
-  progress_in_applyElementOnPattern IN2 ; try rewrite List.app_nil_r in IN0 ; 
-  suite IN0 ; 
+  (* (5.L) now we can progress in IN_APP_PAT. *)
+  unfold Parser.parseOutputPatternElement in IN_APP_PAT ;
+  Tactics.simpl_accessors_any IN_APP_PAT ;
+  unfold Parser.parseOutputPatternLinks in IN_APP_PAT ;
+  unfold Parser.parseOutputPatternLink in IN_APP_PAT ;
+  simpl in IN_APP_PAT ;
+  progress_in_applyElementOnPattern IN_APP_PAT ;  
+  try rewrite List.app_nil_r in IN ; 
+  suite IN ; 
 
   (* (6) *)
-  Tactics.exploit_in_it IN ;
+  Tactics.exploit_in_it IN_IT ;
 
 
-  repeat ListUtils.unfold_In_cons IN1 ; 
-  first [ discriminate IN1 (* discard rules that do not match *)
-        | PropUtils.inj IN1 ] ; 
+  repeat ListUtils.unfold_In_cons IN0 (* fixme : IN0 not introduced (from suite)*) ; 
+  first [ discriminate IN0 (* discard rules that do not match *)
+        | PropUtils.inj IN0 ] ; 
 
   (* (7) *)
   Semantics.exploit_in_allTuples IN_E.
 
-  progress_in_maybeBuildColumnReference IN0.
+  progress_in_maybeBuildColumnReference IN.
   
   core.Semantics.progress_maybeResolve E. 
   

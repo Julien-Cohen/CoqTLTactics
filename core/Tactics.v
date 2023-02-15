@@ -319,13 +319,12 @@ Ltac destruct_in_modelElements_execute H :=
       destruct H as [e [H2 H]]
   end.
 
-Ltac destruct_in_modelLinks_execute H := 
+Ltac destruct_in_modelLinks_execute H NEWNAME := 
   match type of H with
     In _ (modelLinks (execute ?T _)) =>
-      let H2 := fresh "IN_E" in
       let e := fresh "sp" in
       rewrite (core.Certification.tr_execute_in_links T) in H;
-      destruct H as [e [H2 H]]                                           end.     
+      destruct H as [e [NEWNAME H]]                                           end.     
 
 (* deprecated *)
 Ltac destruct_execute :=
@@ -430,24 +429,35 @@ Ltac destruct_apply_pattern_auto :=
       destruct_apply_pattern H IN1
 end.
 
-Ltac destruct_applyRuleOnPattern :=
-  match goal with
-    [ H : In _ (applyRuleOnPattern _ _ _ _) |- _ ] =>
+Ltac destruct_applyRuleOnPattern H NEW1 NEW2 :=
+  match type of H with
+    | In _ (applyRuleOnPattern _ _ _ _) =>
       let N := fresh "n" in 
-      let IN1 := fresh "IN" in 
-      let IN2 := fresh "IN" in 
+
       apply core.Certification.tr_applyRuleOnPattern_in in H ;
-      destruct H as (N & (IN1 & IN2))
+      destruct H as (N & (NEW1 & NEW2))
   end.
 
-Ltac destruct_applyIterationOnPattern :=
+Ltac destruct_applyRuleOnPattern_auto :=
+  match goal with
+    [ H : In _ (applyRuleOnPattern _ _ _ _) |- _ ] =>
+      let IN1 := fresh "IN_IT" in 
+      let IN2 := fresh "IN_APP_PAT" in 
+      destruct_applyRuleOnPattern H IN1 IN2
+  end.
+
+Ltac destruct_applyIterationOnPattern H NEWNAME :=
+  match type of H with
+    | In _ (applyIterationOnPattern _ _ _ _ _ )  =>
+      let p := fresh "p" in
+      apply core.Certification.tr_applyIterationOnPattern_in in H ;
+      destruct H as (p & (NEWNAME & H))
+  end.
+
+Ltac destruct_applyIterationOnPattern_auto :=
   match goal with
     [ H : In _ (applyIterationOnPattern _ _ _ _ _ ) |- _ ] =>
-      let p := fresh "p" in
-      let IN1 := fresh "IN" in
-      let IN2 := fresh "IN" in
-      apply core.Certification.tr_applyIterationOnPattern_in in H ;
-      destruct H as (p & (IN1 & IN2))
+      destruct_applyIterationOnPattern H
   end.
 
 (** On traces. *)
@@ -530,8 +540,8 @@ Ltac destruct_any :=
     | destruct_instantiateIterationOnPattern_auto 
     | unfold_instantiateElementOnPattern_auto 
     | destruct_apply_pattern_auto 
-    | destruct_applyRuleOnPattern 
-    | destruct_applyIterationOnPattern 
+    | destruct_applyRuleOnPattern_auto 
+    | destruct_applyIterationOnPattern_auto 
     | destruct_in_optionToList
     ].
 
@@ -555,11 +565,23 @@ Ltac chain_destruct_in_modelElements_execute H :=
   rename NEW1 into NEW_IN_RULE.
 
 Ltac chain_destruct_in_modelLinks_execute H :=
-  destruct_in_modelLinks_execute H ;
-  destruct_apply_pattern_auto ; (* FIXME *)
-  destruct_applyRuleOnPattern ;
-  destruct_applyIterationOnPattern ; 
-  destruct_in_matchPattern_auto.
+  let NEW_IN_RULE := fresh "IN_RULE" 
+  in
+  let NEW_IN_IT := fresh "IN_IT" 
+  in
+  let NEW_IN_APP_PAT := fresh "IN_APP_PAT" 
+  in
+  let NEW_IN_E := fresh "IN_E" 
+  in
+  let NEW_IN_OUTPAT := fresh "IN_OUTPAT" 
+  in
+  let NEW_MATCH_RULE := fresh "MATCH_RULE" 
+  in
+  destruct_in_modelLinks_execute H NEW_IN_E ;
+  destruct_apply_pattern H NEW_IN_RULE ; 
+  destruct_applyRuleOnPattern H NEW_IN_IT NEW_IN_APP_PAT ;
+  destruct_applyIterationOnPattern NEW_IN_APP_PAT NEW_IN_OUTPAT  ; 
+  destruct_in_matchPattern NEW_IN_RULE NEW_MATCH_RULE.
 
 
 Ltac simpl_accessors_any H :=
