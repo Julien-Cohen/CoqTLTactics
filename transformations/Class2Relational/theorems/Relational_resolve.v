@@ -111,13 +111,14 @@ Lemma wf_stable cm rm :
   RelationalModelProperties.wf_all_table_references_exist rm.
 Proof.
   intros T C_WF1 C_WF2 C_WF3.
-  intros r t R_IN1.
+  intros c tb R_IN1.
   subst rm.
   
   (* (1) *)
-  Tactics.chain_destruct_in_modelLinks_execute R_IN1.
+  destruct (Tactics.destruct_in_modelLinks_execute_lem R_IN1) 
+    as ( elts & r & i & ope & IN_E & IN_RULE & MATCH_RULE & IN_IT & IN_OUTPAT & IN_APP_PAT).
 
-  (* (2) *)
+  (* (2) Select a rule. *)
   Tactics.progress_in_In_rules IN_RULE ; [ | ] ; 
 
   (* (3) *)
@@ -129,25 +130,62 @@ Proof.
   
   (* (5.L) now we can progress in IN_APP_PAT. *)
   unfold Parser.parseOutputPatternElement in IN_APP_PAT ;
-  Tactics.simpl_accessors_any IN_APP_PAT ;
+  Semantics.exploit_In_applyElementOnPattern IN_APP_PAT EV_OUTPAT ;
+
+  
+  ListUtils.destruct_in_optionListToList IN_APP_PAT ;
+  unfold Expressions.evalOutputPatternLinkExpr in IN_APP_PAT ;
+  unfold Syntax.ope_linkExpr in IN_APP_PAT ;
+  unfold ConcreteSyntax.r_InKinds in IN_APP_PAT ;
+  unfold ConcreteSyntax.e_OutKind in IN_APP_PAT ;
+  unfold ConcreteSyntax.e_outlink in IN_APP_PAT ;
   unfold Parser.parseOutputPatternLinks in IN_APP_PAT ;
-  unfold Parser.parseOutputPatternLink in IN_APP_PAT ;
-  simpl in IN_APP_PAT ;
-  progress_in_applyElementOnPattern IN_APP_PAT ;  
-  try rewrite List.app_nil_r in IN ; 
-  suite IN ; 
+  unfold ConcreteExpressions.makeElement in IN_APP_PAT ; 
 
-  (* (6) *)
-  Tactics.exploit_in_it IN_IT ;
 
+  unfold Expressions.evalOutputPatternElementExpr in EV_OUTPAT ; 
+  unfold Syntax.ope_elementExpr in EV_OUTPAT ; 
+  unfold ConcreteSyntax.r_InKinds in EV_OUTPAT ; 
+  unfold ConcreteSyntax.e_OutKind in EV_OUTPAT ; 
+  unfold ConcreteSyntax.e_outpat in EV_OUTPAT ; 
+
+  unfold ConcreteExpressions.makeElement in EV_OUTPAT ;
+  unfold ConcreteExpressions.wrapElement  in EV_OUTPAT ;
+  monadInv EV_OUTPAT ; [ | ] ;
+  repeat ConcreteExpressions.wrap_inv EV_OUTPAT ;
+
+  PropUtils.inj IN_APP_PAT ;
+
+  rewrite List.app_nil_r in IN ;
+
+  ListUtils.destruct_in_optionListToList IN ;
+
+  unfold Parser.parseOutputPatternLink in IN ;
+  unfold ConcreteSyntax.o_OutRefKind in IN ;
+  unfold ConcreteSyntax.o_outpat in IN ;
+  unfold ConcreteExpressions.makeLink in IN ;
+  unfold ConcreteExpressions.wrapLink in IN ;
+  monadInv IN ; [ | ] ;
+  monadInv IN ; [ | ] ;
+  repeat ConcreteExpressions.wrap_inv E ; [ | ] ;
+  monadInv IN ; [ | ] ;
+  compute in E0 (*toEData *) ; PropUtils.inj E0 ;
 
   repeat ListUtils.unfold_In_cons IN0 (* fixme : IN0 not introduced (from suite)*) ; 
-  first [ discriminate IN0 (* discard rules that do not match *)
-        | PropUtils.inj IN0 ] ; 
+    first [ discriminate IN0 (* discard rules that do not match *)
+          | PropUtils.inj IN0 ] ; [].
+
+
+
+  (* (6) *)
+  Tactics.exploit_in_it IN_IT. 
 
   (* (7) *)
   Semantics.exploit_in_allTuples IN_E.
 
+  C2RTactics.negb_inv MATCH_RULE.
+  destruct t ; simpl in MATCH_RULE ; subst derived.
+  
   progress_in_maybeBuildColumnReference IN.
   
   core.Semantics.progress_maybeResolve E. 
@@ -180,31 +218,26 @@ Proof.
   subst rm.
 
   (* 1 *)
-  Tactics.chain_destruct_in_modelElements_execute IN1.
+  destruct (Tactics.destruct_in_modelElements_execute_lem IN1) 
+    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN1'). 
 
   (* (2) *)
-  Tactics.progress_in_In_rules IN_RULE ;
+  Tactics.progress_in_In_rules IN_RULE ; [ | ] ;
 
-  (* (3) *)   Tactics.progress_in_ope IN_OP.
+  (* (3) *)   
+  Tactics.progress_in_ope IN_OP ;
+
+  (* (4) *)   
+  Tactics.exploit_evalGuard MATCH_GUARD ;
   
-    
-    {
-      
-      (* (4) *)  (* Tactics.exploit_evalGuard MATCH_GUARD.*)
-      (* (5.E) *) Tactics.exploit_evaloutpat IN1.
-    }
+  (* (5.E) *) 
+  Tactics.exploit_evaloutpat IN1' ; [].
+  
+  (* (6) *)
+  Tactics.exploit_in_it IN_IT.
 
-    {
-
-      (* (4) *)   Tactics.exploit_evalGuard MATCH_GUARD.
-      (* (5.E) *) Tactics.exploit_evaloutpat IN1.
-    
-
-      (* (6) *)
-      clear IN_IT.   clear n. 
-
-      (* (7) *)
-      Semantics.exploit_in_allTuples IN_E.
+  (* (7) *)
+  Semantics.exploit_in_allTuples IN_E.
   
   Tactics.duplicate PRE H.
 
@@ -281,7 +314,6 @@ Proof.
       reflexivity.
     }
   }
-}
 Qed.
 
 
@@ -306,7 +338,8 @@ Proof.
   subst rm.
 
   (* (1) *)
-  Tactics.chain_destruct_in_modelElements_execute IN1.
+  destruct (Tactics.destruct_in_modelElements_execute_lem IN1) 
+    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN1'). 
 
   (* (2) *)
   Tactics.progress_in_In_rules IN_RULE ;
@@ -318,14 +351,10 @@ Proof.
   Tactics.exploit_evalGuard MATCH_GUARD ;
   
   (* (5.E) *)
-  Tactics.exploit_evaloutpat IN1 ; [].
-
-
-  (* we have lost IN1 : In (ColumnElement col)
-          (modelElements (execute Class2Relational cm)) *)
+  Tactics.exploit_evaloutpat IN1' ; [] ;
 
   (* (6) *)
-  Tactics.exploit_in_it IN_IT.  
+  Tactics.exploit_in_it IN_IT ;  
   
   (* (7) *)
   Semantics.exploit_in_allTuples IN_E.

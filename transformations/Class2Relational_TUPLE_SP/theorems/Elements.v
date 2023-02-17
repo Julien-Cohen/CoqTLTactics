@@ -146,7 +146,8 @@ Proof.
   intros i n H.
 
   (* (1) *)
-  Tactics.chain_destruct_in_modelElements_execute H.
+  destruct (Tactics.destruct_in_modelElements_execute_lem H) 
+    as (r & sp & nn & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & H'). 
 
   (* (2) *)
   Tactics.progress_in_In_rules IN_RULE ; [ exfalso | ] ;
@@ -159,7 +160,8 @@ Proof.
   Tactics.exploit_evalGuard MATCH_GUARD ; 
   
   (* (5.E) make the matched element appear *)
-  unfold Parser.parseOutputPatternElement in H ; Tactics.progress_in_evalOutput H ;
+  unfold Parser.parseOutputPatternElement in H' ; 
+  Tactics.progress_in_evalOutput H' ;
 
   (* (6) *)
   (* not useful here *) 
@@ -189,7 +191,8 @@ Proof.
   intros i n H.
 
   (* (1) *)
-  Tactics.chain_destruct_in_modelElements_execute H.
+  destruct (Tactics.destruct_in_modelElements_execute_lem H) 
+    as (r & sp & nn & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & H'). 
 
   (* (2) *)
   Tactics.progress_in_In_rules IN_RULE ; [ | exfalso ] ; 
@@ -202,7 +205,8 @@ Proof.
   Tactics.exploit_evalGuard MATCH_GUARD ; 
 
   (* (5.E) *)
-  unfold Parser.parseOutputPatternElement in H ; Tactics.exploit_evaloutpat H ;
+  unfold Parser.parseOutputPatternElement in H' ; 
+  Tactics.exploit_evaloutpat H' ;
 
   (* (6) *)
   (* not useful here *) 

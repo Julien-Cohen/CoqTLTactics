@@ -66,8 +66,6 @@ Qed.
 
 
 
-
-
 Lemma transform_attribute_bw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
@@ -78,10 +76,11 @@ Lemma transform_attribute_bw :
 . 
 Proof.
   intros cm rm H ; subst.
-  intros i n H.
+  intros i nm H.
 
   (* (1) *)
-  Tactics.chain_destruct_in_modelElements_execute H.
+  destruct (Tactics.destruct_in_modelElements_execute_lem H) 
+    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & H'). 
 
   (* (2) *)
   Tactics.progress_in_In_rules IN_RULE ; [ exfalso | ] ;
@@ -94,7 +93,8 @@ Proof.
   Tactics.exploit_evalGuard MATCH_GUARD ; 
   
   (* (5.E) make the matched element appear *)
-  unfold Parser.parseOutputPatternElement in H ; Tactics.progress_in_evalOutput H ;
+  unfold Parser.parseOutputPatternElement in H' ;
+ Tactics.progress_in_evalOutput H' ;
 
   (* (6) *)
   (* not useful here *) 
@@ -102,6 +102,7 @@ Proof.
 
   (* (7) *)
   Semantics.exploit_in_allTuples IN_E.
+
   C2RTactics.negb_inv MATCH_GUARD.
 
   destruct t0 ; simpl in *. subst derived. 
@@ -120,10 +121,11 @@ Lemma transform_class_bw :
 . 
 Proof.
   intros cm rm H ; subst.
-  intros i n H.
+  intros i nm H.
 
   (* (1) *)
-  Tactics.chain_destruct_in_modelElements_execute H.
+  destruct (Tactics.destruct_in_modelElements_execute_lem H) 
+    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & H').    
 
   (* (2) *)
   Tactics.progress_in_In_rules IN_RULE ; [ | exfalso ] ; 
@@ -136,7 +138,8 @@ Proof.
   Tactics.exploit_evalGuard MATCH_GUARD ; 
 
   (* (5.E) *)
-  unfold Parser.parseOutputPatternElement in H ; Tactics.exploit_evaloutpat H ;
+  unfold Parser.parseOutputPatternElement in H' ;
+  Tactics.exploit_evaloutpat H' ;
 
   (* (6) *)
   (* not useful here *) 

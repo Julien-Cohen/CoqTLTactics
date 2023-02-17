@@ -23,3 +23,8 @@ Ltac remove_or_false_auto :=
 
 
 Ltac inj H := injection H ; clear H ; intros ; subst.
+
+Ltac destruct_match H :=
+  match type of H with 
+     | context[match ?P with | _ => _ end] => destruct P eqn:?
+  end. 

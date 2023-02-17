@@ -48,7 +48,8 @@ Proof.
     subst rm.
 
     (* (1) *)
-    Tactics.chain_destruct_in_modelElements_execute IN1.
+    destruct (Tactics.destruct_in_modelElements_execute_lem IN1) 
+      as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN1'). 
    
     (* (2) *)
     Tactics.progress_in_In_rules IN_RULE ; [ | ] ; 
@@ -60,7 +61,7 @@ Proof.
     Tactics.exploit_evalGuard MATCH_GUARD;
     
     (* (5) *)
-    Tactics.exploit_evaloutpat IN1 ; 
+    Tactics.exploit_evaloutpat IN1' ; 
 
     (* (6) *)
     clear IN_IT ;
@@ -69,7 +70,8 @@ Proof.
     Semantics.in_allTuples_auto ; [].
 
     (* (1) *)
-    Tactics.chain_destruct_in_modelElements_execute IN2.
+    destruct (Tactics.destruct_in_modelElements_execute_lem IN2) 
+      as (r & sp & n2 & ope & IN_E2 & IN_RULE & MATCH_GUARD2 & IN_IT & IN_OP & IN2'). 
     
     (* (2) *)
     Tactics.progress_in_In_rules IN_RULE ; [ | ]; 
@@ -78,10 +80,10 @@ Proof.
     Tactics.progress_in_ope IN_OP ;  
     
     (* (4) *)
-    Tactics.exploit_evalGuard MATCH_GUARD0 ;
+    Tactics.exploit_evalGuard MATCH_GUARD2 ;
     
     (* (5) *)
-    Tactics.exploit_evaloutpat IN2 ; 
+    Tactics.exploit_evaloutpat IN2' ; 
     
     (* (6) *)
     clear IN_IT ;

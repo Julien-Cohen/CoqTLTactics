@@ -47,7 +47,8 @@ Proof.
 
 
   (* (1) *)
-  Tactics.chain_destruct_in_modelElements_execute IN.
+  destruct (Tactics.destruct_in_modelElements_execute_lem IN) 
+    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN'). 
 
   (* (2) *)
   Tactics.progress_in_In_rules IN_RULE ; [ | ];
@@ -59,7 +60,7 @@ Proof.
   Tactics.exploit_evalGuard MATCH_GUARD ;
 
   (* (5.E) *)  
-  Tactics.exploit_evaloutpat IN ;
+  Tactics.exploit_evaloutpat IN' ;
 
   (* (6) *)
   clear IN_IT ;

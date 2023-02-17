@@ -69,10 +69,12 @@ Proof.
 
   (* 2 *)
   Tactics.progress_in_In_rules IN0 ;
-  (* 4 *)
-  Tactics.exploit_evalGuard M  ; 
+
   (* 3 *)
   Tactics.progress_in_ope IN2 ;
+
+  (* 4 *)
+  Tactics.exploit_evalGuard M  ; 
 
   (* 5.L *) (* fixme *)
   unfold Parser.parseOutputPatternElement in H ; simpl in H  ; C2RTactics.progress_in_traceElementOnPattern H  ;

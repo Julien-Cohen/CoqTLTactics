@@ -172,3 +172,26 @@ Ltac in_allTuples_auto :=
     [ H : In _ (allTuples _ _) |- _ ] =>
        exploit_in_allTuples H
   end.
+
+(** FIXME : move-me to Certification ? *)
+Lemma in_applyElementOnPattern {A B C D E} :
+  forall (tr:Transformation (tc:=Build_TransformationConfiguration A (Metamodel.Build_Metamodel B C D E))) 
+         a ope sm sp it,
+  In a (applyElementOnPattern ope tr sm sp it) ->
+  exists g, 
+    evalOutputPatternElementExpr sm sp it ope = Some g
+    /\ In a (optionListToList (evalOutputPatternLinkExpr sm sp g it (trace tr sm) ope)).
+Proof.  
+  unfold applyElementOnPattern.
+  intros until it ; intro IN.
+  PropUtils.destruct_match IN ; [ | contradiction IN].
+  eauto.
+Qed.
+
+
+Ltac exploit_In_applyElementOnPattern H NEWNAME :=
+  match type of H with
+    | In _ (applyElementOnPattern _ _ _ _ _) =>
+        apply in_applyElementOnPattern in H ;
+        destruct H as (? & (NEWNAME & H))
+end.

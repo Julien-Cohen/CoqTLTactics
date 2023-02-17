@@ -11,6 +11,8 @@ Require Import core.modeling.Parser.
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
 
+Require Certification.
+
 (** * General purpose tactics *)
 
 Ltac destruct_match :=
@@ -94,177 +96,10 @@ Ltac beq_eq_tac :=
 .
 
 
-(** * Singleton rules and singleton transformations *)
-
-(** *** Abstract rules *)
-
-(** We say an abstract rule is a singleton rule when it matches only singletons. *)
-
-Section A.
-
-Variable tc : TransformationConfiguration.
-Variable mtc : ModelingTransformationConfiguration tc.
-
-Definition singleton_rule_a (r: Syntax.Rule (tc:=tc)) : Prop := 
-      (forall m, r.(Syntax.r_guard) m nil = false) /\
-        (forall m e1 e2 s, r.(Syntax.r_guard) m (e1 :: e2 :: s) = false).
 
 
-Lemma singleton_nil_false : 
-  forall r, 
-    singleton_rule_a r ->
-    forall m,
-      Expressions.evalGuardExpr r m nil = false.
-Proof.
-  intros r A m.
-  destruct r.
-  simpl in *.
-  destruct A as [A _]. simpl in A.
-  apply A.
-Qed.
 
-
-Lemma singleton_two_false : 
-  forall a, 
-    singleton_rule_a a ->
-    forall m e1 e2 r,
-      Expressions.evalGuardExpr a m (e1::e2::r) = false.
-Proof.
-  intros a A m e1 e2 r.
-  destruct a.
-  simpl in *.
-  destruct A as [_ A] ; simpl in A.
-  apply A.
-Qed.
-
-(** *** Concrete rule *)
-
-(** We say a concrete rule is a singleton rule when it pattern is a list of size 1. *)
-Definition singleton_rule_c (a:ConcreteRule (tc:=tc) (mtc:=mtc)) :=
-  match a with 
-  | (ConcreteSyntax.Build_ConcreteRule s [m] o o0 l) => True
-  | _ => False
-  end.
-
-
-(** A concrete singleton rule gives an abstract singleton rule. *)
-
-Lemma singleton_rule_parse : 
-  forall a, 
-    singleton_rule_c a ->
-    singleton_rule_a (Parser.parseRule a).
-Proof.
-  intros a H.
-  destruct a ; simpl in H.
-  destruct r_InKinds ; [ contradiction | ].
-  destruct r_InKinds ; [ | contradiction ].
-  clear H.
-  simpl.
-  split ; intro m ; [ | ].
-  { simpl. destruct r_guard ; reflexivity. }
-  {
-    intros e1 e2 r.
-    simpl.
-    destruct r_guard ; simpl.
-    { 
-      unfold ConcreteExpressions.makeGuard. simpl.
-      destruct (toEData e e1) ; reflexivity.
-    }
-    { unfold makeEmptyGuard.  
-      unfold wrap.
-      destruct (toEData e e1) ; reflexivity.
-    }
-  }
-Qed.
-
-(** *** Transformations (abstract and concrete *)
-
-(** We say an abstract transformation is singleton transformation when its rules are singleton rules. *)
-
-Definition singleton_transformation_a (t:Syntax.Transformation) : Prop :=
-  List.Forall singleton_rule_a t.(Syntax.rules).
-
-
-(** We say a concrete transformation is a singleton rule when its rules are singleton rules. *) 
-
-Definition singleton_transformation_c t := 
-  match t with 
-    ConcreteSyntax.transformation l =>
-      Forall singleton_rule_c l
-  end.
-
-(** A concrete singleton transformation gives an abstract singleton transformation. *)
-
-Lemma singleton_transformation_parse : 
-  forall t,
-    singleton_transformation_c t ->
-    singleton_transformation_a (Parser.parse t).
-Proof.
-  intros t H ; destruct t.
-  unfold singleton_transformation_c in H.
-  unfold Parser.parse ; simpl.
-  induction l ; simpl.
-  { constructor. }
-  { inversion_clear H.
-    constructor. 
-    { apply singleton_rule_parse ; assumption. }
-    { apply IHl ; assumption. }
-  }
-Qed.
-
-(** ** Properties on [instantiatePattern] for singleton transformations *)
-
-Lemma instpat_nil : 
-  forall t, 
-    singleton_transformation_a t ->
-    forall m,
-      instantiatePattern t m nil = nil.
-Proof.
-  intro t ; destruct t ; simpl.
-  unfold singleton_transformation_a ; simpl.
-  unfold instantiatePattern ; simpl.
-  unfold matchPattern ; simpl.
-  induction rules ; intros A m ; inversion_clear A ; simpl ; [reflexivity | ].
-  rewrite singleton_nil_false ; auto.
-Qed.
-
-Lemma instpat_two : 
-  forall t, 
-    singleton_transformation_a t ->
-    forall m e1 e2 r,
-      instantiatePattern t m (e1 :: e2 :: r) = nil.
-Proof.
-  intros t ; destruct t ; simpl.
-  unfold singleton_transformation_a ; simpl.
-  unfold instantiatePattern ; simpl.
-  unfold matchPattern ; simpl.
-  induction rules ; intros A m e1 e2 r; inversion_clear A ; simpl ; [reflexivity | ].
-  rewrite singleton_two_false ; auto.
-Qed.
-
-
-Lemma instpat_singleton : 
-  forall t m a , 
-      instantiatePattern t m a <> nil ->
-      singleton_transformation_a t ->
-      exists b, a = b::nil.
-Proof.
-  intros t m a H1 H2.
-  destruct a ; [ exfalso | ].
-  { contradict H1 ; apply instpat_nil ; assumption. }
-  {
-    destruct a ; eauto ; [].    
-    exfalso.
-    contradict H1; apply instpat_two ; assumption. 
-  }
-Qed.
-
-
-End A.
-
-Require Certification.
-
-(** Tactics to transform an hypothesis H : In [e] (allTuples _ cm)
+(** * Tactics to transform an hypothesis H : In [e] (allTuples _ cm)
     into H: In (e) (modelElements cm)
 *)
 
@@ -283,31 +118,10 @@ Qed.
 
 
 
-(** Tactics to make appear that a sucessfully matched pattern is a singleton. The property that the given transformation is a single_transformation must be registered in the [singleton_rules] hintbase.*) 
-
-Ltac show_singleton :=
-  match goal with 
-    [H:In ?B (instantiatePattern _ ?M ?A) |- _ ] =>
-
-      let TMP1 := fresh "N" in
-      let TMP2 := fresh "TMP2" in
-      let TMP3 := fresh "TMP3" in
-      let E := fresh "e" in
-  
-      specialize (in_not_nil B (instantiatePattern _ M A) H) ;
-      intro TMP1 ; 
-      specialize (instpat_singleton _ _ _ _ TMP1) ;
-      intro TMP3 ; 
-      destruct TMP3 as [ E TMP2] ; 
-      [ solve [auto with singleton_rules]
-      | subst A (* This [subst] ensures that if A is not a variable, this tactics fails. *) ]
-       
-  end.
 
 
 
-
-(** ** Destructors *)
+(** * Destructors *)
 
 
 Ltac destruct_in_modelElements_execute H :=
@@ -530,7 +344,7 @@ Ltac chain_destruct_in_trace H :=
   destruct_in_optionToList H.
 
 
-(* DEPRECATED : Use chain_destruct_in_modelLinks_execute or chain_destruct_in_modelElements_execute instead *)
+(** DEPRECATED : Use chain_destruct_in_modelLinks_execute or chain_destruct_in_modelElements_execute instead *)
 Ltac destruct_any := 
   first [ 
       destruct_execute 
@@ -545,43 +359,61 @@ Ltac destruct_any :=
     | destruct_in_optionToList
     ].
 
-Ltac chain_destruct_in_modelElements_execute H :=
-  let NEW1 := fresh "IN_M" 
-  in
-  let NEW2 := fresh "IN_IT" 
-  in
-  let NEW3 := fresh "IN_OP" 
-  in
-  let NEW4 := fresh "MATCH_GUARD" 
-  in
-  let NEW_IN_RULE := fresh "IN_RULE"
-  in
-  destruct_in_modelElements_execute H ; 
-  destruct_instantiatePattern H NEW1 ;
-  destruct_instantiateRuleOnPattern H NEW2 ;
-  destruct_instantiateIterationOnPattern H NEW3 ;
-  unfold_instantiateElementOnPattern H ;
-  destruct_in_matchPattern NEW1 NEW4 ;
-  rename NEW1 into NEW_IN_RULE.
+Lemma destruct_in_modelElements_execute_lem 
+  {SMM}  {ET} {LT} {D} {E} 
+      {t: Syntax.Transformation (tc:=Build_TransformationConfiguration SMM (Metamodel.Build_Metamodel ET LT D E))} 
+      {cm} {a} :
 
-Ltac chain_destruct_in_modelLinks_execute H :=
-  let NEW_IN_RULE := fresh "IN_RULE" 
-  in
-  let NEW_IN_IT := fresh "IN_IT" 
-  in
-  let NEW_IN_APP_PAT := fresh "IN_APP_PAT" 
-  in
-  let NEW_IN_E := fresh "IN_E" 
-  in
-  let NEW_IN_OUTPAT := fresh "IN_OUTPAT" 
-  in
-  let NEW_MATCH_RULE := fresh "MATCH_RULE" 
-  in
-  destruct_in_modelLinks_execute H NEW_IN_E ;
-  destruct_apply_pattern H NEW_IN_RULE ; 
-  destruct_applyRuleOnPattern H NEW_IN_IT NEW_IN_APP_PAT ;
-  destruct_applyIterationOnPattern NEW_IN_APP_PAT NEW_IN_OUTPAT  ; 
-  destruct_in_matchPattern NEW_IN_RULE NEW_MATCH_RULE.
+  In a
+    (modelElements (execute t cm)) ->
+  exists r sp n0 ope,
+    In sp (allTuples t cm)
+    /\ In r (Syntax.rules t) 
+    /\ Expressions.evalGuardExpr r cm sp = true 
+    /\ In n0 (seq 0 (Expressions.evalIteratorExpr r cm sp))
+    /\ In ope (Syntax.r_outputPattern r) 
+    /\ Expressions.evalOutputPatternElementExpr cm sp n0 ope =
+         return a.
+Proof.
+  intros. 
+  destruct_in_modelElements_execute H.  
+  destruct_instantiatePattern H NEW1. 
+  destruct_instantiateRuleOnPattern H NEW2. 
+  destruct_instantiateIterationOnPattern H NEW3. 
+  unfold_instantiateElementOnPattern H. 
+  destruct_in_matchPattern NEW1 NEW4. 
+  eauto 10.
+Qed.
+
+
+Lemma destruct_in_modelLinks_execute_lem 
+  {SMM} 
+  {ET}
+  {LT}
+  {D} 
+  {E} 
+  {t: Syntax.Transformation (tc:=Build_TransformationConfiguration SMM (Metamodel.Build_Metamodel ET LT D E))}
+     {a}
+     {m} :
+    In a (modelLinks (execute t m)) ->
+    exists sp r n p,
+      In sp (allTuples t m) 
+      /\ In r (Syntax.rules t) 
+      /\ Expressions.evalGuardExpr r m sp = true
+      /\ In n (seq 0 (Expressions.evalIteratorExpr r m sp))
+      /\ In p (Syntax.r_outputPattern r) 
+      /\ In a (applyElementOnPattern p t m sp n)
+.
+Proof.
+  intros.
+  destruct_in_modelLinks_execute H H_IN_E. 
+  destruct_apply_pattern H H_IN_RULE.  
+  destruct_applyRuleOnPattern H H_IN_IT H_IN_APP_PAT. 
+  destruct_applyIterationOnPattern H_IN_APP_PAT H_IN_OUTPAT.   
+  destruct_in_matchPattern H_IN_RULE H_MATCH_RULE.
+
+  eauto 10.
+Qed.
 
 
 Ltac simpl_accessors_any H :=

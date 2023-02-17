@@ -130,6 +130,7 @@ Ltac destruct_in_optionListToList H :=
   match type of H with
   | In _ (optionListToList ?E) =>
       let M := fresh "IN" in
+      let l := fresh "l" in
       apply in_optionListToList in H;
       destruct H as (l, (H, M))
   end.
@@ -139,17 +140,21 @@ Definition optionList2List {A : Type} (l:list (option A)) : list A :=
 
 
 Theorem optionListToList_In:
-  forall (A:Type) (a: A) (l: option (list A)), (In a (optionListToList l)) -> l <> None.
+  forall (A:Type) (a: A) (l: option (list A)),
+    In a (optionListToList l) ->
+    l <> None.
 Proof.
-  intros. intro H'.
-  destruct l.
-  - discriminate H'.
-  - assumption.
+  intros.
+  destruct_in_optionListToList H.
+  subst.
+  congruence.
 Qed.
 
 
 Theorem optionList2List_In :
-  forall (A:Type) (a: A) (l: list (option A)), (In a (optionList2List l)) -> (In (Some a) l).
+  forall (A:Type) (a: A) (l: list (option A)), 
+    In a (optionList2List l) ->
+    In (Some a) l.
 Proof.
   intros.
   induction l.
@@ -162,7 +167,9 @@ Proof.
 Qed.
 
 Theorem optionList2List_In_inv :
-  forall (A:Type) (a: A) (l: list (option A)), (In (Some a) l) -> (In a (optionList2List l)).
+  forall (A:Type) (a: A) (l: list (option A)),
+    In (Some a) l ->
+    In a (optionList2List l).
 Proof.
   intros.
   induction l.
