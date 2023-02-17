@@ -262,3 +262,42 @@ Ltac dummy_inv H :=
        try subst SP ;
        try first [subst V | inj H | dummy_inv H ]
    end.
+
+Ltac inv_makeElement H := 
+  match type of H with
+  | makeElement _ _ _ _ _ _ = Some _ =>
+      unfold makeElement in H ;
+      unfold wrapElement in H ; 
+      OptionUtils.monadInv H ;
+      try discriminate ;
+      repeat wrap_inv H
+  end.
+
+Ltac inv_makeGuard H :=
+  match type of H with 
+  | makeEmptyGuard _ _ _ = true =>
+      unfold makeEmptyGuard in H ; 
+      monadInv H ;
+      repeat wrap_inv H
+             
+  | makeGuard _ _ _ _  = true => 
+      unfold makeGuard in H ;
+      monadInv H ;
+      repeat wrap_inv H
+  
+  end.      
+  
+Ltac inv_makeLink H :=
+  match type of H with
+  | makeLink _ _ _ _ _ _ _ _ _ = Some _ =>
+      unfold makeLink in H ;
+      unfold wrapLink in H ; 
+      let H2:= fresh "H" in
+      match type of H with 
+        _ <- ?E ; _ = Some _ => 
+          destruct E eqn:H2 ; [ | discriminate H]
+      end ;
+      repeat ConcreteExpressions.wrap_inv H2 ;
+      OptionUtils.monadInv H ;
+      OptionUtils.monadInv H
+  end.

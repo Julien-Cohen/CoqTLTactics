@@ -160,8 +160,7 @@ Proof.
   Tactics.exploit_evalGuard MATCH_GUARD ; 
   
   (* (5.E) make the matched element appear *)
-  unfold Parser.parseOutputPatternElement in H' ; 
-  Tactics.progress_in_evalOutput H' ;
+  Tactics.exploit_evaloutpat H' ;
 
   (* (6) *)
   (* not useful here *) 
@@ -205,7 +204,6 @@ Proof.
   Tactics.exploit_evalGuard MATCH_GUARD ; 
 
   (* (5.E) *)
-  unfold Parser.parseOutputPatternElement in H' ; 
   Tactics.exploit_evaloutpat H' ;
 
   (* (6) *)

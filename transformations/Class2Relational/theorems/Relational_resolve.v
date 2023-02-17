@@ -88,7 +88,7 @@ Ltac toEDataT H :=
    end.
 
  
- Ltac progress_in_maybeBuildColumnReference H := 
+Ltac progress_in_maybeBuildColumnReference H := 
   match type of H with 
   | maybeBuildColumnReference _ _ = Some _ =>
      inv_maybeBuildColumnReference H ; 
@@ -116,7 +116,7 @@ Proof.
   
   (* (1) *)
   destruct (Tactics.destruct_in_modelLinks_execute_lem R_IN1) 
-    as ( elts & r & i & ope & IN_E & IN_RULE & MATCH_RULE & IN_IT & IN_OUTPAT & IN_APP_PAT).
+    as ( elts & r & i & ope & te & tls & IN_E & IN_RULE & MATCH_RULE & IN_IT & IN_OUTPAT & EV_PE & EV_LINK & IN_LINK).
 
   (* (2) Select a rule. *)
   Tactics.progress_in_In_rules IN_RULE ; [ | ] ; 
@@ -127,55 +127,31 @@ Proof.
   (* (4) Now we can progress in the guard. *)
   Tactics.exploit_evalGuard MATCH_RULE ;
 
+  (* (5.E) *)
+  Tactics.exploit_evaloutpat EV_PE ;
+
+  (* (5.L) now we can progress in EV_LINK. *)
+  unfold Expressions.evalOutputPatternLinkExpr in EV_LINK ;
+  unfold ConcreteSyntax.r_InKinds in EV_LINK ; 
+  unfold Parser.parseOutputPatternElement in EV_LINK ;
+  unfold Syntax.ope_linkExpr in EV_LINK ; 
+  unfold ConcreteSyntax.e_OutKind in EV_LINK ;
+  unfold ConcreteSyntax.e_outlink in EV_LINK ;
+  unfold Parser.parseOutputPatternLinks in EV_LINK ; 
+  inj EV_LINK ; [ | ] ;
   
-  (* (5.L) now we can progress in IN_APP_PAT. *)
-  unfold Parser.parseOutputPatternElement in IN_APP_PAT ;
-  Semantics.exploit_In_applyElementOnPattern IN_APP_PAT EV_OUTPAT ;
-
+  rewrite List.app_nil_r in IN_LINK ; 
+  ListUtils.destruct_in_optionListToList IN_LINK ;
   
-  ListUtils.destruct_in_optionListToList IN_APP_PAT ;
-  unfold Expressions.evalOutputPatternLinkExpr in IN_APP_PAT ;
-  unfold Syntax.ope_linkExpr in IN_APP_PAT ;
-  unfold ConcreteSyntax.r_InKinds in IN_APP_PAT ;
-  unfold ConcreteSyntax.e_OutKind in IN_APP_PAT ;
-  unfold ConcreteSyntax.e_outlink in IN_APP_PAT ;
-  unfold Parser.parseOutputPatternLinks in IN_APP_PAT ;
-  unfold ConcreteExpressions.makeElement in IN_APP_PAT ; 
+  unfold Parser.parseOutputPatternLink in IN_LINK ;
+  unfold ConcreteSyntax.o_OutRefKind in IN_LINK ;
+  unfold ConcreteSyntax.o_outpat in IN_LINK ; 
+  
+  ConcreteExpressions.inv_makeLink IN_LINK ;
+  repeat ListUtils.unfold_In_cons IN ;
+  first [discriminate IN | inj IN] ; [].
 
-
-  unfold Expressions.evalOutputPatternElementExpr in EV_OUTPAT ; 
-  unfold Syntax.ope_elementExpr in EV_OUTPAT ; 
-  unfold ConcreteSyntax.r_InKinds in EV_OUTPAT ; 
-  unfold ConcreteSyntax.e_OutKind in EV_OUTPAT ; 
-  unfold ConcreteSyntax.e_outpat in EV_OUTPAT ; 
-
-  unfold ConcreteExpressions.makeElement in EV_OUTPAT ;
-  unfold ConcreteExpressions.wrapElement  in EV_OUTPAT ;
-  monadInv EV_OUTPAT ; [ | ] ;
-  repeat ConcreteExpressions.wrap_inv EV_OUTPAT ;
-
-  PropUtils.inj IN_APP_PAT ;
-
-  rewrite List.app_nil_r in IN ;
-
-  ListUtils.destruct_in_optionListToList IN ;
-
-  unfold Parser.parseOutputPatternLink in IN ;
-  unfold ConcreteSyntax.o_OutRefKind in IN ;
-  unfold ConcreteSyntax.o_outpat in IN ;
-  unfold ConcreteExpressions.makeLink in IN ;
-  unfold ConcreteExpressions.wrapLink in IN ;
-  monadInv IN ; [ | ] ;
-  monadInv IN ; [ | ] ;
-  repeat ConcreteExpressions.wrap_inv E ; [ | ] ;
-  monadInv IN ; [ | ] ;
-  compute in E0 (*toEData *) ; PropUtils.inj E0 ;
-
-  repeat ListUtils.unfold_In_cons IN0 (* fixme : IN0 not introduced (from suite)*) ; 
-    first [ discriminate IN0 (* discard rules that do not match *)
-          | PropUtils.inj IN0 ] ; [].
-
-
+  compute in E (*toEData *) ; PropUtils.inj E. 
 
   (* (6) *)
   Tactics.exploit_in_it IN_IT. 
@@ -186,7 +162,7 @@ Proof.
   C2RTactics.negb_inv MATCH_RULE.
   destruct t ; simpl in MATCH_RULE ; subst derived.
   
-  progress_in_maybeBuildColumnReference IN.
+  progress_in_maybeBuildColumnReference IN_LINK.
   
   core.Semantics.progress_maybeResolve E. 
   
@@ -214,12 +190,12 @@ forall (cm : ClassModel) (rm : RelationalModel),
     (* postcondition *) all_columns_have_a_reference rm . 
 
 Proof. 
-  intros cm rm  WF2 E PRE.  intros col IN1. 
+  intros cm rm  WF2 E PRE.  intros col IN_COL. 
   subst rm.
 
   (* 1 *)
-  destruct (Tactics.destruct_in_modelElements_execute_lem IN1) 
-    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN1'). 
+  destruct (Tactics.destruct_in_modelElements_execute_lem IN_COL) 
+    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN_ATTR). 
 
   (* (2) *)
   Tactics.progress_in_In_rules IN_RULE ; [ | ] ;
@@ -231,7 +207,7 @@ Proof.
   Tactics.exploit_evalGuard MATCH_GUARD ;
   
   (* (5.E) *) 
-  Tactics.exploit_evaloutpat IN1' ; [].
+  Tactics.exploit_evaloutpat IN_ATTR ; [].
   
   (* (6) *)
   Tactics.exploit_in_it IN_IT.

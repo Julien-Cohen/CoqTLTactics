@@ -75,12 +75,12 @@ Lemma transform_attribute_bw :
     In (AttributeElement {| attr_id:= id ; derived := false ; attr_name := name|}) (cm.(modelElements))
 . 
 Proof.
-  intros cm rm H ; subst.
-  intros i nm H.
+  intros cm rm H ; subst rm.
+  intros i nm IN_ATTR.
 
   (* (1) *)
-  destruct (Tactics.destruct_in_modelElements_execute_lem H) 
-    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & H'). 
+  destruct (Tactics.destruct_in_modelElements_execute_lem IN_ATTR) 
+    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & EV). 
 
   (* (2) *)
   Tactics.progress_in_In_rules IN_RULE ; [ exfalso | ] ;
@@ -93,8 +93,7 @@ Proof.
   Tactics.exploit_evalGuard MATCH_GUARD ; 
   
   (* (5.E) make the matched element appear *)
-  unfold Parser.parseOutputPatternElement in H' ;
- Tactics.progress_in_evalOutput H' ;
+  Tactics.exploit_evaloutpat EV ;
 
   (* (6) *)
   (* not useful here *) 
@@ -138,7 +137,6 @@ Proof.
   Tactics.exploit_evalGuard MATCH_GUARD ; 
 
   (* (5.E) *)
-  unfold Parser.parseOutputPatternElement in H' ;
   Tactics.exploit_evaloutpat H' ;
 
   (* (6) *)

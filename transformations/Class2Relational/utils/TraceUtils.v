@@ -64,23 +64,27 @@ Proof.
   intros l H.  
 
   (* (1) *)
-  Tactics.chain_destruct_in_trace H.
-  Tactics.destruct_in_matchPattern IN0 M.
+  destruct (Tactics.destruct_in_trace_lem H) 
+    as (se & r & i & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV) ; subst l.
 
   (* 2 *)
-  Tactics.progress_in_In_rules IN0 ;
+  Tactics.progress_in_In_rules IN_RULE ;
 
   (* 3 *)
-  Tactics.progress_in_ope IN2 ;
+  Tactics.progress_in_ope IN_OUTPAT ;
 
   (* 4 *)
-  Tactics.exploit_evalGuard M  ; 
+  Tactics.exploit_evalGuard MATCH_GUARD  ; 
 
-  (* 5.L *) (* fixme *)
-  unfold Parser.parseOutputPatternElement in H ; simpl in H  ; C2RTactics.progress_in_traceElementOnPattern H  ;
+  (* 5 *) 
+  Tactics.exploit_evaloutpat EV ; 
 
   (* 6 *)
-  Tactics.exploit_in_it IN1.
+  Tactics.exploit_in_it IN_IT ;
+
+  (* (7) *)
+  (* not useful here *)
+  Semantics.in_allTuples_auto.
 
   { (* rule 1 *) 
     constructor 1. 
@@ -94,17 +98,24 @@ Qed.
 (** General results (do not depend on Class2Relational) *)
 (* FIXME : MOVE-ME *)
 
-Lemma in_trace_in_models_source cm t :
+Corollary in_trace_in_models_source cm t :
   forall a b s i ,
     In (buildTraceLink ([a],i,s) b ) (trace t cm) ->
     In a cm.(modelElements) .
 Proof.
   intros a b s i IN.
 
-  Tactics.chain_destruct_in_trace IN.
+  (* 1 *)
+  destruct (Tactics.destruct_in_trace_lem IN) 
+    as (se & r & n & e & te & IN_SOURCE & ç & _ & _ & _ & EQ & _).
+
+  inj EQ.
  
-  C2RTactics.unfold_traceElementOnPattern IN.
-  eapply C2RTactics.in_allTuples_singleton ; exact IN0.
+
+  (* (7) *)
+  Semantics.in_allTuples_auto.
+
+  exact IN_SOURCE.
 Qed.
 
 (* FIXME : MOVE-ME *)
@@ -118,30 +129,41 @@ Proof.
   destruct s as (a & b).
   destruct a as ((a & i) & s).
 
-  Tactics.chain_destruct_in_trace IN.
-(*  Tactics.destruct_in_matchPattern IN1 M. (keep matchPattern for later) *)
+  (* 1 *)
+  destruct (Tactics.destruct_in_trace_lem IN) 
+    as (se & r & n & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV).
+  
+  inj EQ.
+  simpl target.
 
-  C2RTactics.unfold_traceElementOnPattern IN.
+  unfold execute. 
+  unfold modelElements.
 
-  unfold execute ; simpl.
   
   unfold instantiatePattern.
   apply in_flat_map.
-  exists a ; split ; [ exact IN0 | ].
+  exists se ; split ; [ exact IN_SOURCE | ].
 
   apply in_flat_map.
-  exists r ;  split ; [ exact IN1 | ].
+  unfold matchPattern.
+  exists r ;  split ; [ apply List.filter_In ; split ; assumption | ].
 
   unfold instantiateRuleOnPattern.
   apply in_flat_map.
-  exists i ; split ; [ exact IN2 | ].
+  exists n ; split ; [ exact IN_IT | ].
 
   unfold instantiateIterationOnPattern.
   apply in_flat_map.
-  exists e ; split ; [ exact IN3 | ].
+  exists e ; split ; [ exact IN_OUTPAT | ].
 
-  rewrite IN.
+  unfold instantiateElementOnPattern.
+
+  Set Printing Implicit.
+  unfold C2RConfiguration ; simpl.
+  unfold RelationalMM ; simpl.
+  rewrite EV.
   compute ; auto.
+  Unset Printing Implicit.
 Qed.
 
 

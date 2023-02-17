@@ -336,15 +336,37 @@ Ltac destruct_in_optionToList_auto :=
 
 
 
-Ltac chain_destruct_in_trace H := 
+Lemma destruct_in_trace_lem {SMM}  {ET} {LT} {D} {E} 
+      {t: Syntax.Transformation (tc:=Build_TransformationConfiguration SMM (Metamodel.Build_Metamodel ET LT D E))} {cm} {l} :
+  In l (trace t cm) ->
+  exists p r i e te,   
+    In p (allTuples t cm)
+    /\ In r (Syntax.rules t) 
+    /\ Expressions.evalGuardExpr r cm p = true 
+    /\ In i (seq 0 (Expressions.evalIteratorExpr r cm p))
+    /\ In e (Syntax.r_outputPattern r)
+    /\ l = {|
+             TraceLink.source := (p, i, Syntax.ope_name e);
+             TraceLink.target := te
+           |} 
+    /\ Expressions.evalOutputPatternElementExpr cm p i e = return te .
+Proof.
+  intros.
   destruct_trace H ; 
   destruct_tracePattern H ; 
   destruct_traceRuleOnPattern H ; 
   destruct_traceIterationOnPattern H ; 
   destruct_in_optionToList H.
+  Tactics.destruct_in_matchPattern IN0 M.
+  unfold traceElementOnPattern in H.
+ 
+  OptionUtils.monadInv H.
+  unfold instantiateElementOnPattern in H.
+  eauto 12.
+Qed.
 
 
-(** DEPRECATED : Use chain_destruct_in_modelLinks_execute or chain_destruct_in_modelElements_execute instead *)
+(** DEPRECATED *)
 Ltac destruct_any := 
   first [ 
       destruct_execute 
@@ -393,26 +415,32 @@ Lemma destruct_in_modelLinks_execute_lem
   {D} 
   {E} 
   {t: Syntax.Transformation (tc:=Build_TransformationConfiguration SMM (Metamodel.Build_Metamodel ET LT D E))}
-     {a}
+     {l}
      {m} :
-    In a (modelLinks (execute t m)) ->
-    exists sp r n p,
+    In l (modelLinks (execute t m)) ->
+    exists sp r n p te tls,
       In sp (allTuples t m) 
       /\ In r (Syntax.rules t) 
       /\ Expressions.evalGuardExpr r m sp = true
       /\ In n (seq 0 (Expressions.evalIteratorExpr r m sp))
       /\ In p (Syntax.r_outputPattern r) 
-      /\ In a (applyElementOnPattern p t m sp n)
-.
+      /\ Expressions.evalOutputPatternElementExpr m sp n p =
+         return te
+  
+  /\ Expressions.evalOutputPatternLinkExpr m sp te n (trace t m) p = return tls
+  /\ In l tls.
+
 Proof.
   intros.
-  destruct_in_modelLinks_execute H H_IN_E. 
-  destruct_apply_pattern H H_IN_RULE.  
-  destruct_applyRuleOnPattern H H_IN_IT H_IN_APP_PAT. 
-  destruct_applyIterationOnPattern H_IN_APP_PAT H_IN_OUTPAT.   
-  destruct_in_matchPattern H_IN_RULE H_MATCH_RULE.
-
-  eauto 10.
+  destruct_in_modelLinks_execute H IN_E. 
+  destruct_apply_pattern H IN_RULE.  
+  destruct_applyRuleOnPattern H IN_IT IN_APP_PAT. 
+  destruct_applyIterationOnPattern IN_APP_PAT H_IN_OUTPAT.   
+  destruct_in_matchPattern IN_RULE H_MATCH_RULE.
+  unfold applyElementOnPattern in IN_APP_PAT.
+  PropUtils.destruct_match IN_APP_PAT ; [ | ListUtils.unfold_In_cons IN_APP_PAT ].
+  ListUtils.destruct_in_optionListToList IN_APP_PAT.
+  eauto 15.
 Qed.
 
 
@@ -425,36 +453,26 @@ Ltac simpl_accessors_any H :=
 
 Ltac progress_in_In_rules H :=
   match type of H with 
-    In ?R (Syntax.rules _) =>
-      simpl Syntax.rules in H ;
-      progress repeat unfold_In_cons H ;
-      subst R
+    | In ?R (Syntax.rules _) =>
+        simpl Syntax.rules in H ;
+        progress repeat unfold_In_cons H ;
+        subst R
   end.
 
-
-Ltac exploit_evaloutpat_1 H :=
-  match type of H with 
-    Expressions.evalOutputPatternElementExpr _ _ _ _ = Some _ =>
-      simpl in H ;
-      unfold ConcreteExpressions.makeElement in H ;
-      unfold ConcreteExpressions.wrapElement in H ; 
-      OptionUtils.monadInv H ;
-      try discriminate
-  end.
 
 Ltac exploit_evaloutpat H :=
-  exploit_evaloutpat_1 H ;
-  repeat ConcreteExpressions.wrap_inv H.
+  match type of H with 
 
-(** Deprecated : use [exploit_evaloutpat_2] above. *)
-Ltac progress_in_evalOutput H :=
-  unfold Expressions.evalOutputPatternElementExpr in H ;
-  Tactics.simpl_accessors_any H ;
-  unfold ConcreteExpressions.makeElement in H ;
-  unfold ConcreteExpressions.wrapElement in H ;
-  OptionUtils.monadInv H ;
-  repeat ConcreteExpressions.wrap_inv H ;
-  try discriminate.
+  | Expressions.evalOutputPatternElementExpr _ _ _ (Parser.parseOutputPatternElement _) = Some _ =>
+      unfold Parser.parseOutputPatternElement in H ;
+      exploit_evaloutpat H (* recursion *)
+       
+  | Expressions.evalOutputPatternElementExpr _ _ _ _ = Some _ =>
+      simpl in H ;
+      ConcreteExpressions.inv_makeElement H
+  end.
+
+
 
 Ltac progress_in_ope H :=
   match type of H with 
@@ -468,7 +486,7 @@ Ltac progress_in_ope H :=
       subst ope 
             
   | In ?ope (Syntax.r_outputPattern (Parser.parseRule ?E)) =>
-       progress unfold E in H ; (* for the case where a rule is defined outsoide the transformation *)
+       progress unfold E in H ; (* for the case where a rule is defined outside the transformation *)
       progress_in_ope H (* recursion *)
 
   | In ?ope (Syntax.r_outputPattern (Parser.parseRule _)) =>
@@ -498,11 +516,7 @@ Ltac exploit_evalGuard H :=
           unfold Syntax.r_guard in H ; 
           unfold ConcreteSyntax.r_guard in H ; 
           unfold ConcreteSyntax.r_InKinds in H ; 
-          first [ progress unfold ConcreteExpressions.makeEmptyGuard in H  
-                | progress unfold ConcreteExpressions.makeGuard in H] ;
-            
-          ConcreteExpressions.monadInv H ;
-          repeat ConcreteExpressions.wrap_inv H 
+          ConcreteExpressions.inv_makeGuard H
       
     | Expressions.evalGuardExpr (Parser.parseRule ?R) _ _ = true =>
           progress unfold R in H ;

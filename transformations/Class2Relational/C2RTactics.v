@@ -77,17 +77,17 @@ Qed.
 
 (** *** January tactics *)
 
-
+(* REMOVE-ME *)
 Ltac unfold_traceElementOnPattern H :=
   match type of H with
   | traceElementOnPattern _ _ _ _ = return _ => 
-      unfold traceElementOnPattern in H ; OptionUtils.monadInv H
+      unfold traceElementOnPattern in H ; 
+      OptionUtils.monadInv H
   end.
 
 Ltac progress_in_traceElementOnPattern H := 
-  unfold_traceElementOnPattern H ;
   Tactics.unfold_instantiateElementOnPattern H ; 
-  Tactics.progress_in_evalOutput H.
+  Tactics.exploit_evaloutpat H.
 
 
 Ltac unfold_toEData H :=
