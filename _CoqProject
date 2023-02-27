@@ -67,6 +67,13 @@ transformations/Class2Relational_TUPLE_SP/tests/PersonTest_TUPLE_SP.v
 transformations/Class2Relational_TUPLE_SP/Class2Relational_TUPLE_SP.v
 transformations/Class2Relational_TUPLE_SP/C2RTactics.v
 
+transformations/Class2Relational_tactic_test/ClassMetamodel.v
+transformations/Class2Relational_tactic_test/RelationalMetamodel.v
+transformations/Class2Relational_tactic_test/tests/PersonModel.v
+transformations/Class2Relational_tactic_test/tests/PersonTest.v
+transformations/Class2Relational_tactic_test/Class2Relational_tactic_test.v
+
+
 transformations/TT2BDD/TT.v
 transformations/TT2BDD/BDD.v
 transformations/TT2BDD/TT2BDDAbstract.v
