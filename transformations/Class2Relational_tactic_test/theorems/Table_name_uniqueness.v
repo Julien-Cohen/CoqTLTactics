@@ -42,67 +42,26 @@ forall (cm : ClassModel) (rm : RelationalModel),
 Proof.
     intros cm rm E PRE t1 t2 IN1 IN2 D.
     subst rm.
-
+    (* track t1 *)
     destruct (Tactics.destruct_in_modelElements_execute_lem IN1) 
-      as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN1').
-    Tactics.progress_in_In_rules IN_RULE.
-    Tactics.progress_in_ope IN_OP.
-    Tactics.exploit_evalGuard MATCH_GUARD.
-    Tactics.exploit_evaloutpat IN1'.
-    Tactics.exploit_in_it IN_IT.
-    Semantics.exploit_in_allTuples IN_E.
+      as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN1');
+    Tactics.progress_in_In_rules IN_RULE;
+    Tactics.progress_in_ope IN_OP;
+    Tactics.exploit_evalGuard MATCH_GUARD;
+    Tactics.exploit_evaloutpat IN1';
+    Tactics.exploit_in_it IN_IT;
+    Semantics.exploit_in_allTuples IN_E;
+    (* track t2 *)
     destruct (Tactics.destruct_in_modelElements_execute_lem IN2) 
-    as (r & sp & n & ope & IN_E2 & IN_RULE2 & MATCH_GUARD2 & IN_IT2 & IN_OP2 & IN2').
-    * Tactics.progress_in_In_rules IN_RULE2.
-        ** Tactics.progress_in_ope IN_OP2.
-            Tactics.exploit_evalGuard MATCH_GUARD2.
-            Tactics.exploit_evaloutpat IN2'.
-            Tactics.exploit_in_it IN_IT2.
-            Semantics.exploit_in_allTuples IN_E2.
-            simpl.
-            apply PRE ; auto.
-            contradict D. subst. reflexivity.
-        ** Tactics.progress_in_ope IN_OP2.
-            Tactics.exploit_evalGuard MATCH_GUARD2.
-            Tactics.exploit_evaloutpat IN2'.
-            Tactics.exploit_in_it IN_IT2.
-            Semantics.exploit_in_allTuples IN_E2.
-            simpl.
-            apply PRE ; auto.
-            contradict D. subst. reflexivity.
-        ** Tactics.progress_in_ope IN_OP2.
-            Tactics.exploit_evalGuard MATCH_GUARD2.
-            Tactics.exploit_evaloutpat IN2'.
-    *   Tactics.progress_in_ope IN_OP.
-        Tactics.exploit_evalGuard MATCH_GUARD.
-        Tactics.exploit_in_it IN_IT.
-        Tactics.exploit_evaloutpat IN1'.
-        Semantics.exploit_in_allTuples IN_E.
-        destruct (Tactics.destruct_in_modelElements_execute_lem IN2) 
-        as (r & sp & n & ope & IN_E2 & IN_RULE2 & MATCH_GUARD2 & IN_IT2 & IN_OP2 & IN2').
-        ** Tactics.progress_in_In_rules IN_RULE2.
-            *** Tactics.progress_in_ope IN_OP2.
-                Tactics.exploit_evalGuard MATCH_GUARD2.
-                Tactics.exploit_evaloutpat IN2'.
-                Tactics.exploit_in_it IN_IT2.
-                Semantics.exploit_in_allTuples IN_E2.
-                simpl. 
-                apply PRE; auto.
-                contradict D. subst. reflexivity.
-            *** Tactics.progress_in_ope IN_OP2.
-                Tactics.exploit_evalGuard MATCH_GUARD2.
-                Tactics.exploit_evaloutpat IN2'.
-                Tactics.exploit_in_it IN_IT2.
-                Semantics.exploit_in_allTuples IN_E2.
-                simpl. 
-                apply PRE; auto.
-                contradict D. subst. reflexivity.
-            *** Tactics.progress_in_ope IN_OP2.
-                Tactics.exploit_evalGuard MATCH_GUARD2.
-                Tactics.exploit_evaloutpat IN2'.
-    * Tactics.progress_in_ope IN_OP.
-      Tactics.exploit_evalGuard MATCH_GUARD.
-      Tactics.exploit_in_it IN_IT.
-      Tactics.exploit_evaloutpat IN1'.
+    as (r & sp & n & ope & IN_E2 & IN_RULE2 & MATCH_GUARD2 & IN_IT2 & IN_OP2 & IN2');
+    Tactics.progress_in_In_rules IN_RULE2;
+    Tactics.progress_in_ope IN_OP2;
+    Tactics.exploit_evalGuard MATCH_GUARD2;
+    Tactics.exploit_evaloutpat IN2';
+    Tactics.exploit_in_it IN_IT2;
+    Semantics.exploit_in_allTuples IN_E2;
+    simpl;
+    apply PRE ; auto;
+    contradict D; subst; reflexivity.
 Qed.
 
