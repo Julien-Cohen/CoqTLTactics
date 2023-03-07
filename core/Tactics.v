@@ -597,3 +597,28 @@ Ltac destruct_in_trace_G :=
       unfold trace ;
       apply in_flat_map
   end.
+
+(** Foraward Descriptions *)
+
+Lemma transform_elements_fw {tc} cm p tp (t:Syntax.Transformation (tc:=tc)) :
+  In p (allTuples t cm) ->
+  In tp (instantiatePattern t cm p) ->
+  In tp (modelElements (execute t cm)).
+Proof.
+  intros IN1 IN2.
+  simpl.
+  apply List.in_flat_map.
+  eauto.
+Qed.
+
+
+Lemma transform_element_fw {tc} cm e te (t:Syntax.Transformation (tc:=tc)) :
+  0 < Syntax.arity t ->
+  In e (modelElements cm) ->
+  In te (instantiatePattern t cm [e]) ->
+  In te (modelElements (execute t cm)).
+Proof.
+  intros A IN1 IN2.
+  eapply Tactics.allModelElements_allTuples in IN1 ; [ | exact A].
+  eapply transform_elements_fw ; eauto.
+Qed.

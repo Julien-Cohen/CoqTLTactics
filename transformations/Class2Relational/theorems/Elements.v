@@ -21,7 +21,9 @@ Import Class2Relational ClassMetamodel RelationalMetamodel.
 
 
 
-(** *** Utilities on transformation of elements *)
+(** Utilities on transformation of elements *)
+
+(** *** Forward Descriptions *)
 
 
 Lemma transform_attribute_fw : 
@@ -34,13 +36,9 @@ Lemma transform_attribute_fw :
 Proof.
   intros cm rm H ; subst.
   intros i n H.
-  simpl.
-  apply C2RTactics.allModelElements_allTuples in H.
-  revert H ; generalize (allTuples Class2Relational cm).
-  intros s H.
-  apply List.in_flat_map.
-  eexists ; split ; [exact H | clear H ].
-  simpl ; auto.
+  eapply C2RTactics.transform_element_fw ; [ exact H | ].
+  compute.
+  auto.
 Qed.
 
 
@@ -54,17 +52,14 @@ Lemma transform_class_fw :
 Proof.
   intros cm rm H ; subst.
   intros i n H.
-  simpl.
-  apply C2RTactics.allModelElements_allTuples in H.
-  revert H ; generalize (allTuples Class2Relational cm).
-  intros s H.
-  apply List.in_flat_map.
-  eexists ; split ; [exact H | clear H ].
-  simpl ; auto.
+  eapply C2RTactics.transform_element_fw ; [ exact H | ].
+  compute.
+  auto.
     (* Remark : exactly the same script as above. *)
 Qed.
 
 
+(** *** Backward Descriptions *)
 
 Lemma transform_attribute_bw : 
   forall (cm : ClassModel) (rm : RelationalModel), 

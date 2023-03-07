@@ -12,33 +12,6 @@ Require Import transformations.Class2Relational.RelationalMetamodel.
 
 From core Require Tactics Certification.
 
-(** ** Type correspondence *)
-
-Lemma tables_come_from_classes a b c : 
-  In (TableElement a) (instantiatePattern Class2Relational b [c]) ->
-  exists d, c = ClassElement d.
-Proof.
- destruct c ; simpl ; [ solve [eauto] | intro H ; exfalso ].
- simpl in H.
- destruct a0.
- destruct derived ; simpl in H ; auto.
- remove_or_false H.
- discriminate H.
-Qed.
-
-Lemma columns_come_from_attributes a b c : 
-  In (ColumnElement a) (instantiatePattern Class2Relational b [c]) ->
-  exists d, c = AttributeElement d.
-Proof.
- destruct c ; simpl ; [intro H ; exfalso | solve[eauto] ].
- simpl in H.
- remove_or_false H.
- discriminate H.
-Qed.
-
-
-
-
 
 Ltac negb_inv H :=
   match type of H with
@@ -77,34 +50,20 @@ Qed.
 
 (** *** January tactics *)
 
-(* REMOVE-ME *)
-Ltac unfold_traceElementOnPattern H :=
-  match type of H with
-  | traceElementOnPattern _ _ _ _ = return _ => 
-      unfold traceElementOnPattern in H ; 
-      OptionUtils.monadInv H
-  end.
-
-Ltac progress_in_traceElementOnPattern H := 
-  Tactics.unfold_instantiateElementOnPattern H ; 
-  Tactics.exploit_evaloutpat H.
-
 
 Ltac unfold_toEData H :=
   unfold toEData in H ;
   simpl (unbox _) in H ;
   unfold get_E_data in H.
 
-Ltac unfold_make_element H :=
-  unfold ConcreteExpressions.makeElement in H ;
-  unfold ConcreteExpressions.wrapElement in H ;
-  unfold ConcreteExpressions.wrap in H ;
-  unfold_toEData H ;
-  unfold ClassMetamodel.get_E_data in H.
 
-Ltac unfold_make_link H := 
-  unfold ConcreteExpressions.makeLink in H ;
-  unfold ConcreteExpressions.wrapLink in H ;
-  unfold ConcreteExpressions.wrap in H;
-  unfold_toEData H ;
-  unfold ClassMetamodel.get_E_data in H.
+(** *** Forward Descriptions *)
+
+Lemma transform_element_fw cm e te :
+  In e (modelElements cm) ->
+  In te (instantiatePattern Class2Relational cm [e]) ->
+  In te (modelElements (execute Class2Relational cm)).
+Proof.
+  intros IN1 IN2.
+  eapply Tactics.transform_element_fw ; eauto.
+Qed.
