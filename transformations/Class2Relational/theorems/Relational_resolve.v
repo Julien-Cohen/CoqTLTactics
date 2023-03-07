@@ -22,7 +22,7 @@ From transformations.Class2Relational
   Require C2RTactics TraceUtils Elements.
 
 
-(** Concepts under focus in this module *)
+(** Concepts under focus in this module. *)
 
 Definition all_attributes_are_typed (cm : ClassModel) :=
   forall (att : Attribute_t),
@@ -36,51 +36,7 @@ forall (col: Column_t),
       exists r', In (ColumnReferenceLink {| cr := col ;  ct := r' |}) rm.(modelLinks).
   
 
-(** Some tactics *)
-
-
-(* same as Tactics.destruct_in_optionListToList but switches the names of the produced hypothsesis *)
-
-Lemma optionListToList_Some {A} :
-  forall (a: list A), optionListToList (Some a) = a.
-Proof.
-  reflexivity.
-Qed.
-
-Ltac unfold_evalOutputPatternElementExpr H :=
-  unfold Expressions.evalOutputPatternElementExpr in H ;
-  unfold Syntax.ope_elementExpr in H.
-
-Ltac unfold_evalOutputPatternLinkExpr H :=
-  unfold Expressions.evalOutputPatternLinkExpr in H ;
-  unfold Syntax.ope_linkExpr in H.
-
-Ltac unfold_maybeResolveAll H :=
-  unfold ModelingSemantics.maybeResolveAll in H ;
-  unfold Semantics.maybeResolveAll in H.
-
-Ltac progress_in_applyElementOnPattern H :=
-    unfold applyElementOnPattern in H ;
-    unfold_evalOutputPatternElementExpr H ;
-
-    C2RTactics.unfold_make_element H ;
-    ListUtils.destruct_in_optionListToList H ;
-    
-    unfold_evalOutputPatternLinkExpr H ;
-    try rewrite flat_map_singleton in H ; 
-    
-    C2RTactics.unfold_make_link H  ; 
-    
-    simpl constructor in H ;
-    
-    cbv match in H ;
-    Tactics.simpl_accessors_any H  ;
-    PropUtils.inj H.
-
-Ltac suite H :=
-  ListUtils.destruct_in_optionListToList H ;
-  OptionUtils.monadInv H.
-
+(** Some tactics related to Class2Relational. *)
 
 Ltac toEDataT H :=
    match type of H with
@@ -101,7 +57,7 @@ Ltac progress_in_maybeBuildColumnReference H :=
 
  
 
-(** important lemma *)
+(** Important lemma. *)
 
 Lemma wf_stable cm rm :
   rm = execute Class2Relational cm ->
@@ -170,7 +126,7 @@ Proof.
   
   inv_getAttributeTypeElement E0.
   
-  eapply TraceUtils.in_trace_in_models_target ; eauto. 
+  eapply Tactics.in_trace_in_models_target ; eauto. 
   
 Qed.
 

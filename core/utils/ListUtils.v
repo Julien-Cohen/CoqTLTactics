@@ -117,6 +117,12 @@ Definition optionListToList {A:Type} (o: option (list A)) : list A :=
   | None => nil
   end.
 
+Remark optionListToList_Some {A} :
+  forall (a: list A), optionListToList (Some a) = a.
+Proof.
+  reflexivity.
+Qed.
+
 Lemma in_optionListToList {A} : forall (a:A) b,
     In a (optionListToList b) ->
     exists l, (b = Some l /\ In a l).

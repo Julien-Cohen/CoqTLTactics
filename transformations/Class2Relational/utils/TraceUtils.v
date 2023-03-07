@@ -95,80 +95,10 @@ Proof.
 Qed.
 
 
-(** General results (do not depend on Class2Relational) *)
-(* FIXME : MOVE-ME *)
-
-Corollary in_trace_in_models_source cm t :
-  forall a b s i ,
-    In (buildTraceLink ([a],i,s) b ) (trace t cm) ->
-    In a cm.(modelElements) .
-Proof.
-  intros a b s i IN.
-
-  (* 1 *)
-  destruct (Tactics.destruct_in_trace_lem IN) 
-    as (se & r & n & e & te & IN_SOURCE & ç & _ & _ & _ & EQ & _).
-
-  inj EQ.
- 
-
-  (* (7) *)
-  Semantics.in_allTuples_auto.
-
-  exact IN_SOURCE.
-Qed.
-
-(* FIXME : MOVE-ME *)
-Lemma in_trace_in_models_target cm t :
-  forall s e,
-    In s (trace t cm) ->
-    e = s.(target) ->
-    In e (execute t cm).(modelElements).
-Proof.
-  intros s e IN E ; subst e.
-  destruct s as (a & b).
-  destruct a as ((a & i) & s).
-
-  (* 1 *)
-  destruct (Tactics.destruct_in_trace_lem IN) 
-    as (se & r & n & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV).
-  
-  inj EQ.
-  simpl target.
-
-  unfold execute. 
-  unfold modelElements.
-
-  
-  unfold instantiatePattern.
-  apply in_flat_map.
-  exists se ; split ; [ exact IN_SOURCE | ].
-
-  apply in_flat_map.
-  unfold matchPattern.
-  exists r ;  split ; [ apply List.filter_In ; split ; assumption | ].
-
-  unfold instantiateRuleOnPattern.
-  apply in_flat_map.
-  exists n ; split ; [ exact IN_IT | ].
-
-  unfold instantiateIterationOnPattern.
-  apply in_flat_map.
-  exists e ; split ; [ exact IN_OUTPAT | ].
-
-  unfold instantiateElementOnPattern.
-
-  Set Printing Implicit.
-  unfold C2RConfiguration ; simpl.
-  unfold RelationalMM ; simpl.
-  rewrite EV.
-  compute ; auto.
-  Unset Printing Implicit.
-Qed.
 
 
 
-(* local lemma *)
+(** Local lemma. *)
 Lemma in_find t : 
   wf t ->
   forall c,
@@ -306,6 +236,6 @@ Proof.
   apply in_trace in H.
   rewrite in_resolve ; [ | solve [apply trace_wf] | exact H ].
   split ; [ reflexivity | ].
-  eapply in_trace_in_models_target in H ; eauto. 
+  eapply Tactics.in_trace_in_models_target in H ; eauto. 
 Qed.
 

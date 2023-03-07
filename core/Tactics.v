@@ -13,6 +13,8 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 Require Certification.
 
+Import Metamodel.
+
 (** * General purpose tactics *)
 
 Ltac destruct_match :=
@@ -336,8 +338,10 @@ Ltac destruct_in_optionToList_auto :=
 
 
 
-Lemma destruct_in_trace_lem {SMM}  {ET} {LT} {D} {E} 
-      {t: Syntax.Transformation (tc:=Build_TransformationConfiguration SMM (Metamodel.Build_Metamodel ET LT D E))} {cm} {l} :
+Lemma destruct_in_trace_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
+  forall
+    {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))} 
+  {cm} {l},
   In l (trace t cm) ->
   exists p r i e te,   
     In p (allTuples t cm)
@@ -365,6 +369,72 @@ Proof.
   eauto 12.
 Qed.
 
+Corollary in_trace_in_models_source {MM1} {T1} {T2} {BEQ1} {BEQ2} :  
+  forall (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2)))
+ cm a b s i,
+    In (TraceLink.buildTraceLink ([a],i,s) b ) (trace t cm) ->
+    In a cm.(modelElements) .
+Proof.
+  intros t cm a b s i IN.
+
+  (* 1 *)
+  destruct (destruct_in_trace_lem IN) 
+    as (se & r & n & e & te & IN_SOURCE & _ & _ & _ & _ & EQ & _).
+
+  inj EQ.
+ 
+
+  (* (7) *)
+  Semantics.in_allTuples_auto.
+
+  exact IN_SOURCE.
+Qed.
+
+Lemma in_trace_in_models_target {MM1} {T1} {T2} {BEQ1} {BEQ2} :
+  forall 
+    (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2)))
+    cm s e,
+    In s (trace t cm) ->
+    e = s.(TraceLink.target) ->
+    In e (execute t cm).(modelElements).
+Proof.
+  intros t cm s e IN EQ ; subst e.
+  destruct s as (a & b).
+  destruct a as ((a & i) & s).
+
+  (* 1 *) 
+  destruct (destruct_in_trace_lem IN) 
+    as (se & r & n & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV).
+  
+  inj EQ.
+  simpl TraceLink.target.
+
+  unfold execute. 
+  unfold modelElements.
+
+  
+  unfold instantiatePattern.
+  apply in_flat_map.
+  exists se ; split ; [ exact IN_SOURCE | ].
+
+  apply in_flat_map.
+  unfold matchPattern.
+  exists r ;  split ; [ apply List.filter_In ; split ; assumption | ].
+
+  unfold instantiateRuleOnPattern.
+  apply in_flat_map.
+  exists n ; split ; [ exact IN_IT | ].
+
+  unfold instantiateIterationOnPattern.
+  apply in_flat_map.
+  exists e ; split ; [ exact IN_OUTPAT | ].
+
+  unfold instantiateElementOnPattern. 
+
+  rewrite EV.
+  compute ; auto.
+
+Qed.
 
 (** DEPRECATED *)
 Ltac destruct_any := 
@@ -381,11 +451,11 @@ Ltac destruct_any :=
     | destruct_in_optionToList
     ].
 
-Lemma destruct_in_modelElements_execute_lem 
-  {SMM}  {ET} {LT} {D} {E} 
-      {t: Syntax.Transformation (tc:=Build_TransformationConfiguration SMM (Metamodel.Build_Metamodel ET LT D E))} 
-      {cm} {a} :
-
+Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
+  forall 
+    {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))} 
+    {cm} {a},
+    
   In a
     (modelElements (execute t cm)) ->
   exists r sp n0 ope,
@@ -408,15 +478,11 @@ Proof.
 Qed.
 
 
-Lemma destruct_in_modelLinks_execute_lem 
-  {SMM} 
-  {ET}
-  {LT}
-  {D} 
-  {E} 
-  {t: Syntax.Transformation (tc:=Build_TransformationConfiguration SMM (Metamodel.Build_Metamodel ET LT D E))}
+Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
+  forall 
+  {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))}
      {l}
-     {m} :
+     {m},
     In l (modelLinks (execute t m)) ->
     exists sp r n p te tls,
       In sp (allTuples t m) 
