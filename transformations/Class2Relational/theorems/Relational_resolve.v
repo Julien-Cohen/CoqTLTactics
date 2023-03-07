@@ -30,10 +30,21 @@ Definition all_attributes_are_typed (cm : ClassModel) :=
       exists (r:Class_t), 
         In (AttributeTypeLink {| source_attribute := att ; a_type := r |}) cm.(modelLinks) .
 
+Definition all_attributes_are_typed_2 (cm : ClassModel) :=
+  forall (att : Attribute_t),
+    In (AttributeElement att) cm.(modelElements) ->
+    exists (r:Class_t), 
+      getAttributeType att cm = Some r.
+
 Definition all_columns_have_a_reference (rm : RelationalModel) :=
 forall (col: Column_t),
       In (ColumnElement col) rm.(modelElements) ->
       exists r', In (ColumnReferenceLink {| cr := col ;  ct := r' |}) rm.(modelLinks).
+ 
+Definition all_columns_have_a_reference_2 (rm : RelationalModel) :=
+forall (col: Column_t),
+      In (ColumnElement col) rm.(modelElements) ->
+      exists r',  getColumnReference col rm =Some r'.
   
 
 (** Some tactics related to Class2Relational. *)
@@ -249,7 +260,7 @@ Proof.
 Qed.
 
 
-
+(** The result below is stronger than the result above. Here we do not use the result above in order to compare the two proofs.. *)
 Theorem Relational_Column_Reference_definedness:
 forall (cm : ClassModel) (rm : RelationalModel), 
 
@@ -257,14 +268,9 @@ forall (cm : ClassModel) (rm : RelationalModel),
 
   (* transformation *) rm = execute Class2Relational cm ->
 
-  (* precondition *)  (forall (att : Attribute_t),
-      In (AttributeElement att) cm.(modelElements) ->
-      exists (r:Class_t), 
-        getAttributeType att cm = Some r ) ->  
+  (* precondition *)  all_attributes_are_typed_2 cm ->  
 
-    (* postcondition *)  forall (col: Column_t),
-      In (ColumnElement col) rm.(modelElements) ->
-      exists r', getColumnReference col rm =Some r'. 
+    (* postcondition *)   all_columns_have_a_reference_2 rm. 
 Proof. 
   intros cm rm WF E PRE.  intros col IN1.
   subst rm.
@@ -364,7 +370,7 @@ Qed.
      
 
 
-
+(* This is the same result as above, but we use the other result above. *)
 Theorem Relational_Column_Reference_definedness_altproof:
   forall (cm : ClassModel) (rm : RelationalModel), 
     
@@ -372,14 +378,9 @@ Theorem Relational_Column_Reference_definedness_altproof:
     
     (* transformation *) rm = execute Class2Relational cm ->
     
-    (* precondition *)  (forall (att : Attribute_t),
-        In (AttributeElement att) cm.(modelElements) ->
-        exists (r:Class_t), 
-          getAttributeType att cm = Some r ) ->  
+    (* precondition *)  all_attributes_are_typed_2 cm  ->  
     
-      (* postcondition *)  forall (col: Column_t),
-        In (ColumnElement col) rm.(modelElements) ->
-        exists r', getColumnReference col rm =Some r'. 
+      (* postcondition *)  all_columns_have_a_reference_2 rm . 
 
 Proof. 
   intros cm rm WF E PRE.  intros col IN1.
@@ -404,7 +405,7 @@ Proof.
   }
 Qed.
 
-
+(** Now a stronger result. *)
 Corollary Relational_Column_Reference_definedness_2:
   forall (cm : ClassModel) (rm : RelationalModel), 
     
@@ -418,10 +419,7 @@ Corollary Relational_Column_Reference_definedness_2:
     rm = execute Class2Relational cm ->
     
     (* precondition *)  
-    (forall (att : Attribute_t),
-        In (AttributeElement att) cm.(modelElements) ->
-        exists (r:Class_t), 
-          getAttributeType att cm = Some r ) ->  
+    all_attributes_are_typed_2 cm ->
     
     (* postcondition *)  
     forall (col: Column_t),
