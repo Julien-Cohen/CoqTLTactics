@@ -32,11 +32,6 @@ Definition all_attributes_are_typed (cm : ClassModel) :=
       exists (r:Class_t), 
         In (AttributeTypeLink {| source_attribute := att ; a_type := r |}) cm.(modelLinks) .
 
-Definition all_attributes_are_typed_2 (cm : ClassModel) :=
-  forall (att : Attribute_t),
-    In (AttributeElement att) cm.(modelElements) ->
-    exists (r:Class_t), 
-      getAttributeType att cm = Some r.
 
 (** *** On relational models *)
 
@@ -45,13 +40,9 @@ forall (col: Column_t),
       In (ColumnElement col) rm.(modelElements) ->
       exists r', In (ColumnReferenceLink {| cr := col ;  ct := r' |}) rm.(modelLinks).
  
-Definition all_columns_have_a_reference_2 (rm : RelationalModel) :=
-forall (col: Column_t),
-      In (ColumnElement col) rm.(modelElements) ->
-      exists r',  getColumnReference col rm =Some r'.
   
 
-(** Some tactics related to Class2Relational. *)
+(** ** Some tactics related to Class2Relational *)
 
 Ltac toEDataT H :=
    match type of H with
@@ -72,7 +63,7 @@ Ltac progress_in_maybeBuildColumnReference H :=
 
  
 
-(** Important lemma. *)
+(** ** Important lemma *)
 
 Lemma wf_stable cm rm :
   rm = execute Class2Relational cm ->
@@ -146,7 +137,7 @@ Proof.
 Qed.
 
 
-(** *** Main Results *)
+(** ** Main Result *)
 
 
 Theorem Relational_Column_Reference_definedness_aux:
@@ -265,6 +256,65 @@ Qed.
 
      
 
+(** A stronger result. *)
+
+Corollary Relational_Column_Reference_definedness_not_used :
+  forall (cm : ClassModel) (rm : RelationalModel), 
+    
+    (* well-formed (1/2) *) 
+    ClassModelProperties.wf_classmodel_types_exist cm ->
+    
+    (* well-formed (2/2) *) 
+    ClassModelProperties.wf_classmodel_unique_attribute_types cm ->
+    
+    (* transformation *) 
+    rm = execute Class2Relational cm ->
+    
+    (* precondition *)  
+    all_attributes_are_typed cm ->
+    
+    (* postcondition *)  
+    forall (col: Column_t),
+        In (ColumnElement col) rm.(modelElements) ->
+        exists r', (In (ColumnReferenceLink {| cr := col ;  ct := r' |}) rm.(modelLinks) 
+                    /\ In (TableElement r') rm.(modelElements)). 
+
+Proof. 
+  intros cm rm WF1 WF2 T WF3 col IN .
+  cut (exists r' : Table_t,
+          In (ColumnReferenceLink {| cr := col ;  ct := r' |}) rm.(modelLinks)
+       ).
+  {
+    intros (r & G).
+    exists r.
+    split ; [ exact G | ].
+    eapply wf_stable ; [ exact T | exact WF3 | exact WF1  | exact WF2 | exact G ].
+  }
+  { eapply Relational_Column_Reference_definedness_aux ; eassumption. }
+Qed.
+
+
+(** * Same results with [get] instead of [In] *) 
+(** ** Concepts under focus in this module. *)
+
+(** *** On class models *)
+
+
+Definition all_attributes_are_typed_2 (cm : ClassModel) :=
+  forall (att : Attribute_t),
+    In (AttributeElement att) cm.(modelElements) ->
+    exists (r:Class_t), 
+      getAttributeType att cm = Some r.
+
+(** *** On relational models *)
+
+ 
+Definition all_columns_have_a_reference_2 (rm : RelationalModel) :=
+forall (col: Column_t),
+      In (ColumnElement col) rm.(modelElements) ->
+      exists r',  getColumnReference col rm =Some r'.
+
+(** ** Results *)
 
 Corollary Relational_Column_Reference_definedness:
   forall (cm : ClassModel) (rm : RelationalModel), 
@@ -302,8 +352,8 @@ Qed.
 
 
 
-(** Now a stronger result. *)
-Corollary Relational_Column_Reference_definedness_2:
+(** A stronger result. *)
+Corollary Relational_Column_Reference_definedness_3 :
   forall (cm : ClassModel) (rm : RelationalModel), 
     
     (* well-formed (1/2) *) 
@@ -326,6 +376,7 @@ Corollary Relational_Column_Reference_definedness_2:
 
 Proof. 
   intros cm rm WF1 WF2 T WF3 col IN .
+(* FIXME : can we use [Relational_Column_Reference_definedness_not_used] here ? *)
   cut (exists r' : Table_t,
           getColumnReference col rm = return r').
   {
