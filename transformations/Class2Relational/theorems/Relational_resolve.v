@@ -22,7 +22,9 @@ From transformations.Class2Relational
   Require C2RTactics TraceUtils Elements.
 
 
-(** Concepts under focus in this module. *)
+(** ** Concepts under focus in this module. *)
+
+(** *** On class models *)
 
 Definition all_attributes_are_typed (cm : ClassModel) :=
   forall (att : Attribute_t),
@@ -35,6 +37,8 @@ Definition all_attributes_are_typed_2 (cm : ClassModel) :=
     In (AttributeElement att) cm.(modelElements) ->
     exists (r:Class_t), 
       getAttributeType att cm = Some r.
+
+(** *** On relational models *)
 
 Definition all_columns_have_a_reference (rm : RelationalModel) :=
 forall (col: Column_t),
@@ -259,119 +263,10 @@ Proof.
   }
 Qed.
 
-
-(** The result below is stronger than the result above. Here we do not use the result above in order to compare the two proofs.. *)
-Theorem Relational_Column_Reference_definedness:
-forall (cm : ClassModel) (rm : RelationalModel), 
-
-  (* well-formed *) ClassModelProperties.wf_classmodel_types_exist cm ->
-
-  (* transformation *) rm = execute Class2Relational cm ->
-
-  (* precondition *)  all_attributes_are_typed_2 cm ->  
-
-    (* postcondition *)   all_columns_have_a_reference_2 rm. 
-Proof. 
-  intros cm rm WF E PRE.  intros col IN1.
-  subst rm.
-
-  (* (1) *)
-  destruct (Tactics.destruct_in_modelElements_execute_lem IN1) 
-    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN1'). 
-
-  (* (2) *)
-  Tactics.progress_in_In_rules IN_RULE ;
-  
-  (* (3) *)
-  Tactics.progress_in_ope IN_OP ;  
-
-  (* (4) *) 
-  Tactics.exploit_evalGuard MATCH_GUARD ;
-  
-  (* (5.E) *)
-  Tactics.exploit_evaloutpat IN1' ; [] ;
-
-  (* (6) *)
-  Tactics.exploit_in_it IN_IT ;  
-  
-  (* (7) *)
-  Semantics.exploit_in_allTuples IN_E.
-  
-  Tactics.duplicate PRE H.
-
-  specialize (H _ IN_E).
-  destruct H as (c & G1). 
-  Tactics.duplicate G1 IN_C.
-  apply ClassModelProperties.getAttributeType_In_right in IN_C.
-  eapply WF in IN_C.
-  Tactics.duplicate G1 IN2. (* test *)
-  apply ClassModelProperties.getAttributeType_In_right in IN2.
-  unfold getColumnReference.
-
-  unfold execute ; simpl. 
-
-  C2RTactics.negb_inv MATCH_GUARD.
-  destruct t0 ; simpl in *. (* derived a0 = false *)
-  subst derived ; simpl in *. 
-
-  Tactics.duplicate G1 G2. (* à quoi sert de garder PRE1 ? *)
-  apply ClassModelProperties.getAttributeTypeOnLinks_In_right in G1.
-
-  specialize (TraceUtils.in_maybeResolve_trace_2 c cm IN_C ) ; intros (R & I).
-
-
-  eapply RelationalModelProperties.in_getColumnReferenceOnLinks_right 
-    with (x:= {| table_id := c.(class_id) ;  
-                table_name := c.(class_name) |}) . 
-
-  apply in_flat_map.
-  exists ([AttributeElement {|
-               attr_id := attr_id;
-               derived := false;
-               attr_name := attr_name
-             |}]).
-  split.
-  { apply C2RTactics.allModelElements_allTuples. exact IN_E. }
-  {
-    
-    unfold applyPattern.
-    apply in_flat_map.
-    exists (Parser.parseRule R2).
-  
-    split.
-    { simpl. auto. }
-    { 
-      apply tr_applyRuleOnPattern_in ; simpl.
-      exists 0.
-      split ; [ solve [auto] | ].
-      apply tr_applyIterationOnPattern_in.
-      eexists  ; split ; [ solve [ simpl ; auto] | ].
-      erewrite tr_applyElementOnPattern_leaf ; simpl.
-      2:{ compute. reflexivity. }
-
-      rewrite <- app_nil_end. 
-      simpl.
-      
-      unfold Parser.parseOutputPatternLink ; simpl.
-      unfold ConcreteExpressions.makeLink ; simpl.
-      unfold ConcreteExpressions.wrapLink ; simpl.
-      unfold getAttributeTypeElement.
-      rewrite G2. simpl.
-
-      unfold ModelingSemantics.maybeResolve.
-      unfold singleton.
-      rewrite R. 
-
-      simpl. left. reflexivity. 
-    }
-  }
-  
-Qed.
      
 
 
-(* This is the same result as above, but we use the other result above. *)
-Theorem Relational_Column_Reference_definedness_altproof:
+Corollary Relational_Column_Reference_definedness:
   forall (cm : ClassModel) (rm : RelationalModel), 
     
     (* well-formed *) ClassModelProperties.wf_classmodel_types_exist cm ->
@@ -404,6 +299,8 @@ Proof.
     eauto.
   }
 Qed.
+
+
 
 (** Now a stronger result. *)
 Corollary Relational_Column_Reference_definedness_2:
