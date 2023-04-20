@@ -61,7 +61,16 @@ Ltac progress_in_maybeBuildColumnReference H :=
      PropUtils.inj H
   end.
 
- 
+Ltac unfold_parseOutputPatternElement H :=
+    unfold Parser.parseOutputPatternElement in H ;
+    unfold Parser.parseOutputPatternLinks in H ;
+    unfold Parser.parseOutputPatternLink in H ;
+    repeat ConcreteSyntax.simpl_elem_accessors H.
+  
+Ltac unfold_evalOutputPatternLinkExpr H :=
+    unfold Expressions.evalOutputPatternLinkExpr in H ;
+    ConcreteSyntax.simpl_cr_accessors H ;
+    Syntax.simpl_ope_accessors H.
 
 (** ** Important lemma *)
 
@@ -93,27 +102,20 @@ Proof.
   Tactics.exploit_evaloutpat EV_PE ;
 
   (* (5.L) now we can progress in EV_LINK. *)
-  unfold Expressions.evalOutputPatternLinkExpr in EV_LINK ;
-  unfold ConcreteSyntax.r_InKinds in EV_LINK ; 
-  unfold Parser.parseOutputPatternElement in EV_LINK ;
-  unfold Syntax.ope_linkExpr in EV_LINK ; 
-  unfold ConcreteSyntax.e_OutKind in EV_LINK ;
-  unfold ConcreteSyntax.e_outlink in EV_LINK ;
-  unfold Parser.parseOutputPatternLinks in EV_LINK ; 
+  unfold_parseOutputPatternElement EV_LINK ; 
+  unfold_evalOutputPatternLinkExpr EV_LINK ; 
+  rewrite flat_map_singleton in EV_LINK ; 
+    repeat ConcreteSyntax.simpl_link_accessors EV_LINK ;
   inj EV_LINK ; [ | ] ;
   
-  rewrite List.app_nil_r in IN_LINK ; 
+  (* Rem : the value computed in EV_LINK appears now in IN_LINK *)
   ListUtils.destruct_in_optionListToList IN_LINK ;
   
-  unfold Parser.parseOutputPatternLink in IN_LINK ;
-  unfold ConcreteSyntax.o_OutRefKind in IN_LINK ;
-  unfold ConcreteSyntax.o_outpat in IN_LINK ; 
-  
-  ConcreteExpressions.inv_makeLink IN_LINK ;
-  repeat ListUtils.unfold_In_cons IN ;
+  ConcreteExpressions.inv_makeLink IN_LINK ; 
+  apply ListUtils.in_singleton in IN ;
   first [discriminate IN | inj IN] ; [].
 
-  compute in E (*toEData *) ; PropUtils.inj E. 
+  compute in E (* (toEData) *) ; PropUtils.inj E. 
 
   (* (6) *)
   Tactics.exploit_in_it IN_IT. 
@@ -131,16 +133,17 @@ Proof.
   ListUtils.inv_maybeSingleton E0.
   
   inv_getAttributeTypeElement E0.
-  
+
+  destruct t ; simpl in H ; subst ; auto.   
   eapply Tactics.in_trace_in_models_target ; eauto. 
-  
+
 Qed.
 
 
 (** ** Main Result *)
 
 
-Theorem Relational_Column_Reference_definedness_aux:
+Theorem Relational_Column_Reference_definedness_1:
 forall (cm : ClassModel) (rm : RelationalModel), 
 
   (* well-formed *) ClassModelProperties.wf_classmodel_types_exist cm ->
@@ -290,7 +293,7 @@ Proof.
     split ; [ exact G | ].
     eapply wf_stable ; [ exact T | exact WF3 | exact WF1  | exact WF2 | exact G ].
   }
-  { eapply Relational_Column_Reference_definedness_aux ; eassumption. }
+  { eapply Relational_Column_Reference_definedness_1 ; eassumption. }
 Qed.
 
 
@@ -339,7 +342,7 @@ Proof.
     eauto.
   }
   {
-    apply Relational_Column_Reference_definedness_aux with (cm:=cm) ;
+    apply Relational_Column_Reference_definedness_1 with (cm:=cm) ;
     [ exact WF | exact E | ].
     unfold all_attributes_are_typed.
     intros att IN2.

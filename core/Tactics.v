@@ -338,7 +338,7 @@ Ltac destruct_in_optionToList_auto :=
 
 
 
-Lemma destruct_in_trace_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
+Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
   forall
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))} 
   {cm} {l},
@@ -390,16 +390,14 @@ Proof.
   exact IN_SOURCE.
 Qed.
 
-Lemma in_trace_in_models_target {MM1} {T1} {T2} {BEQ1} {BEQ2} :
+Lemma in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
   forall 
     (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2)))
-    cm s e,
-    In s (trace t cm) ->
-    e = s.(TraceLink.target) ->
-    In e (execute t cm).(modelElements).
+    cm a b,
+     In (TraceLink.buildTraceLink a b) (trace t cm) ->
+    In b (execute t cm).(modelElements).
 Proof.
-  intros t cm s e IN EQ ; subst e.
-  destruct s as (a & b).
+  intros t cm a b IN.
   destruct a as ((a & i) & s).
 
   (* 1 *) 
