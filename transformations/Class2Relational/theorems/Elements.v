@@ -81,7 +81,7 @@ Proof.
   Tactics.progress_in_In_rules IN_RULE ; [ exfalso | ] ;
 
   (* (3) make the ouput-pattern-element appear *)
-  Tactics.progress_in_ope IN_OP ;
+  Tactics.progress_in_In_outpat IN_OP ;
 
   (* (4) *) 
   (* needed here to get that derived = false *)
@@ -125,7 +125,7 @@ Proof.
   Tactics.progress_in_In_rules IN_RULE ; [ | exfalso ] ; 
 
   (* (3) *)
-  Tactics.progress_in_ope IN_OP ;
+  Tactics.progress_in_In_outpat IN_OP ;
   
   (* (4) *)
   (* not useful here *)

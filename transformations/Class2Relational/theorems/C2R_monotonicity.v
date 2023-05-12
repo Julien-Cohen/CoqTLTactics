@@ -40,7 +40,7 @@ Proof.
 
 
   (* (3) make the ouput-pattern-element appear *)
-  Tactics.progress_in_ope IN_OP ; 
+  Tactics.progress_in_In_outpat IN_OP ; 
 
   (* (4) *) 
   Tactics.exploit_evalGuard MATCH_GUARD ;

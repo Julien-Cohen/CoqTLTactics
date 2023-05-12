@@ -117,7 +117,7 @@ Definition wf_classmodel_unique_attribute_types (cm:ClassModel) :=
   In (AttributeTypeLink {| source_attribute := attr ; a_type := c1 |}) cm.(modelLinks) ->
   In (AttributeTypeLink {| source_attribute := attr ; a_type := c2 |}) cm.(modelLinks) ->
           c1 = c2. 
-(** Reminder : If two attributes of different classes have the same name, they will have different identifiers are so they are different with respect to = and <> *)
+(** Reminder : If two attributes of different classes have the same name, they will have different identifiers and so they are different with respect to = and <> *)
 (** Remark : Above, nothing forces c1/c2 to be in cm.(modelElements). See below for such a constraint.  *)
 
 (** The attributes of each class are defined in a single link ClassAttributeLink (and not by small bits). *)

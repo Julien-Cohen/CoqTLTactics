@@ -536,56 +536,68 @@ Ltac exploit_evaloutpat H :=
       ConcreteExpressions.inv_makeElement H
   end.
 
+Ltac unfold_parseRule H :=
+  match type of H with
+    | context[Parser.parseRule (ConcreteSyntax.Build_ConcreteRule _ _ _ _ _ )] => unfold Parser.parseRule in H
 
+    | context[Parser.parseRule ?E] =>
+        (* For the case where a rule is defined 
+           outside the transformation. *) 
+        unfold E in H ; 
+        unfold_parseRule H (* recursion *)
 
-Ltac progress_in_ope H :=
+    | context[Parser.parseRule _] => 
+        fail "Cannot read the rule"
+
+    | _ => 
+        fail "Cannot find something to unfold (Parser.parseRule)"
+  end.
+
+Ltac progress_in_In_outpat H :=
   match type of H with 
-  | In ?ope (Syntax.r_outputPattern (Parser.parseRule (ConcreteSyntax.Build_ConcreteRule _ _ _ _ _ ))) => 
- 
-      unfold Parser.parseRule in H ;
-      unfold Syntax.r_outputPattern in H ; 
-      unfold ConcreteSyntax.r_outpat in H ;
-      unfold List.map in H ;
-      progress repeat unfold_In_cons H ;
-      subst ope 
+    | context[Parser.parseRule _] => 
+        unfold_parseRule H ;
+        progress_in_In_outpat H (* recursion *)
+                      
+    | In ?ope (Syntax.r_outputPattern (Syntax.buildRule _ _ _ _)) =>
+        unfold Syntax.r_outputPattern in H ; 
+        unfold ConcreteSyntax.r_outpat in H ;
+        unfold List.map in H ;
+        progress repeat unfold_In_cons H ;
+        subst ope 
             
-  | In ?ope (Syntax.r_outputPattern (Parser.parseRule ?E)) =>
-       progress unfold E in H ; (* for the case where a rule is defined outside the transformation *)
-      progress_in_ope H (* recursion *)
-
-  | In ?ope (Syntax.r_outputPattern (Parser.parseRule _)) =>
-      fail "ConcreteRule must be unfolded"
   end.
 
 Ltac exploit_in_it H :=
   match type of H with
-  | In ?I (seq _ (Expressions.evalIteratorExpr (Parser.parseRule (ConcreteSyntax.Build_ConcreteRule _ _ _ _ _ )) _ _)) => 
-      unfold Parser.parseRule in H ; 
+    | context[Parser.parseRule _] => 
+        unfold_parseRule H ;
+        exploit_in_it H (* recursion *)
+
+    | In ?I (seq _ (Expressions.evalIteratorExpr (Syntax.buildRule _ _ _ _ ) _ _)) => 
       unfold Expressions.evalIteratorExpr in H ; 
       unfold Syntax.r_iterator in H ; 
       unfold ConcreteSyntax.r_iter in H ;
       simpl seq in H ;
       repeat unfold_In_cons H ;
       subst I
-  | In _ (seq _ (Expressions.evalIteratorExpr (Parser.parseRule ?E) _ _)) => 
-      progress unfold E in H ; 
-      exploit_in_it H (* recursion *)
   end.
   
 Ltac exploit_evalGuard H :=
     match type of H with
-      | Expressions.evalGuardExpr (Parser.parseRule (ConcreteSyntax.Build_ConcreteRule _ _ _ _ _)) _ _ = true => 
-          unfold Parser.parseRule in H ;
+      | context[Parser.parseRule _] => 
+         unfold_parseRule H ;
+         exploit_evalGuard H (* recursion *)
+
+      | Expressions.evalGuardExpr (Syntax.buildRule _ _ _ _) _ _ = true => 
           unfold Expressions.evalGuardExpr in H ; 
           unfold Syntax.r_guard in H ; 
           unfold ConcreteSyntax.r_guard in H ; 
           unfold ConcreteSyntax.r_InKinds in H ; 
           ConcreteExpressions.inv_makeGuard H
       
-    | Expressions.evalGuardExpr (Parser.parseRule ?R) _ _ = true =>
-          progress unfold R in H ;
-          exploit_evalGuard H (* recursion *)
     end.
+
 
 (** Tactics to progress in the goal (not in the hypothesis) *)
 
@@ -596,7 +608,8 @@ Ltac destruct_in_trace_G :=
       apply in_flat_map
   end.
 
-(** Foraward Descriptions *)
+
+(** Forward Descriptions *)
 
 Lemma transform_elements_fw {tc} cm p tp (t:Syntax.Transformation (tc:=tc)) :
   In p (allTuples t cm) ->

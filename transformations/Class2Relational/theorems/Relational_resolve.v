@@ -87,13 +87,13 @@ Proof.
   
   (* (1) *)
   destruct (Tactics.destruct_in_modelLinks_execute_lem R_IN1) 
-    as ( elts & r & i & ope & te & tls & IN_E & IN_RULE & MATCH_RULE & IN_IT & IN_OUTPAT & EV_PE & EV_LINK & IN_LINK).
+    as ( elts & r & i & out_pat_el & te & tls & IN_E & IN_RULE & MATCH_RULE & IN_IT & IN_OUTPAT & EV_PE & EV_LINK & IN_LINK).
 
-  (* (2) Select a rule. *)
+  (* (2) Case analysis on the rule that has matched. *)
   Tactics.progress_in_In_rules IN_RULE ; [ | ] ; 
 
   (* (3) *)
-  Tactics.progress_in_ope IN_OUTPAT ; 
+  Tactics.progress_in_In_outpat IN_OUTPAT ; 
 
   (* (4) Now we can progress in the guard. *)
   Tactics.exploit_evalGuard MATCH_RULE ;
@@ -166,7 +166,7 @@ Proof.
   Tactics.progress_in_In_rules IN_RULE ; [ | ] ;
 
   (* (3) *)   
-  Tactics.progress_in_ope IN_OP ;
+  Tactics.progress_in_In_outpat IN_OP ;
 
   (* (4) *)   
   Tactics.exploit_evalGuard MATCH_GUARD ;
@@ -259,7 +259,7 @@ Qed.
 
      
 
-(** A stronger result. *)
+(** With an additional hypothesis on well-formedness of the source model, we get a better result on the produced model. *)
 
 Corollary Relational_Column_Reference_definedness_not_used :
   forall (cm : ClassModel) (rm : RelationalModel), 
@@ -319,7 +319,8 @@ forall (col: Column_t),
 
 (** ** Results *)
 
-Corollary Relational_Column_Reference_definedness:
+(** We use the result above to prove a similar result with [get] instead of [In]. *)
+Corollary Relational_Column_Reference_definedness_2 :
   forall (cm : ClassModel) (rm : RelationalModel), 
     
     (* well-formed *) ClassModelProperties.wf_classmodel_types_exist cm ->
@@ -355,7 +356,7 @@ Qed.
 
 
 
-(** A stronger result. *)
+(** With an additional hypothesis on well-formedness of the source model, we get again a better result on the produced model. *)
 Corollary Relational_Column_Reference_definedness_3 :
   forall (cm : ClassModel) (rm : RelationalModel), 
     
@@ -402,5 +403,5 @@ Proof.
       exact G.
     }
   }
-  { eapply Relational_Column_Reference_definedness ; eassumption. }
+  { eapply Relational_Column_Reference_definedness_2 ; eassumption. }
 Qed.

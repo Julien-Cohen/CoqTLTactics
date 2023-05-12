@@ -54,7 +54,7 @@ Proof.
   Tactics.progress_in_In_rules IN_RULE ; [ |  ];
 
   (* (3) *)
-  Tactics.progress_in_ope IN_OP ;
+  Tactics.progress_in_In_outpat IN_OP ;
 
   (* (4) *)
   Tactics.exploit_evalGuard MATCH_GUARD ;
@@ -77,7 +77,7 @@ Proof.
   Tactics.progress_in_In_rules IN_RULE ; [ |  ];
 
   (* (3) *)
-  Tactics.progress_in_ope IN_OP ;
+  Tactics.progress_in_In_outpat IN_OP ;
 
   (* (4) *)
   (* useless here *)
