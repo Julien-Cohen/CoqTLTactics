@@ -14,11 +14,17 @@ Section Semantics.
 
 Context {tc: TransformationConfiguration}.
 
-(** * Instantiate **)
+(** * Pattern matching *)
 
+Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceElementType) :=
+  tuples_up_to_n sm.(modelElements) tr.(arity).
 
 Definition matchingRules (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) : list Rule :=
   filter (fun (r:Rule) => evalGuardExpr r sm sp) tr.(rules).
+
+
+(** * Instantiate **)
+
 
 Definition instantiateElementOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceElementType) (iter: nat)
   : option TargetElementType :=
@@ -36,13 +42,10 @@ Definition instantiatePattern (tr: Transformation) (sm : SourceModel) (sp: list 
   flat_map (fun r => instantiateRuleOnPattern r sm sp) (matchingRules tr sm sp).
 
 
-(* Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: list SourceElementType) (iter: nat) (name: string): option (TargetElementType) :=
-  match (Rule_findOutputPatternElement r name) with
-  | Some o =>  instantiateElementOnPattern o sm sp iter
-  | None => None
-  end.*)
 
 (** * Trace **)
+
+(** ** Building traces *)
 
 Definition traceElementOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceElementType) (iter: nat)
   : option TraceLink :=
@@ -63,16 +66,17 @@ Definition tracePattern (tr: Transformation) (sm : SourceModel) (sp: list Source
   flat_map (fun r => traceRuleOnPattern r sm sp) (matchingRules tr sm sp).
 
 
-Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceElementType) :=
-  tuples_up_to_n sm.(modelElements) tr.(arity).
 
 Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
   flat_map (tracePattern tr sm) (allTuples tr sm).  
 
+
+(** ** User read access in traces ([resolve]) *)
+
 Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
             (sp: list SourceElementType)
             (iter : nat) : option TargetElementType :=
-  option_map target (find (source_compare (sp,iter,name)) tls) .
+  option_map TraceLink.target (find (source_compare (sp,iter,name)) tls) .
 
 Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
   (sp: list SourceElementType) : option TargetElementType :=
@@ -133,7 +137,7 @@ Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
 
 End Semantics.
 
-(** Some tactics *)
+(** * Some tactics *)
 
 (* tactics need to be outside the section to be visible *)
 Ltac inv_maybeResolve H := 
