@@ -67,7 +67,7 @@ Proof.
     apply in_allTuples_2 ; auto.
   }
   {
-    unfold instantiatePattern.
+    unfold instantiateOnPattern.
     apply List.in_flat_map.
 
     match eval cbv beta iota fix 

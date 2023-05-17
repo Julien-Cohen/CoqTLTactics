@@ -36,23 +36,23 @@
 
 
 
-(* decompose instantiatePattern results *)
-Lemma instantiatePattern_distributive:
+(* decompose instantiateOnPattern results *)
+Lemma instantiateOnPattern_distributive:
 forall (tc: TransformationConfiguration),
   forall a0 sp sm1 n a l,
-In a0 (instantiatePattern (buildTransformation n (a :: l)) sm1 sp) <->
-In a0 (instantiatePattern (buildTransformation n [a]) sm1 sp) \/
-In a0 (instantiatePattern (buildTransformation n l) sm1 sp).
+In a0 (instantiateOnPattern (buildTransformation n (a :: l)) sm1 sp) <->
+In a0 (instantiateOnPattern (buildTransformation n [a]) sm1 sp) \/
+In a0 (instantiateOnPattern (buildTransformation n l) sm1 sp).
 Proof.
 intros.
 split.
 + intro.
-  unfold instantiatePattern in H.
+  unfold instantiateOnPattern in H.
   unfold instantiateRuleOnPattern  in H.
   unfold instantiateIterationOnPattern in H.
   unfold matchingRules in H.
   simpl in H.
-  unfold instantiatePattern.
+  unfold instantiateOnPattern.
   unfold instantiateRuleOnPattern.
   unfold instantiateIterationOnPattern.
   unfold matchingRules.
@@ -61,7 +61,7 @@ split.
   flat_map
     (fun iter : nat =>
      flat_map
-       (fun o : OutputPatternElement =>
+       (fun o : OutputPatternUnit =>
         optionToList (instantiateElementOnPattern o sm1 sp iter))
        r.(r_outputPattern))
     (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
@@ -74,7 +74,7 @@ split.
     -- right. apply in_flat_map. exists x. crush.
   - right. auto.
 + intro.
-unfold instantiatePattern.
+unfold instantiateOnPattern.
 unfold instantiateRuleOnPattern.
 unfold instantiateIterationOnPattern.
 unfold matchingRules.
@@ -83,14 +83,14 @@ remember ((fun r : Rule =>
 flat_map
   (fun iter : nat =>
    flat_map
-     (fun o : OutputPatternElement =>
+     (fun o : OutputPatternUnit =>
       optionToList (instantiateElementOnPattern o sm1 sp iter))
      r.(r_outputPattern))
   (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
 remember (filter (fun r : Rule => evalGuardExpr r sm1 sp) l) as l1.
 destruct (evalGuardExpr a sm1 sp) eqn: ca.
 ++ destruct H.
-- unfold instantiatePattern in H.
+- unfold instantiateOnPattern in H.
 unfold instantiateRuleOnPattern in H.
 unfold instantiateIterationOnPattern in H.
 unfold matchingRules in H.
@@ -99,7 +99,7 @@ rewrite ca in H.
 rewrite <- Heqf in H.
 apply in_flat_map in H. destruct H.
 apply in_flat_map. exists x. split. crush. crush. 
-- unfold instantiatePattern in H.
+- unfold instantiateOnPattern in H.
 unfold instantiateRuleOnPattern in H.
 unfold instantiateIterationOnPattern in H.
 unfold matchingRules in H.
@@ -110,7 +110,7 @@ destruct H.
 apply in_flat_map.
 exists x. split; crush.
 ++ destruct H. 
-unfold instantiatePattern in H.
+unfold instantiateOnPattern in H.
 unfold instantiateRuleOnPattern in H.
 unfold instantiateIterationOnPattern in H.
 unfold matchingRules in H.
@@ -118,7 +118,7 @@ simpl in H.
 rewrite ca in H.
 rewrite <- Heqf in H.
 simpl in H. inversion H.
-unfold instantiatePattern in H.
+unfold instantiateOnPattern in H.
 unfold instantiateRuleOnPattern in H.
 unfold instantiateIterationOnPattern in H.
 unfold matchingRules in H.
@@ -148,10 +148,10 @@ Theorem incl_equiv_to_surj:
        (r : Rule),
         instantiateRuleOnPattern r tr sm sp = Some tp1 ->
         In r (matchingRules tr sm sp) ->
-        instantiatePattern tr sm sp = Some tp ->
+        instantiateOnPattern tr sm sp = Some tp ->
         incl tp1 tp) <->
     (forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
-        instantiatePattern tr sm sp = Some tp ->
+        instantiateOnPattern tr sm sp = Some tp ->
         (exists (r : Rule) (tp1 : list TargetModelElement),
             In r (matchingRules tr sm sp) /\
             instantiateRuleOnPattern r tr sm sp = Some tp1 /\
@@ -235,16 +235,16 @@ Qed.
       ++ crush.
   Qed.
 
-Theorem tr_instantiatePattern_None_tr : forall t: TransformationEngine,
+Theorem tr_instantiateOnPattern_None_tr : forall t: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       getRules tr = nil ->
-      (instantiatePattern tr sm sp = None).
+      (instantiateOnPattern tr sm sp = None).
 Proof.
   intros.
-  destruct (instantiatePattern tr sm sp) eqn:dst.
+  destruct (instantiateOnPattern tr sm sp) eqn:dst.
   - apply tr_matchingRules_None_tr with (sm:=sm) (sp:=sp) in H.
-    assert (instantiatePattern tr sm sp <> None). { rewrite dst. discriminate. }
-    apply tr_instantiatePattern_non_None in H0.
+    assert (instantiateOnPattern tr sm sp <> None). { rewrite dst. discriminate. }
+    apply tr_instantiateOnPattern_non_None in H0.
     destruct H0. destruct H0.
     rewrite H in H0.
     destruct H0.
@@ -282,7 +282,7 @@ Proof.
     rewrite <- ame in i0.
     apply i in i0.
     destruct i0. destruct H0. destruct H0. destruct H1.
-    pose (tr_instantiatePattern_in tr sm x t0).
+    pose (tr_instantiateOnPattern_in tr sm x t0).
     apply tr_matchingRules_None_tr with (sm:=sm) (sp:=x) in H.
     destruct i0. destruct H3.
     -- exists x0.
@@ -299,7 +299,7 @@ Qed.
       (allModelElements (execute tr sm)) <> nil <->
       (exists (te : TargetModelElement) (sp : list SourceModelElement) (tp : list TargetModelElement),
           incl sp (allModelElements sm) /\
-          instantiatePattern tr sm sp = Some tp /\
+          instantiateOnPattern tr sm sp = Some tp /\
           In te tp).
   Proof.
     intros.
@@ -383,7 +383,7 @@ Qed.
 
 Theorem tr_applyElementOnPattern_None :
    forall eng: TransformationEngine,
-      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternUnit (getInTypes r) (getIteratorType r)),
         length sp <> length (getInTypes r) ->
         applyElementOnPattern r ope tr sm sp i = None.
 Proof.
@@ -411,7 +411,7 @@ Proof.
   { specialize (option_res_dec (applyIterationOnPattern r tr sm sp)). intros.
     specialize (H1 i H0). destruct H1. exists x. crush. }
   destruct H1.
-  assert (exists  ope : OutputPatternElement (getInTypes r) (getIteratorType r),
+  assert (exists  ope : OutputPatternUnit (getInTypes r) (getIteratorType r),
       In ope (getOutputPattern r) /\ applyElementOnPattern r ope tr sm sp i <> None).
   { specialize (tr_applyIterationOnPattern_non_None tr r sm sp i). crush. }
   destruct H2.
@@ -452,7 +452,7 @@ Proof.
   { specialize (option_res_dec (instantiateIterationOnPattern r sm sp)). intros.
     specialize (H1 i H0). destruct H1. exists x. crush. }
   destruct H1.
-  assert (exists  ope : OutputPatternElement (getInTypes r) (getIteratorType r),
+  assert (exists  ope : OutputPatternUnit (getInTypes r) (getIteratorType r),
       In ope (getOutputPattern r) /\ instantiateElementOnPattern r ope sm sp i <> None).
   { specialize (tr_instantiateIterationOnPattern_non_None r sm sp i). crush. }
   destruct H2.
@@ -500,7 +500,7 @@ Qed.
 
 Theorem tr_applyElementOnPattern_None_iterator :
   forall eng: TransformationEngine,
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternUnit (getInTypes r) (getIteratorType r)),
       i >= length (evalIterator r sm sp) ->
       applyElementOnPattern r ope tr sm sp i = None.
 Proof.

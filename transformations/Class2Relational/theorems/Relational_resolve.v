@@ -61,8 +61,8 @@ Ltac progress_in_maybeBuildColumnReference H :=
      PropUtils.inj H
   end.
 
-Ltac unfold_parseOutputPatternElement H :=
-    unfold Parser.parseOutputPatternElement in H ;
+Ltac unfold_parseOutputPatternUnit H :=
+    unfold Parser.parseOutputPatternUnit in H ;
     unfold Parser.parseOutputPatternLinks in H ;
     unfold Parser.parseOutputPatternLink in H ;
     repeat ConcreteSyntax.simpl_elem_accessors H.
@@ -70,7 +70,7 @@ Ltac unfold_parseOutputPatternElement H :=
 Ltac unfold_evalOutputPatternLinkExpr H :=
     unfold EvalExpressions.evalOutputPatternLinkExpr in H ;
     ConcreteSyntax.simpl_cr_accessors H ;
-    Syntax.simpl_ope_accessors H.
+    Syntax.simpl_opu_accessors H.
 
 (** ** Important lemma *)
 
@@ -102,7 +102,7 @@ Proof.
   Tactics.exploit_evaloutpat EV_PE ;
 
   (* (5.L) now we can progress in EV_LINK. *)
-  unfold_parseOutputPatternElement EV_LINK ; 
+  unfold_parseOutputPatternUnit EV_LINK ; 
   unfold_evalOutputPatternLinkExpr EV_LINK ; 
   rewrite flat_map_singleton in EV_LINK ; 
     repeat ConcreteSyntax.simpl_link_accessors EV_LINK ;
@@ -196,7 +196,7 @@ Proof.
   split.
   { apply C2RTactics.allModelElements_allTuples. exact IN_E. }
   {
-    unfold applyPattern.
+    unfold applyOnPattern.
     apply in_flat_map.
     exists (Parser.parseRule R2).
     
@@ -208,7 +208,7 @@ Proof.
       split ; [ solve [auto] | ].
       apply tr_applyIterationOnPattern_in.
       eexists  ; split ; [ solve [simpl ; auto] | ].
-      erewrite tr_applyElementOnPattern_leaf ; simpl.
+      erewrite tr_applyUnitOnPattern_leaf ; simpl.
       2:{ compute. reflexivity. }
 
       rewrite <- app_nil_end. 

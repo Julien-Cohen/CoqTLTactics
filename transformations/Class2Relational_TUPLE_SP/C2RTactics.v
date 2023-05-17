@@ -17,7 +17,7 @@ From core Require Tactics Certification.
 (** ** Type correspondence *)
 
 Lemma tables_come_from_classes a b c : 
-  In (TableElement a) (instantiatePattern Class2Relational_TUPLE_SP b [c]) ->
+  In (TableElement a) (instantiateOnPattern Class2Relational_TUPLE_SP b [c]) ->
   exists d, c = ClassElement d.
 Proof.
  destruct c ; simpl ; [ solve [eauto] | intro H ; exfalso ].
@@ -25,7 +25,7 @@ Proof.
 Qed.
 
 Lemma columns_come_from_attributes a b c d : 
-  In (ColumnElement a) (instantiatePattern Class2Relational_TUPLE_SP b [c; d]) ->
+  In (ColumnElement a) (instantiateOnPattern Class2Relational_TUPLE_SP b [c; d]) ->
   exists e f, c = AttributeElement e /\
               d = ClassElement f.
 Proof.
@@ -45,10 +45,10 @@ Ltac show_origin :=
   let TMP := fresh in
   match goal with 
    
-   [ H : In (TableElement ?a) (instantiatePattern Class2Relational_TUPLE_SP ?b [?c]) |- _ ] =>
+   [ H : In (TableElement ?a) (instantiateOnPattern Class2Relational_TUPLE_SP ?b [?c]) |- _ ] =>
       destruct (tables_come_from_classes a b c H) as [newclassname TMP]; subst c
 
- | [ H : In (ColumnElement ?a) (instantiatePattern Class2Relational_TUPLE_SP ?b [?c; ?d]) |- _ ] =>
+ | [ H : In (ColumnElement ?a) (instantiateOnPattern Class2Relational_TUPLE_SP ?b [?c; ?d]) |- _ ] =>
       destruct (columns_come_from_attributes a b c d H) as [newattributename TMP]; subst c
 
 end.
@@ -57,7 +57,7 @@ end.
 Lemma unify_table_class_lem :
   forall cm c ta,
     In (TableElement ta)
-      (instantiatePattern Class2Relational_TUPLE_SP cm [ClassElement c]) ->
+      (instantiateOnPattern Class2Relational_TUPLE_SP cm [ClassElement c]) ->
     ta = {| table_id := class_id c; table_name := class_name c |}.
 Proof.
   intros cm c ta H.
@@ -70,20 +70,20 @@ Qed.
 
 Ltac unify_table_class_tac H :=
   match type of H with
-    In (TableElement ?ta) (instantiatePattern Class2Relational_TUPLE_SP _ [ClassElement ?c]) => apply unify_table_class_lem in H ; subst ta
+    In (TableElement ?ta) (instantiateOnPattern Class2Relational_TUPLE_SP _ [ClassElement ?c]) => apply unify_table_class_lem in H ; subst ta
   end.
 
 Lemma unify_column_attribute_lem : 
   forall m a cl c, 
   In (ColumnElement c)
-          (instantiatePattern Class2Relational_TUPLE_SP m
+          (instantiateOnPattern Class2Relational_TUPLE_SP m
              [AttributeElement a; ClassElement cl]) ->
   c = {| column_id := a.(attr_id); column_name := a.(attr_name) |} /\ 
   a.(derived) = false /\
   (getAttributeType a m) = Some cl.
 Proof.
   intros.
-  unfold instantiatePattern in H. unfold matchingRules in H. simpl in H.
+  unfold instantiateOnPattern in H. unfold matchingRules in H. simpl in H.
   unfold ConcreteExpressions.makeGuard in H. simpl in H. 
   destruct (derived a).
   { simpl in H. inversion H. }
@@ -106,7 +106,7 @@ Ltac unify_column_attribute_tac H :=
   let H2 := fresh in
   match type of H with 
     In (ColumnElement ?c)
-      (instantiatePattern Class2Relational_TUPLE_SP _
+      (instantiateOnPattern Class2Relational_TUPLE_SP _
          [AttributeElement ?a; ClassElement ?cl]) => 
           apply unify_column_attribute_lem in H ; destruct H as [H2 H] ; subst c
   end.

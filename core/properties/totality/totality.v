@@ -32,7 +32,7 @@ Theorem Totality_elem :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
       (exists (sp : list SourceElementType),
           In sp (allTuples tr sm) /\
-          In te (instantiatePattern tr sm sp)) ->
+          In te (instantiateOnPattern tr sm sp)) ->
           In te (execute tr sm).(modelElements).
 Proof.
     apply tr_execute_in_elements.
@@ -42,7 +42,7 @@ Qed.
 Theorem Totality_elem:
 forall (tr: Transformation) (sm : SourceModel) (sp : list SourceElementType) (te : TargetElementType),
 In sp (allTuples tr sm) -> 
-In te (instantiatePattern tr sm sp) ->
+In te (instantiateOnPattern tr sm sp) ->
 In te (allModelElements (execute tr sm)).
 Proof.
     intros.
@@ -60,7 +60,7 @@ Theorem Totality_links :
 forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
       (exists (sp : list SourceElementType),
           In sp (allTuples tr sm) /\
-          In tl (applyPattern tr sm sp)) -> 
+          In tl (applyOnPattern tr sm sp)) -> 
           In tl (execute tr sm).(modelLinks) .
 Proof.
     apply tr_execute_in_links.
@@ -70,7 +70,7 @@ Qed.
 Theorem Totality_link:
 forall (tr: Transformation) (sm : SourceModel) (sp : list SourceElementType) (tl : TargetLinkType),
 In sp (allTuples tr sm) -> 
-In tl (applyPattern tr sm sp) ->
+In tl (applyOnPattern tr sm sp) ->
 In tl (allModelLinks (execute tr sm)).
 Proof.
     intros.

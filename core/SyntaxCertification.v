@@ -14,7 +14,7 @@ Instance CoqTLSyntax :
 
       Transformation := Transformation;
       Rule := Rule;
-      OutputPatternElement := OutputPatternElement;
+      OutputPatternElement := OutputPatternUnit;
 
       TraceLink := TraceLink;
 
@@ -28,7 +28,7 @@ Instance CoqTLSyntax :
       TraceLink_getName := TraceLink.getName;
       TraceLink_getTargetElement := target ;    
       
-      evalOutputPatternElementExpr := evalOutputPatternElementExpr;
+      evalOutputPatternElementExpr := fun a b c d => evalOutputPatternElementExpr d a b c ; (* change the order of parameters *)
       evalIteratorExpr := evalIteratorExpr;
       evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
       evalGuardExpr := Syntax.r_guard;

@@ -23,12 +23,11 @@ Definition matchingRules (tr: Transformation) (sm : SourceModel) (sp: list Sourc
   filter (fun (r:Rule) => evalGuardExpr r sm sp) tr.(rules).
 
 
-(** * Instantiate **)
+(** * Instantiate element part of the r.h.s. of rules *)
 
 
-Definition instantiateElementOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceElementType) (iter: nat)
-  : option TargetElementType :=
-  evalOutputPatternElementExpr sm sp iter o.
+Definition instantiateElementOnPattern : OutputPatternUnit -> SourceModel -> list SourceElementType -> nat -> option TargetElementType :=
+  evalOutputPatternElementExpr.
 
 Definition instantiateIterationOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceElementType) (iter: nat) :  list TargetElementType :=
   flat_map (fun o => optionToList (instantiateElementOnPattern o sm sp iter))
@@ -38,7 +37,7 @@ Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list Source
   flat_map (instantiateIterationOnPattern r sm sp)
     (seq 0 (evalIteratorExpr r sm sp)).
 
-Definition instantiatePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) : list TargetElementType :=
+Definition instantiateOnPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) : list TargetElementType :=
   flat_map (fun r => instantiateRuleOnPattern r sm sp) (matchingRules tr sm sp).
 
 
@@ -47,10 +46,10 @@ Definition instantiatePattern (tr: Transformation) (sm : SourceModel) (sp: list 
 
 (** ** Building traces *)
 
-Definition traceElementOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceElementType) (iter: nat)
+Definition traceElementOnPattern (o: OutputPatternUnit) (sm: SourceModel) (sp: list SourceElementType) (iter: nat)
   : option TraceLink :=
   match (instantiateElementOnPattern o sm sp iter) with
-  | Some e => Some (buildTraceLink (sp, iter, o.(ope_name)) e)
+  | Some e => Some (buildTraceLink (sp, iter, o.(opu_name)) e)
   | None => None
   end.
 
@@ -62,13 +61,13 @@ Definition traceRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceElemen
   flat_map (traceIterationOnPattern r sm sp)
     (seq 0 (evalIteratorExpr r sm sp)).
 
-Definition tracePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) : list TraceLink :=
+Definition traceOnPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) : list TraceLink :=
   flat_map (fun r => traceRuleOnPattern r sm sp) (matchingRules tr sm sp).
 
 
 
 Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
-  flat_map (tracePattern tr sm) (allTuples tr sm).  
+  flat_map (traceOnPattern tr sm) (allTuples tr sm).  
 
 
 (** ** User read access in traces ([resolve]) *)
@@ -104,35 +103,35 @@ Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
   resolveAll tr sm name sp'.
 
 
-(** * Apply **)
+(** * Apply link part of the r.h.s of rules (with traces) **)
 
-Definition applyElementOnPattern
-            (ope: OutputPatternElement)
+Definition applyUnitOnPattern
+            (opu: OutputPatternUnit)
             (tr: Transformation)
             (sm: SourceModel)
             (sp: list SourceElementType) (iter: nat) : list TargetLinkType :=
-  match (evalOutputPatternElementExpr sm sp iter ope) with 
-  | Some l => optionListToList (evalOutputPatternLinkExpr sm sp l iter (trace tr sm) ope)
+  match (evalOutputPatternElementExpr opu sm sp iter) with 
+  | Some l => optionListToList (evalOutputPatternLinkExpr sm sp l iter (trace tr sm) opu)
   | None => nil
   end.
 
 Definition applyIterationOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceElementType) (iter: nat) : list TargetLinkType :=
-  flat_map (fun o => applyElementOnPattern o tr sm sp iter)
+  flat_map (fun o => applyUnitOnPattern o tr sm sp iter)
     r.(r_outputPattern).
 
 Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceElementType): list TargetLinkType :=
   flat_map (applyIterationOnPattern r tr sm sp)
     (seq 0 (evalIteratorExpr r sm sp)).
 
-Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) : list TargetLinkType :=
+Definition applyOnPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) : list TargetLinkType :=
   flat_map (fun r => applyRuleOnPattern r tr sm sp) (matchingRules tr sm sp).
 
 (** * Execute **)
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   {|
-    modelElements := flat_map (instantiatePattern tr sm) (allTuples tr sm) ;
-    modelLinks := flat_map (applyPattern tr sm) (allTuples tr sm)
+    modelElements := flat_map (instantiateOnPattern tr sm) (allTuples tr sm) ;
+    modelLinks := flat_map (applyOnPattern tr sm) (allTuples tr sm)
   |}.
 
 End Semantics.
@@ -179,24 +178,24 @@ Ltac in_allTuples_auto :=
   end.
 
 (** FIXME : move-me to Certification ? *)
-Lemma in_applyElementOnPattern {A B C D E} :
+Lemma in_applyUnitOnPattern {A B C D E} :
   forall (tr:Transformation (tc:=Build_TransformationConfiguration A (Metamodel.Build_Metamodel B C D E))) 
-         a ope sm sp it,
-  In a (applyElementOnPattern ope tr sm sp it) ->
+         a opu sm sp it,
+  In a (applyUnitOnPattern opu tr sm sp it) ->
   exists g, 
-    evalOutputPatternElementExpr sm sp it ope = Some g
-    /\ In a (optionListToList (evalOutputPatternLinkExpr sm sp g it (trace tr sm) ope)).
+    evalOutputPatternElementExpr opu sm sp it = Some g
+    /\ In a (optionListToList (evalOutputPatternLinkExpr sm sp g it (trace tr sm) opu)).
 Proof.  
-  unfold applyElementOnPattern.
+  unfold applyUnitOnPattern.
   intros until it ; intro IN.
   PropUtils.destruct_match IN ; [ | contradiction IN].
   eauto.
 Qed.
 
 
-Ltac exploit_In_applyElementOnPattern H NEWNAME :=
+Ltac exploit_In_applyUnitOnPattern H NEWNAME :=
   match type of H with
-    | In _ (applyElementOnPattern _ _ _ _ _) =>
-        apply in_applyElementOnPattern in H ;
+    | In _ (applyUnitOnPattern _ _ _ _ _) =>
+        apply in_applyUnitOnPattern in H ;
         destruct H as (? & (NEWNAME & H))
 end.

@@ -25,7 +25,7 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
   In te (execute tr sm).(modelElements) <->
   (exists (sp : list SourceElementType),
       In sp (allTuples tr sm) /\
-      In te (instantiatePattern tr sm sp)).
+      In te (instantiateOnPattern tr sm sp)).
 Proof.
   intros.
   apply in_flat_map.
@@ -36,7 +36,7 @@ forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
   In tl (execute tr sm).(modelLinks) <->
   (exists (sp : list SourceElementType),
       In sp (allTuples tr sm) /\
-      In tl (applyPattern tr sm sp)).
+      In tl (applyOnPattern tr sm sp)).
 Proof.
   intros.
   apply in_flat_map.
@@ -54,9 +54,9 @@ Proof.
 Qed.
 
 
-Lemma tr_instantiatePattern_in :
+Lemma tr_instantiateOnPattern_in :
 forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
-  In te (instantiatePattern tr sm sp) <->
+  In te (instantiateOnPattern tr sm sp) <->
   (exists (r : Rule),
       In r (matchingRules tr sm sp) /\
       In te (instantiateRuleOnPattern r sm sp)).
@@ -80,7 +80,7 @@ Lemma tr_instantiateIterationOnPattern_in :
 forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType) (i:nat),
   In te (instantiateIterationOnPattern r sm sp i)
   <->
-  (exists (ope: OutputPatternElement),
+  (exists (ope: OutputPatternUnit),
       In ope r.(r_outputPattern) /\ 
       instantiateElementOnPattern ope sm sp i = Some te).
 Proof.
@@ -108,15 +108,15 @@ Proof.
 Qed.
 
 Lemma  tr_instantiateElementOnPattern_leaf:
-      forall (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceElementType) (iter: nat),
-        instantiateElementOnPattern o sm sp iter = evalOutputPatternElementExpr sm sp iter o.
+      forall (o: OutputPatternUnit) (sm: SourceModel) (sp: list SourceElementType) (iter: nat),
+        instantiateElementOnPattern o sm sp iter = evalOutputPatternElementExpr o sm sp iter.
 Proof.
   crush.
 Qed.
 
-Lemma tr_applyPattern_in :
+Lemma tr_applyOnPattern_in :
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (tl : TargetLinkType),
-      In tl (applyPattern tr sm sp) <->
+      In tl (applyOnPattern tr sm sp) <->
       (exists (r : Rule),
           In r (matchingRules tr sm sp) /\
           In tl (applyRuleOnPattern r tr sm sp)).
@@ -139,24 +139,24 @@ Qed.
 Lemma tr_applyIterationOnPattern_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (tl : TargetLinkType) (i:nat),
       In tl (applyIterationOnPattern r tr sm sp i) <->
-      (exists (ope: OutputPatternElement),
+      (exists (ope: OutputPatternUnit),
           In ope r.(r_outputPattern) /\ 
-          In tl (applyElementOnPattern ope tr sm sp i)).
+          In tl (applyUnitOnPattern ope tr sm sp i)).
 Proof.
   intros.
   apply in_flat_map.
 Qed.
 
-Lemma tr_applyElementOnPattern_leaf : 
+Lemma tr_applyUnitOnPattern_leaf : 
 forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (te: TargetElementType) 
-       (i:nat) (ope: OutputPatternElement),
-  evalOutputPatternElementExpr sm sp i ope = Some te ->
-  applyElementOnPattern ope tr sm sp i = optionListToList (evalOutputPatternLinkExpr sm sp te i (trace tr sm) ope).
+       (i:nat) (ope: OutputPatternUnit),
+  evalOutputPatternElementExpr ope sm sp i = Some te ->
+  applyUnitOnPattern ope tr sm sp i = optionListToList (evalOutputPatternLinkExpr sm sp te i (trace tr sm) ope).
 Proof.
   intros.
   destruct (evalOutputPatternLinkExpr sm sp te i (trace tr sm) ope) eqn:dst.
-  * unfold applyElementOnPattern. crush.
-  * unfold applyElementOnPattern. crush.
+  * unfold applyUnitOnPattern. crush.
+  * unfold applyUnitOnPattern. crush.
 Qed.  
 
 (*TODO
@@ -295,15 +295,15 @@ Instance CoqTLEngine :
     matchPattern := matchingRules;
     matchRuleOnPattern := evalGuardExpr ;
 
-    instantiatePattern := instantiatePattern;
+    instantiatePattern := instantiateOnPattern;
     instantiateRuleOnPattern := instantiateRuleOnPattern;
     instantiateIterationOnPattern := instantiateIterationOnPattern;
     instantiateElementOnPattern := instantiateElementOnPattern;
 
-    applyPattern := applyPattern;
+    applyPattern := applyOnPattern;
     applyRuleOnPattern := applyRuleOnPattern;
     applyIterationOnPattern := applyIterationOnPattern;
-    applyElementOnPattern := applyElementOnPattern;
+    applyElementOnPattern := applyUnitOnPattern;
 
     trace := trace;
 
@@ -318,15 +318,15 @@ Instance CoqTLEngine :
     tr_matchPattern_in := tr_matchingRules_in;
     tr_matchRuleOnPattern_leaf := fun _ _ _ _ => eq_refl ;
 
-    tr_instantiatePattern_in := tr_instantiatePattern_in;
+    tr_instantiatePattern_in := tr_instantiateOnPattern_in;
     tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
     tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
     tr_instantiateElementOnPattern_leaf := tr_instantiateElementOnPattern_leaf;
 
-    tr_applyPattern_in := tr_applyPattern_in;
+    tr_applyPattern_in := tr_applyOnPattern_in;
     tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
     tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
-    tr_applyElementOnPattern_leaf := tr_applyElementOnPattern_leaf;
+    tr_applyElementOnPattern_leaf := tr_applyUnitOnPattern_leaf;
 
     tr_resolveAll_in := tr_resolveAllIter_in;
     tr_resolve_leaf := tr_resolveIter_leaf;
@@ -336,8 +336,8 @@ Instance CoqTLEngine :
 
     tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
 
-    tr_instantiatePattern_non_None := tr_instantiatePattern_non_None;
-    tr_instantiatePattern_None := tr_instantiatePattern_None;
+    tr_instantiatePattern_non_None := tr_instantiateOnPattern_non_None;
+    tr_instantiatePattern_None := tr_instantiateOnPattern_None;
 
     tr_instantiateRuleOnPattern_non_None := tr_instantiateRuleOnPattern_non_None;
 
@@ -346,14 +346,14 @@ Instance CoqTLEngine :
     tr_instantiateElementOnPattern_None := tr_instantiateElementOnPattern_None;
     tr_instantiateElementOnPattern_None_iterator := tr_instantiateElementOnPattern_None_iterator;
 
-    tr_applyPattern_non_None := tr_applyPattern_non_None;
-    tr_applyPattern_None := tr_applyPattern_None;
+    tr_applyPattern_non_None := tr_applyOnPattern_non_None;
+    tr_applyPattern_None := tr_applyOnPattern_None;
 
     tr_applyRuleOnPattern_non_None := tr_applyRuleOnPattern_non_None;
 
     tr_applyIterationOnPattern_non_None := tr_applyIterationOnPattern_non_None;
 
-    tr_applyElementOnPattern_non_None := tr_applyElementOnPattern_non_None;
+    tr_applyElementOnPattern_non_None := tr_applyUnitOnPattern_non_None;
 
     tr_applyLinkOnPattern_None := tr_applyLinkOnPattern_None;
     tr_applyLinkOnPattern_None_iterator := tr_applyLinkOnPattern_None_iterator;
@@ -377,7 +377,7 @@ Instance CoqTLEngine :
 Lemma tr_match_injective :
 forall (sm : SourceModel)(sp : list SourceElementType)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIteratorExpr r sm sp)) /\ 
-    (exists ope, In ope r.(r_outputPattern) /\  (evalOutputPatternElementExpr sm sp iter ope) <> None ) ->
+    (exists ope, In ope r.(r_outputPattern) /\  (evalOutputPatternElementExpr ope sm sp iter) <> None ) ->
       (exists (te: TargetElementType),  In te (instantiateRuleOnPattern r sm sp) ).
 Proof.
 intros.
@@ -402,15 +402,15 @@ split.
     simpl. left. reflexivity.
 Qed.
 
-(* if In te (instantiateRuleOnPattern r sm sp) => tr_instantiatePattern_in
-    In te (instantiatePattern tr sm sp) => by tr_execute_in_elements
+(* if In te (instantiateRuleOnPattern r sm sp) => tr_instantiateOnPattern_in
+    In te (instantiateOnPattern tr sm sp) => by tr_execute_in_elements
     In te (allModelElements (execute tr sm)) 
     *)
 
 Theorem tr_instantiateRuleAndIterationOnPattern_in :
 forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
   In te (instantiateRuleOnPattern r sm sp) <->
-  (exists (i: nat) (ope: OutputPatternElement),
+  (exists (i: nat) (ope: OutputPatternUnit),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\
       In ope r.(r_outputPattern) /\ 
         instantiateElementOnPattern ope sm sp i = Some te).
@@ -442,7 +442,7 @@ forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElemen
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\
-      (exists (ope: OutputPatternElement),
+      (exists (ope: OutputPatternUnit),
       In ope (Rule_getOutputPatternElements r) /\ 
         instantiateElementOnPattern ope sm sp i = Some te)).
 Proof.

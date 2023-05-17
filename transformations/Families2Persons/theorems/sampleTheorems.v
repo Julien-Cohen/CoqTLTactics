@@ -16,7 +16,7 @@ Theorem tr_FamiliesToPersons :
       (exists (se : FamiliesMetamodel_Object),
           In se sm.(modelElements) /\
           In te
-            (instantiatePattern Families2Persons sm [se])).
+            (instantiateOnPattern Families2Persons sm [se])).
 Proof.
     intros.
     apply (tr_execute_in_elements Families2Persons) in H.

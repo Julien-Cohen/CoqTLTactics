@@ -27,8 +27,8 @@ Definition parseOutputPatternLinks (inkinds: list SourceEKind) (outtype: TargetE
     fun (tls:list TraceLink) (iter:nat) (sm:SourceModel) (sp: list SourceElementType) (te: TargetElementType) =>
     Some (flat_map (fun (x: ConcreteOutputPatternLink inkinds outtype) => optionListToList (parseOutputPatternLink inkinds outtype x tls iter sm sp te)) cr).
 
-Definition parseOutputPatternElement (inkinds: list SourceEKind) (co: ConcreteOutputPatternElement inkinds) : OutputPatternElement :=
-  buildOutputPatternElement
+Definition parseOutputPatternUnit (inkinds: list SourceEKind) (co: ConcreteOutputPatternElement inkinds) : OutputPatternUnit :=
+  buildOutputPatternUnit
     co.(e_name)
     (makeElement inkinds co.(e_OutKind) co.(e_outpat))
     (parseOutputPatternLinks inkinds co.(e_OutKind) co.(e_outlink)).
@@ -46,7 +46,7 @@ Definition parseRule(cr: ConcreteRule) : Rule :=
       | None => (fun _ _ => Some 1)
       end
     )
-    ( map (parseOutputPatternElement cr.(r_InKinds)) cr.(r_outpat) ).
+    ( map (parseOutputPatternUnit cr.(r_InKinds)) cr.(r_outpat) ).
 
 Definition parse(ct: ConcreteTransformation) : Transformation :=
   buildTransformation 
@@ -59,6 +59,6 @@ End Parser.
 
 Ltac unfold_parseRule H:=
   unfold parseRule in H ; 
-  unfold parseOutputPatternElement in H ; 
+  unfold parseOutputPatternUnit in H ; 
   unfold parseOutputPatternLinks in H ; 
   unfold parseOutputPatternLink in H.

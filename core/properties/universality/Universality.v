@@ -20,7 +20,7 @@ Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel ->
     (buildRule "rule"%string 
       (fun sm sp => match sp with nil => true | _ => false end)
       (fun sm sp => Some (length ((f sm).(modelElements))))
-      [(buildOutputPatternElement "out"%string 
+      [(buildOutputPatternUnit "out"%string 
          (fun i sm sp => nth_error ((f sm).(modelElements)) i)
          (fun tls i sm sp te => match i with 0 => Some (f sm).(modelLinks) | _ => None end))
       ])
@@ -36,12 +36,12 @@ Proof.
   exists (toTransformation tc f).
   intros.
   unfold execute.
-  unfold applyPattern.
+  unfold applyOnPattern.
   unfold applyRuleOnPattern.
   unfold applyIterationOnPattern.
-  unfold applyElementOnPattern.
+  unfold applyUnitOnPattern.
   unfold EvalExpressions.evalOutputPatternLinkExpr.
-  unfold instantiatePattern.
+  unfold instantiateOnPattern.
   unfold instantiateRuleOnPattern.
   unfold instantiateIterationOnPattern.
   unfold instantiateElementOnPattern.

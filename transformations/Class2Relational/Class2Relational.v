@@ -57,9 +57,9 @@ Definition R1 : ConcreteRule :=
     to [ ELEM "tab" ::: Table_K  
         << fun _ _ c => Build_Table_t c.(class_id) c.(class_name) >>
         <<< LINK TableColumns_K //
-               fun tls _ m c t =>
+               fun tra _ m c t =>
                   maybeBuildTableColumns t
-                    (maybeResolveAll tls m "col" Column_K 
+                    (maybeResolveAll tra m "col" Column_K 
                        (maybeSingletons (getClassAttributesElements c m)))
                     >>> ].
 
@@ -70,9 +70,9 @@ Definition R2 : ConcreteRule :=
     to [ ELEM "col" ::: Column_K 
         << fun _ _ a => Build_Column_t a.(attr_id) a.(attr_name) >>
         <<< LINK ColumnReference_K //
-               fun tls _ m a c =>
+               fun tra _ m a c =>
                   maybeBuildColumnReference c
-                    (maybeResolve tls m "tab" Table_K 
+                    (maybeResolve tra m "tab" Table_K 
                        (maybeSingleton (getAttributeTypeElement a m)))
         >>> ].
 

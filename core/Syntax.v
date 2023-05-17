@@ -14,22 +14,22 @@ Section Syntax.
 
 Context {tc: TransformationConfiguration}.
 
-(** ** Syntactic Elements
+(** ** Syntactic Componants
 
-        Next, we model syntactic elements of any transformation specification that supported by the CoqTL engine. *)
+        Next, we model syntactic componants of any transformation specification that supported by the CoqTL engine. *)
 
-(** *** OutputPatternElement *)
+(** *** OutputPatternUnit *)
 
-Record OutputPatternElement : Type :=
-  buildOutputPatternElement {
+Record OutputPatternUnit : Type :=
+  buildOutputPatternUnit {
 
-    ope_name : 
+    opu_name : 
       string ; 
 
-    ope_elementExpr :
+    opu_elementExpr :
       nat -> SourceModel -> (list SourceElementType) -> option TargetElementType ; 
 
-    ope_linkExpr :
+    opu_linkExpr :
       list TraceLink -> nat -> SourceModel -> (list SourceElementType) -> TargetElementType -> option (list TargetLinkType)
 
 }.
@@ -44,14 +44,14 @@ Record Rule : Type :=
       r_name : string ;
       r_guard : SourceModel -> list SourceElementType -> bool ;
       r_iterator : SourceModel -> list SourceElementType -> option nat ;
-      r_outputPattern : list OutputPatternElement
+      r_outputPattern : list OutputPatternUnit
     } .
 
 
-(** find an output pattern element in a rule by the given name: *)
+(** find an output pattern unit in a rule by the given name: *)
 
-Definition Rule_findOutputPatternElement (r: Rule) (name: string) : option OutputPatternElement :=
-  find (fun (o:OutputPatternElement) => beq_string name o.(ope_name))
+Definition Rule_findOutputPatternUnit (r: Rule) (name: string) : option OutputPatternUnit :=
+  find (fun (o:OutputPatternUnit) => beq_string name o.(opu_name))
         r.(r_outputPattern).
 
 (** *** Transformation *)
@@ -70,7 +70,7 @@ Arguments buildTransformation {_}.
 Arguments Rule {_}.
 Arguments buildRule {_}.
 
-Arguments buildOutputPatternElement {_}.
+Arguments buildOutputPatternUnit {_}.
 (* end hide *)
 
 
@@ -97,16 +97,16 @@ Ltac simpl_r_accessors H :=
   end.
 
 
-Ltac simpl_ope_accessors H :=
+Ltac simpl_opu_accessors H :=
   match type of H with 
   | context[
-        ope_name (buildOutputPatternElement _ _ _)] =>
-      unfold ope_name in H
+        opu_name (buildOutputPatternUnit _ _ _)] =>
+      unfold opu_name in H
   | context[
-        ope_elementExpr (buildOutputPatternElement _ _ _)] =>
-      unfold ope_elementExpr in H
+        opu_elementExpr (buildOutputPatternUnit _ _ _)] =>
+      unfold opu_elementExpr in H
   | context[
-        ope_linkExpr (buildOutputPatternElement _ _ _)] =>
-      unfold ope_linkExpr in H
+        opu_linkExpr (buildOutputPatternUnit _ _ _)] =>
+      unfold opu_linkExpr in H
   end.
 
