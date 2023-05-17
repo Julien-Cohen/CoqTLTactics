@@ -24,6 +24,7 @@ core/TransformationConfiguration.v
 core/TraceLink.v
 core/Syntax.v
 core/Semantics.v
+core/Resolve.v
 core/Engine.v
 core/Tactics.v
 

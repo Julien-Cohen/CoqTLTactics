@@ -179,10 +179,10 @@ Lemma in_resolve t c cm :
         ([ClassElement c], 0, "tab")
         (TableElement
            {| table_id := c.(class_id); table_name := c.(class_name) |})) t ->
-  resolveIter t cm "tab" [ClassElement c] 0 = 
+  Resolve.resolveIter t cm "tab" [ClassElement c] 0 = 
     Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}).
 Proof.
-  unfold resolveIter. 
+  unfold Resolve.resolveIter. 
   intros C IN1.
   specialize (in_find t C c IN1) ; intro T5 ; clear IN1.
   destruct T5 as (t1 & IN1).
@@ -224,7 +224,7 @@ Lemma in_maybeResolve_trace_2 c (cm : ClassModel) :
   
   In (ClassElement c) cm.(modelElements) -> 
   
-  maybeResolve (trace Class2Relational cm) cm "tab" (Some [ClassElement c])  =  
+  Resolve.maybeResolve (trace Class2Relational cm) cm "tab" (Some [ClassElement c])  =  
     Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}) 
   
   /\ In 
@@ -232,8 +232,8 @@ Lemma in_maybeResolve_trace_2 c (cm : ClassModel) :
        (execute Class2Relational cm).(modelElements).
 Proof.
   intro H.
-  unfold maybeResolve.
-  unfold resolve.
+  unfold Resolve.maybeResolve.
+  unfold Resolve.resolve.
   apply in_trace in H.
   rewrite in_resolve ; [ | solve [apply trace_wf] | exact H ].
   split ; [ reflexivity | ].

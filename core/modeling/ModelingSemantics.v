@@ -6,6 +6,7 @@ Require Import core.Model.
 Require Import core.modeling.ConcreteSyntax.
 Require Import core.Syntax.
 Require Import core.Semantics.
+Require Import core.Resolve.
 Require Import core.modeling.Parser.
 Require Import Bool.
 Require Import Arith.
@@ -34,28 +35,28 @@ Definition denoteOutputList (k: TargetEKind) (f: option (list TargetElementType)
 Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
             (k: TargetEKind) (sp: list SourceElementType)
             (iter : nat) : option (denoteEDatatype k) :=
-  denoteOutput k (Semantics.resolveIter tls sm name sp iter).
+  denoteOutput k (Resolve.resolveIter tls sm name sp iter).
 
 Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
   (k: TargetEKind) (sp: list SourceElementType) : option (denoteEDatatype k) :=
-  denoteOutput k (Semantics.resolve tr sm name sp).
+  denoteOutput k (Resolve.resolve tr sm name sp).
 
 Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
   (k: TargetEKind) (sps: list(list SourceElementType)) (iter: nat)
   : option (list (denoteEDatatype k)) :=
-  denoteOutputList k (Semantics.resolveAllIter tr sm name sps iter).
+  denoteOutputList k (Resolve.resolveAllIter tr sm name sps iter).
 
 Definition resolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
   (k: TargetEKind) (sps: list(list SourceElementType)) : option (list (denoteEDatatype k)) :=
-  denoteOutputList k (Semantics.resolveAll tr sm name sps).
+  denoteOutputList k (Resolve.resolveAll tr sm name sps).
 
 Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
   (k: TargetEKind) (sp: option (list SourceElementType)) : option (denoteEDatatype k) :=
-  denoteOutput k (Semantics.maybeResolve tr sm name sp).
+  denoteOutput k (Resolve.maybeResolve tr sm name sp).
 
 Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
   (k: TargetEKind) (sp: option (list (list SourceElementType))) : option (list (denoteEDatatype k)) :=
-  denoteOutputList k (Semantics.maybeResolveAll tr sm name sp).
+  denoteOutputList k (Resolve.maybeResolveAll tr sm name sp).
 
 End SemanticsModeling.
 

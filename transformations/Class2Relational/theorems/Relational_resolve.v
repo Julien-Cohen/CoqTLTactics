@@ -128,7 +128,7 @@ Proof.
   
   progress_in_maybeBuildColumnReference IN_LINK.
   
-  core.Semantics.progress_maybeResolve E. 
+  core.Resolve.progress_maybeResolve E. 
   
   ListUtils.inv_maybeSingleton E0.
   

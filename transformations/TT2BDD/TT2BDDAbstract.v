@@ -9,6 +9,7 @@ Require Import core.utils.Utils.
 
 Require Import core.Syntax.
 Require Import core.Semantics.
+Require Import core.Resolve.
 Require Import core.Model.
 Require Import core.TransformationConfiguration.
 
