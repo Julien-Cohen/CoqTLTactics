@@ -158,28 +158,10 @@ Proof.
   intros cm rm  WF2 E PRE.  intros col IN_COL. 
   subst rm.
 
-  (* 1 *)
-  destruct (Tactics.destruct_in_modelElements_execute_lem IN_COL) 
-    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN_ATTR). 
-
-  (* (2) *)
-  Tactics.progress_in_In_rules IN_RULE ; [ | ] ;
-
-  (* (3) *)   
-  Tactics.progress_in_In_outpat IN_OP ;
-
-  (* (4) *)   
-  Tactics.exploit_evalGuard MATCH_GUARD ;
+  C2RTactics.exploit_element_in_result IN_COL ; []; 
+  clear IN_COL.
   
-  (* (5.E) *) 
-  Tactics.exploit_evaloutpat IN_ATTR ; [].
-  
-  (* (6) *)
-  Tactics.exploit_in_it IN_IT.
-
-  (* (7) *)
-  Semantics.exploit_in_allTuples IN_E.
-  
+ 
   Tactics.duplicate PRE H.
 
   specialize (H _ IN_E).
