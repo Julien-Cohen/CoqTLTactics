@@ -5,7 +5,6 @@ Require Import core.TransformationConfiguration.
 Require Import String.
 Require Import EqNat.
 Require Import List.
-Require Import Expressions.
 Require Import core.utils.Utils.
 Require Import PeanoNat.
 Require Import Lia.

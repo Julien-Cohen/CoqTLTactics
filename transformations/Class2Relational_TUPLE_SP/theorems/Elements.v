@@ -98,7 +98,7 @@ Proof.
     {
       unfold instantiateRuleOnPattern.
       simpl.
-      unfold Expressions.evalIteratorExpr.
+      unfold EvalExpressions.evalIteratorExpr.
       rewrite HeqR at 2 ; simpl.
       rewrite List.app_nil_r.
       unfold instantiateIterationOnPattern ; simpl.

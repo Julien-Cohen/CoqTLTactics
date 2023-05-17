@@ -5,7 +5,6 @@ Require Import core.TransformationConfiguration.
 Require Import String.
 Require Import EqNat.
 Require Import List.
-Require Import Expressions.
 Require Import core.utils.Utils.
 Require Import PeanoNat.
 Require Import Lia.
@@ -41,13 +40,13 @@ Proof.
   unfold applyRuleOnPattern.
   unfold applyIterationOnPattern.
   unfold applyElementOnPattern.
-  unfold evalOutputPatternLinkExpr.
+  unfold EvalExpressions.evalOutputPatternLinkExpr.
   unfold instantiatePattern.
   unfold instantiateRuleOnPattern.
   unfold instantiateIterationOnPattern.
   unfold instantiateElementOnPattern.
-  unfold evalOutputPatternElementExpr.
-  unfold evalIteratorExpr.
+  unfold EvalExpressions.evalOutputPatternElementExpr.
+  unfold EvalExpressions.evalIteratorExpr.
   simpl.
   apply (H sm) in H0.
   destruct (f sm). simpl.

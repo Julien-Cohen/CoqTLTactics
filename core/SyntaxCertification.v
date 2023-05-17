@@ -1,7 +1,7 @@
 Require Import core.Engine.
 Require Import core.Syntax.
 Require Import core.TransformationConfiguration.
-Require Import core.Expressions.
+Require Import core.EvalExpressions.
 
 Section SyntaxCertification.
 
