@@ -16,7 +16,7 @@ Require Import core.utils.CpdtTactics.
 Theorem All_classes_match_impl:
   forall (cm : ClassModel) (c : Class_t),
   exists (r : Rule),
-    matchPattern Class2Relational cm [ClassElement c] = [r].
+    matchingRules Class2Relational cm [ClassElement c] = [r].
 Proof.
   eexists.
   reflexivity.

@@ -56,9 +56,10 @@ Definition wf t : Prop :=
 (** Traces built by the Class2Relational transformation are well-formed. *)
 
 
-Lemma trace_wf cm :
-  wf (trace Class2Relational cm).
+Lemma trace_wf :
+  forall cm, wf (trace Class2Relational cm).
 Proof.
+  intro cm. 
   unfold wf.
   apply Forall_forall.
   intros l H.  

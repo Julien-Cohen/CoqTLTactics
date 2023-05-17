@@ -50,12 +50,12 @@ split.
   unfold instantiatePattern in H.
   unfold instantiateRuleOnPattern  in H.
   unfold instantiateIterationOnPattern in H.
-  unfold matchPattern in H.
+  unfold matchingRules in H.
   simpl in H.
   unfold instantiatePattern.
   unfold instantiateRuleOnPattern.
   unfold instantiateIterationOnPattern.
-  unfold matchPattern.
+  unfold matchingRules.
   simpl. 
   remember ((fun r : Rule =>
   flat_map
@@ -77,7 +77,7 @@ split.
 unfold instantiatePattern.
 unfold instantiateRuleOnPattern.
 unfold instantiateIterationOnPattern.
-unfold matchPattern.
+unfold matchingRules.
 simpl. 
 remember ((fun r : Rule =>
 flat_map
@@ -93,7 +93,7 @@ destruct (evalGuardExpr a sm1 sp) eqn: ca.
 - unfold instantiatePattern in H.
 unfold instantiateRuleOnPattern in H.
 unfold instantiateIterationOnPattern in H.
-unfold matchPattern in H.
+unfold matchingRules in H.
 simpl in H.
 rewrite ca in H.
 rewrite <- Heqf in H.
@@ -102,7 +102,7 @@ apply in_flat_map. exists x. split. crush. crush.
 - unfold instantiatePattern in H.
 unfold instantiateRuleOnPattern in H.
 unfold instantiateIterationOnPattern in H.
-unfold matchPattern in H.
+unfold matchingRules in H.
 simpl in H.
 rewrite <- Heqf in H.
 apply in_flat_map in H.
@@ -113,7 +113,7 @@ exists x. split; crush.
 unfold instantiatePattern in H.
 unfold instantiateRuleOnPattern in H.
 unfold instantiateIterationOnPattern in H.
-unfold matchPattern in H.
+unfold matchingRules in H.
 simpl in H.
 rewrite ca in H.
 rewrite <- Heqf in H.
@@ -121,7 +121,7 @@ simpl in H. inversion H.
 unfold instantiatePattern in H.
 unfold instantiateRuleOnPattern in H.
 unfold instantiateIterationOnPattern in H.
-unfold matchPattern in H.
+unfold matchingRules in H.
 simpl in H.
 rewrite <- Heqf in H.
 apply in_flat_map in H.
@@ -147,13 +147,13 @@ Theorem incl_equiv_to_surj:
        (sp : list SourceModelElement) (tp: list TargetModelElement) (tp1: list TargetModelElement)
        (r : Rule),
         instantiateRuleOnPattern r tr sm sp = Some tp1 ->
-        In r (matchPattern tr sm sp) ->
+        In r (matchingRules tr sm sp) ->
         instantiatePattern tr sm sp = Some tp ->
         incl tp1 tp) <->
     (forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
         instantiatePattern tr sm sp = Some tp ->
         (exists (r : Rule) (tp1 : list TargetModelElement),
-            In r (matchPattern tr sm sp) /\
+            In r (matchingRules tr sm sp) /\
             instantiateRuleOnPattern r tr sm sp = Some tp1 /\
             In te tp1) ->
         In te tp).
@@ -178,7 +178,7 @@ Qed.
 Theorem tr_match_functionality :
   forall (eng: TransformationEngine)
     (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r1: list Rule) (r2: list Rule),
-          matchPattern tr sm sp  = r1 -> matchPattern tr sm sp = r2 -> r1 = r2.
+          matchingRules tr sm sp  = r1 -> matchingRules tr sm sp = r2 -> r1 = r2.
 Proof.
     intros.
     rewrite H in H0.
@@ -186,15 +186,15 @@ Proof.
     reflexivity.
 Qed.
 
-Theorem tr_matchPattern_None_tr : forall t: TransformationEngine,
+Theorem tr_matchingRules_None_tr : forall t: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       getRules tr = nil ->
-      matchPattern tr sm sp = nil.
+      matchingRules tr sm sp = nil.
 Proof.
   intros.
-  destruct (matchPattern tr sm sp) eqn:mtch. reflexivity.
+  destruct (matchingRules tr sm sp) eqn:mtch. reflexivity.
   exfalso.
-  pose (tr_matchPattern_in tr sm sp r).
+  pose (tr_matchingRules_in tr sm sp r).
   rewrite H in i.
   pose (in_eq r l).
   rewrite <- mtch in i0.
@@ -204,11 +204,11 @@ Proof.
   contradiction.
 Qed.
 
-  Theorem tr_matchPattern_non_Nil :
+  Theorem tr_matchingRules_non_Nil :
     forall eng: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel),
     forall (sp : list SourceModelElement),
-      (matchPattern tr sm sp) <> nil <->
+      (matchingRules tr sm sp) <> nil <->
       (exists (r: Rule),
         In r (getRules tr) /\
         matchRuleOnPattern r tr sm sp = return true).
@@ -216,9 +216,9 @@ Qed.
     intros.
     split.
     + intro.
-      assert (exists (r: Rule), In r (matchPattern tr sm sp)).
+      assert (exists (r: Rule), In r (matchingRules tr sm sp)).
       {
-        destruct (matchPattern tr sm sp).
+        destruct (matchingRules tr sm sp).
         ++ crush.
         ++ exists r.
            crush.
@@ -226,11 +226,11 @@ Qed.
       destruct H0.
       rename x into r.
       exists r.
-      apply tr_matchPattern_in. auto.
+      apply tr_matchingRules_in. auto.
     + intro.
       destruct H.
-      apply tr_matchPattern_in in H.
-      destruct (matchPattern tr sm sp).
+      apply tr_matchingRules_in in H.
+      destruct (matchingRules tr sm sp).
       ++ inversion H.
       ++ crush.
   Qed.
@@ -242,7 +242,7 @@ Theorem tr_instantiatePattern_None_tr : forall t: TransformationEngine,
 Proof.
   intros.
   destruct (instantiatePattern tr sm sp) eqn:dst.
-  - apply tr_matchPattern_None_tr with (sm:=sm) (sp:=sp) in H.
+  - apply tr_matchingRules_None_tr with (sm:=sm) (sp:=sp) in H.
     assert (instantiatePattern tr sm sp <> None). { rewrite dst. discriminate. }
     apply tr_instantiatePattern_non_None in H0.
     destruct H0. destruct H0.
@@ -259,7 +259,7 @@ Theorem tr_applyPattern_None_tr :
 Proof.
   intros.
   destruct (applyPattern tr sm sp) eqn:dst.
-  - apply tr_matchPattern_None_tr with (sm:=sm) (sp:=sp) in H.
+  - apply tr_matchingRules_None_tr with (sm:=sm) (sp:=sp) in H.
     assert (applyPattern tr sm sp <> None). { rewrite dst. discriminate. }
     apply tr_applyPattern_non_None in H0.
     destruct H0. destruct H0.
@@ -283,7 +283,7 @@ Proof.
     apply i in i0.
     destruct i0. destruct H0. destruct H0. destruct H1.
     pose (tr_instantiatePattern_in tr sm x t0).
-    apply tr_matchPattern_None_tr with (sm:=sm) (sp:=x) in H.
+    apply tr_matchingRules_None_tr with (sm:=sm) (sp:=x) in H.
     destruct i0. destruct H3.
     -- exists x0.
        split. assumption. assumption.
@@ -371,7 +371,7 @@ Proof.
     apply i in i0.
     destruct i0. destruct H0. destruct H0. destruct H1.
     pose (tr_applyPattern_in tr sm x t0).
-    apply tr_matchPattern_None_tr with (sm:=sm) (sp:=x) in H.
+    apply tr_matchingRules_None_tr with (sm:=sm) (sp:=x) in H.
     destruct i0. destruct H3.
     -- exists x0.
        split. assumption. assumption.

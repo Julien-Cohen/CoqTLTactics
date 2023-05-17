@@ -87,7 +87,7 @@ Proof.
 
     split ; [  | ]. 
     { 
-      unfold matchPattern ; simpl.
+      unfold matchingRules ; simpl.
       
       unfold ConcreteExpressions.makeGuard ; simpl.
       rewrite H3 ; simpl.

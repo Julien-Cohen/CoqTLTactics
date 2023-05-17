@@ -42,10 +42,10 @@ Proof.
   apply in_flat_map.
 Qed.
 
-Lemma tr_matchPattern_in :
+Lemma tr_matchingRules_in :
 forall (tr: Transformation) (sm : SourceModel),
   forall (sp : list SourceElementType)(r : Rule),
-    In r (matchPattern tr sm sp) <->
+    In r (matchingRules tr sm sp) <->
       In r tr.(rules) /\
       Expressions.evalGuardExpr r sm sp = true.
 Proof.
@@ -58,7 +58,7 @@ Lemma tr_instantiatePattern_in :
 forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
   In te (instantiatePattern tr sm sp) <->
   (exists (r : Rule),
-      In r (matchPattern tr sm sp) /\
+      In r (matchingRules tr sm sp) /\
       In te (instantiateRuleOnPattern r sm sp)).
 Proof.
   intros.
@@ -118,7 +118,7 @@ Lemma tr_applyPattern_in :
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (tl : TargetLinkType),
       In tl (applyPattern tr sm sp) <->
       (exists (r : Rule),
-          In r (matchPattern tr sm sp) /\
+          In r (matchingRules tr sm sp) /\
           In tl (applyRuleOnPattern r tr sm sp)).
 Proof.
   intros.
@@ -292,7 +292,7 @@ Instance CoqTLEngine :
 
     execute := execute;
 
-    matchPattern := matchPattern;
+    matchPattern := matchingRules;
     matchRuleOnPattern := evalGuardExpr ;
 
     instantiatePattern := instantiatePattern;
@@ -315,7 +315,7 @@ Instance CoqTLEngine :
     tr_execute_in_elements := tr_execute_in_elements;
     tr_execute_in_links := tr_execute_in_links;
 
-    tr_matchPattern_in := tr_matchPattern_in;
+    tr_matchPattern_in := tr_matchingRules_in;
     tr_matchRuleOnPattern_leaf := fun _ _ _ _ => eq_refl ;
 
     tr_instantiatePattern_in := tr_instantiatePattern_in;
@@ -332,7 +332,7 @@ Instance CoqTLEngine :
     tr_resolve_leaf := tr_resolveIter_leaf;
 
     allTuples_incl := allTuples_incl;
-    (*tr_matchPattern_None := tr_matchPattern_None;
+    (*tr_matchPattern_None := tr_matchingRules_None;
 
     tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
 

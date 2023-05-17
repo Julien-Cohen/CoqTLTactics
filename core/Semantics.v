@@ -17,7 +17,7 @@ Context {tc: TransformationConfiguration}.
 (** * Instantiate **)
 
 
-Definition matchPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) : list Rule :=
+Definition matchingRules (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) : list Rule :=
   filter (fun (r:Rule) => evalGuardExpr r sm sp) tr.(rules).
 
 Definition instantiateElementOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceElementType) (iter: nat)
@@ -33,13 +33,14 @@ Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list Source
     (seq 0 (evalIteratorExpr r sm sp)).
 
 Definition instantiatePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) : list TargetElementType :=
-  flat_map (fun r => instantiateRuleOnPattern r sm sp) (matchPattern tr sm sp).
+  flat_map (fun r => instantiateRuleOnPattern r sm sp) (matchingRules tr sm sp).
 
-Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: list SourceElementType) (iter: nat) (name: string): option (TargetElementType) :=
+
+(* Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: list SourceElementType) (iter: nat) (name: string): option (TargetElementType) :=
   match (Rule_findOutputPatternElement r name) with
   | Some o =>  instantiateElementOnPattern o sm sp iter
   | None => None
-  end.
+  end.*)
 
 (** * Trace **)
 
@@ -59,7 +60,7 @@ Definition traceRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceElemen
     (seq 0 (evalIteratorExpr r sm sp)).
 
 Definition tracePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) : list TraceLink :=
-  flat_map (fun r => traceRuleOnPattern r sm sp) (matchPattern tr sm sp).
+  flat_map (fun r => traceRuleOnPattern r sm sp) (matchingRules tr sm sp).
 
 
 Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceElementType) :=
@@ -120,7 +121,7 @@ Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (
     (seq 0 (evalIteratorExpr r sm sp)).
 
 Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) : list TargetLinkType :=
-  flat_map (fun r => applyRuleOnPattern r tr sm sp) (matchPattern tr sm sp).
+  flat_map (fun r => applyRuleOnPattern r tr sm sp) (matchingRules tr sm sp).
 
 (** * Execute **)
 

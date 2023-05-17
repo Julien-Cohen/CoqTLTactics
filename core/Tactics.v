@@ -171,18 +171,18 @@ Ltac destruct_instantiatePattern_auto :=
   end.
 
 
-Ltac destruct_in_matchPattern H NEWNAME :=
+Ltac destruct_in_matchingRules H NEWNAME :=
   match type of H with 
-    | In _ (matchPattern ?T _ _)  =>
-      rewrite (core.Certification.tr_matchPattern_in T) in H ;
+    | In _ (matchingRules ?T _ _)  =>
+      rewrite (core.Certification.tr_matchingRules_in T) in H ;
       destruct H as [H NEWNAME]
   end.
 
-Ltac destruct_in_matchPattern_auto :=
+Ltac destruct_in_matchingRules_auto :=
   match goal with 
-    [ H : In _ (matchPattern _ _ _) |- _ ] =>
+    [ H : In _ (matchingRules _ _ _) |- _ ] =>
       let H2 := fresh "M" in
-      destruct_in_matchPattern H H2
+      destruct_in_matchingRules H H2
   end.
 
 
@@ -361,7 +361,7 @@ Proof.
   destruct_traceRuleOnPattern H ; 
   destruct_traceIterationOnPattern H ; 
   destruct_in_optionToList H.
-  Tactics.destruct_in_matchPattern IN0 M.
+  Tactics.destruct_in_matchingRules IN0 M.
   unfold traceElementOnPattern in H.
  
   OptionUtils.monadInv H.
@@ -416,7 +416,7 @@ Proof.
   exists se ; split ; [ exact IN_SOURCE | ].
 
   apply in_flat_map.
-  unfold matchPattern.
+  unfold matchingRules.
   exists r ;  split ; [ apply List.filter_In ; split ; assumption | ].
 
   unfold instantiateRuleOnPattern.
@@ -439,7 +439,7 @@ Ltac destruct_any :=
   first [ 
       destruct_execute 
     | destruct_instantiatePattern_auto 
-    | destruct_in_matchPattern_auto 
+    | destruct_in_matchingRules_auto 
     | destruct_instantiateRuleOnPattern_auto 
     | destruct_instantiateIterationOnPattern_auto 
     | unfold_instantiateElementOnPattern_auto 
@@ -471,7 +471,7 @@ Proof.
   destruct_instantiateRuleOnPattern H NEW2. 
   destruct_instantiateIterationOnPattern H NEW3. 
   unfold_instantiateElementOnPattern H. 
-  destruct_in_matchPattern NEW1 NEW4. 
+  destruct_in_matchingRules NEW1 NEW4. 
   eauto 10.
 Qed.
 
@@ -500,7 +500,7 @@ Proof.
   destruct_apply_pattern H IN_RULE.  
   destruct_applyRuleOnPattern H IN_IT IN_APP_PAT. 
   destruct_applyIterationOnPattern IN_APP_PAT H_IN_OUTPAT.   
-  destruct_in_matchPattern IN_RULE H_MATCH_RULE.
+  destruct_in_matchingRules IN_RULE H_MATCH_RULE.
   unfold applyElementOnPattern in IN_APP_PAT.
   PropUtils.destruct_match IN_APP_PAT ; [ | ListUtils.unfold_In_cons IN_APP_PAT ].
   ListUtils.destruct_in_optionListToList IN_APP_PAT.
