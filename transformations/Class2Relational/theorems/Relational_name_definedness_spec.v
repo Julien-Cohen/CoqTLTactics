@@ -45,37 +45,11 @@ Proof.
   intros T P e IN; intros.
   subst rm.
 
+  C2RTactics.exploit_element_in_result IN ; [ | ] ;
+  clear IN.
 
-  (* (1) *)
-  destruct (Tactics.destruct_in_modelElements_execute_lem IN) 
-    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN'). 
-
-  (* (2) *)
-  Tactics.progress_in_In_rules IN_RULE ; [ | ];
-
-  (* (3) *)
-  Tactics.progress_in_In_outpat IN_OP ;
-
-  (* (4) *)
-  Tactics.exploit_evalGuard MATCH_GUARD ;
-
-  (* (5.E) *)  
-  Tactics.exploit_evaloutpat IN' ;
-
-  (* (6) *)
-  clear IN_IT ;
-
-  (* (7) *)
-  Semantics.exploit_in_allTuples IN_E.
-
-  {
-    apply P in IN_E.
-    apply IN_E.
-  }
-  {
-    apply P in IN_E.
-    apply IN_E.
-  }
+  { apply P in IN_E. apply IN_E. }
+  { apply P in IN_E. apply IN_E. }
 Qed.
 
 

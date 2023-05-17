@@ -31,29 +31,8 @@ Proof.
   unfold incl.
   intros sm1 sm2 INC a IN.
 
-  (* (1) *)
-  destruct (Tactics.destruct_in_modelElements_execute_lem IN) 
-    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN'). 
-
-  (* (2)  *)
-  Tactics.progress_in_In_rules IN_RULE ; [ | ] ;
-
-
-  (* (3) make the ouput-pattern-element appear *)
-  Tactics.progress_in_In_outpat IN_OP ; 
-
-  (* (4) *) 
-  Tactics.exploit_evalGuard MATCH_GUARD ;
-
-  
-  (* (5) *)
-  Tactics.exploit_evaloutpat IN' ;
-  
-  (* (6) *)
-  clear IN_IT ;
-
-  (* 7 *)
-   Semantics.exploit_in_allTuples IN_E.
+  C2RTactics.exploit_element_in_result IN ; [ | ] ;
+  clear IN.
 
   {
     apply INC in IN_E.

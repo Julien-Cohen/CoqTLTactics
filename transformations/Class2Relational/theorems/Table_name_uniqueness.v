@@ -44,54 +44,12 @@ forall (cm : ClassModel) (rm : RelationalModel),
 Proof.
   intros cm rm E PRE t1 t2 IN1 IN2 D.
   subst rm.
-  
-    
-  (* (1) *)
-  destruct (Tactics.destruct_in_modelElements_execute_lem IN1) 
-    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN1'). 
 
-  (* (2) *)
-  Tactics.progress_in_In_rules IN_RULE ; [ |  ];
+  C2RTactics.exploit_element_in_result IN1 ; [] ;
+  clear IN1.
 
-  (* (3) *)
-  Tactics.progress_in_In_outpat IN_OP ;
-
-  (* (4) *)
-  Tactics.exploit_evalGuard MATCH_GUARD ;
-
-  (* (5.E) *)
-  Tactics.exploit_evaloutpat IN1' ; subst ; [] ;
-
-  (* (6) *)
-  Tactics.exploit_in_it IN_IT ;
-  
-  (* (7) *)
-  Semantics.in_allTuples_auto.
-
-
-  (* (1) *)
-  destruct (Tactics.destruct_in_modelElements_execute_lem IN2) 
-    as (r & sp & n & ope & IN_E2 & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN2'). 
-
-  (* (2) *)
-  Tactics.progress_in_In_rules IN_RULE ; [ |  ];
-
-  (* (3) *)
-  Tactics.progress_in_In_outpat IN_OP ;
-
-  (* (4) *)
-  (* useless here *)
-  Tactics.exploit_evalGuard MATCH_GUARD ;
-  
-  (* (5.E) *) 
-  Tactics.exploit_evaloutpat IN2' ;
-
-  (* (6) *)
-  (* useless here *)
-  Tactics.exploit_in_it IN_IT ;
-
-  (* (7) *)
-  repeat Semantics.in_allTuples_auto.
+  C2RTactics.exploit_element_in_result IN2 ; [] ;
+  clear IN2.
 
   simpl in *.
   
