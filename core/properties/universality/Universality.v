@@ -36,15 +36,15 @@ Proof.
   exists (toTransformation tc f).
   intros.
   unfold execute.
-  unfold applyOnPattern.
-  unfold applyRuleOnPattern.
-  unfold applyIterationOnPattern.
-  unfold applyUnitOnPattern.
+  unfold applyOnPiece.
+  unfold applyRuleOnPiece.
+  unfold applyIterationOnPiece.
+  unfold applyUnitOnPiece.
   unfold EvalExpressions.evalOutputPatternLinkExpr.
-  unfold instantiateOnPattern.
-  unfold instantiateRuleOnPattern.
-  unfold instantiateIterationOnPattern.
-  unfold instantiateElementOnPattern.
+  unfold instantiateOnPiece.
+  unfold instantiateRuleOnPiece.
+  unfold instantiateIterationOnPiece.
+  unfold instantiateElementOnPiece.
   unfold EvalExpressions.evalOutputPatternElementExpr.
   unfold EvalExpressions.evalIteratorExpr.
   simpl.

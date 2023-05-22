@@ -67,7 +67,7 @@ Proof.
     apply in_allTuples_2 ; auto.
   }
   {
-    unfold instantiateOnPattern.
+    unfold instantiateOnPiece.
     apply List.in_flat_map.
 
     match eval cbv beta iota fix 
@@ -96,12 +96,12 @@ Proof.
     }
 
     {
-      unfold instantiateRuleOnPattern.
+      unfold instantiateRuleOnPiece.
       simpl.
       unfold EvalExpressions.evalIteratorExpr.
       rewrite HeqR at 2 ; simpl.
       rewrite List.app_nil_r.
-      unfold instantiateIterationOnPattern ; simpl.
+      unfold instantiateIterationOnPiece ; simpl.
       rewrite HeqR ; unfold Syntax.r_outputPattern ; simpl.
       auto.
     }

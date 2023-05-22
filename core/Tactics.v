@@ -154,20 +154,20 @@ Ltac destruct_execute :=
   end.
 
 
-Ltac destruct_instantiateOnPattern H IN_MATCH_NEWNAME :=
+Ltac destruct_instantiateOnPiece H IN_MATCH_NEWNAME :=
   match type of H with 
-    In _ (instantiateOnPattern ?T _ _) =>
+    In _ (instantiateOnPiece ?T _ _) =>
       let e := fresh "r" in
-      rewrite (core.Certification.tr_instantiateOnPattern_in T) in H ;
+      rewrite (core.Certification.tr_instantiateOnPiece_in T) in H ;
       destruct H as [e [IN_MATCH_NEWNAME H]]
   end.
 
-Ltac destruct_instantiateOnPattern_auto :=
+Ltac destruct_instantiateOnPiece_auto :=
   match goal with 
-    [ H : In _ (instantiateOnPattern ?T _ _) |- _ ] =>
+    [ H : In _ (instantiateOnPiece ?T _ _) |- _ ] =>
       let H2 := fresh "IN_R" in
       let e := fresh "r" in
-      destruct_instantiateOnPattern H H2
+      destruct_instantiateOnPiece H H2
   end.
 
 
@@ -187,93 +187,93 @@ Ltac destruct_in_matchingRules_auto :=
 
 
 
-Ltac destruct_instantiateRuleOnPattern H IN_IT_NEWNAME:=
+Ltac destruct_instantiateRuleOnPiece H IN_IT_NEWNAME:=
   match type of H with 
-    In _ (instantiateRuleOnPattern _ _ _) =>
+    In _ (instantiateRuleOnPiece _ _ _) =>
       let e := fresh "n" in
-      rewrite (core.Certification.tr_instantiateRuleOnPattern_in) in H ;
+      rewrite (core.Certification.tr_instantiateRuleOnPiece_in) in H ;
       destruct H as [e [IN_IT_NEWNAME H]]
   end.
 
-Ltac destruct_instantiateRuleOnPattern_auto :=
+Ltac destruct_instantiateRuleOnPiece_auto :=
   match goal with 
-    [ H : In _ (instantiateRuleOnPattern _ _ _) |- _ ] =>
+    [ H : In _ (instantiateRuleOnPiece _ _ _) |- _ ] =>
       let H2 := fresh "IN_I" in
-      destruct_instantiateRuleOnPattern H H2
+      destruct_instantiateRuleOnPiece H H2
   end.
 
 
-Ltac destruct_instantiateIterationOnPattern H NEWNAME :=
+Ltac destruct_instantiateIterationOnPiece H NEWNAME :=
   match type of H with 
-    In _ (instantiateIterationOnPattern _ _ _ _) =>
+    In _ (instantiateIterationOnPiece _ _ _ _) =>
       let e := fresh "opu" in
-      apply core.Certification.tr_instantiateIterationOnPattern_in in H ;
+      apply core.Certification.tr_instantiateIterationOnPiece_in in H ;
       destruct H as [e [NEWNAME H]]
   end.
-Ltac destruct_instantiateIterationOnPattern_auto :=
+Ltac destruct_instantiateIterationOnPiece_auto :=
   match goal with 
-    [ H : In _ (instantiateIterationOnPattern _ _ _ _) |- _ ] =>
+    [ H : In _ (instantiateIterationOnPiece _ _ _ _) |- _ ] =>
       let H2 := fresh "IN_OP" in
-      destruct_instantiateIterationOnPattern H H2
+      destruct_instantiateIterationOnPiece H H2
   end.
 
 
-Ltac unfold_instantiateElementOnPattern H :=
+Ltac unfold_instantiateElementOnPiece H :=
   match type of H with 
-    context[instantiateElementOnPattern _ _ _ _] => 
-      rewrite core.Certification.tr_instantiateElementOnPattern_leaf in H 
+    context[instantiateElementOnPiece _ _ _ _] => 
+      rewrite core.Certification.tr_instantiateElementOnPiece_leaf in H 
   end.
 
-Ltac unfold_instantiateElementOnPattern_auto :=
+Ltac unfold_instantiateElementOnPiece_auto :=
   match goal with 
-    [ H : context[instantiateElementOnPattern _ _ _ _] |- _ ] => 
-      unfold_instantiateElementOnPattern H 
+    [ H : context[instantiateElementOnPiece _ _ _ _] |- _ ] => 
+      unfold_instantiateElementOnPiece H 
   end.
 
 Ltac destruct_apply_pattern H IN_MATCH_NEWNAME :=
   match type of H with 
-    In _ (applyOnPattern _ _ _) => 
+    In _ (applyOnPiece _ _ _) => 
       let R := fresh "r" in
-      apply core.Certification.tr_applyOnPattern_in in H ; 
+      apply core.Certification.tr_applyOnPiece_in in H ; 
       destruct H as (R & (IN_MATCH_NEWNAME & H))
 end.
 
 Ltac destruct_apply_pattern_auto :=
   match goal with 
-    [ H : In _ (applyOnPattern _ _ _) |- _ ] => 
+    [ H : In _ (applyOnPiece _ _ _) |- _ ] => 
       let IN1 := fresh "IN_MATCH" in
       destruct_apply_pattern H IN1
 end.
 
-Ltac destruct_applyRuleOnPattern H NEW1 NEW2 :=
+Ltac destruct_applyRuleOnPiece H NEW1 NEW2 :=
   match type of H with
-    | In _ (applyRuleOnPattern _ _ _ _) =>
+    | In _ (applyRuleOnPiece _ _ _ _) =>
       let N := fresh "n" in 
 
-      apply core.Certification.tr_applyRuleOnPattern_in in H ;
+      apply core.Certification.tr_applyRuleOnPiece_in in H ;
       destruct H as (N & (NEW1 & NEW2))
   end.
 
-Ltac destruct_applyRuleOnPattern_auto :=
+Ltac destruct_applyRuleOnPiece_auto :=
   match goal with
-    [ H : In _ (applyRuleOnPattern _ _ _ _) |- _ ] =>
+    [ H : In _ (applyRuleOnPiece _ _ _ _) |- _ ] =>
       let IN1 := fresh "IN_IT" in 
       let IN2 := fresh "IN_APP_PAT" in 
-      destruct_applyRuleOnPattern H IN1 IN2
+      destruct_applyRuleOnPiece H IN1 IN2
   end.
 
-Ltac destruct_applyIterationOnPattern H NEWNAME :=
+Ltac destruct_applyIterationOnPiece H NEWNAME :=
   match type of H with
-    | In _ (applyIterationOnPattern _ _ _ _ _ )  =>
+    | In _ (applyIterationOnPiece _ _ _ _ _ )  =>
       let p := fresh "p" in
-      apply core.Certification.tr_applyIterationOnPattern_in in H ;
+      apply core.Certification.tr_applyIterationOnPiece_in in H ;
       destruct H as (p & (NEWNAME & H))
   end.
 
-Ltac destruct_applyIterationOnPattern_auto :=
+Ltac destruct_applyIterationOnPiece_auto :=
   match goal with
-    [ H : In _ (applyIterationOnPattern _ _ _ _ _ ) |- _ ] =>
-      destruct_applyIterationOnPattern H
+    [ H : In _ (applyIterationOnPiece _ _ _ _ _ ) |- _ ] =>
+      destruct_applyIterationOnPiece H
   end.
 
 (** On traces. *)
@@ -288,38 +288,38 @@ Ltac destruct_trace H :=
   | _ => fail "Failure in destruct_trace."
   end.
 
-Ltac destruct_traceOnPattern H :=
+Ltac destruct_traceOnPiece H :=
   match type of H with 
-    | In _ (traceOnPattern _ _ _) => 
+    | In _ (traceOnPiece _ _ _) => 
         let p:= fresh "r" in
         let IN := fresh "IN" in
-        unfold traceOnPattern in H ;
+        unfold traceOnPiece in H ;
         apply in_flat_map in H ; 
         destruct H as (p & (IN & H))
-  | _ => fail "Failure in destruct_traceOnPattern."
+  | _ => fail "Failure in destruct_traceOnPiece."
   end.
 
 
-Ltac destruct_traceRuleOnPattern H :=
+Ltac destruct_traceRuleOnPiece H :=
   let p:= fresh "i" in
   let IN := fresh "IN" in
   match type of H  with 
-    | In _ (traceRuleOnPattern _ _ _) => 
-      unfold traceRuleOnPattern in H ;
+    | In _ (traceRuleOnPiece _ _ _) => 
+      unfold traceRuleOnPiece in H ;
       apply in_flat_map in H ; 
       destruct H as (p & (IN & H))
-  | _ => fail "Failure in destruct_traceRuleOnPattern."
+  | _ => fail "Failure in destruct_traceRuleOnPiece."
   end.
 
-Ltac destruct_traceIterationOnPattern H :=
+Ltac destruct_traceIterationOnPiece H :=
   match type of H with 
-    | In _ (traceIterationOnPattern _ _ _ _) => 
+    | In _ (traceIterationOnPiece _ _ _ _) => 
         let p:= fresh "e" in
         let IN := fresh "IN" in
-        unfold traceIterationOnPattern in H ;
+        unfold traceIterationOnPiece in H ;
         apply in_flat_map in H ; 
         destruct H as (p & (IN & H))
-  | _ => fail "Failure in destruct_traceIterationOnPattern."
+  | _ => fail "Failure in destruct_traceIterationOnPiece."
   end.
 
 
@@ -357,15 +357,15 @@ Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
 Proof.
   intros.
   destruct_trace H ; 
-  destruct_traceOnPattern H ; 
-  destruct_traceRuleOnPattern H ; 
-  destruct_traceIterationOnPattern H ; 
+  destruct_traceOnPiece H ; 
+  destruct_traceRuleOnPiece H ; 
+  destruct_traceIterationOnPiece H ; 
   destruct_in_optionToList H.
   Tactics.destruct_in_matchingRules IN0 M.
-  unfold traceElementOnPattern in H.
+  unfold traceElementOnPiece in H.
  
   OptionUtils.monadInv H.
-  unfold instantiateElementOnPattern in H.
+  unfold instantiateElementOnPiece in H.
   eauto 12.
 Qed.
 
@@ -411,7 +411,7 @@ Proof.
   unfold modelElements.
 
   
-  unfold instantiateOnPattern.
+  unfold instantiateOnPiece.
   apply in_flat_map.
   exists se ; split ; [ exact IN_SOURCE | ].
 
@@ -419,15 +419,15 @@ Proof.
   unfold matchingRules.
   exists r ;  split ; [ apply List.filter_In ; split ; assumption | ].
 
-  unfold instantiateRuleOnPattern.
+  unfold instantiateRuleOnPiece.
   apply in_flat_map.
   exists n ; split ; [ exact IN_IT | ].
 
-  unfold instantiateIterationOnPattern.
+  unfold instantiateIterationOnPiece.
   apply in_flat_map.
   exists e ; split ; [ exact IN_OUTPAT | ].
 
-  unfold instantiateElementOnPattern. 
+  unfold instantiateElementOnPiece. 
 
   rewrite EV.
   compute ; auto.
@@ -438,14 +438,14 @@ Qed.
 Ltac destruct_any := 
   first [ 
       destruct_execute 
-    | destruct_instantiateOnPattern_auto 
+    | destruct_instantiateOnPiece_auto 
     | destruct_in_matchingRules_auto 
-    | destruct_instantiateRuleOnPattern_auto 
-    | destruct_instantiateIterationOnPattern_auto 
-    | unfold_instantiateElementOnPattern_auto 
+    | destruct_instantiateRuleOnPiece_auto 
+    | destruct_instantiateIterationOnPiece_auto 
+    | unfold_instantiateElementOnPiece_auto 
     | destruct_apply_pattern_auto 
-    | destruct_applyRuleOnPattern_auto 
-    | destruct_applyIterationOnPattern_auto 
+    | destruct_applyRuleOnPiece_auto 
+    | destruct_applyIterationOnPiece_auto 
     | destruct_in_optionToList
     ].
 
@@ -467,10 +467,10 @@ Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
 Proof.
   intros. 
   destruct_in_modelElements_execute H.  
-  destruct_instantiateOnPattern H NEW1. 
-  destruct_instantiateRuleOnPattern H NEW2. 
-  destruct_instantiateIterationOnPattern H NEW3. 
-  unfold_instantiateElementOnPattern H. 
+  destruct_instantiateOnPiece H NEW1. 
+  destruct_instantiateRuleOnPiece H NEW2. 
+  destruct_instantiateIterationOnPiece H NEW3. 
+  unfold_instantiateElementOnPiece H. 
   destruct_in_matchingRules NEW1 NEW4. 
   eauto 10.
 Qed.
@@ -498,10 +498,10 @@ Proof.
   intros.
   destruct_in_modelLinks_execute H IN_E. 
   destruct_apply_pattern H IN_RULE.  
-  destruct_applyRuleOnPattern H IN_IT IN_APP_PAT. 
-  destruct_applyIterationOnPattern IN_APP_PAT H_IN_OUTPAT.   
+  destruct_applyRuleOnPiece H IN_IT IN_APP_PAT. 
+  destruct_applyIterationOnPiece IN_APP_PAT H_IN_OUTPAT.   
   destruct_in_matchingRules IN_RULE H_MATCH_RULE.
-  unfold applyUnitOnPattern in IN_APP_PAT.
+  unfold applyUnitOnPiece in IN_APP_PAT.
   PropUtils.destruct_match IN_APP_PAT ; [ | ListUtils.unfold_In_cons IN_APP_PAT ].
   ListUtils.destruct_in_optionListToList IN_APP_PAT.
   eauto 15.
@@ -613,7 +613,7 @@ Ltac destruct_in_trace_G :=
 
 Lemma transform_elements_fw {tc} cm p tp (t:Syntax.Transformation (tc:=tc)) :
   In p (allTuples t cm) ->
-  In tp (instantiateOnPattern t cm p) ->
+  In tp (instantiateOnPiece t cm p) ->
   In tp (modelElements (execute t cm)).
 Proof.
   intros IN1 IN2.
@@ -626,7 +626,7 @@ Qed.
 Lemma transform_element_fw {tc} cm e te (t:Syntax.Transformation (tc:=tc)) :
   0 < Syntax.arity t ->
   In e (modelElements cm) ->
-  In te (instantiateOnPattern t cm [e]) ->
+  In te (instantiateOnPiece t cm [e]) ->
   In te (modelElements (execute t cm)).
 Proof.
   intros A IN1 IN2.

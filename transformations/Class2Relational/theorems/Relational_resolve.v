@@ -196,19 +196,19 @@ Proof.
   split.
   { apply C2RTactics.allModelElements_allTuples. exact IN_E. }
   {
-    unfold applyOnPattern.
+    unfold applyOnPiece.
     apply in_flat_map.
     exists (Parser.parseRule R2).
     
     split.
     { simpl. auto. }
     { 
-      apply tr_applyRuleOnPattern_in ; simpl.
+      apply tr_applyRuleOnPiece_in ; simpl.
       exists 0.
       split ; [ solve [auto] | ].
-      apply tr_applyIterationOnPattern_in.
+      apply tr_applyIterationOnPiece_in.
       eexists  ; split ; [ solve [simpl ; auto] | ].
-      erewrite tr_applyUnitOnPattern_leaf ; simpl.
+      erewrite tr_applyUnitOnPiece_leaf ; simpl.
       2:{ compute. reflexivity. }
 
       rewrite <- app_nil_end. 

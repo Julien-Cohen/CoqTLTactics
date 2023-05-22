@@ -16,7 +16,7 @@ Require Import core.utils.CpdtTactics.
 Theorem All_classes_instantiate_impl:
   forall (cm : ClassModel) (c: Class_t),
   exists (t: Table_t),
-    instantiateOnPattern Class2Relational cm [ClassElement c] = [TableElement t].
+    instantiateOnPiece Class2Relational cm [ClassElement c] = [TableElement t].
 Proof.
   eexists.
   reflexivity.
