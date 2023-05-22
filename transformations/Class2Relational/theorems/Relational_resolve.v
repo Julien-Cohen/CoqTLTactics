@@ -161,81 +161,47 @@ Proof.
   C2RTactics.exploit_element_in_result IN_COL ; []; 
   clear IN_COL.
   
- 
-  Tactics.duplicate PRE H.
-
-  specialize (H _ IN_E).
-  destruct H as (c & G1).
-  Tactics.duplicate G1 IN_C ; apply WF2 in IN_C.  
-  
-  Tactics.duplicate G1 IN2. 
-
-  unfold execute ;  simpl. 
+  specialize (PRE _ IN_E).
+  destruct PRE as (c & G1).
 
   C2RTactics.negb_inv MATCH_GUARD.
+  destruct t0. simpl (ClassMetamodel.attr_id _)  in * ; simpl (ClassMetamodel.attr_name _) in * ; simpl ClassMetamodel.derived in *. (* derived a = false *)
+  subst derived. 
 
-  destruct t0 ; simpl in *. (* derived a = false *)
-  subst derived ; simpl in *. 
-
-  Tactics.duplicate G1 G2. 
-
-  specialize (TraceUtils.in_maybeResolve_trace_2 c cm IN_C ) ; 
-    intros (R & I).
-
+ 
   apply ClassModelProperties.getAttributeType_In_left in G1 ; (* here we should exploit ClassModelProperties.getAttributeType_In_left_wf *)
     destruct G1 as [r G1].
 
   exists{| table_id := r.(class_id); table_name := r.(class_name) |}.
 
-  apply in_flat_map.
-  exists ([AttributeElement {|
-               attr_id := attr_id;
-               derived := false;
-               attr_name := attr_name
-             |}]).
-  split.
-  { apply C2RTactics.allModelElements_allTuples. exact IN_E. }
-  {
-    unfold applyOnPiece.
-    apply in_flat_map.
-    exists (Parser.parseRule R2).
-    
-    split.
-    { simpl. auto. }
-    { 
-      apply tr_applyRuleOnPiece_in ; simpl.
-      exists 0.
-      split ; [ solve [auto] | ].
-      apply tr_applyIterationOnPiece_in.
-      eexists  ; split ; [ solve [simpl ; auto] | ].
-      erewrite tr_applyUnitOnPiece_leaf ; simpl.
-      2:{ compute. reflexivity. }
+  eapply Tactics.in_links_fw with (tc:=C2RConfiguration) ; simpl.
+  
+  { apply incl_singleton. eassumption. }
+  { auto. }
+  { (* no auto *) simpl. right. left. reflexivity. (* rule R2 *) }
+  { auto. }
+  { simpl. instantiate (1:=0). auto. }
+  { simpl ; auto. }
+  { crush. }
+  { crush. }
+  { crush. 
+    unfold getAttributeTypeElement.
+    unfold Parser.parseOutputPatternLink.
+    simpl.
+    unfold ConcreteExpressions.makeLink ; simpl.
+    unfold ConcreteExpressions.wrapLink ; simpl.
+    rewrite G1.
+    simpl.
+    unfold singleton ; simpl.
 
-      rewrite <- app_nil_end. 
-      simpl.
-      
-      unfold Parser.parseOutputPatternLink ; simpl.
-      unfold ConcreteExpressions.makeLink ; simpl.
-      unfold ConcreteExpressions.wrapLink ; simpl.
-      unfold getAttributeTypeElement.
-     
-      rewrite G1.
+    apply ClassModelProperties.getAttributeType_classex_right in G1 ; [ | exact WF2].
 
-      unfold ModelingSemantics.maybeResolve.
-
-      apply ClassModelProperties.getAttributeType_classex_right in G1 ; [ | exact WF2].
-
-      apply TraceUtils.in_maybeResolve_trace_2 in G1.
-      destruct G1 as (G11 & G12).
-      
-      unfold maybeSingleton.
-      unfold option_map.
-      unfold singleton.
-      rewrite G11.
-      simpl.
-      left.
-      reflexivity.
-    }
+    apply TraceUtils.in_maybeResolve_trace_2 in G1. 
+    destruct G1 as (G11 & G12).
+    unfold ModelingSemantics.maybeResolve.
+    rewrite G11.
+    simpl.
+    auto.
   }
 Qed.
 

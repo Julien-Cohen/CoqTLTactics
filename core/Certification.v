@@ -81,9 +81,9 @@ Lemma tr_instantiateIterationOnPiece_in :
 forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType) (i:nat),
   In te (instantiateIterationOnPiece r sm sp i)
   <->
-  (exists (ope: OutputPatternUnit),
-      In ope r.(r_outputPattern) /\ 
-      instantiateElementOnPiece ope sm sp i = Some te).
+  (exists (opu: OutputPatternUnit),
+      In opu r.(r_outputPattern) /\ 
+      instantiateElementOnPiece opu sm sp i = Some te).
 Proof.
   split.
   * intros.
@@ -140,9 +140,9 @@ Qed.
 Lemma tr_applyIterationOnPiece_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (tl : TargetLinkType) (i:nat),
       In tl (applyIterationOnPiece r tr sm sp i) <->
-      (exists (ope: OutputPatternUnit),
-          In ope r.(r_outputPattern) /\ 
-          In tl (applyUnitOnPiece ope tr sm sp i)).
+      (exists (opu: OutputPatternUnit),
+          In opu r.(r_outputPattern) /\ 
+          In tl (applyUnitOnPiece opu tr sm sp i)).
 Proof.
   intros.
   apply in_flat_map.
@@ -150,12 +150,12 @@ Qed.
 
 Lemma tr_applyUnitOnPiece_leaf : 
 forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (te: TargetElementType) 
-       (i:nat) (ope: OutputPatternUnit),
-  evalOutputPatternElement ope sm sp i = Some te ->
-  applyUnitOnPiece ope tr sm sp i = optionListToList (evalOutputPatternLink sm sp te i (trace tr sm) ope).
+       (i:nat) (opu: OutputPatternUnit),
+  evalOutputPatternElement opu sm sp i = Some te ->
+  applyUnitOnPiece opu tr sm sp i = optionListToList (evalOutputPatternLink sm sp te i (trace tr sm) opu).
 Proof.
   intros.
-  destruct (evalOutputPatternLink sm sp te i (trace tr sm) ope) eqn:dst.
+  destruct (evalOutputPatternLink sm sp te i (trace tr sm) opu) eqn:dst.
   * unfold applyUnitOnPiece. crush.
   * unfold applyUnitOnPiece. crush.
 Qed.  
@@ -378,15 +378,15 @@ Instance CoqTLEngine :
 Lemma tr_match_injective :
 forall (sm : SourceModel)(sp : list SourceElementType)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIterator r sm sp)) /\ 
-    (exists ope, In ope r.(r_outputPattern) /\  (evalOutputPatternElement ope sm sp iter) <> None ) ->
+    (exists opu, In opu r.(r_outputPattern) /\  (evalOutputPatternElement opu sm sp iter) <> None ) ->
       (exists (te: TargetElementType),  In te (instantiateRuleOnPiece r sm sp) ).
 Proof.
 intros.
-destruct H as [Hiter Hope].
-destruct Hope as [ope HopeIn].
-destruct HopeIn as [HopeInr HopeEval].
-apply option_res_dec in HopeEval.
-destruct HopeEval as [te Hte].
+destruct H as [Hiter Hopu].
+destruct Hopu as [opu HopuIn].
+destruct HopuIn as [HopuInr HopuEval].
+apply option_res_dec in HopuEval.
+destruct HopuEval as [te Hte].
 exists te.
 unfold instantiateRuleOnPiece.
 apply in_flat_map.
@@ -395,9 +395,9 @@ split.
 - exact Hiter.
 - unfold instantiateIterationOnPiece.
 apply in_flat_map.
-exists ope. 
+exists opu. 
 split. 
--- exact HopeInr.
+-- exact HopuInr.
 -- unfold instantiateElementOnPiece.
     rewrite Hte.
     simpl. left. reflexivity.
@@ -411,10 +411,10 @@ Qed.
 Theorem tr_instantiateRuleAndIterationOnPiece_in :
 forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
   In te (instantiateRuleOnPiece r sm sp) <->
-  (exists (i: nat) (ope: OutputPatternUnit),
+  (exists (i: nat) (opu: OutputPatternUnit),
       In i (seq 0 (evalIterator r sm sp)) /\
-      In ope r.(r_outputPattern) /\ 
-        instantiateElementOnPiece ope sm sp i = Some te).
+      In opu r.(r_outputPattern) /\ 
+        instantiateElementOnPiece opu sm sp i = Some te).
 Proof.
   intros.
   split.
@@ -443,9 +443,9 @@ forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElemen
   In te (instantiateRuleOnPiece r sm sp) <->
   (exists (i: nat),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\
-      (exists (ope: OutputPatternUnit),
-      In ope (Rule_getOutputPatternElements r) /\ 
-        instantiateElementOnPiece ope sm sp i = Some te)).
+      (exists (opu: OutputPatternUnit),
+      In opu (Rule_getOutputPatternElements r) /\ 
+        instantiateElementOnPiece opu sm sp i = Some te)).
 Proof.
   intros.
   specialize (tr_instantiateRuleOnPiece_in tr r sm sp te) as inst. 

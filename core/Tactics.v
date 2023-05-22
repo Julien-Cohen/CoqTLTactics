@@ -633,3 +633,73 @@ Proof.
   eapply Tactics.allModelElements_allTuples in IN1 ; [ | exact A].
   eapply transform_elements_fw ; eauto.
 Qed.
+
+
+Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
+  forall (sp:Syntax.InputPiece) (r:Syntax.Rule) i opu produced_element produced_links,
+
+    incl sp (modelElements cm) ->
+    
+    
+    Datatypes.length sp <= Syntax.arity t ->
+    
+    In r t.(Syntax.rules)  ->
+    
+    EvalUserExpressions.evalGuard r cm sp = true ->
+    
+    In i (seq 0 (EvalUserExpressions.evalIterator r cm sp)) ->
+    
+    In opu (Syntax.r_outputPattern r) ->
+    
+    EvalUserExpressions.evalOutputPatternElement opu cm sp i = Some produced_element ->
+    
+    EvalUserExpressions.evalOutputPatternLink cm sp produced_element i (trace t cm) opu = Some produced_links ->
+    
+    forall l, In l  produced_links -> In l (modelLinks (execute t cm)).
+Proof.
+  intros sp r i opu produced_element produced_links.
+  intros IN_MOD A IN_R EVAL_GUARD  EVAL_IT IN_OPU  EVAL_OUT_EL EVAL_OUT_LINK. 
+  intros l INLV  .
+
+  apply Certification.tr_execute_in_links.
+
+  exists sp.  
+  split.
+  {
+    apply Certification.allTuples_incl_length.
+    exact IN_MOD.
+    exact A.
+  }
+  {
+    apply Certification.tr_applyOnPiece_in.
+    exists r.
+    split.
+    {
+      apply Certification.tr_matchingRules_in.
+      split.
+      { exact IN_R. }
+      { exact EVAL_GUARD. }
+    }
+    {
+      apply Certification.tr_applyRuleOnPiece_in.
+      exists i.
+      split.
+      { exact EVAL_IT. }
+      { 
+        apply Certification.tr_applyIterationOnPiece_in.
+        exists opu.
+        split.
+        { exact IN_OPU. }
+        { 
+          rewrite Certification.tr_applyUnitOnPiece_leaf with (te:=produced_element).
+          { 
+            rewrite EVAL_OUT_LINK.
+            simpl.
+            exact INLV.
+          }
+          { exact EVAL_OUT_EL. }
+        }
+      }
+    }
+  }
+Qed.
