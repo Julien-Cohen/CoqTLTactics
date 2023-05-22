@@ -16,20 +16,18 @@ Context {tc: TransformationConfiguration}.
 
 (** * Pattern matching *)
 
-Notation InputPiece := (list SourceElementType).
-
 Definition allTuples (tr: Transformation) (sm : SourceModel) : list InputPiece :=
   tuples_up_to_n sm.(modelElements) tr.(arity).
 
 Definition matchingRules (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list Rule :=
-  filter (fun (r:Rule) => evalGuardExpr r sm sp) tr.(rules).
+  filter (fun (r:Rule) => evalGuard r sm sp) tr.(rules).
 
 
 (** * Instantiate element part of the r.h.s. of rules *)
 
 
 Definition instantiateElementOnPiece : OutputPatternUnit -> SourceModel -> InputPiece -> nat -> option TargetElementType :=
-  evalOutputPatternElementExpr.
+  evalOutputPatternElement.
 
 Definition instantiateIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) :  list TargetElementType :=
   flat_map (fun o => optionToList (instantiateElementOnPiece o sm sp iter))
@@ -37,7 +35,7 @@ Definition instantiateIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPie
 
 Definition instantiateRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :  list TargetElementType :=
   flat_map (instantiateIterationOnPiece r sm sp)
-    (seq 0 (evalIteratorExpr r sm sp)).
+    (seq 0 (evalIterator r sm sp)).
 
 Definition instantiateOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetElementType :=
   flat_map (fun r => instantiateRuleOnPiece r sm sp) (matchingRules tr sm sp).
@@ -59,7 +57,7 @@ Definition traceIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) (i
 
 Definition traceRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :  list TraceLink :=
   flat_map (traceIterationOnPiece r sm sp)
-    (seq 0 (evalIteratorExpr r sm sp)).
+    (seq 0 (evalIterator r sm sp)).
 
 Definition traceOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TraceLink :=
   flat_map (fun r => traceRuleOnPiece r sm sp) (matchingRules tr sm sp).
@@ -79,8 +77,8 @@ Definition applyUnitOnPiece
             (tr: Transformation)
             (sm: SourceModel)
             (sp: InputPiece) (iter: nat) : list TargetLinkType :=
-  match (evalOutputPatternElementExpr opu sm sp iter) with 
-  | Some l => optionListToList (evalOutputPatternLinkExpr sm sp l iter (trace tr sm) opu)
+  match (evalOutputPatternElement opu sm sp iter) with 
+  | Some l => optionListToList (evalOutputPatternLink sm sp l iter (trace tr sm) opu)
   | None => nil
   end.
 
@@ -90,7 +88,7 @@ Definition applyIterationOnPiece (r: Rule) (tr: Transformation) (sm: SourceModel
 
 Definition applyRuleOnPiece (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: InputPiece): list TargetLinkType :=
   flat_map (applyIterationOnPiece r tr sm sp)
-    (seq 0 (evalIteratorExpr r sm sp)).
+    (seq 0 (evalIterator r sm sp)).
 
 Definition applyOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetLinkType :=
   flat_map (fun r => applyRuleOnPiece r tr sm sp) (matchingRules tr sm sp).
@@ -130,8 +128,8 @@ Lemma in_applyUnitOnPiece {A B C D E} :
          a opu sm sp it,
   In a (applyUnitOnPiece opu tr sm sp it) ->
   exists g, 
-    evalOutputPatternElementExpr opu sm sp it = Some g
-    /\ In a (optionListToList (evalOutputPatternLinkExpr sm sp g it (trace tr sm) opu)).
+    evalOutputPatternElement opu sm sp it = Some g
+    /\ In a (optionListToList (evalOutputPatternLink sm sp g it (trace tr sm) opu)).
 Proof.  
   unfold applyUnitOnPiece.
   intros until it ; intro IN.

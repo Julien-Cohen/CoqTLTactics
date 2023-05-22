@@ -40,13 +40,13 @@ Proof.
   unfold applyRuleOnPiece.
   unfold applyIterationOnPiece.
   unfold applyUnitOnPiece.
-  unfold EvalExpressions.evalOutputPatternLinkExpr.
+  unfold EvalExpressions.evalOutputPatternLink.
   unfold instantiateOnPiece.
   unfold instantiateRuleOnPiece.
   unfold instantiateIterationOnPiece.
   unfold instantiateElementOnPiece.
-  unfold EvalExpressions.evalOutputPatternElementExpr.
-  unfold EvalExpressions.evalIteratorExpr.
+  unfold EvalExpressions.evalOutputPatternElement.
+  unfold EvalExpressions.evalIterator.
   simpl.
   apply (H sm) in H0.
   destruct (f sm). simpl.

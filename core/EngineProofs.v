@@ -64,9 +64,9 @@ split.
        (fun o : OutputPatternUnit =>
         optionToList (instantiateElementOnPiece o sm1 sp iter))
        r.(r_outputPattern))
-    (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
-  remember (filter (fun r : Rule => evalGuardExpr r sm1 sp) l) as l1.
-  destruct (evalGuardExpr a sm1 sp) eqn: ca.
+    (seq 0 (evalIterator r sm1 sp)))) as f.
+  remember (filter (fun r : Rule => evalGuard r sm1 sp) l) as l1.
+  destruct (evalGuard a sm1 sp) eqn: ca.
   - apply in_flat_map in H.
     destruct H. destruct H.
     destruct H.
@@ -86,9 +86,9 @@ flat_map
      (fun o : OutputPatternUnit =>
       optionToList (instantiateElementOnPiece o sm1 sp iter))
      r.(r_outputPattern))
-  (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
-remember (filter (fun r : Rule => evalGuardExpr r sm1 sp) l) as l1.
-destruct (evalGuardExpr a sm1 sp) eqn: ca.
+  (seq 0 (evalIterator r sm1 sp)))) as f.
+remember (filter (fun r : Rule => evalGuard r sm1 sp) l) as l1.
+destruct (evalGuard a sm1 sp) eqn: ca.
 ++ destruct H.
 - unfold instantiateOnPiece in H.
 unfold instantiateRuleOnPiece in H.

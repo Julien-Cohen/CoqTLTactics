@@ -48,7 +48,7 @@ forall (tr: Transformation) (sm : SourceModel),
   forall (sp : list SourceElementType)(r : Rule),
     In r (matchingRules tr sm sp) <->
       In r tr.(rules) /\
-      EvalExpressions.evalGuardExpr r sm sp = true.
+      EvalExpressions.evalGuard r sm sp = true.
 Proof.
   intros.
   apply filter_In.
@@ -70,7 +70,7 @@ Lemma tr_instantiateRuleOnPiece_in :
 forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
   In te (instantiateRuleOnPiece r sm sp) <->
   (exists (i: nat),
-      In i (seq 0 (evalIteratorExpr r sm sp)) /\
+      In i (seq 0 (evalIterator r sm sp)) /\
       In te (instantiateIterationOnPiece r sm sp i)).
 Proof.
   intros.
@@ -110,7 +110,7 @@ Qed.
 
 Lemma  tr_instantiateElementOnPiece_leaf:
       forall (o: OutputPatternUnit) (sm: SourceModel) (sp: list SourceElementType) (iter: nat),
-        instantiateElementOnPiece o sm sp iter = evalOutputPatternElementExpr o sm sp iter.
+        instantiateElementOnPiece o sm sp iter = evalOutputPatternElement o sm sp iter.
 Proof.
   crush.
 Qed.
@@ -130,7 +130,7 @@ Lemma tr_applyRuleOnPiece_in :
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (tl : TargetLinkType),
       In tl (applyRuleOnPiece r tr sm sp) <->
       (exists (i: nat),
-          In i (seq 0 (evalIteratorExpr r sm sp)) /\
+          In i (seq 0 (evalIterator r sm sp)) /\
           In tl (applyIterationOnPiece r tr sm sp i)).
 Proof.
   intros.
@@ -151,11 +151,11 @@ Qed.
 Lemma tr_applyUnitOnPiece_leaf : 
 forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (te: TargetElementType) 
        (i:nat) (ope: OutputPatternUnit),
-  evalOutputPatternElementExpr ope sm sp i = Some te ->
-  applyUnitOnPiece ope tr sm sp i = optionListToList (evalOutputPatternLinkExpr sm sp te i (trace tr sm) ope).
+  evalOutputPatternElement ope sm sp i = Some te ->
+  applyUnitOnPiece ope tr sm sp i = optionListToList (evalOutputPatternLink sm sp te i (trace tr sm) ope).
 Proof.
   intros.
-  destruct (evalOutputPatternLinkExpr sm sp te i (trace tr sm) ope) eqn:dst.
+  destruct (evalOutputPatternLink sm sp te i (trace tr sm) ope) eqn:dst.
   * unfold applyUnitOnPiece. crush.
   * unfold applyUnitOnPiece. crush.
 Qed.  
@@ -377,8 +377,8 @@ Instance CoqTLEngine :
 
 Lemma tr_match_injective :
 forall (sm : SourceModel)(sp : list SourceElementType)(r : Rule)(iter: nat),
-    In iter (seq 0 (evalIteratorExpr r sm sp)) /\ 
-    (exists ope, In ope r.(r_outputPattern) /\  (evalOutputPatternElementExpr ope sm sp iter) <> None ) ->
+    In iter (seq 0 (evalIterator r sm sp)) /\ 
+    (exists ope, In ope r.(r_outputPattern) /\  (evalOutputPatternElement ope sm sp iter) <> None ) ->
       (exists (te: TargetElementType),  In te (instantiateRuleOnPiece r sm sp) ).
 Proof.
 intros.
@@ -412,7 +412,7 @@ Theorem tr_instantiateRuleAndIterationOnPiece_in :
 forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
   In te (instantiateRuleOnPiece r sm sp) <->
   (exists (i: nat) (ope: OutputPatternUnit),
-      In i (seq 0 (evalIteratorExpr r sm sp)) /\
+      In i (seq 0 (evalIterator r sm sp)) /\
       In ope r.(r_outputPattern) /\ 
         instantiateElementOnPiece ope sm sp i = Some te).
 Proof.

@@ -98,7 +98,7 @@ Proof.
     {
       unfold instantiateRuleOnPiece.
       simpl.
-      unfold EvalExpressions.evalIteratorExpr.
+      unfold EvalExpressions.evalIterator.
       rewrite HeqR at 2 ; simpl.
       rewrite List.app_nil_r.
       unfold instantiateIterationOnPiece ; simpl.

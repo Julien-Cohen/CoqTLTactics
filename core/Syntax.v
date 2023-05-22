@@ -10,13 +10,15 @@ Require Export core.TraceLink.
       In this section, we introduce _one possible_ abstract syntax of the CoqTL transformation engine.  
       ---- *)
 
+Notation InputPiece := (list SourceElementType).
+
 Section Syntax.
 
 Context {tc: TransformationConfiguration}.
 
 (** ** Syntactic Components
 
-        Next, we model syntactic components of any transformation specification that supported by the CoqTL engine. *)
+        Next, we model syntactic components of any transformation specification that is supported by the CoqTL engine. *)
 
 (** *** OutputPatternUnit *)
 
@@ -26,11 +28,11 @@ Record OutputPatternUnit : Type :=
     opu_name : 
       string ; 
 
-    opu_elementExpr :
-      nat -> SourceModel -> (list SourceElementType) -> option TargetElementType ; 
+    opu_element :
+      nat -> SourceModel -> InputPiece -> option TargetElementType ; 
 
-    opu_linkExpr :
-      list TraceLink -> nat -> SourceModel -> (list SourceElementType) -> TargetElementType -> option (list TargetLinkType)
+    opu_link :
+      list TraceLink -> nat -> SourceModel -> InputPiece -> TargetElementType -> option (list TargetLinkType)
 
 }.
 
@@ -42,8 +44,8 @@ Record OutputPatternUnit : Type :=
 Record Rule : Type :=
   buildRule {
       r_name : string ;
-      r_guard : SourceModel -> list SourceElementType -> bool ;
-      r_iterator : SourceModel -> list SourceElementType -> option nat ;
+      r_guard : SourceModel -> InputPiece -> bool ;
+      r_iterator : SourceModel -> InputPiece -> option nat ;
       r_outputPattern : list OutputPatternUnit
     } .
 
@@ -103,10 +105,10 @@ Ltac simpl_opu_accessors H :=
         opu_name (buildOutputPatternUnit _ _ _)] =>
       unfold opu_name in H
   | context[
-        opu_elementExpr (buildOutputPatternUnit _ _ _)] =>
-      unfold opu_elementExpr in H
+        opu_element (buildOutputPatternUnit _ _ _)] =>
+      unfold opu_element in H
   | context[
-        opu_linkExpr (buildOutputPatternUnit _ _ _)] =>
-      unfold opu_linkExpr in H
+        opu_link (buildOutputPatternUnit _ _ _)] =>
+      unfold opu_link in H
   end.
 

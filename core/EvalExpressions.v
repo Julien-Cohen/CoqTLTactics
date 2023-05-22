@@ -9,30 +9,31 @@ Require Import TransformationConfiguration.
 Scheme Equality for list.
 
 
+
 Section Expressions.
 
 Context {tc: TransformationConfiguration}.
 
 
 
-Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceElementType) : bool :=
+Definition evalGuard (r : Rule) (sm: SourceModel) (sp: InputPiece) : bool :=
   r.(r_guard) sm sp.
 
-Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceElementType) :
+Definition evalIterator (r : Rule) (sm: SourceModel) (sp: InputPiece) :
   nat :=
   match r.(r_iterator) sm sp with
   | Some n => n
   | _ => 0
   end.
 
-Definition evalOutputPatternElementExpr (o: OutputPatternUnit) (sm: SourceModel) (sp: list SourceElementType) (iter: nat) 
+Definition evalOutputPatternElement (o: OutputPatternUnit) (sm: SourceModel) (sp: InputPiece) (iter: nat) 
   : option TargetElementType := 
-  o.(opu_elementExpr) iter sm sp.
+  o.(opu_element) iter sm sp.
 
-Definition evalOutputPatternLinkExpr
-            (sm: SourceModel) (sp: list SourceElementType) (oe: TargetElementType) (iter: nat) (tra: list TraceLink)
+Definition evalOutputPatternLink
+            (sm: SourceModel) (sp: InputPiece) (oe: TargetElementType) (iter: nat) (tra: list TraceLink)
             (o: OutputPatternUnit)
   : option (list TargetLinkType) :=
-  o.(opu_linkExpr) tra iter sm sp oe.
+  o.(opu_link) tra iter sm sp oe.
 
 End Expressions.
