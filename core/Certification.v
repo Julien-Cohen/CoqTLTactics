@@ -14,7 +14,7 @@ Require Import core.Resolve.
 Require Import core.Metamodel.
 Require Import core.TransformationConfiguration.
 Require Import core.SyntaxCertification.
-Require Import core.EvalExpressions.
+Require Import core.EvalUserExpressions.
 
 
 Section Certification.
@@ -48,7 +48,7 @@ forall (tr: Transformation) (sm : SourceModel),
   forall (sp : list SourceElementType)(r : Rule),
     In r (matchingRules tr sm sp) <->
       In r tr.(rules) /\
-      EvalExpressions.evalGuard r sm sp = true.
+      EvalUserExpressions.evalGuard r sm sp = true.
 Proof.
   intros.
   apply filter_In.

@@ -346,14 +346,14 @@ Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
   exists p r i outpat te,   
     In p (allTuples t cm)
     /\ In r (Syntax.rules t) 
-    /\ EvalExpressions.evalGuard r cm p = true 
-    /\ In i (seq 0 (EvalExpressions.evalIterator r cm p))
+    /\ EvalUserExpressions.evalGuard r cm p = true 
+    /\ In i (seq 0 (EvalUserExpressions.evalIterator r cm p))
     /\ In outpat (Syntax.r_outputPattern r)
     /\ l = {|
              TraceLink.source := (p, i, Syntax.opu_name outpat);
              TraceLink.produced := te
            |} 
-    /\ EvalExpressions.evalOutputPatternElement outpat cm p i = return te .
+    /\ EvalUserExpressions.evalOutputPatternElement outpat cm p i = return te .
 Proof.
   intros.
   destruct_trace H ; 
@@ -459,10 +459,10 @@ Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
   exists r sp n0 opu,
     In sp (allTuples t cm)
     /\ In r (Syntax.rules t) 
-    /\ EvalExpressions.evalGuard r cm sp = true 
-    /\ In n0 (seq 0 (EvalExpressions.evalIterator r cm sp))
+    /\ EvalUserExpressions.evalGuard r cm sp = true 
+    /\ In n0 (seq 0 (EvalUserExpressions.evalIterator r cm sp))
     /\ In opu (Syntax.r_outputPattern r) 
-    /\ EvalExpressions.evalOutputPatternElement opu cm sp n0 =
+    /\ EvalUserExpressions.evalOutputPatternElement opu cm sp n0 =
          return a.
 Proof.
   intros. 
@@ -485,13 +485,13 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
     exists sp r n p te tls,
       In sp (allTuples t m) 
       /\ In r (Syntax.rules t) 
-      /\ EvalExpressions.evalGuard r m sp = true
-      /\ In n (seq 0 (EvalExpressions.evalIterator r m sp))
+      /\ EvalUserExpressions.evalGuard r m sp = true
+      /\ In n (seq 0 (EvalUserExpressions.evalIterator r m sp))
       /\ In p (Syntax.r_outputPattern r) 
-      /\ EvalExpressions.evalOutputPatternElement p m sp n =
+      /\ EvalUserExpressions.evalOutputPatternElement p m sp n =
          return te
   
-  /\ EvalExpressions.evalOutputPatternLink m sp te n (trace t m) p = return tls
+  /\ EvalUserExpressions.evalOutputPatternLink m sp te n (trace t m) p = return tls
   /\ In l tls.
 
 Proof.
@@ -527,11 +527,11 @@ Ltac progress_in_In_rules H :=
 Ltac exploit_evaloutpat H :=
   match type of H with 
 
-  | EvalExpressions.evalOutputPatternElement _ _ _ (Parser.parseOutputPatternUnit _) = Some _ =>
+  | EvalUserExpressions.evalOutputPatternElement _ _ _ (Parser.parseOutputPatternUnit _) = Some _ =>
       unfold Parser.parseOutputPatternUnit in H ;
       exploit_evaloutpat H (* recursion *)
        
-  | EvalExpressions.evalOutputPatternElement _ _ _ _ = Some _ =>
+  | EvalUserExpressions.evalOutputPatternElement _ _ _ _ = Some _ =>
       simpl in H ;
       ConcreteExpressions.inv_makeElement H
   end.
@@ -574,8 +574,8 @@ Ltac exploit_in_it H :=
         unfold_parseRule H ;
         exploit_in_it H (* recursion *)
 
-    | In ?I (seq _ (EvalExpressions.evalIterator (Syntax.buildRule _ _ _ _ ) _ _)) => 
-      unfold EvalExpressions.evalIterator in H ; 
+    | In ?I (seq _ (EvalUserExpressions.evalIterator (Syntax.buildRule _ _ _ _ ) _ _)) => 
+      unfold EvalUserExpressions.evalIterator in H ; 
       unfold Syntax.r_iterator in H ; 
       unfold ConcreteSyntax.r_iter in H ;
       simpl seq in H ;
@@ -589,8 +589,8 @@ Ltac exploit_evalGuard H :=
          unfold_parseRule H ;
          exploit_evalGuard H (* recursion *)
 
-      | EvalExpressions.evalGuard (Syntax.buildRule _ _ _ _) _ _ = true => 
-          unfold EvalExpressions.evalGuard in H ; 
+      | EvalUserExpressions.evalGuard (Syntax.buildRule _ _ _ _) _ _ = true => 
+          unfold EvalUserExpressions.evalGuard in H ; 
           unfold Syntax.r_guard in H ; 
           unfold ConcreteSyntax.r_guard in H ; 
           unfold ConcreteSyntax.r_InKinds in H ; 

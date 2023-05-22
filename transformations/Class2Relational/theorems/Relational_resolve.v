@@ -67,8 +67,8 @@ Ltac unfold_parseOutputPatternUnit H :=
     unfold Parser.parseOutputPatternLink in H ;
     repeat ConcreteSyntax.simpl_elem_accessors H.
   
-Ltac unfold_evalOutputPatternLinkExpr H :=
-    unfold EvalExpressions.evalOutputPatternLink in H ;
+Ltac unfold_evalOutputPatternLink H :=
+    unfold EvalUserExpressions.evalOutputPatternLink in H ;
     ConcreteSyntax.simpl_cr_accessors H ;
     Syntax.simpl_opu_accessors H.
 
@@ -103,7 +103,7 @@ Proof.
 
   (* (5.L) now we can progress in EV_LINK. *)
   unfold_parseOutputPatternUnit EV_LINK ; 
-  unfold_evalOutputPatternLinkExpr EV_LINK ; 
+  unfold_evalOutputPatternLink EV_LINK ; 
   rewrite flat_map_singleton in EV_LINK ; 
     repeat ConcreteSyntax.simpl_link_accessors EV_LINK ;
   inj EV_LINK ; [ | ] ;

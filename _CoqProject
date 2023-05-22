@@ -17,7 +17,7 @@ core/utils/TupleUtils.v
 core/utils/OptionUtils.v
 core/utils/Utils.v
 
-core/EvalExpressions.v
+core/EvalUserExpressions.v
 core/Model.v
 core/Metamodel.v
 core/TransformationConfiguration.v
