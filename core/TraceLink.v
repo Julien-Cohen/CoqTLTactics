@@ -15,14 +15,14 @@ Context {tc: TransformationConfiguration}.
 
 (** ** Traces 
 
-        We introduce the concept of trace in the syntax to track relationship of a target element and 
-        the source pattern that generates it   *)
+        We introduce the concept of trace in the syntax to track relationship of a produced element (target) and 
+        the source pattern that generates it.   *)
 
 Record TraceLink : Type :=
   buildTraceLink  
     { 
       source : (list SourceElementType) * nat * string ;
-      target : TargetElementType 
+      produced : TargetElementType 
     }.
 
 Definition getSourcePattern (tl: TraceLink):=
@@ -56,7 +56,7 @@ Definition source_compare (s:(list SourceElementType) * nat * string) (t:TraceLi
 Lemma source_compare_refl : 
   (forall a,  SourceElement_eqb a a = true) ->
   forall a b, 
-    source_compare a {| source := a ; target := b |} = true.
+    source_compare a {| source := a ; produced := b |} = true.
 Proof.
   intros R a b.
   destruct a as ((l & i) & n). 

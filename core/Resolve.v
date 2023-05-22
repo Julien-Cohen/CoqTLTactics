@@ -4,7 +4,7 @@ Import String List Utils.
 Import core.TraceLink core.TransformationConfiguration.
 
 
-(** ** User read access in traces ([resolve]) *)
+(** * User read access in traces ([resolve]) *)
 
 Section Resolve.
 
@@ -13,7 +13,7 @@ Context {tc: TransformationConfiguration}.
 Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
             (sp: list SourceElementType)
             (iter : nat) : option TargetElementType :=
-  option_map TraceLink.target (find (source_compare (sp,iter,name)) tls) .
+  option_map TraceLink.produced (find (source_compare (sp,iter,name)) tls) .
 
 Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
   (sp: list SourceElementType) : option TargetElementType :=

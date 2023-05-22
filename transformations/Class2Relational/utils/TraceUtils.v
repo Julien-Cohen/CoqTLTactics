@@ -189,7 +189,7 @@ Proof.
   (* Set Printing All. *)
   unfold TransformationConfiguration.SourceElementType ; simpl.
   rewrite IN1.
-  simpl target.
+  simpl produced.
   reflexivity.
 Qed.
 

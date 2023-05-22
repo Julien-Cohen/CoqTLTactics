@@ -47,7 +47,7 @@ Definition instantiateOnPattern (tr: Transformation) (sm : SourceModel) (sp: lis
 Definition traceElementOnPattern (o: OutputPatternUnit) (sm: SourceModel) (sp: list SourceElementType) (iter: nat)
   : option TraceLink :=
   match (instantiateElementOnPattern o sm sp iter) with
-  | Some e => Some (buildTraceLink (sp, iter, o.(opu_name)) e)
+  | Some e => Some {| source := (sp, iter, o.(opu_name)) ; produced :=  e |}
   | None => None
   end.
 

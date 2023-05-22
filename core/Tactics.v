@@ -351,7 +351,7 @@ Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
     /\ In outpat (Syntax.r_outputPattern r)
     /\ l = {|
              TraceLink.source := (p, i, Syntax.opu_name outpat);
-             TraceLink.target := te
+             TraceLink.produced := te
            |} 
     /\ EvalExpressions.evalOutputPatternElementExpr outpat cm p i = return te .
 Proof.
@@ -405,7 +405,7 @@ Proof.
     as (se & r & n & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV).
   
   inj EQ.
-  simpl TraceLink.target.
+  simpl TraceLink.produced.
 
   unfold execute. 
   unfold modelElements.

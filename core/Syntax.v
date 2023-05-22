@@ -14,9 +14,9 @@ Section Syntax.
 
 Context {tc: TransformationConfiguration}.
 
-(** ** Syntactic Componants
+(** ** Syntactic Components
 
-        Next, we model syntactic componants of any transformation specification that supported by the CoqTL engine. *)
+        Next, we model syntactic components of any transformation specification that supported by the CoqTL engine. *)
 
 (** *** OutputPatternUnit *)
 
@@ -48,7 +48,7 @@ Record Rule : Type :=
     } .
 
 
-(** find an output pattern unit in a rule by the given name: *)
+(** Find an output pattern unit in a rule by the given name: *)
 
 Definition Rule_findOutputPatternUnit (r: Rule) (name: string) : option OutputPatternUnit :=
   find (fun (o:OutputPatternUnit) => beq_string name o.(opu_name))

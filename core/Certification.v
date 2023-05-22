@@ -265,7 +265,7 @@ Theorem tr_resolveIter_leaf:
         Is_true (list_beq _ (@elements_eqdec tc.(SourceMetamodel)) (TraceLink.getSourcePattern tl) sp) /\
         ((TraceLink.getIteration tl) = iter) /\ 
         ((TraceLink.getName tl) = name)%string /\
-        tl.(target) = x).
+        tl.(produced) = x).
 Proof.
 intros.
 unfold resolveIter in H.
