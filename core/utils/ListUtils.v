@@ -274,6 +274,18 @@ Proof.
   apply app_nil_r.
 Qed.
 
+Lemma map_flat_map {A} {B} {C}:
+  forall  (f:B->C) (g:A-> list B) (s:list A),
+     map f (flat_map g s) = List.flat_map (fun a => map f (g a)) s.
+Proof.
+  intros f g s.
+  induction s ; simpl.
+  reflexivity.
+  rewrite List.map_app.
+  f_equal ; auto.
+Qed.
+
+
 Lemma filter_nil:
     forall (A : Type) (f : A -> bool) (x : A) (l : list A),
       (filter f l) = nil <->  (forall a: A, In a l -> f a = false).

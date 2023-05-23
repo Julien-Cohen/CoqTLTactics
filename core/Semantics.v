@@ -109,6 +109,29 @@ Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
 
 End Semantics.
 
+
+
+
+Remark trace_duplicate_instantiate {tc :TransformationConfiguration} :
+  forall tr sm,
+    instantiateTrOnModel tr sm = List.map TraceLink.produced (traceTrOnModel tr sm).
+Proof.
+  intros tr sm. 
+  unfold traceTrOnModel, instantiateTrOnModel. rewrite map_flat_map.
+  apply flat_map_ext ; clear ; intro. 
+  unfold instantiateTrOnPiece, traceTrOnPiece. rewrite map_flat_map.
+  apply flat_map_ext ; clear ; intro. 
+  unfold instantiateRuleOnPiece, traceRuleOnPiece. rewrite map_flat_map.
+  apply flat_map_ext ; clear ; intro. 
+  unfold instantiateIterationOnPiece, traceIterationOnPiece. rewrite map_flat_map.
+  apply flat_map_ext ; clear ; intro. 
+  
+  unfold traceElementOnPiece.
+  destruct (instantiateElementOnPiece a0 sm a a1) ; reflexivity.
+Qed.
+
+
+
 (** * Some tactics *)
 
 (* tactics need to be outside the section to be visible *)
