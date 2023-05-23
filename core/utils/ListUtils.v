@@ -110,6 +110,13 @@ Proof.
   + contradiction.
 Qed.
 
+Lemma optionToList_map {A} {B}: 
+  forall (f:A->B) a,
+         optionToList (option_map f a) = map f (optionToList a).
+Proof.
+  intros.
+  destruct a ; reflexivity.
+Qed.
 
 Definition optionListToList {A:Type} (o: option (list A)) : list A :=
   match o with

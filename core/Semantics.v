@@ -23,31 +23,12 @@ Definition matchingRules (tr: Transformation) (sm : SourceModel) (sp: InputPiece
   filter (fun (r:Rule) => evalGuard r sm sp) tr.(rules).
 
 
-(** * Instantiate element part of the r.h.s. of rules *)
-
-
-Definition instantiateElementOnPiece : OutputPatternUnit -> SourceModel -> InputPiece -> nat -> option TargetElementType :=
-  evalOutputPatternElement.
-
-Definition instantiateIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) :  list TargetElementType :=
-  flat_map (fun o => optionToList (instantiateElementOnPiece o sm sp iter))
-    r.(r_outputPattern).
-
-Definition instantiateRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :  list TargetElementType :=
-  flat_map (instantiateIterationOnPiece r sm sp)
-    (seq 0 (evalIterator r sm sp)).
-
-Definition instantiateTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetElementType :=
-  flat_map (fun r => instantiateRuleOnPiece r sm sp) (matchingRules tr sm sp).
-
-Definition instantiateTrOnModel (tr: Transformation) (sm : SourceModel) := flat_map (instantiateTrOnPiece tr sm) (allTuples tr sm).
-
 
 (** * Building traces *)
 
 Definition traceElementOnPiece (o: OutputPatternUnit) (sm: SourceModel) (sp: InputPiece) (iter: nat)
   : option TraceLink :=
-  match (instantiateElementOnPiece o sm sp iter) with
+  match (evalOutputPatternElement o sm sp iter) with
   | Some e => Some {| source := (sp, iter, o.(opu_name)) ; produced :=  e |}
   | None => None
   end.
@@ -68,6 +49,25 @@ Definition traceTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiec
 Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) : list TraceLink :=
   flat_map (traceTrOnPiece tr sm) (allTuples tr sm).  
 
+
+(** * Instantiate element part of the r.h.s. of rules *)
+
+Definition instantiateElementOnPiece opu sm ip it:  option TargetElementType :=
+  option_map produced (traceElementOnPiece opu sm ip it). 
+
+
+Definition instantiateIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) :  list TargetElementType :=
+  flat_map (fun o => optionToList (instantiateElementOnPiece o sm sp iter))
+    r.(r_outputPattern).
+
+Definition instantiateRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :  list TargetElementType :=
+  flat_map (instantiateIterationOnPiece r sm sp)
+    (seq 0 (evalIterator r sm sp)).
+
+Definition instantiateTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetElementType :=
+  flat_map (fun r => instantiateRuleOnPiece r sm sp) (matchingRules tr sm sp).
+
+Definition instantiateTrOnModel (tr: Transformation) (sm : SourceModel) := flat_map (instantiateTrOnPiece tr sm) (allTuples tr sm).
 
 
 
@@ -125,9 +125,9 @@ Proof.
   apply flat_map_ext ; clear ; intro. 
   unfold instantiateIterationOnPiece, traceIterationOnPiece. rewrite map_flat_map.
   apply flat_map_ext ; clear ; intro. 
-  
-  unfold traceElementOnPiece.
-  destruct (instantiateElementOnPiece a0 sm a a1) ; reflexivity.
+
+  unfold instantiateElementOnPiece.  
+  apply ListUtils.optionToList_map.
 Qed.
 
 

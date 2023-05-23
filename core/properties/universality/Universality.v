@@ -47,6 +47,7 @@ Proof.
   unfold instantiateRuleOnPiece.
   unfold instantiateIterationOnPiece.
   unfold instantiateElementOnPiece.
+  unfold traceElementOnPiece.
   unfold EvalUserExpressions.evalOutputPatternElement.
   unfold EvalUserExpressions.evalIterator.
   simpl.
@@ -60,9 +61,17 @@ Proof.
       f_equal.
       rewrite <- IHmodelElements at 2.
       repeat rewrite flat_map_concat_map.
+      repeat rewrite app_nil_r.
       f_equal.
       rewrite <- seq_shift.
       rewrite map_map.
+      (* The two are equals because of the projection [produced]. *)
+      simpl nth_error.
+      apply map_ext ; intro x.
+      f_equal.
+      f_equal.
+      repeat rewrite OptionUtils.option_map_bind.
+      simpl (produced _).
       reflexivity.
   - destruct modelElements eqn:dst.
     * crush. 

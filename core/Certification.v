@@ -112,7 +112,10 @@ Lemma  tr_instantiateElementOnPiece_leaf:
       forall (o: OutputPatternUnit) (sm: SourceModel) (sp: list SourceElementType) (iter: nat),
         instantiateElementOnPiece o sm sp iter = evalOutputPatternElement o sm sp iter.
 Proof.
-  crush.
+  intros.
+  unfold instantiateElementOnPiece.
+  unfold traceElementOnPiece.
+  destruct (evalOutputPatternElement o sm sp iter) ; reflexivity.
 Qed.
 
 Lemma tr_applyOnPiece_in :
@@ -376,31 +379,32 @@ Instance CoqTLEngine :
 *)
 
 Lemma tr_match_injective :
-forall (sm : SourceModel)(sp : list SourceElementType)(r : Rule)(iter: nat),
+  forall (sm : SourceModel)(sp : list SourceElementType)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIterator r sm sp)) /\ 
-    (exists opu, In opu r.(r_outputPattern) /\  (evalOutputPatternElement opu sm sp iter) <> None ) ->
-      (exists (te: TargetElementType),  In te (instantiateRuleOnPiece r sm sp) ).
+      (exists opu, In opu r.(r_outputPattern) /\  (evalOutputPatternElement opu sm sp iter) <> None ) ->
+    (exists (te: TargetElementType),  In te (instantiateRuleOnPiece r sm sp) ).
 Proof.
-intros.
-destruct H as [Hiter Hopu].
-destruct Hopu as [opu HopuIn].
-destruct HopuIn as [HopuInr HopuEval].
-apply option_res_dec in HopuEval.
-destruct HopuEval as [te Hte].
-exists te.
-unfold instantiateRuleOnPiece.
-apply in_flat_map.
-exists iter.
-split.
-- exact Hiter.
-- unfold instantiateIterationOnPiece.
-apply in_flat_map.
-exists opu. 
-split. 
--- exact HopuInr.
--- unfold instantiateElementOnPiece.
-    rewrite Hte.
-    simpl. left. reflexivity.
+  intros.
+  destruct H as [Hiter Hopu].
+  destruct Hopu as [opu HopuIn].
+  destruct HopuIn as [HopuInr HopuEval].
+  apply option_res_dec in HopuEval.
+  destruct HopuEval as [te Hte].
+  exists te.
+  unfold instantiateRuleOnPiece.
+  apply in_flat_map.
+  exists iter.
+  split.
+  - exact Hiter.
+  - unfold instantiateIterationOnPiece.
+    apply in_flat_map.
+    exists opu. 
+    split. 
+    -- exact HopuInr.
+    -- unfold instantiateElementOnPiece.
+       unfold traceElementOnPiece.
+       rewrite Hte.
+       simpl. auto.
 Qed.
 
 (* if In te (instantiateRuleOnPiece r sm sp) => tr_instantiateOnPiece_in

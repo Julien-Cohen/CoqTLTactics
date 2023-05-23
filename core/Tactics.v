@@ -428,26 +428,12 @@ Proof.
   exists e ; split ; [ exact IN_OUTPAT | ].
 
   unfold instantiateElementOnPiece. 
-
+  unfold traceElementOnPiece.
   rewrite EV.
   compute ; auto.
 
 Qed.
 
-(** DEPRECATED *)
-Ltac destruct_any := 
-  first [ 
-      destruct_execute 
-    | destruct_instantiateOnPiece_auto 
-    | destruct_in_matchingRules_auto 
-    | destruct_instantiateRuleOnPiece_auto 
-    | destruct_instantiateIterationOnPiece_auto 
-    | unfold_instantiateElementOnPiece_auto 
-    | destruct_apply_pattern_auto 
-    | destruct_applyRuleOnPiece_auto 
-    | destruct_applyIterationOnPiece_auto 
-    | destruct_in_optionToList
-    ].
 
 Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
   forall 

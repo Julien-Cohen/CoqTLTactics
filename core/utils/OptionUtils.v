@@ -69,3 +69,12 @@ Ltac monadInv H :=
 
 Ltac monadInvN n H :=
   unfold n in H ; monadInv H.
+
+Lemma option_map_bind {A} {B} :
+  forall (f:A->B) (a:option B) b,
+    option_map f (e <- a ; return b e) = (e <- a ; return f (b e)).
+Proof.
+  intros.
+  destruct a ;
+    reflexivity.
+Qed.
