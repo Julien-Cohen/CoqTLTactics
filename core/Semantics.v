@@ -40,6 +40,7 @@ Definition instantiateRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :
 Definition instantiateTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetElementType :=
   flat_map (fun r => instantiateRuleOnPiece r sm sp) (matchingRules tr sm sp).
 
+Definition instantiateTrOnModel (tr: Transformation) (sm : SourceModel) := flat_map (instantiateTrOnPiece tr sm) (allTuples tr sm).
 
 
 (** * Building traces *)
@@ -64,7 +65,7 @@ Definition traceTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiec
 
 
 
-Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
+Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) : list TraceLink :=
   flat_map (traceTrOnPiece tr sm) (allTuples tr sm).  
 
 
@@ -78,7 +79,7 @@ Definition applyUnitOnPiece
             (sm: SourceModel)
             (sp: InputPiece) (iter: nat) : list TargetLinkType :=
   match (evalOutputPatternElement opu sm sp iter) with 
-  | Some l => optionListToList (evalOutputPatternLink sm sp l iter (trace tr sm) opu)
+  | Some l => optionListToList (evalOutputPatternLink sm sp l iter (traceTrOnModel tr sm) opu)
   | None => nil
   end.
 
@@ -93,12 +94,17 @@ Definition applyRuleOnPiece (r: Rule) (tr: Transformation) (sm: SourceModel) (sp
 Definition applyTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetLinkType :=
   flat_map (fun r => applyRuleOnPiece r tr sm sp) (matchingRules tr sm sp).
 
+Definition applyTrOnModel (tr: Transformation) (sm : SourceModel) 
+  : list TargetLinkType
+  :=  flat_map (applyTrOnPiece tr sm) (allTuples tr sm).
+
 (** * Execute **)
+
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   {|
-    modelElements := flat_map (instantiateTrOnPiece tr sm) (allTuples tr sm) ;
-    modelLinks := flat_map (applyTrOnPiece tr sm) (allTuples tr sm)
+    modelElements := instantiateTrOnModel tr sm ;
+    modelLinks := applyTrOnModel tr sm
   |}.
 
 End Semantics.
@@ -129,7 +135,7 @@ Lemma in_applyUnitOnPiece {A B C D E} :
   In a (applyUnitOnPiece opu tr sm sp it) ->
   exists g, 
     evalOutputPatternElement opu sm sp it = Some g
-    /\ In a (optionListToList (evalOutputPatternLink sm sp g it (trace tr sm) opu)).
+    /\ In a (optionListToList (evalOutputPatternLink sm sp g it (traceTrOnModel tr sm) opu)).
 Proof.  
   unfold applyUnitOnPiece.
   intros until it ; intro IN.

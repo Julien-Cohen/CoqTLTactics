@@ -57,7 +57,7 @@ Definition wf t : Prop :=
 
 
 Lemma trace_wf :
-  forall cm, wf (trace Class2Relational cm).
+  forall cm, wf (traceTrOnModel Class2Relational cm).
 Proof.
   intro cm. 
   unfold wf.
@@ -207,7 +207,7 @@ Lemma in_trace c (cm : ClassModel) :
           |}
          )
     ) 
-    (trace Class2Relational cm).
+    (traceTrOnModel Class2Relational cm).
 Proof.
   intro IN1.
 
@@ -224,7 +224,7 @@ Lemma in_maybeResolve_trace_2 c (cm : ClassModel) :
   
   In (ClassElement c) cm.(modelElements) -> 
   
-  Resolve.maybeResolve (trace Class2Relational cm) cm "tab" (Some [ClassElement c])  =  
+  Resolve.maybeResolve (traceTrOnModel Class2Relational cm) cm "tab" (Some [ClassElement c])  =  
     Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}) 
   
   /\ In 

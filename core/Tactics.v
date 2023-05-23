@@ -279,10 +279,10 @@ Ltac destruct_applyIterationOnPiece_auto :=
 (** On traces. *)
 Ltac destruct_trace H :=
   match type of H with 
-  | In _ (trace _ _ )  => 
+  | In _ (traceTrOnModel _ _ )  => 
       let p:= fresh "p" in
       let IN := fresh "IN" in
-      unfold trace in H ;
+      unfold traceTrOnModel in H ;
       apply in_flat_map in H ; 
       destruct H as (p & (IN & H))
   | _ => fail "Failure in destruct_trace."
@@ -342,7 +342,7 @@ Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
   forall
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))} 
   {cm} {l},
-  In l (trace t cm) ->
+  In l (traceTrOnModel t cm) ->
   exists p r i outpat te,   
     In p (allTuples t cm)
     /\ In r (Syntax.rules t) 
@@ -372,7 +372,7 @@ Qed.
 Corollary in_trace_in_models_source {MM1} {T1} {T2} {BEQ1} {BEQ2} :  
   forall (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2)))
  cm a b s i,
-    In (TraceLink.buildTraceLink ([a],i,s) b ) (trace t cm) ->
+    In (TraceLink.buildTraceLink ([a],i,s) b ) (traceTrOnModel t cm) ->
     In a cm.(modelElements) .
 Proof.
   intros t cm a b s i IN.
@@ -394,7 +394,7 @@ Lemma in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
   forall 
     (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2)))
     cm a b,
-     In (TraceLink.buildTraceLink a b) (trace t cm) ->
+     In (TraceLink.buildTraceLink a b) (traceTrOnModel t cm) ->
     In b (execute t cm).(modelElements).
 Proof.
   intros t cm a b IN.
@@ -491,7 +491,7 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
       /\ EvalUserExpressions.evalOutputPatternElement p m sp n =
          return te
   
-  /\ EvalUserExpressions.evalOutputPatternLink m sp te n (trace t m) p = return tls
+  /\ EvalUserExpressions.evalOutputPatternLink m sp te n (traceTrOnModel t m) p = return tls
   /\ In l tls.
 
 Proof.
@@ -603,8 +603,8 @@ Ltac exploit_evalGuard H :=
 
 Ltac destruct_in_trace_G :=
   match goal with 
-    [ |- In _ (trace _ _)] => 
-      unfold trace ;
+    [ |- In _ (traceTrOnModel _ _)] => 
+      unfold traceTrOnModel ;
       apply in_flat_map
   end.
 
@@ -653,7 +653,7 @@ Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
     
     EvalUserExpressions.evalOutputPatternElement opu cm sp i = Some produced_element ->
     
-    EvalUserExpressions.evalOutputPatternLink cm sp produced_element i (trace t cm) opu = Some produced_links ->
+    EvalUserExpressions.evalOutputPatternLink cm sp produced_element i (traceTrOnModel t cm) opu = Some produced_links ->
     
     forall l, In l  produced_links -> In l (modelLinks (execute t cm)).
 Proof.

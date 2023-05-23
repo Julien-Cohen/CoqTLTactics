@@ -36,11 +36,13 @@ Proof.
   exists (toTransformation tc f).
   intros.
   unfold execute.
+  unfold applyTrOnModel.
   unfold applyTrOnPiece.
   unfold applyRuleOnPiece.
   unfold applyIterationOnPiece.
   unfold applyUnitOnPiece.
   unfold EvalUserExpressions.evalOutputPatternLink.
+  unfold instantiateTrOnModel.
   unfold instantiateTrOnPiece.
   unfold instantiateRuleOnPiece.
   unfold instantiateIterationOnPiece.

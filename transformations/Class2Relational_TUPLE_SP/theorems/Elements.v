@@ -120,6 +120,7 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
   simpl.
+  unfold instantiateTrOnModel. 
   apply C2RTactics.allModelElements_allTuples in H.
   revert H ; generalize (allTuples Class2Relational_TUPLE_SP cm).
 
