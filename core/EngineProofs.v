@@ -38,96 +38,96 @@
 
 (* decompose instantiateOnPiece results *)
 Lemma instantiateOnPiece_distributive:
-forall (tc: TransformationConfiguration),
+  forall (tc: TransformationConfiguration),
   forall a0 sp sm1 n a l,
-In a0 (instantiateOnPiece (buildTransformation n (a :: l)) sm1 sp) <->
-In a0 (instantiateOnPiece (buildTransformation n [a]) sm1 sp) \/
-In a0 (instantiateOnPiece (buildTransformation n l) sm1 sp).
+    In a0 (instantiateTrOnPiece (buildTransformation n (a :: l)) sm1 sp) <->
+      In a0 (instantiateTrOnPiece (buildTransformation n [a]) sm1 sp) \/
+        In a0 (instantiateTrOnPiece (buildTransformation n l) sm1 sp).
 Proof.
-intros.
-split.
-+ intro.
-  unfold instantiateOnPiece in H.
-  unfold instantiateRuleOnPiece  in H.
-  unfold instantiateIterationOnPiece in H.
-  unfold matchingRules in H.
-  simpl in H.
-  unfold instantiateOnPiece.
-  unfold instantiateRuleOnPiece.
-  unfold instantiateIterationOnPiece.
-  unfold matchingRules.
-  simpl. 
-  remember ((fun r : Rule =>
-  flat_map
-    (fun iter : nat =>
-     flat_map
-       (fun o : OutputPatternUnit =>
-        optionToList (instantiateElementOnPiece o sm1 sp iter))
-       r.(r_outputPattern))
-    (seq 0 (evalIterator r sm1 sp)))) as f.
-  remember (filter (fun r : Rule => evalGuard r sm1 sp) l) as l1.
-  destruct (evalGuard a sm1 sp) eqn: ca.
+  intros.
+  split.
+  + intro.
+    unfold instantiateTrOnPiece in H.
+    unfold instantiateRuleOnPiece  in H.
+    unfold instantiateIterationOnPiece in H.
+    unfold matchingRules in H.
+    simpl in H.
+    unfold instantiateTrOnPiece.
+    unfold instantiateRuleOnPiece.
+    unfold instantiateIterationOnPiece.
+    unfold matchingRules.
+    simpl. 
+    remember ((fun r : Rule =>
+                 flat_map
+                   (fun iter : nat =>
+                      flat_map
+                        (fun o : OutputPatternUnit =>
+                           optionToList (instantiateElementOnPiece o sm1 sp iter))
+                        r.(r_outputPattern))
+                   (seq 0 (evalIterator r sm1 sp)))) as f.
+    remember (filter (fun r : Rule => evalGuard r sm1 sp) l) as l1.
+    destruct (evalGuard a sm1 sp) eqn: ca.
   - apply in_flat_map in H.
     destruct H. destruct H.
     destruct H.
     -- rewrite <- H in H0. left. apply in_flat_map. exists x. crush.
     -- right. apply in_flat_map. exists x. crush.
   - right. auto.
-+ intro.
-unfold instantiateOnPiece.
-unfold instantiateRuleOnPiece.
-unfold instantiateIterationOnPiece.
-unfold matchingRules.
-simpl. 
-remember ((fun r : Rule =>
-flat_map
-  (fun iter : nat =>
-   flat_map
-     (fun o : OutputPatternUnit =>
-      optionToList (instantiateElementOnPiece o sm1 sp iter))
-     r.(r_outputPattern))
-  (seq 0 (evalIterator r sm1 sp)))) as f.
-remember (filter (fun r : Rule => evalGuard r sm1 sp) l) as l1.
-destruct (evalGuard a sm1 sp) eqn: ca.
-++ destruct H.
-- unfold instantiateOnPiece in H.
-unfold instantiateRuleOnPiece in H.
-unfold instantiateIterationOnPiece in H.
-unfold matchingRules in H.
-simpl in H.
-rewrite ca in H.
-rewrite <- Heqf in H.
-apply in_flat_map in H. destruct H.
-apply in_flat_map. exists x. split. crush. crush. 
-- unfold instantiateOnPiece in H.
-unfold instantiateRuleOnPiece in H.
-unfold instantiateIterationOnPiece in H.
-unfold matchingRules in H.
-simpl in H.
-rewrite <- Heqf in H.
-apply in_flat_map in H.
-destruct H.
-apply in_flat_map.
-exists x. split; crush.
-++ destruct H. 
-unfold instantiateOnPiece in H.
-unfold instantiateRuleOnPiece in H.
-unfold instantiateIterationOnPiece in H.
-unfold matchingRules in H.
-simpl in H.
-rewrite ca in H.
-rewrite <- Heqf in H.
-simpl in H. inversion H.
-unfold instantiateOnPiece in H.
-unfold instantiateRuleOnPiece in H.
-unfold instantiateIterationOnPiece in H.
-unfold matchingRules in H.
-simpl in H.
-rewrite <- Heqf in H.
-apply in_flat_map in H.
-destruct H.
-apply in_flat_map.
-exists x. split; crush.
+    + intro.
+      unfold instantiateTrOnPiece.
+      unfold instantiateRuleOnPiece.
+      unfold instantiateIterationOnPiece.
+      unfold matchingRules.
+      simpl. 
+      remember ((fun r : Rule =>
+                   flat_map
+                     (fun iter : nat =>
+                        flat_map
+                          (fun o : OutputPatternUnit =>
+                             optionToList (instantiateElementOnPiece o sm1 sp iter))
+                          r.(r_outputPattern))
+                     (seq 0 (evalIterator r sm1 sp)))) as f.
+      remember (filter (fun r : Rule => evalGuard r sm1 sp) l) as l1.
+      destruct (evalGuard a sm1 sp) eqn: ca.
+      ++ destruct H.
+         -- unfold instantiateTrOnPiece in H.
+            unfold instantiateRuleOnPiece in H.
+            unfold instantiateIterationOnPiece in H.
+            unfold matchingRules in H.
+            simpl in H.
+            rewrite ca in H.
+            rewrite <- Heqf in H.
+            apply in_flat_map in H. destruct H.
+            apply in_flat_map. exists x. split. crush. crush. 
+         -- unfold instantiateTrOnPiece in H.
+            unfold instantiateRuleOnPiece in H.
+            unfold instantiateIterationOnPiece in H.
+            unfold matchingRules in H.
+            simpl in H.
+            rewrite <- Heqf in H.
+            apply in_flat_map in H.
+            destruct H.
+            apply in_flat_map.
+            exists x. split; crush.
+      ++ destruct H. 
+         unfold instantiateTrOnPiece in H.
+         unfold instantiateRuleOnPiece in H.
+         unfold instantiateIterationOnPiece in H.
+         unfold matchingRules in H.
+         simpl in H.
+         rewrite ca in H.
+         rewrite <- Heqf in H.
+         simpl in H. inversion H.
+         unfold instantiateTrOnPiece in H.
+         unfold instantiateRuleOnPiece in H.
+         unfold instantiateIterationOnPiece in H.
+         unfold matchingRules in H.
+         simpl in H.
+         rewrite <- Heqf in H.
+         apply in_flat_map in H.
+         destruct H.
+         apply in_flat_map.
+         exists x. split; crush.
 Qed.
 
 (** ** maxArity **)

@@ -33,7 +33,7 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
       In te (execute tr sm).(modelElements) ->
       (exists (sp : list SourceElementType),
           In sp (allTuples tr sm) /\
-          In te (instantiateOnPiece tr sm sp)).
+          In te (instantiateTrOnPiece tr sm sp)).
 Proof.
     apply tr_execute_in_elements.
 Qed.
@@ -46,7 +46,7 @@ forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
       In tl (execute tr sm).(modelLinks) ->
       (exists (sp : list SourceElementType),
           In sp (allTuples tr sm) /\
-          In tl (applyOnPiece tr sm sp)).
+          In tl (applyTrOnPiece tr sm sp)).
 Proof.
     apply tr_execute_in_links.
 Qed.

@@ -32,7 +32,7 @@ Theorem Totality_elem :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
       (exists (sp : list SourceElementType),
           In sp (allTuples tr sm) /\
-          In te (instantiateOnPiece tr sm sp)) ->
+          In te (instantiateTrOnPiece tr sm sp)) ->
           In te (execute tr sm).(modelElements).
 Proof.
     apply tr_execute_in_elements.
@@ -60,7 +60,7 @@ Theorem Totality_links :
 forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
       (exists (sp : list SourceElementType),
           In sp (allTuples tr sm) /\
-          In tl (applyOnPiece tr sm sp)) -> 
+          In tl (applyTrOnPiece tr sm sp)) -> 
           In tl (execute tr sm).(modelLinks) .
 Proof.
     apply tr_execute_in_links.

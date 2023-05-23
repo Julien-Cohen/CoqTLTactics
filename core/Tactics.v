@@ -156,7 +156,7 @@ Ltac destruct_execute :=
 
 Ltac destruct_instantiateOnPiece H IN_MATCH_NEWNAME :=
   match type of H with 
-    In _ (instantiateOnPiece ?T _ _) =>
+    In _ (instantiateTrOnPiece ?T _ _) =>
       let e := fresh "r" in
       rewrite (core.Certification.tr_instantiateOnPiece_in T) in H ;
       destruct H as [e [IN_MATCH_NEWNAME H]]
@@ -164,7 +164,7 @@ Ltac destruct_instantiateOnPiece H IN_MATCH_NEWNAME :=
 
 Ltac destruct_instantiateOnPiece_auto :=
   match goal with 
-    [ H : In _ (instantiateOnPiece ?T _ _) |- _ ] =>
+    [ H : In _ (instantiateTrOnPiece ?T _ _) |- _ ] =>
       let H2 := fresh "IN_R" in
       let e := fresh "r" in
       destruct_instantiateOnPiece H H2
@@ -232,7 +232,7 @@ Ltac unfold_instantiateElementOnPiece_auto :=
 
 Ltac destruct_apply_pattern H IN_MATCH_NEWNAME :=
   match type of H with 
-    In _ (applyOnPiece _ _ _) => 
+    In _ (applyTrOnPiece _ _ _) => 
       let R := fresh "r" in
       apply core.Certification.tr_applyOnPiece_in in H ; 
       destruct H as (R & (IN_MATCH_NEWNAME & H))
@@ -240,7 +240,7 @@ end.
 
 Ltac destruct_apply_pattern_auto :=
   match goal with 
-    [ H : In _ (applyOnPiece _ _ _) |- _ ] => 
+    [ H : In _ (applyTrOnPiece _ _ _) |- _ ] => 
       let IN1 := fresh "IN_MATCH" in
       destruct_apply_pattern H IN1
 end.
@@ -290,10 +290,10 @@ Ltac destruct_trace H :=
 
 Ltac destruct_traceOnPiece H :=
   match type of H with 
-    | In _ (traceOnPiece _ _ _) => 
+    | In _ (traceTrOnPiece _ _ _) => 
         let p:= fresh "r" in
         let IN := fresh "IN" in
-        unfold traceOnPiece in H ;
+        unfold traceTrOnPiece in H ;
         apply in_flat_map in H ; 
         destruct H as (p & (IN & H))
   | _ => fail "Failure in destruct_traceOnPiece."
@@ -411,7 +411,7 @@ Proof.
   unfold modelElements.
 
   
-  unfold instantiateOnPiece.
+  unfold instantiateTrOnPiece.
   apply in_flat_map.
   exists se ; split ; [ exact IN_SOURCE | ].
 
@@ -613,7 +613,7 @@ Ltac destruct_in_trace_G :=
 
 Lemma transform_elements_fw {tc} cm p tp (t:Syntax.Transformation (tc:=tc)) :
   In p (allTuples t cm) ->
-  In tp (instantiateOnPiece t cm p) ->
+  In tp (instantiateTrOnPiece t cm p) ->
   In tp (modelElements (execute t cm)).
 Proof.
   intros IN1 IN2.
@@ -626,7 +626,7 @@ Qed.
 Lemma transform_element_fw {tc} cm e te (t:Syntax.Transformation (tc:=tc)) :
   0 < Syntax.arity t ->
   In e (modelElements cm) ->
-  In te (instantiateOnPiece t cm [e]) ->
+  In te (instantiateTrOnPiece t cm [e]) ->
   In te (modelElements (execute t cm)).
 Proof.
   intros A IN1 IN2.

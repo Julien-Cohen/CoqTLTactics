@@ -37,7 +37,7 @@ Definition instantiateRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :
   flat_map (instantiateIterationOnPiece r sm sp)
     (seq 0 (evalIterator r sm sp)).
 
-Definition instantiateOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetElementType :=
+Definition instantiateTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetElementType :=
   flat_map (fun r => instantiateRuleOnPiece r sm sp) (matchingRules tr sm sp).
 
 
@@ -59,13 +59,13 @@ Definition traceRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :  list
   flat_map (traceIterationOnPiece r sm sp)
     (seq 0 (evalIterator r sm sp)).
 
-Definition traceOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TraceLink :=
+Definition traceTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TraceLink :=
   flat_map (fun r => traceRuleOnPiece r sm sp) (matchingRules tr sm sp).
 
 
 
 Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
-  flat_map (traceOnPiece tr sm) (allTuples tr sm).  
+  flat_map (traceTrOnPiece tr sm) (allTuples tr sm).  
 
 
 
@@ -90,15 +90,15 @@ Definition applyRuleOnPiece (r: Rule) (tr: Transformation) (sm: SourceModel) (sp
   flat_map (applyIterationOnPiece r tr sm sp)
     (seq 0 (evalIterator r sm sp)).
 
-Definition applyOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetLinkType :=
+Definition applyTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetLinkType :=
   flat_map (fun r => applyRuleOnPiece r tr sm sp) (matchingRules tr sm sp).
 
 (** * Execute **)
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   {|
-    modelElements := flat_map (instantiateOnPiece tr sm) (allTuples tr sm) ;
-    modelLinks := flat_map (applyOnPiece tr sm) (allTuples tr sm)
+    modelElements := flat_map (instantiateTrOnPiece tr sm) (allTuples tr sm) ;
+    modelLinks := flat_map (applyTrOnPiece tr sm) (allTuples tr sm)
   |}.
 
 End Semantics.

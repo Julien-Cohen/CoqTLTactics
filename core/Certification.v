@@ -26,7 +26,7 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
   In te (execute tr sm).(modelElements) <->
   (exists (sp : list SourceElementType),
       In sp (allTuples tr sm) /\
-      In te (instantiateOnPiece tr sm sp)).
+      In te (instantiateTrOnPiece tr sm sp)).
 Proof.
   intros.
   apply in_flat_map.
@@ -37,7 +37,7 @@ forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
   In tl (execute tr sm).(modelLinks) <->
   (exists (sp : list SourceElementType),
       In sp (allTuples tr sm) /\
-      In tl (applyOnPiece tr sm sp)).
+      In tl (applyTrOnPiece tr sm sp)).
 Proof.
   intros.
   apply in_flat_map.
@@ -57,7 +57,7 @@ Qed.
 
 Lemma tr_instantiateOnPiece_in :
 forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
-  In te (instantiateOnPiece tr sm sp) <->
+  In te (instantiateTrOnPiece tr sm sp) <->
   (exists (r : Rule),
       In r (matchingRules tr sm sp) /\
       In te (instantiateRuleOnPiece r sm sp)).
@@ -117,7 +117,7 @@ Qed.
 
 Lemma tr_applyOnPiece_in :
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (tl : TargetLinkType),
-      In tl (applyOnPiece tr sm sp) <->
+      In tl (applyTrOnPiece tr sm sp) <->
       (exists (r : Rule),
           In r (matchingRules tr sm sp) /\
           In tl (applyRuleOnPiece r tr sm sp)).
@@ -296,12 +296,12 @@ Instance CoqTLEngine :
     matchPattern := matchingRules;
     matchRuleOnPattern := evalGuardExpr ;
 
-    instantiatePattern := instantiateOnPiece;
+    instantiatePattern := instantiateTrOnPiece;
     instantiateRuleOnPattern := instantiateRuleOnPiece;
     instantiateIterationOnPattern := instantiateIterationOnPiece;
     instantiateElementOnPattern := instantiateElementOnPiece;
 
-    applyPattern := applyOnPiece;
+    applyPattern := applyTrOnPiece;
     applyRuleOnPattern := applyRuleOnPiece;
     applyIterationOnPattern := applyIterationOnPiece;
     applyElementOnPattern := applyUnitOnPiece;
