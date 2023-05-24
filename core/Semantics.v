@@ -57,8 +57,7 @@ Definition instantiateElementOnPiece opu sm ip it:  option TargetElementType :=
 
 
 Definition instantiateIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) :  list TargetElementType :=
-  flat_map (fun o => optionToList (instantiateElementOnPiece o sm sp iter))
-    r.(r_outputPattern).
+  map produced (traceIterationOnPiece r sm sp iter).
 
 Definition instantiateRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :  list TargetElementType :=
   flat_map (instantiateIterationOnPiece r sm sp)
@@ -126,8 +125,7 @@ Proof.
   unfold instantiateIterationOnPiece, traceIterationOnPiece. rewrite map_flat_map.
   apply flat_map_ext ; clear ; intro. 
 
-  unfold instantiateElementOnPiece.  
-  apply ListUtils.optionToList_map.
+  reflexivity.
 Qed.
 
 

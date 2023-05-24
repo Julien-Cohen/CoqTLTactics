@@ -46,7 +46,7 @@ Proof.
   unfold instantiateTrOnPiece.
   unfold instantiateRuleOnPiece.
   unfold instantiateIterationOnPiece.
-  unfold instantiateElementOnPiece.
+  unfold traceIterationOnPiece.
   unfold traceElementOnPiece.
   unfold EvalUserExpressions.evalOutputPatternElement.
   unfold EvalUserExpressions.evalIterator.
@@ -68,7 +68,8 @@ Proof.
       (* The two are equals because of the projection [produced]. *)
       simpl nth_error.
       apply map_ext ; intro x.
-      f_equal.
+      repeat rewrite <- app_nil_end.
+      repeat rewrite <- optionToList_map.
       f_equal.
       repeat rewrite OptionUtils.option_map_bind.
       simpl (produced _).

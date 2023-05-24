@@ -218,18 +218,6 @@ Ltac destruct_instantiateIterationOnPiece_auto :=
   end.
 
 
-Ltac unfold_instantiateElementOnPiece H :=
-  match type of H with 
-    context[instantiateElementOnPiece _ _ _ _] => 
-      rewrite core.Certification.tr_instantiateElementOnPiece_leaf in H 
-  end.
-
-Ltac unfold_instantiateElementOnPiece_auto :=
-  match goal with 
-    [ H : context[instantiateElementOnPiece _ _ _ _] |- _ ] => 
-      unfold_instantiateElementOnPiece H 
-  end.
-
 Ltac destruct_apply_pattern H IN_MATCH_NEWNAME :=
   match type of H with 
     In _ (applyTrOnPiece _ _ _) => 
@@ -365,7 +353,6 @@ Proof.
   unfold traceElementOnPiece in H.
  
   OptionUtils.monadInv H.
-  unfold instantiateElementOnPiece in H.
   eauto 12.
 Qed.
 
@@ -424,10 +411,11 @@ Proof.
   exists n ; split ; [ exact IN_IT | ].
 
   unfold instantiateIterationOnPiece.
+  unfold traceIterationOnPiece.
+  rewrite map_flat_map.
   apply in_flat_map.
   exists e ; split ; [ exact IN_OUTPAT | ].
 
-  unfold instantiateElementOnPiece. 
   unfold traceElementOnPiece.
   rewrite EV.
   compute ; auto.
@@ -456,7 +444,10 @@ Proof.
   destruct_instantiateOnPiece H NEW1. 
   destruct_instantiateRuleOnPiece H NEW2. 
   destruct_instantiateIterationOnPiece H NEW3. 
-  unfold_instantiateElementOnPiece H. 
+  unfold traceElementOnPiece in H.
+  OptionUtils.monadInv H.
+  OptionUtils.monadInv H.
+  simpl TraceLink.produced.
   destruct_in_matchingRules NEW1 NEW4. 
   eauto 10.
 Qed.

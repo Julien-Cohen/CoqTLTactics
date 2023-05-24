@@ -83,29 +83,29 @@ forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetEl
   <->
   (exists (opu: OutputPatternUnit),
       In opu r.(r_outputPattern) /\ 
-      instantiateElementOnPiece opu sm sp i = Some te).
+       option_map produced (traceElementOnPiece opu sm sp i) = Some te).
 Proof.
-  split.
-  * intros.
-    apply in_flat_map in H.
-    destruct H.
+  unfold instantiateIterationOnPiece.
+  unfold traceIterationOnPiece.
+  intros r sm sp te i.
+  rewrite map_flat_map.
+  split ; intros.
+  * apply in_flat_map in H.
+    destruct H as (x, (H, H0)).
     exists x.
-    unfold optionToList in H.
-    destruct H.
+    unfold optionToList in H0.
     split. 
-    - assumption.
-    - destruct (instantiateElementOnPiece x sm sp i).
+    - exact H.
+    - destruct (traceElementOnPiece x sm sp i).
       ** crush.
       ** contradiction.
-  * intros.
-    apply in_flat_map.
-    destruct H.
+  * apply in_flat_map.
+    destruct H as (x, (H, H0)).
     exists x.
-    unfold optionToList.
-    destruct H.
     split.
-    - assumption.
-    - crush.
+    - exact H.
+    - monadInv H0.
+      crush.
 Qed.
 
 Lemma  tr_instantiateElementOnPiece_leaf:
@@ -397,49 +397,15 @@ Proof.
   split.
   - exact Hiter.
   - unfold instantiateIterationOnPiece.
+    unfold traceIterationOnPiece.
+    rewrite map_flat_map.
     apply in_flat_map.
     exists opu. 
     split. 
     -- exact HopuInr.
-    -- unfold instantiateElementOnPiece.
-       unfold traceElementOnPiece.
-       rewrite Hte.
-       simpl. auto.
-Qed.
-
-(* if In te (instantiateRuleOnPiece r sm sp) => tr_instantiateOnPiece_in
-    In te (instantiateOnPiece tr sm sp) => by tr_execute_in_elements
-    In te (allModelElements (execute tr sm)) 
-    *)
-
-Theorem tr_instantiateRuleAndIterationOnPiece_in :
-forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
-  In te (instantiateRuleOnPiece r sm sp) <->
-  (exists (i: nat) (opu: OutputPatternUnit),
-      In i (seq 0 (evalIterator r sm sp)) /\
-      In opu r.(r_outputPattern) /\ 
-        instantiateElementOnPiece opu sm sp i = Some te).
-Proof.
-  intros.
-  split.
-  - intros.
-    apply tr_instantiateRuleOnPiece_in in H.
-    repeat destruct H.
-    exists x.
-    apply tr_instantiateIterationOnPiece_in in H0.
-    repeat destruct H0.
-    exists x0.
-    auto.
-  - intros.
-    repeat destruct H.
-    destruct H0.
-    apply tr_instantiateRuleOnPiece_in.
-    exists x.
-    split.
-    + assumption.
-    + apply tr_instantiateIterationOnPiece_in.
-      exists x0.
-      auto. 
+    -- unfold traceElementOnPiece.
+       rewrite Hte. 
+       crush.
 Qed.
 
 (*Theorem tr_instantiateRuleAndIterationOnPiece_in' :

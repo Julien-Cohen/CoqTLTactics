@@ -45,89 +45,33 @@ Lemma instantiateOnPiece_distributive:
         In a0 (instantiateTrOnPiece (buildTransformation n l) sm1 sp).
 Proof.
   intros.
-  split.
-  + intro.
-    unfold instantiateTrOnPiece in H.
-    unfold instantiateRuleOnPiece  in H.
-    unfold instantiateIterationOnPiece in H.
-    unfold matchingRules in H.
-    simpl in H.
-    unfold instantiateTrOnPiece.
-    unfold instantiateRuleOnPiece.
-    unfold instantiateIterationOnPiece.
-    unfold matchingRules.
-    simpl. 
-    remember ((fun r : Rule =>
-                 flat_map
-                   (fun iter : nat =>
-                      flat_map
-                        (fun o : OutputPatternUnit =>
-                           optionToList (instantiateElementOnPiece o sm1 sp iter))
-                        r.(r_outputPattern))
-                   (seq 0 (evalIterator r sm1 sp)))) as f.
-    remember (filter (fun r : Rule => evalGuard r sm1 sp) l) as l1.
+  unfold instantiateTrOnPiece, instantiateRuleOnPiece, instantiateIterationOnPiece, matchingRules.  
+  simpl.
+  split ; intro H.
+  + remember (filter (fun r : Rule => evalGuard r sm1 sp) l) as l1.
     destruct (evalGuard a sm1 sp) eqn: ca.
-  - apply in_flat_map in H.
-    destruct H. destruct H.
-    destruct H.
-    -- rewrite <- H in H0. left. apply in_flat_map. exists x. crush.
-    -- right. apply in_flat_map. exists x. crush.
-  - right. auto.
-    + intro.
-      unfold instantiateTrOnPiece.
-      unfold instantiateRuleOnPiece.
-      unfold instantiateIterationOnPiece.
-      unfold matchingRules.
-      simpl. 
-      remember ((fun r : Rule =>
-                   flat_map
-                     (fun iter : nat =>
-                        flat_map
-                          (fun o : OutputPatternUnit =>
-                             optionToList (instantiateElementOnPiece o sm1 sp iter))
-                          r.(r_outputPattern))
-                     (seq 0 (evalIterator r sm1 sp)))) as f.
-      remember (filter (fun r : Rule => evalGuard r sm1 sp) l) as l1.
-      destruct (evalGuard a sm1 sp) eqn: ca.
-      ++ destruct H.
-         -- unfold instantiateTrOnPiece in H.
-            unfold instantiateRuleOnPiece in H.
-            unfold instantiateIterationOnPiece in H.
-            unfold matchingRules in H.
-            simpl in H.
-            rewrite ca in H.
-            rewrite <- Heqf in H.
-            apply in_flat_map in H. destruct H.
-            apply in_flat_map. exists x. split. crush. crush. 
-         -- unfold instantiateTrOnPiece in H.
-            unfold instantiateRuleOnPiece in H.
-            unfold instantiateIterationOnPiece in H.
-            unfold matchingRules in H.
-            simpl in H.
-            rewrite <- Heqf in H.
-            apply in_flat_map in H.
+    - apply in_flat_map in H.
+      destruct H. destruct H.
+      destruct H.
+      -- rewrite <- H in H0. left. apply in_flat_map. exists x. crush.
+      -- right. apply in_flat_map. exists x. crush.
+    - right. auto.
+  + destruct (evalGuard a sm1 sp) eqn: ca.
+      ++    simpl in H.
             destruct H.
+         -- rewrite <- app_nil_end in H. 
+            apply in_flat_map in H. destruct H as (x, (H,H0)).
+            simpl flat_map ; apply in_or_app ; left.
             apply in_flat_map.
-            exists x. split; crush.
+            exists x ; auto.
+         -- apply in_flat_map in H. destruct H as (x, (H, H0)).
+            simpl flat_map ; apply in_or_app ; right.
+            apply in_flat_map.
+            exists x. split. crush. crush.
       ++ destruct H. 
-         unfold instantiateTrOnPiece in H.
-         unfold instantiateRuleOnPiece in H.
-         unfold instantiateIterationOnPiece in H.
-         unfold matchingRules in H.
-         simpl in H.
-         rewrite ca in H.
-         rewrite <- Heqf in H.
-         simpl in H. inversion H.
-         unfold instantiateTrOnPiece in H.
-         unfold instantiateRuleOnPiece in H.
-         unfold instantiateIterationOnPiece in H.
-         unfold matchingRules in H.
-         simpl in H.
-         rewrite <- Heqf in H.
-         apply in_flat_map in H.
-         destruct H.
-         apply in_flat_map.
-         exists x. split; crush.
+         -- simpl in H.
+            contradiction.
+         -- assumption. 
 Qed.
 
 (** ** maxArity **)
