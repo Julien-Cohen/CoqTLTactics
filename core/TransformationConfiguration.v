@@ -20,3 +20,6 @@ Class TransformationConfiguration := {
   SourceElement_eqb := @elements_eqdec SourceMetamodel;
   TargetElement_eqb := @elements_eqdec TargetMetamodel;
 }.
+
+
+Notation InputPiece := (list SourceElementType).

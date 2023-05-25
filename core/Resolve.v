@@ -11,32 +11,32 @@ Section Resolve.
 Context {tc: TransformationConfiguration}.
 
 Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
-            (sp: list SourceElementType)
+            (sp: InputPiece)
             (iter : nat) : option TargetElementType :=
   option_map TraceLink.produced (find (source_compare (sp,iter,name)) tls) .
 
 Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (sp: list SourceElementType) : option TargetElementType :=
+  (sp: InputPiece) : option TargetElementType :=
   resolveIter tr sm name sp 0.
 
 
 Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (sps: list(list SourceElementType)) (iter: nat)
+  (sps: list(InputPiece)) (iter: nat)
   : option (list TargetElementType) :=
-  Some (flat_map (fun l:(list SourceElementType) => optionToList (resolveIter tr sm name l iter)) sps).
+  Some (flat_map (fun l:(InputPiece) => optionToList (resolveIter tr sm name l iter)) sps).
 
 Definition resolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (sps: list(list SourceElementType)) : option (list TargetElementType) :=
+  (sps: list(InputPiece)) : option (list TargetElementType) :=
   resolveAllIter tr sm name sps 0.
 
 Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (sp: option (list SourceElementType)) : option TargetElementType :=
+  (sp: option (InputPiece)) : option TargetElementType :=
   sp' <- sp ;
   resolve tr sm name sp' .
 
 
 Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (sp: option (list (list SourceElementType))) : option (list TargetElementType) :=
+  (sp: option (list (InputPiece))) : option (list TargetElementType) :=
   sp' <- sp ; 
   resolveAll tr sm name sp'.
 

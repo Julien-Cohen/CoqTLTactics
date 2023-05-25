@@ -10,8 +10,6 @@ Require Export core.TraceLink.
       In this section, we introduce _one possible_ abstract syntax of the CoqTL transformation engine.  
       ---- *)
 
-Notation InputPiece := (list SourceElementType).
-
 Section Syntax.
 
 Context {tc: TransformationConfiguration}.

@@ -596,7 +596,7 @@ Qed.
 
 
 Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
-  forall (sp:Syntax.InputPiece) (r:Syntax.Rule) i opu produced_element produced_links,
+  forall (sp:InputPiece) (r:Syntax.Rule) i opu produced_element produced_links,
 
     incl sp (modelElements cm) ->
     

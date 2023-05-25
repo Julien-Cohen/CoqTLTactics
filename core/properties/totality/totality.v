@@ -18,8 +18,6 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
-Require Import transformations.Moore2Mealy.Moore.
-Require Import transformations.Moore2Mealy.Moore2Mealy.
 
 
 (*************************************************************)
@@ -28,9 +26,9 @@ Require Import transformations.Moore2Mealy.Moore2Mealy.
 
 (** Totality on model elements                               *)
 
-Theorem Totality_elem :
+Theorem Totality_elem {tc:TransformationConfiguration} :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
-      (exists (sp : list SourceElementType),
+      (exists (sp : InputPiece),
           In sp (allTuples tr sm) /\
           In te (elements_proj (traceTrOnPiece tr sm sp))) ->
           In te (execute tr sm).(modelElements).
@@ -40,7 +38,7 @@ Qed.
 
 (*
 Theorem Totality_elem:
-forall (tr: Transformation) (sm : SourceModel) (sp : list SourceElementType) (te : TargetElementType),
+forall (tr: Transformation) (sm : SourceModel) (sp : InputPiece) (te : TargetElementType),
 In sp (allTuples tr sm) -> 
 In te (instantiateOnPiece tr sm sp) ->
 In te (allModelElements (execute tr sm)).
@@ -56,9 +54,9 @@ Qed.
 
 (** Totality on model links                                  *)
 
-Theorem Totality_links :
+Theorem Totality_links {tc:TransformationConfiguration} :
 forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
-      (exists (sp : list SourceElementType),
+      (exists (sp : InputPiece),
           In sp (allTuples tr sm) /\
           In tl (applyTrOnPiece tr sm sp)) -> 
           In tl (execute tr sm).(modelLinks) .
@@ -68,7 +66,7 @@ Qed.
 
 (*
 Theorem Totality_link:
-forall (tr: Transformation) (sm : SourceModel) (sp : list SourceElementType) (tl : TargetLinkType),
+forall (tr: Transformation) (sm : SourceModel) (sp : InputPiece) (tl : TargetLinkType),
 In sp (allTuples tr sm) -> 
 In tl (applyOnPiece tr sm sp) ->
 In tl (allModelLinks (execute tr sm)).

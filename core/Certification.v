@@ -24,7 +24,7 @@ Context {tc : TransformationConfiguration}.
 Lemma tr_execute_in_elements :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
   In te (execute tr sm).(modelElements) <->
-  (exists (sp : list SourceElementType),
+  (exists (sp : InputPiece),
       In sp (allTuples tr sm) /\
       In te (Semantics.elements_proj (traceTrOnPiece tr sm sp))).
 Proof.
@@ -38,7 +38,7 @@ Qed.
 Lemma tr_execute_in_links :
 forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
   In tl (execute tr sm).(modelLinks) <->
-  (exists (sp : list SourceElementType),
+  (exists (sp : InputPiece),
       In sp (allTuples tr sm) /\
       In tl (applyTrOnPiece tr sm sp)).
 Proof.
@@ -48,7 +48,7 @@ Qed.
 
 Lemma tr_matchingRules_in :
 forall (tr: Transformation) (sm : SourceModel),
-  forall (sp : list SourceElementType)(r : Rule),
+  forall (sp : InputPiece)(r : Rule),
     In r (matchingRules tr sm sp) <->
       In r tr.(rules) /\
       EvalUserExpressions.evalGuard r sm sp = true.
@@ -59,7 +59,7 @@ Qed.
 
 
 Lemma tr_instantiateOnPiece_in :
-forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
+forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (te : TargetElementType),
   In te (elements_proj (traceTrOnPiece tr sm sp)) <->
   (exists (r : Rule),
       In r (matchingRules tr sm sp) /\
@@ -72,7 +72,7 @@ Proof.
 Qed.
 
 Lemma tr_instantiateRuleOnPiece_in :
-forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
+forall (r : Rule) (sm : SourceModel) (sp: InputPiece) (te : TargetElementType),
   In te (elements_proj (traceRuleOnPiece r sm sp)) <->
   (exists (i: nat),
       In i (seq 0 (evalIterator r sm sp)) /\
@@ -85,7 +85,7 @@ Proof.
 Qed.
 
 Lemma tr_instantiateIterationOnPiece_in : 
-forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType) (i:nat),
+forall (r : Rule) (sm : SourceModel) (sp: InputPiece) (te : TargetElementType) (i:nat),
   In te (elements_proj (traceIterationOnPiece r sm sp i))
   <->
   (exists (opu: OutputPatternUnit),
@@ -115,7 +115,7 @@ Proof.
 Qed.
 
 Lemma  tr_instantiateElementOnPiece_leaf:
-      forall (o: OutputPatternUnit) (sm: SourceModel) (sp: list SourceElementType) (iter: nat),
+      forall (o: OutputPatternUnit) (sm: SourceModel) (sp: InputPiece) (iter: nat),
         option_map produced (traceElementOnPiece o sm sp iter) = evalOutputPatternElement o sm sp iter.
 Proof.
   intros.
@@ -124,7 +124,7 @@ Proof.
 Qed.
 
 Lemma tr_applyOnPiece_in :
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (tl : TargetLinkType),
+    forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (tl : TargetLinkType),
       In tl (applyTrOnPiece tr sm sp) <->
       (exists (r : Rule),
           In r (matchingRules tr sm sp) /\
@@ -135,7 +135,7 @@ Proof.
 Qed.
 
 Lemma tr_applyRuleOnPiece_in : 
-    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (tl : TargetLinkType),
+    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: InputPiece) (tl : TargetLinkType),
       In tl (applyRuleOnPiece r tr sm sp) <->
       (exists (i: nat),
           In i (seq 0 (evalIterator r sm sp)) /\
@@ -146,7 +146,7 @@ Proof.
 Qed.
 
 Lemma tr_applyIterationOnPiece_in : 
-    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (tl : TargetLinkType) (i:nat),
+    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: InputPiece) (tl : TargetLinkType) (i:nat),
       In tl (applyIterationOnPiece r tr sm sp i) <->
       (exists (opu: OutputPatternUnit),
           In opu r.(r_outputPattern) /\ 
@@ -157,7 +157,7 @@ Proof.
 Qed.
 
 Lemma tr_applyUnitOnPiece_leaf : 
-forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (te: TargetElementType) 
+forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (te: TargetElementType) 
        (i:nat) (opu: OutputPatternUnit),
   evalOutputPatternElement opu sm sp i = Some te ->
   applyUnitOnPiece opu tr sm sp i = optionListToList (evalOutputPatternLink sm sp te i (traceTrOnModel tr sm) opu).
@@ -170,13 +170,13 @@ Qed.
 
 (*TODO
 Lemma maxArity_length:
-  forall (sp : list SourceElementType) (tr: Transformation) (sm: SourceModel), 
+  forall (sp : InputPiece) (tr: Transformation) (sm: SourceModel), 
   gt (length sp) (maxArity tr) -> In sp (allTuples tr sm) -> False.
 *)
 
 
 Lemma allTuples_incl:
-  forall (sp : list SourceElementType) (tr: Transformation) (sm: SourceModel), 
+  forall (sp : InputPiece) (tr: Transformation) (sm: SourceModel), 
   In sp (allTuples tr sm) -> incl sp sm.(modelElements).
 Proof.
   intros.
@@ -186,7 +186,7 @@ Proof.
 Qed.
 
 Lemma allTuples_incl_length:
-  forall (sp : list SourceElementType) (tr: Transformation) (sm: SourceModel), 
+  forall (sp : InputPiece) (tr: Transformation) (sm: SourceModel), 
   incl sp sm.(modelElements) -> 
   length sp <= tr.(arity) ->
   In sp (allTuples tr sm).
@@ -200,7 +200,7 @@ Qed.
 
 
 Lemma allTuples_not_incl_length:
-  forall (sp : list SourceElementType) (tr: Transformation) (sm: SourceModel), 
+  forall (sp : InputPiece) (tr: Transformation) (sm: SourceModel), 
   length sp > tr.(arity) -> not (In sp (allTuples tr sm)).
 Proof.
 intros sp tr sm c.
@@ -216,7 +216,7 @@ Qed.
 
 Theorem tr_resolveAll_in:
   forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-    (sps: list(list SourceElementType)),
+    (sps: list(InputPiece)),
     resolveAll tls sm name sps = resolveAllIter tls sm name sps 0.
 Proof.
   crush.
@@ -224,11 +224,11 @@ Qed.
 
 Theorem tr_resolveAllIter_in:
   forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-          (sps: list(list SourceElementType)) (iter: nat)
+          (sps: list(InputPiece)) (iter: nat)
     (te: TargetElementType),
     (exists tes: list TargetElementType,
         resolveAllIter tls sm name sps iter = Some tes /\ In te tes) <->
-    (exists (sp: list SourceElementType),
+    (exists (sp: InputPiece),
         In sp sps /\
         resolveIter tls sm name sp iter = Some te).
 Proof.
@@ -266,7 +266,7 @@ Qed.
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
 Theorem tr_resolveIter_leaf: 
   forall (tls:list TraceLink) (sm : SourceModel) (name: string)
-    (sp: list SourceElementType) (iter: nat) (x: TargetElementType),
+    (sp: InputPiece) (iter: nat) (x: TargetElementType),
     resolveIter tls sm name sp iter = return x ->
       (exists (tl : TraceLink),
         In tl tls /\
@@ -384,7 +384,7 @@ Instance CoqTLEngine :
 *)
 
 Lemma tr_match_injective :
-  forall (sm : SourceModel)(sp : list SourceElementType)(r : Rule)(iter: nat),
+  forall (sm : SourceModel)(sp : InputPiece)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIterator r sm sp)) /\ 
       (exists opu, In opu r.(r_outputPattern) /\  (evalOutputPatternElement opu sm sp iter) <> None ) ->
     (exists (te: TargetElementType),  In te (elements_proj (traceRuleOnPiece r sm sp)) ).
@@ -414,7 +414,7 @@ Proof.
 Qed.
 
 (*Theorem tr_instantiateRuleAndIterationOnPiece_in' :
-forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
+forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: InputPiece) (te : TargetElementType),
   In te (instantiateRuleOnPiece r sm sp) <->
   (exists (i: nat),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\

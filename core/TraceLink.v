@@ -21,7 +21,7 @@ Context {tc: TransformationConfiguration}.
 Record TraceLink : Type :=
   buildTraceLink  
     { 
-      source : (list SourceElementType) * nat * string ;
+      source : InputPiece * nat * string ;
       produced : TargetElementType 
     }.
 
@@ -43,7 +43,7 @@ Definition getName (tl: TraceLink):=
 Open Scope bool_scope.
 
 
-Definition source_compare (s:(list SourceElementType) * nat * string) (t:TraceLink) : bool :=
+Definition source_compare (s:InputPiece * nat * string) (t:TraceLink) : bool :=
   match s with 
     (e,i,n) =>
       list_beq tc.(SourceElement_eqb) (getSourcePattern t) e
