@@ -60,10 +60,10 @@ forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (te 
   In te (instantiateTrOnPiece tr sm sp) <->
   (exists (r : Rule),
       In r (matchingRules tr sm sp) /\
-      In te (instantiateRuleOnPiece r sm sp)).
+      In te (map produced (traceRuleOnPiece r sm sp))).
 Proof.
   intros.
-  unfold instantiateTrOnPiece, instantiateRuleOnPiece.
+  unfold instantiateTrOnPiece.
   unfold traceTrOnPiece.
   rewrite map_flat_map.
   apply in_flat_map.
@@ -71,13 +71,12 @@ Qed.
 
 Lemma tr_instantiateRuleOnPiece_in :
 forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
-  In te (instantiateRuleOnPiece r sm sp) <->
+  In te (map produced (traceRuleOnPiece r sm sp)) <->
   (exists (i: nat),
       In i (seq 0 (evalIterator r sm sp)) /\
       In te (map produced (traceIterationOnPiece r sm sp i))).
 Proof.
   intros.
-  unfold instantiateRuleOnPiece.
   unfold traceRuleOnPiece.
   rewrite map_flat_map.
   apply in_flat_map.
@@ -304,9 +303,9 @@ Instance CoqTLEngine :
     matchRuleOnPattern := evalGuardExpr ;
 
     instantiatePattern := instantiateTrOnPiece;
-    instantiateRuleOnPattern := instantiateRuleOnPiece;
-    instantiateIterationOnPattern := fun  r sm sp iter => map produced (traceIterationOnPiece r sm sp iter) (*instantiateIterationOnPiece*) ;
-    instantiateElementOnPattern := fun opu sm ip it => option_map produced (traceElementOnPiece opu sm ip it) (*instantiateElementOnPiece*) ;
+    instantiateRuleOnPattern := fun r sm sp => map produced (traceRuleOnPiece r sm sp);
+    instantiateIterationOnPattern := fun  r sm sp iter => map produced (traceIterationOnPiece r sm sp iter)  ;
+    instantiateElementOnPattern := fun opu sm ip it => option_map produced (traceElementOnPiece opu sm ip it)  ;
 
     applyPattern := applyTrOnPiece;
     applyRuleOnPattern := applyRuleOnPiece;
@@ -386,7 +385,7 @@ Lemma tr_match_injective :
   forall (sm : SourceModel)(sp : list SourceElementType)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIterator r sm sp)) /\ 
       (exists opu, In opu r.(r_outputPattern) /\  (evalOutputPatternElement opu sm sp iter) <> None ) ->
-    (exists (te: TargetElementType),  In te (instantiateRuleOnPiece r sm sp) ).
+    (exists (te: TargetElementType),  In te (map produced (traceRuleOnPiece r sm sp)) ).
 Proof.
   intros.
   destruct H as [Hiter Hopu].
@@ -395,7 +394,6 @@ Proof.
   apply option_res_dec in HopuEval.
   destruct HopuEval as [te Hte].
   exists te.
-  unfold instantiateRuleOnPiece.
   unfold traceRuleOnPiece.
   rewrite map_flat_map.
   apply in_flat_map.

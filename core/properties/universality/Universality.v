@@ -44,7 +44,6 @@ Proof.
   unfold EvalUserExpressions.evalOutputPatternLink.
   unfold instantiateTrOnModel.
   unfold instantiateTrOnPiece.
-  unfold instantiateRuleOnPiece.
   unfold traceTrOnPiece.
   unfold traceRuleOnPiece.
   unfold traceIterationOnPiece.

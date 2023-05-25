@@ -189,17 +189,10 @@ Ltac destruct_in_matchingRules_auto :=
 
 Ltac destruct_instantiateRuleOnPiece H IN_IT_NEWNAME:=
   match type of H with 
-    In _ (instantiateRuleOnPiece _ _ _) =>
+    In _ (map TraceLink.produced (traceRuleOnPiece _ _ _)) =>
       let e := fresh "n" in
       rewrite (core.Certification.tr_instantiateRuleOnPiece_in) in H ;
       destruct H as [e [IN_IT_NEWNAME H]]
-  end.
-
-Ltac destruct_instantiateRuleOnPiece_auto :=
-  match goal with 
-    [ H : In _ (instantiateRuleOnPiece _ _ _) |- _ ] =>
-      let H2 := fresh "IN_I" in
-      destruct_instantiateRuleOnPiece H H2
   end.
 
 
@@ -401,7 +394,6 @@ Proof.
   unfold matchingRules.
   exists r ;  split ; [ apply List.filter_In ; split ; assumption | ].
 
-  unfold instantiateRuleOnPiece.
   unfold traceRuleOnPiece.
   rewrite map_flat_map.
   apply in_flat_map.

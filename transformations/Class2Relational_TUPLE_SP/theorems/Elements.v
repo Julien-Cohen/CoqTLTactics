@@ -98,7 +98,6 @@ Proof.
     }
 
     {
-      unfold instantiateRuleOnPiece.
       unfold traceRuleOnPiece.
       rewrite map_flat_map.
       simpl.

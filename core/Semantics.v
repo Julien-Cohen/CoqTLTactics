@@ -52,9 +52,6 @@ Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) : list TraceLi
 
 (** * Instantiate element part of the r.h.s. of rules *)
 
-Definition instantiateRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :  list TargetElementType :=
-  map produced (traceRuleOnPiece r sm sp).
-
 Definition instantiateTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetElementType :=
    map produced (traceTrOnPiece tr sm sp).
 
