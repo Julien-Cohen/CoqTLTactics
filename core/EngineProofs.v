@@ -45,7 +45,7 @@ Lemma instantiateOnPiece_distributive:
         In a0 (instantiateTrOnPiece (buildTransformation n l) sm1 sp).
 Proof.
   intros.
-  unfold instantiateTrOnPiece, instantiateRuleOnPiece, instantiateIterationOnPiece, matchingRules.  
+  unfold instantiateTrOnPiece, instantiateRuleOnPiece, matchingRules.  
   simpl.
   split ; intro H.
   + remember (filter (fun r : Rule => evalGuard r sm1 sp) l) as l1.

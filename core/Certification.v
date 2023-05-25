@@ -71,10 +71,9 @@ forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetEl
   In te (instantiateRuleOnPiece r sm sp) <->
   (exists (i: nat),
       In i (seq 0 (evalIterator r sm sp)) /\
-      In te (instantiateIterationOnPiece r sm sp i)).
+      In te (map produced (traceIterationOnPiece r sm sp i))).
 Proof.
   intros.
-  unfold instantiateIterationOnPiece.
   unfold instantiateRuleOnPiece.
   unfold traceRuleOnPiece.
   rewrite map_flat_map.
@@ -83,13 +82,12 @@ Qed.
 
 Lemma tr_instantiateIterationOnPiece_in : 
 forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType) (i:nat),
-  In te (instantiateIterationOnPiece r sm sp i)
+  In te (map produced (traceIterationOnPiece r sm sp i))
   <->
   (exists (opu: OutputPatternUnit),
       In opu r.(r_outputPattern) /\ 
        option_map produced (traceElementOnPiece opu sm sp i) = Some te).
 Proof.
-  unfold instantiateIterationOnPiece.
   unfold traceIterationOnPiece.
   intros r sm sp te i.
   rewrite map_flat_map.
@@ -304,7 +302,7 @@ Instance CoqTLEngine :
 
     instantiatePattern := instantiateTrOnPiece;
     instantiateRuleOnPattern := instantiateRuleOnPiece;
-    instantiateIterationOnPattern := instantiateIterationOnPiece;
+    instantiateIterationOnPattern := fun  r sm sp iter => map produced (traceIterationOnPiece r sm sp iter) (*instantiateIterationOnPiece*) ;
     instantiateElementOnPattern := fun opu sm ip it => option_map produced (traceElementOnPiece opu sm ip it) (*instantiateElementOnPiece*) ;
 
     applyPattern := applyTrOnPiece;
@@ -401,8 +399,7 @@ Proof.
   exists iter.
   split.
   - exact Hiter.
-  - unfold instantiateIterationOnPiece.
-    unfold traceIterationOnPiece.
+  - unfold traceIterationOnPiece.
     rewrite map_flat_map.
     apply in_flat_map.
     exists opu. 

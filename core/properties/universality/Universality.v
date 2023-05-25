@@ -45,7 +45,6 @@ Proof.
   unfold instantiateTrOnModel.
   unfold instantiateTrOnPiece.
   unfold instantiateRuleOnPiece.
-  unfold instantiateIterationOnPiece.
   unfold traceRuleOnPiece.
   unfold traceIterationOnPiece.
   unfold traceElementOnPiece.

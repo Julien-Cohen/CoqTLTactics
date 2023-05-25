@@ -205,16 +205,10 @@ Ltac destruct_instantiateRuleOnPiece_auto :=
 
 Ltac destruct_instantiateIterationOnPiece H NEWNAME :=
   match type of H with 
-    In _ (instantiateIterationOnPiece _ _ _ _) =>
+    In _ (map TraceLink.produced (traceIterationOnPiece _ _ _ _)) =>
       let e := fresh "opu" in
       apply core.Certification.tr_instantiateIterationOnPiece_in in H ;
       destruct H as [e [NEWNAME H]]
-  end.
-Ltac destruct_instantiateIterationOnPiece_auto :=
-  match goal with 
-    [ H : In _ (instantiateIterationOnPiece _ _ _ _) |- _ ] =>
-      let H2 := fresh "IN_OP" in
-      destruct_instantiateIterationOnPiece H H2
   end.
 
 
@@ -412,7 +406,6 @@ Proof.
   apply in_flat_map.
   exists n ; split ; [ exact IN_IT | ].
 
-  unfold instantiateIterationOnPiece.
   unfold traceIterationOnPiece.
   rewrite map_flat_map.
   apply in_flat_map.

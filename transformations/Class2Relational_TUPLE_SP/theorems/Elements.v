@@ -103,7 +103,6 @@ Proof.
       unfold EvalUserExpressions.evalIterator.
       rewrite HeqR at 1 ; simpl.
       rewrite List.app_nil_r.
-      unfold instantiateIterationOnPiece ; simpl.
       rewrite HeqR ; unfold Syntax.r_outputPattern ; simpl.
       auto.
     }
