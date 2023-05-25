@@ -29,6 +29,11 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
       In te (instantiateTrOnPiece tr sm sp)).
 Proof.
   intros.
+  unfold instantiateTrOnPiece.
+  unfold execute ; simpl.
+  unfold instantiateTrOnModel.
+  unfold traceTrOnModel.
+  rewrite map_flat_map.
   apply in_flat_map.
 Qed.
 

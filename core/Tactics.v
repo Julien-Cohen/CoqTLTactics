@@ -385,6 +385,8 @@ Proof.
 
   unfold instantiateTrOnModel.
   unfold instantiateTrOnPiece.
+  unfold traceTrOnModel.
+  rewrite map_flat_map.
   apply in_flat_map.
   exists se ; split ; [ exact IN_SOURCE | ].
 
@@ -583,6 +585,10 @@ Lemma transform_elements_fw {tc} cm p tp (t:Syntax.Transformation (tc:=tc)) :
 Proof.
   intros IN1 IN2.
   simpl.
+  unfold instantiateTrOnModel.
+  unfold instantiateTrOnPiece in IN2.
+  unfold traceTrOnModel.
+  rewrite map_flat_map.
   apply List.in_flat_map.
   eauto.
 Qed.

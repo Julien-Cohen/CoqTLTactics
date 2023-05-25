@@ -58,7 +58,9 @@ Proof.
   intros cm rm H ; subst.
   intros i n i2 n2 H1 H2 H3.
   simpl.
-
+  unfold instantiateTrOnModel.
+  unfold traceTrOnModel.
+  rewrite map_flat_map.
   apply List.in_flat_map.
   exists ([AttributeElement
             {| attr_id := i; derived := false; attr_name := n |} ; ClassElement {| class_id := i2; class_name := n2 |} ]).
@@ -122,11 +124,12 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
   simpl.
-  unfold instantiateTrOnModel. 
+  unfold instantiateTrOnModel, traceTrOnModel. 
   apply C2RTactics.allModelElements_allTuples in H.
   revert H ; generalize (allTuples Class2Relational_TUPLE_SP cm).
 
   intros s H.
+  rewrite map_flat_map.
   apply List.in_flat_map.
   eexists ; split ; [exact H | clear H ].
   simpl ; auto.

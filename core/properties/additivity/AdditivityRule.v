@@ -61,8 +61,11 @@ Proof.
   unfold incl.
   unfold instantiateTrOnModel.
   unfold instantiateTrOnPiece.
+  unfold traceTrOnModel.
   unfold traceTrOnPiece.
-  intros.
+  intros ? ? ? ? ? ?.
+  repeat rewrite map_flat_map.
+  intro H0.
   apply in_flat_map in H0. destruct H0 as (r1, (H0, H1)). 
   rewrite map_flat_map in H1.
   apply in_flat_map in H1. destruct H1 as (r2, (H1,H2)).

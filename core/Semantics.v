@@ -55,8 +55,8 @@ Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) : list TraceLi
 Definition instantiateTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetElementType :=
    map produced (traceTrOnPiece tr sm sp).
 
-Definition instantiateTrOnModel (tr: Transformation) (sm : SourceModel) := flat_map (instantiateTrOnPiece tr sm) (allTuples tr sm).
-
+Definition instantiateTrOnModel (tr: Transformation) (sm : SourceModel) := 
+   map produced (traceTrOnModel tr sm).
 
 
 (** * Apply link part of the r.h.s of rules (with traces) **)
@@ -96,20 +96,6 @@ Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   |}.
 
 End Semantics.
-
-
-
-
-Remark trace_duplicate_instantiate {tc :TransformationConfiguration} :
-  forall tr sm,
-    instantiateTrOnModel tr sm = List.map TraceLink.produced (traceTrOnModel tr sm).
-Proof.
-  intros tr sm. 
-  unfold traceTrOnModel, instantiateTrOnModel. rewrite map_flat_map.
-  apply flat_map_ext ; clear ; intro. 
-  unfold instantiateTrOnPiece, traceTrOnPiece. rewrite map_flat_map.
-  reflexivity.
-Qed.
 
 
 
