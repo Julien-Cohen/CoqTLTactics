@@ -407,6 +407,8 @@ Proof.
   exists r ;  split ; [ apply List.filter_In ; split ; assumption | ].
 
   unfold instantiateRuleOnPiece.
+  unfold traceRuleOnPiece.
+  rewrite map_flat_map.
   apply in_flat_map.
   exists n ; split ; [ exact IN_IT | ].
 

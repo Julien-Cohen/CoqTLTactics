@@ -56,8 +56,7 @@ Definition instantiateIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPie
   map produced (traceIterationOnPiece r sm sp iter).
 
 Definition instantiateRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :  list TargetElementType :=
-  flat_map (instantiateIterationOnPiece r sm sp)
-    (seq 0 (evalIterator r sm sp)).
+  map produced (traceRuleOnPiece r sm sp).
 
 Definition instantiateTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetElementType :=
   flat_map (fun r => instantiateRuleOnPiece r sm sp) (matchingRules tr sm sp).
@@ -117,10 +116,7 @@ Proof.
   unfold instantiateTrOnPiece, traceTrOnPiece. rewrite map_flat_map.
   apply flat_map_ext ; clear ; intro. 
   unfold instantiateRuleOnPiece, traceRuleOnPiece. rewrite map_flat_map.
-  apply flat_map_ext ; clear ; intro. 
-  unfold instantiateIterationOnPiece, traceIterationOnPiece. rewrite map_flat_map.
-  apply flat_map_ext ; clear ; intro. 
-
+  apply flat_map_ext ; clear ; intro.
   reflexivity.
 Qed.
 

@@ -46,11 +46,13 @@ Proof.
   unfold instantiateTrOnPiece.
   unfold instantiateRuleOnPiece.
   unfold instantiateIterationOnPiece.
+  unfold traceRuleOnPiece.
   unfold traceIterationOnPiece.
   unfold traceElementOnPiece.
   unfold EvalUserExpressions.evalOutputPatternElement.
   unfold EvalUserExpressions.evalIterator.
   simpl.
+  rewrite map_flat_map.
   apply (H sm) in H0.
   destruct (f sm). simpl.
   f_equal.

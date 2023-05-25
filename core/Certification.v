@@ -74,6 +74,10 @@ forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetEl
       In te (instantiateIterationOnPiece r sm sp i)).
 Proof.
   intros.
+  unfold instantiateIterationOnPiece.
+  unfold instantiateRuleOnPiece.
+  unfold traceRuleOnPiece.
+  rewrite map_flat_map.
   apply in_flat_map.
 Qed.
 
@@ -391,6 +395,8 @@ Proof.
   destruct HopuEval as [te Hte].
   exists te.
   unfold instantiateRuleOnPiece.
+  unfold traceRuleOnPiece.
+  rewrite map_flat_map.
   apply in_flat_map.
   exists iter.
   split.

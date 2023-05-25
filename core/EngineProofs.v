@@ -60,8 +60,12 @@ Proof.
       ++    simpl in H.
             destruct H.
          -- rewrite <- app_nil_end in H. 
+            unfold traceRuleOnPiece in H.
+            rewrite map_flat_map in H.
             apply in_flat_map in H. destruct H as (x, (H,H0)).
             simpl flat_map ; apply in_or_app ; left.
+            unfold traceRuleOnPiece.
+            rewrite map_flat_map.
             apply in_flat_map.
             exists x ; auto.
          -- apply in_flat_map in H. destruct H as (x, (H, H0)).
