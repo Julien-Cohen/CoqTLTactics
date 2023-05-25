@@ -83,7 +83,9 @@ Lemma unify_column_attribute_lem :
   (getAttributeType a m) = Some cl.
 Proof.
   intros.
-  unfold instantiateTrOnPiece in H. unfold matchingRules in H. simpl in H.
+  unfold instantiateTrOnPiece, traceTrOnPiece in H. 
+  unfold matchingRules in H.
+  simpl in H.
   unfold ConcreteExpressions.makeGuard in H. simpl in H. 
   destruct (derived a).
   { simpl in H. inversion H. }

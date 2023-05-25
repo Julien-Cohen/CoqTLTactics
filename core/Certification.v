@@ -63,6 +63,9 @@ forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (te 
       In te (instantiateRuleOnPiece r sm sp)).
 Proof.
   intros.
+  unfold instantiateTrOnPiece, instantiateRuleOnPiece.
+  unfold traceTrOnPiece.
+  rewrite map_flat_map.
   apply in_flat_map.
 Qed.
 

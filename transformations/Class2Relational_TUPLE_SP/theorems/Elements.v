@@ -68,6 +68,8 @@ Proof.
   }
   {
     unfold instantiateTrOnPiece.
+    unfold traceTrOnPiece.
+    rewrite map_flat_map.
     apply List.in_flat_map.
 
     match eval cbv beta iota fix 

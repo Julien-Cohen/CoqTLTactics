@@ -56,7 +56,7 @@ Definition instantiateRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :
   map produced (traceRuleOnPiece r sm sp).
 
 Definition instantiateTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetElementType :=
-  flat_map (fun r => instantiateRuleOnPiece r sm sp) (matchingRules tr sm sp).
+   map produced (traceTrOnPiece tr sm sp).
 
 Definition instantiateTrOnModel (tr: Transformation) (sm : SourceModel) := flat_map (instantiateTrOnPiece tr sm) (allTuples tr sm).
 
@@ -111,9 +111,6 @@ Proof.
   unfold traceTrOnModel, instantiateTrOnModel. rewrite map_flat_map.
   apply flat_map_ext ; clear ; intro. 
   unfold instantiateTrOnPiece, traceTrOnPiece. rewrite map_flat_map.
-  apply flat_map_ext ; clear ; intro. 
-  unfold instantiateRuleOnPiece, traceRuleOnPiece. rewrite map_flat_map.
-  apply flat_map_ext ; clear ; intro.
   reflexivity.
 Qed.
 

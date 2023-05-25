@@ -57,26 +57,30 @@ forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceMode
   (Transformation_incl_rules''' t1 t2 -> 
     incl  (execute t1 sm).(modelElements)  (execute t2 sm).(modelElements)).
 Proof.
-simpl.
-unfold incl.
-intros.
-apply in_flat_map in H0. repeat destruct H0. 
-apply in_flat_map in H1. repeat destruct H1.
-apply filter_In in H1. destruct H1.
-destruct H.
-apply in_flat_map. exists x.
-split.
-* unfold allTuples.
-
-  rewrite <- H.
-  assumption.
-* apply in_flat_map.
-  specialize (H4 x0 H1).
-  exists x0.
+  simpl.
+  unfold incl.
+  unfold instantiateTrOnModel.
+  unfold instantiateTrOnPiece.
+  unfold traceTrOnPiece.
+  intros.
+  apply in_flat_map in H0. destruct H0 as (r1, (H0, H1)). 
+  rewrite map_flat_map in H1.
+  apply in_flat_map in H1. destruct H1 as (r2, (H1,H2)).
+  apply filter_In in H1. destruct H1.
+  destruct H as (H4, H5).
+  apply in_flat_map. exists r1.
   split.
-  + apply filter_In.
-    split; auto.
-  + auto.
+  * unfold allTuples.
+    rewrite <- H4.
+    assumption.
+  * rewrite map_flat_map.
+    apply in_flat_map.
+    specialize (H5 r2 H1).
+    exists r2.
+    split.
+    + apply filter_In.
+      split; auto.
+    + auto.
 Qed.
 
 Theorem additivity_rules :

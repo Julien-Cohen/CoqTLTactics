@@ -45,12 +45,14 @@ Proof.
   unfold instantiateTrOnModel.
   unfold instantiateTrOnPiece.
   unfold instantiateRuleOnPiece.
+  unfold traceTrOnPiece.
   unfold traceRuleOnPiece.
   unfold traceIterationOnPiece.
   unfold traceElementOnPiece.
   unfold EvalUserExpressions.evalOutputPatternElement.
   unfold EvalUserExpressions.evalIterator.
   simpl.
+  repeat rewrite <- app_nil_end.
   rewrite map_flat_map.
   apply (H sm) in H0.
   destruct (f sm). simpl.
@@ -62,7 +64,6 @@ Proof.
       f_equal.
       rewrite <- IHmodelElements at 2.
       repeat rewrite flat_map_concat_map.
-      repeat rewrite app_nil_r.
       f_equal.
       rewrite <- seq_shift.
       rewrite map_map.

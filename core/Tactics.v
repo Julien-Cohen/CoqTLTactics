@@ -386,16 +386,17 @@ Proof.
     as (se & r & n & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV).
   
   inj EQ.
-  simpl TraceLink.produced.
 
   unfold execute. 
   unfold modelElements.
 
-  
+  unfold instantiateTrOnModel.
   unfold instantiateTrOnPiece.
   apply in_flat_map.
   exists se ; split ; [ exact IN_SOURCE | ].
 
+  unfold traceTrOnPiece.
+  rewrite map_flat_map.
   apply in_flat_map.
   unfold matchingRules.
   exists r ;  split ; [ apply List.filter_In ; split ; assumption | ].
