@@ -10,35 +10,35 @@ Section Resolve.
 
 Context {tc: TransformationConfiguration}.
 
-Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolveIter (tls: list TraceLink) (name: string)
             (sp: InputPiece)
             (iter : nat) : option TargetElementType :=
   option_map TraceLink.produced (find (source_compare (sp,iter,name)) tls) .
 
-Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolve (tr: list TraceLink)  (name: string)
   (sp: InputPiece) : option TargetElementType :=
-  resolveIter tr sm name sp 0.
+  resolveIter tr name sp 0.
 
 
-Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolveAllIter (tr: list TraceLink) (name: string)
   (sps: list(InputPiece)) (iter: nat)
   : option (list TargetElementType) :=
-  Some (flat_map (fun l:(InputPiece) => optionToList (resolveIter tr sm name l iter)) sps).
+  Some (flat_map (fun l:(InputPiece) => optionToList (resolveIter tr name l iter)) sps).
 
-Definition resolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolveAll (tr: list TraceLink) (name: string)
   (sps: list(InputPiece)) : option (list TargetElementType) :=
-  resolveAllIter tr sm name sps 0.
+  resolveAllIter tr name sps 0.
 
-Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition maybeResolve (tr: list TraceLink) (name: string)
   (sp: option (InputPiece)) : option TargetElementType :=
   sp' <- sp ;
-  resolve tr sm name sp' .
+  resolve tr name sp' .
 
 
-Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition maybeResolveAll (tr: list TraceLink) (name: string)
   (sp: option (list (InputPiece))) : option (list TargetElementType) :=
   sp' <- sp ; 
-  resolveAll tr sm name sp'.
+  resolveAll tr name sp'.
 
 
 End Resolve.
@@ -56,7 +56,7 @@ Ltac inv_maybeResolveAll H :=
 
 Ltac inv_resolve H :=
   match type of H with
-  | resolve _ _ _ _ = Some _ =>
+  | resolve _ _ _  = Some _ =>
       unfold resolve in H ; 
       OptionUtils.monadInvN resolveIter H
   end.
@@ -64,7 +64,7 @@ Ltac inv_resolve H :=
 
 Ltac progress_maybeResolve H :=
   match type of H with 
-    maybeResolve _ _ _ _ = Some _ =>
+    maybeResolve _ _ _  = Some _ =>
       inv_maybeResolve H ;
       inv_resolve H ; 
       apply List.find_some in H ; 

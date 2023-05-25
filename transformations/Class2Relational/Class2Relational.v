@@ -59,7 +59,7 @@ Definition R1 : ConcreteRule :=
         <<< LINK TableColumns_K //
                fun tra _ m c t =>
                   maybeBuildTableColumns t
-                    (maybeResolveAll tra m "col" Column_K 
+                    (maybeResolveAll tra "col" Column_K 
                        (maybeSingletons (getClassAttributesElements c m)))
                     >>> ].
 
@@ -72,7 +72,7 @@ Definition R2 : ConcreteRule :=
         <<< LINK ColumnReference_K //
                fun tra _ m a c =>
                   maybeBuildColumnReference c
-                    (maybeResolve tra m "tab" Table_K 
+                    (maybeResolve tra "tab" Table_K 
                        (maybeSingleton (getAttributeTypeElement a m)))
         >>> ].
 

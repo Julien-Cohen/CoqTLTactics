@@ -173,13 +173,13 @@ Qed.
         
 
       
-Lemma in_resolve t c cm : 
+Lemma in_resolve t c : 
   wf t ->
   In (buildTraceLink
         ([ClassElement c], 0, "tab")
         (TableElement
            {| table_id := c.(class_id); table_name := c.(class_name) |})) t ->
-  Resolve.resolveIter t cm "tab" [ClassElement c] 0 = 
+  Resolve.resolveIter t "tab" [ClassElement c] 0 = 
     Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}).
 Proof.
   unfold Resolve.resolveIter. 
@@ -224,7 +224,7 @@ Lemma in_maybeResolve_trace_2 c (cm : ClassModel) :
   
   In (ClassElement c) cm.(modelElements) -> 
   
-  Resolve.maybeResolve (traceTrOnModel Class2Relational cm) cm "tab" (Some [ClassElement c])  =  
+  Resolve.maybeResolve (traceTrOnModel Class2Relational cm) "tab" (Some [ClassElement c])  =  
     Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}) 
   
   /\ In 

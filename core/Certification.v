@@ -215,22 +215,22 @@ Qed.
 (** * Resolve *)
 
 Theorem tr_resolveAll_in:
-  forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+  forall (tls: list TraceLink) (name: string)
     (sps: list(InputPiece)),
-    resolveAll tls sm name sps = resolveAllIter tls sm name sps 0.
+    resolveAll tls name sps = resolveAllIter tls name sps 0.
 Proof.
   crush.
 Qed.
 
 Theorem tr_resolveAllIter_in:
-  forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+  forall (tls: list TraceLink) (name: string)
           (sps: list(InputPiece)) (iter: nat)
     (te: TargetElementType),
     (exists tes: list TargetElementType,
-        resolveAllIter tls sm name sps iter = Some tes /\ In te tes) <->
+        resolveAllIter tls name sps iter = Some tes /\ In te tes) <->
     (exists (sp: InputPiece),
         In sp sps /\
-        resolveIter tls sm name sp iter = Some te).
+        resolveIter tls name sp iter = Some te).
 Proof.
   intros.
       intros.
@@ -243,12 +243,12 @@ Proof.
     apply in_flat_map in H0.
     destruct H0. destruct H0.
     exists x0. split; auto.
-    destruct (resolveIter tls sm name x0 iter).
+    destruct (resolveIter tls name x0 iter).
     -- unfold optionToList in H1. crush.
     -- crush.
   - intros.
     destruct H. destruct H.
-    remember (resolveAllIter tls sm name sps iter) as tes1.
+    remember (resolveAllIter tls name sps iter) as tes1.
     destruct tes1 eqn: resolveAll.
     -- exists l.
         split. auto.
@@ -256,7 +256,7 @@ Proof.
         inversion Heqtes1.
         apply in_flat_map.
         exists x. split. auto.
-        destruct (resolveIter tls sm name x iter).
+        destruct (resolveIter tls name x iter).
         --- crush.
         --- crush.
     -- unfold resolveAllIter in Heqtes1.
@@ -265,9 +265,9 @@ Qed.
 
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
 Theorem tr_resolveIter_leaf: 
-  forall (tls:list TraceLink) (sm : SourceModel) (name: string)
+  forall (tls:list TraceLink)  (name: string)
     (sp: InputPiece) (iter: nat) (x: TargetElementType),
-    resolveIter tls sm name sp iter = return x ->
+    resolveIter tls name sp iter = return x ->
       (exists (tl : TraceLink),
         In tl tls /\
         Is_true (list_beq _ (@elements_eqdec tc.(SourceMetamodel)) (TraceLink.getSourcePattern tl) sp) /\
@@ -293,7 +293,7 @@ match type of H with context[find ?F tls] => destruct (find F tls) eqn: find_ca 
 Qed.
 
 
-Instance CoqTLEngine :
+Program Instance CoqTLEngine :
   TransformationEngine CoqTLSyntax :=
   {
 
@@ -316,8 +316,8 @@ Instance CoqTLEngine :
 
     trace := traceTrOnModel ;
 
-    resolveAll := resolveAllIter;
-    resolve := resolveIter;
+    resolveAll := (fun a b c d => resolveAllIter a c d) ;
+    resolve := (fun a b c d => resolveIter a c d);
 
     (* lemmas *)
 
@@ -337,8 +337,8 @@ Instance CoqTLEngine :
     tr_applyIterationOnPattern_in := tr_applyIterationOnPiece_in;
     tr_applyElementOnPattern_leaf := tr_applyUnitOnPiece_leaf;
 
-    tr_resolveAll_in := tr_resolveAllIter_in;
-    tr_resolve_leaf := tr_resolveIter_leaf;
+    tr_resolveAll_in := (*tr_resolveAllIter_in*) _ ;
+    tr_resolve_leaf := (* tr_resolveIter_leaf *) _ ;
 
     allTuples_incl := allTuples_incl;
     (*tr_matchPattern_None := tr_matchingRules_None;
@@ -376,8 +376,12 @@ Instance CoqTLEngine :
     tr_resolveAll_in := tr_resolveAllIter_in;
     tr_resolve_Leaf := tr_resolveIter_Leaf';*)
   }. 
-
-
+Next Obligation.
+  apply tr_resolveAllIter_in.
+Qed.
+Next Obligation.
+  apply tr_resolveIter_leaf. assumption.
+Qed.
 
 (* matched sp must produce matched rule's output element 
   genearlization of lemma such as: Attribute_name_preservation

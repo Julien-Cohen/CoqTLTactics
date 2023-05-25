@@ -32,31 +32,31 @@ Definition denoteOutputList (k: TargetEKind) (f: option (list TargetElementType)
     (flat_map (fun e:TargetElementType => optionToList (toEData k e)))
     f.
 
-Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolveIter (tls: list TraceLink) (name: string)
             (k: TargetEKind) (sp: list SourceElementType)
             (iter : nat) : option (denoteEDatatype k) :=
-  denoteOutput k (Resolve.resolveIter tls sm name sp iter).
+  denoteOutput k (Resolve.resolveIter tls name sp iter).
 
-Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolve (tr: list TraceLink) (name: string)
   (k: TargetEKind) (sp: list SourceElementType) : option (denoteEDatatype k) :=
-  denoteOutput k (Resolve.resolve tr sm name sp).
+  denoteOutput k (Resolve.resolve tr name sp).
 
-Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolveAllIter (tr: list TraceLink) (name: string)
   (k: TargetEKind) (sps: list(list SourceElementType)) (iter: nat)
   : option (list (denoteEDatatype k)) :=
-  denoteOutputList k (Resolve.resolveAllIter tr sm name sps iter).
+  denoteOutputList k (Resolve.resolveAllIter tr name sps iter).
 
-Definition resolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolveAll (tr: list TraceLink) (name: string)
   (k: TargetEKind) (sps: list(list SourceElementType)) : option (list (denoteEDatatype k)) :=
-  denoteOutputList k (Resolve.resolveAll tr sm name sps).
+  denoteOutputList k (Resolve.resolveAll tr name sps).
 
-Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition maybeResolve (tr: list TraceLink) (name: string)
   (k: TargetEKind) (sp: option (list SourceElementType)) : option (denoteEDatatype k) :=
-  denoteOutput k (Resolve.maybeResolve tr sm name sp).
+  denoteOutput k (Resolve.maybeResolve tr name sp).
 
-Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition maybeResolveAll (tr: list TraceLink) (name: string)
   (k: TargetEKind) (sp: option (list (list SourceElementType))) : option (list (denoteEDatatype k)) :=
-  denoteOutputList k (Resolve.maybeResolveAll tr sm name sp).
+  denoteOutputList k (Resolve.maybeResolveAll tr name sp).
 
 End SemanticsModeling.
 

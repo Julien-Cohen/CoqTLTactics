@@ -60,7 +60,7 @@ Definition Class2Relational :=
             (makeLink [Class_K] Table_K TableColumns_K
             (fun tls i m c t =>
               attrs <- getClassAttributes c m;
-              cols <- resolveAll tls m "col" Column_K 
+              cols <- resolveAll tls "col" Column_K 
                 (singletons (map (ClassMetamodel.lift_EKind Attribute_K) attrs));
               return Build_TableColumns_t t cols))
         ];
@@ -73,7 +73,7 @@ Definition Class2Relational :=
             (makeLink [Attribute_K] Column_K ColumnReference_K
               (fun tls i m a c =>
                 cl <- getAttributeType a m;
-                tb <- resolve tls m "tab" Table_K [ClassMetamodel.lift_EKind Class_K cl];
+                tb <- resolve tls "tab" Table_K [ClassMetamodel.lift_EKind Class_K cl];
                 return Build_ColumnReference_t c tb))
         ]
     ].
