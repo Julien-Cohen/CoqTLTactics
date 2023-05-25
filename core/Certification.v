@@ -26,10 +26,9 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
   In te (execute tr sm).(modelElements) <->
   (exists (sp : list SourceElementType),
       In sp (allTuples tr sm) /\
-      In te (instantiateTrOnPiece tr sm sp)).
+      In te (Semantics.elements_proj (traceTrOnPiece tr sm sp))).
 Proof.
   intros.
-  unfold instantiateTrOnPiece.
   unfold execute ; simpl.
   unfold instantiateTrOnModel.
   unfold traceTrOnModel.
@@ -62,13 +61,12 @@ Qed.
 
 Lemma tr_instantiateOnPiece_in :
 forall (tr: Transformation) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
-  In te (instantiateTrOnPiece tr sm sp) <->
+  In te (elements_proj (traceTrOnPiece tr sm sp)) <->
   (exists (r : Rule),
       In r (matchingRules tr sm sp) /\
-      In te (map produced (traceRuleOnPiece r sm sp))).
+      In te (elements_proj (traceRuleOnPiece r sm sp))).
 Proof.
   intros.
-  unfold instantiateTrOnPiece.
   unfold traceTrOnPiece.
   rewrite map_flat_map.
   apply in_flat_map.
@@ -76,10 +74,10 @@ Qed.
 
 Lemma tr_instantiateRuleOnPiece_in :
 forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType),
-  In te (map produced (traceRuleOnPiece r sm sp)) <->
+  In te (elements_proj (traceRuleOnPiece r sm sp)) <->
   (exists (i: nat),
       In i (seq 0 (evalIterator r sm sp)) /\
-      In te (map produced (traceIterationOnPiece r sm sp i))).
+      In te (elements_proj (traceIterationOnPiece r sm sp i))).
 Proof.
   intros.
   unfold traceRuleOnPiece.
@@ -89,7 +87,7 @@ Qed.
 
 Lemma tr_instantiateIterationOnPiece_in : 
 forall (r : Rule) (sm : SourceModel) (sp: list SourceElementType) (te : TargetElementType) (i:nat),
-  In te (map produced (traceIterationOnPiece r sm sp i))
+  In te (elements_proj (traceIterationOnPiece r sm sp i))
   <->
   (exists (opu: OutputPatternUnit),
       In opu r.(r_outputPattern) /\ 
@@ -307,9 +305,9 @@ Instance CoqTLEngine :
     matchPattern := matchingRules;
     matchRuleOnPattern := evalGuardExpr ;
 
-    instantiatePattern := instantiateTrOnPiece;
-    instantiateRuleOnPattern := fun r sm sp => map produced (traceRuleOnPiece r sm sp);
-    instantiateIterationOnPattern := fun  r sm sp iter => map produced (traceIterationOnPiece r sm sp iter)  ;
+    instantiatePattern := fun tr sm sp => elements_proj (traceTrOnPiece tr sm sp) ;
+    instantiateRuleOnPattern := fun r sm sp => elements_proj (traceRuleOnPiece r sm sp);
+    instantiateIterationOnPattern := fun  r sm sp iter => elements_proj (traceIterationOnPiece r sm sp iter)  ;
     instantiateElementOnPattern := fun opu sm ip it => option_map produced (traceElementOnPiece opu sm ip it)  ;
 
     applyPattern := applyTrOnPiece;
@@ -390,7 +388,7 @@ Lemma tr_match_injective :
   forall (sm : SourceModel)(sp : list SourceElementType)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIterator r sm sp)) /\ 
       (exists opu, In opu r.(r_outputPattern) /\  (evalOutputPatternElement opu sm sp iter) <> None ) ->
-    (exists (te: TargetElementType),  In te (map produced (traceRuleOnPiece r sm sp)) ).
+    (exists (te: TargetElementType),  In te (elements_proj (traceRuleOnPiece r sm sp)) ).
 Proof.
   intros.
   destruct H as [Hiter Hopu].

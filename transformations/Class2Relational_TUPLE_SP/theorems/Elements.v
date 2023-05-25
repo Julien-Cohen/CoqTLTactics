@@ -69,7 +69,6 @@ Proof.
     apply in_allTuples_2 ; auto.
   }
   {
-    unfold instantiateTrOnPiece.
     unfold traceTrOnPiece.
     rewrite map_flat_map.
     apply List.in_flat_map.

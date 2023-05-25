@@ -60,7 +60,6 @@ Proof.
   simpl.
   unfold incl.
   unfold instantiateTrOnModel.
-  unfold instantiateTrOnPiece.
   unfold traceTrOnModel.
   unfold traceTrOnPiece.
   intros ? ? ? ? ? ?.

@@ -40,12 +40,12 @@
 Lemma instantiateOnPiece_distributive:
   forall (tc: TransformationConfiguration),
   forall a0 sp sm1 n a l,
-    In a0 (instantiateTrOnPiece (buildTransformation n (a :: l)) sm1 sp) <->
-      In a0 (instantiateTrOnPiece (buildTransformation n [a]) sm1 sp) \/
-        In a0 (instantiateTrOnPiece (buildTransformation n l) sm1 sp).
+    In a0 (elements_proj (traceTrOnPiece (buildTransformation n (a :: l)) sm1 sp)) <->
+      In a0 (elements_proj (traceTrOnPiece (buildTransformation n [a]) sm1 sp)) \/
+        In a0 (elements_proj (traceTrOnPiece (buildTransformation n l) sm1 sp)).
 Proof.
   intros.
-  unfold instantiateTrOnPiece, traceTrOnPiece, traceRuleOnPiece, matchingRules.  
+  unfold traceTrOnPiece, traceRuleOnPiece, matchingRules.  
   repeat rewrite map_flat_map.
   simpl.
   split ; intro H.

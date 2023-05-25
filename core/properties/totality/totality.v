@@ -32,7 +32,7 @@ Theorem Totality_elem :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
       (exists (sp : list SourceElementType),
           In sp (allTuples tr sm) /\
-          In te (instantiateTrOnPiece tr sm sp)) ->
+          In te (elements_proj (traceTrOnPiece tr sm sp))) ->
           In te (execute tr sm).(modelElements).
 Proof.
     apply tr_execute_in_elements.

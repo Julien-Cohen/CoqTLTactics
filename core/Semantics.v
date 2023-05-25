@@ -10,6 +10,8 @@ Require Import EvalUserExpressions.
 Scheme Equality for list.
 
 
+Notation elements_proj := (map TraceLink.produced).
+
 Section Semantics.
 
 Context {tc: TransformationConfiguration}.
@@ -52,11 +54,9 @@ Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) : list TraceLi
 
 (** * Instantiate element part of the r.h.s. of rules *)
 
-Definition instantiateTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetElementType :=
-   map produced (traceTrOnPiece tr sm sp).
 
 Definition instantiateTrOnModel (tr: Transformation) (sm : SourceModel) := 
-   map produced (traceTrOnModel tr sm).
+   elements_proj (traceTrOnModel tr sm).
 
 
 (** * Apply link part of the r.h.s of rules (with traces) **)

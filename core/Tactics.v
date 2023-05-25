@@ -156,19 +156,12 @@ Ltac destruct_execute :=
 
 Ltac destruct_instantiateOnPiece H IN_MATCH_NEWNAME :=
   match type of H with 
-    In _ (instantiateTrOnPiece ?T _ _) =>
+    In _ (elements_proj (traceTrOnPiece ?T _ _)) =>
       let e := fresh "r" in
       rewrite (core.Certification.tr_instantiateOnPiece_in T) in H ;
       destruct H as [e [IN_MATCH_NEWNAME H]]
   end.
 
-Ltac destruct_instantiateOnPiece_auto :=
-  match goal with 
-    [ H : In _ (instantiateTrOnPiece ?T _ _) |- _ ] =>
-      let H2 := fresh "IN_R" in
-      let e := fresh "r" in
-      destruct_instantiateOnPiece H H2
-  end.
 
 
 Ltac destruct_in_matchingRules H NEWNAME :=
@@ -189,7 +182,7 @@ Ltac destruct_in_matchingRules_auto :=
 
 Ltac destruct_instantiateRuleOnPiece H IN_IT_NEWNAME:=
   match type of H with 
-    In _ (map TraceLink.produced (traceRuleOnPiece _ _ _)) =>
+    In _ (elements_proj (traceRuleOnPiece _ _ _)) =>
       let e := fresh "n" in
       rewrite (core.Certification.tr_instantiateRuleOnPiece_in) in H ;
       destruct H as [e [IN_IT_NEWNAME H]]
@@ -198,7 +191,7 @@ Ltac destruct_instantiateRuleOnPiece H IN_IT_NEWNAME:=
 
 Ltac destruct_instantiateIterationOnPiece H NEWNAME :=
   match type of H with 
-    In _ (map TraceLink.produced (traceIterationOnPiece _ _ _ _)) =>
+    In _ (elements_proj (traceIterationOnPiece _ _ _ _)) =>
       let e := fresh "opu" in
       apply core.Certification.tr_instantiateIterationOnPiece_in in H ;
       destruct H as [e [NEWNAME H]]
@@ -384,7 +377,6 @@ Proof.
   unfold modelElements.
 
   unfold instantiateTrOnModel.
-  unfold instantiateTrOnPiece.
   unfold traceTrOnModel.
   rewrite map_flat_map.
   apply in_flat_map.
@@ -580,13 +572,12 @@ Ltac destruct_in_trace_G :=
 
 Lemma transform_elements_fw {tc} cm p tp (t:Syntax.Transformation (tc:=tc)) :
   In p (allTuples t cm) ->
-  In tp (instantiateTrOnPiece t cm p) ->
+  In tp (elements_proj (traceTrOnPiece t cm p)) ->
   In tp (modelElements (execute t cm)).
 Proof.
   intros IN1 IN2.
   simpl.
   unfold instantiateTrOnModel.
-  unfold instantiateTrOnPiece in IN2.
   unfold traceTrOnModel.
   rewrite map_flat_map.
   apply List.in_flat_map.
@@ -597,7 +588,7 @@ Qed.
 Lemma transform_element_fw {tc} cm e te (t:Syntax.Transformation (tc:=tc)) :
   0 < Syntax.arity t ->
   In e (modelElements cm) ->
-  In te (instantiateTrOnPiece t cm [e]) ->
+  In te (elements_proj (traceTrOnPiece t cm [e])) ->
   In te (modelElements (execute t cm)).
 Proof.
   intros A IN1 IN2.

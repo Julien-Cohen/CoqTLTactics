@@ -61,7 +61,7 @@ Ltac unfold_toEData H :=
 
 Lemma transform_element_fw cm e te :
   In e (modelElements cm) ->
-  In te (instantiateTrOnPiece Class2Relational cm [e]) ->
+  In te (elements_proj (traceTrOnPiece Class2Relational cm [e])) ->
   In te (modelElements (execute Class2Relational cm)).
 Proof.
   intros IN1 IN2.

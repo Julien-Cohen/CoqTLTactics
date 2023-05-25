@@ -43,7 +43,6 @@ Proof.
   unfold applyUnitOnPiece.
   unfold EvalUserExpressions.evalOutputPatternLink.
   unfold instantiateTrOnModel.
-  unfold instantiateTrOnPiece.
   unfold traceTrOnModel.
   unfold traceTrOnPiece.
   unfold traceRuleOnPiece.
