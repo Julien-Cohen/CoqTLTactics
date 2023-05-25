@@ -52,10 +52,6 @@ Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) : list TraceLi
 
 (** * Instantiate element part of the r.h.s. of rules *)
 
-Definition instantiateElementOnPiece opu sm ip it:  option TargetElementType :=
-  option_map produced (traceElementOnPiece opu sm ip it). 
-
-
 Definition instantiateIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) :  list TargetElementType :=
   map produced (traceIterationOnPiece r sm sp iter).
 

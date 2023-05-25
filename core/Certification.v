@@ -110,10 +110,9 @@ Qed.
 
 Lemma  tr_instantiateElementOnPiece_leaf:
       forall (o: OutputPatternUnit) (sm: SourceModel) (sp: list SourceElementType) (iter: nat),
-        instantiateElementOnPiece o sm sp iter = evalOutputPatternElement o sm sp iter.
+        option_map produced (traceElementOnPiece o sm sp iter) = evalOutputPatternElement o sm sp iter.
 Proof.
   intros.
-  unfold instantiateElementOnPiece.
   unfold traceElementOnPiece.
   destruct (evalOutputPatternElement o sm sp iter) ; reflexivity.
 Qed.
@@ -302,7 +301,7 @@ Instance CoqTLEngine :
     instantiatePattern := instantiateTrOnPiece;
     instantiateRuleOnPattern := instantiateRuleOnPiece;
     instantiateIterationOnPattern := instantiateIterationOnPiece;
-    instantiateElementOnPattern := instantiateElementOnPiece;
+    instantiateElementOnPattern := fun opu sm ip it => option_map produced (traceElementOnPiece opu sm ip it) (*instantiateElementOnPiece*) ;
 
     applyPattern := applyTrOnPiece;
     applyRuleOnPattern := applyRuleOnPiece;
