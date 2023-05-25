@@ -30,7 +30,6 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
 Proof.
   intros.
   unfold execute ; simpl.
-  unfold instantiateTrOnModel.
   unfold traceTrOnModel.
   rewrite map_flat_map.
   apply in_flat_map.

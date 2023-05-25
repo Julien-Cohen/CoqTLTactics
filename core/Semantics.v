@@ -52,13 +52,6 @@ Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) : list TraceLi
   flat_map (traceTrOnPiece tr sm) (allTuples tr sm).  
 
 
-(** * Instantiate element part of the r.h.s. of rules *)
-
-
-Definition instantiateTrOnModel (tr: Transformation) (sm : SourceModel) := 
-   elements_proj (traceTrOnModel tr sm).
-
-
 (** * Apply link part of the r.h.s of rules (with traces) **)
 
 Definition applyUnitOnPiece
@@ -91,7 +84,7 @@ Definition applyTrOnModel (tr: Transformation) (sm : SourceModel)
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   {|
-    modelElements := instantiateTrOnModel tr sm ;
+    modelElements := elements_proj (traceTrOnModel tr sm) ;
     modelLinks := applyTrOnModel tr sm
   |}.
 

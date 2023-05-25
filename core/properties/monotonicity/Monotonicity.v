@@ -58,7 +58,6 @@ Proof.
     destruct H.
   - unfold TargetModel_elem_incl.
     simpl.
-    unfold instantiateTrOnModel ; simpl.
     crush.
     apply incl_l_nil in H.
     crush.

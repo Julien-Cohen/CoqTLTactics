@@ -59,7 +59,6 @@ forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceMode
 Proof.
   simpl.
   unfold incl.
-  unfold instantiateTrOnModel.
   unfold traceTrOnModel.
   unfold traceTrOnPiece.
   intros ? ? ? ? ? ?.
