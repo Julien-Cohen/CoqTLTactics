@@ -36,12 +36,7 @@ Proof.
   exists (toTransformation tc f).
   intros.
   unfold execute.
-  unfold applyTrOnModel.
-  unfold applyTrOnPiece.
-  unfold applyRuleOnPiece.
-  unfold applyIterationOnPiece.
-  unfold applyUnitOnPiece.
-  unfold EvalUserExpressions.evalOutputPatternLink.
+  unfold applyTrOnModel_alt.
   unfold traceTrOnModel.
   unfold traceTrOnPiece.
   unfold traceRuleOnPiece.
@@ -53,9 +48,9 @@ Proof.
   repeat rewrite <- app_nil_end.
   rewrite map_flat_map.
   apply (H sm) in H0.
-  destruct (f sm). simpl.
+  destruct (f sm) eqn:E. simpl.
   f_equal.
-  - clear H. clear H0.
+  - clear H. clear H0. clear E.
     induction modelElements.
     * reflexivity.
     * simpl.
@@ -78,20 +73,32 @@ Proof.
     * crush. 
     * clear H0.
       simpl. 
-      repeat rewrite app_nil_r.
       rewrite app_nil_end.
-      f_equal.
+      f_equal ; [ rewrite E ; auto | ]. 
       apply in_flat_map_nil.
       intros.
-      rewrite app_nil_r.
-      destruct a.
-      + exfalso. 
-        rewrite in_seq in H0.
-        lia.
-      + simpl.
-        rewrite in_seq in H0.
-        destruct H0.
-        simpl in H1.
-        apply Lt.lt_S_n in H1.
-        destruct (nth_error l a); reflexivity.
+      unfold RichTraceLink.convert.
+      unfold RichTraceLink.produced.
+      unfold RichTraceLink.source.
+
+      apply in_flat_map in H0. destruct H0 as (i, (H1,H2)).
+      rewrite in_seq in H1.
+      destruct H1 as [H11 H12].
+      simpl in H11.
+      rewrite app_nil_r in H2.
+      destruct i ; [ solve [inversion H11] | ].
+      clear H11.
+      simpl in H2.
+      apply Lt.lt_S_n in H12.
+      apply nth_error_Some in H12.
+      destruct (nth_error l i) ; [ clear H12 | contradiction  ].
+
+      unfold optionToList in H2.
+      apply in_singleton in H2.
+      subst a.
+      unfold RichTraceLink.linkPattern.
+      unfold RichTraceLink.getIteration.
+      unfold RichTraceLink.source.      
+      reflexivity.
+
 Qed.

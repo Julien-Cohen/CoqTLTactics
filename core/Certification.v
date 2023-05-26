@@ -44,6 +44,10 @@ forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
       In tl (applyTrOnPiece tr sm sp)).
 Proof.
   intros.
+  unfold execute ; unfold modelLinks.
+  eapply RelationClasses.iff_Transitive.
+  apply RelationClasses.iff_Symmetric.
+  apply included_3.
   apply in_flat_map.
 Qed.
 

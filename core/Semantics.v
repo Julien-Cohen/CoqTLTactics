@@ -227,6 +227,15 @@ Proof.
   repeat (split ; eauto ).
 Qed.
 
+Lemma included_3 tr sm :
+  forall lk, In lk (applyTrOnModel tr sm) <-> In lk (applyTrOnModel_alt tr sm).
+Proof.
+  intro link.
+  split.
+  apply included_2.
+  apply included_1.
+Qed.
+
 
 
 (** * Execute **)
@@ -235,7 +244,7 @@ Qed.
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   {|
     modelElements := elements_proj (traceTrOnModel tr sm) ;
-    modelLinks := applyTrOnModel tr sm
+    modelLinks := applyTrOnModel_alt tr sm
   |}.
 
 End Semantics.
