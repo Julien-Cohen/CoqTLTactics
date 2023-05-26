@@ -3,7 +3,7 @@ Require Import String.
 Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.TransformationConfiguration.
-Require Export core.TraceLink.
+Require Export core.PoorTraceLink.
 
 (** * Syntax
 

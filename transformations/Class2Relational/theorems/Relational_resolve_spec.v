@@ -26,7 +26,7 @@ forall
   (meng: ModelingTransformationEngine Class2RelationalConfiguration eng) 
   (cm : ClassModel) (c: Class_t) tls o,
   (@resolve _ _ _ _ meng tls cm "tab" Table_K [ClassMetamodel.lift_EKind Class_K c] 1) = Some o ->
-  (exists (tl : TraceLink.TraceLink), In tl tls).
+  (exists (tl : PoorTraceLink.TraceLink), In tl tls).
 Proof.
 intros.
 apply tr_resolve_leaf in H.

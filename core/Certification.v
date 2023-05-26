@@ -16,6 +16,7 @@ Require Import core.TransformationConfiguration.
 Require Import core.SyntaxCertification.
 Require Import core.EvalUserExpressions.
 
+Import RichTraceLink.
 
 Section Certification.
 
@@ -160,10 +161,10 @@ Lemma tr_applyUnitOnPiece_leaf :
 forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (te: TargetElementType) 
        (i:nat) (opu: OutputPatternUnit),
   evalOutputPatternElement opu sm sp i = Some te ->
-  applyUnitOnPiece opu tr sm sp i = optionListToList (evalOutputPatternLink sm sp te i (traceTrOnModel tr sm) opu).
+  applyUnitOnPiece opu tr sm sp i = optionListToList (evalOutputPatternLink sm sp te i (convert2 (traceTrOnModel tr sm)) opu).
 Proof.
   intros.
-  destruct (evalOutputPatternLink sm sp te i (traceTrOnModel tr sm) opu) eqn:dst.
+  destruct (evalOutputPatternLink sm sp te i (convert2 (traceTrOnModel tr sm)) opu) eqn:dst.
   * unfold applyUnitOnPiece. crush.
   * unfold applyUnitOnPiece. crush.
 Qed.  
@@ -215,7 +216,7 @@ Qed.
 (** * Resolve *)
 
 Theorem tr_resolveAll_in:
-  forall (tls: list TraceLink) (name: string)
+  forall (tls: list PoorTraceLink.TraceLink) (name: string)
     (sps: list(InputPiece)),
     resolveAll tls name sps = resolveAllIter tls name sps 0.
 Proof.
@@ -223,7 +224,7 @@ Proof.
 Qed.
 
 Theorem tr_resolveAllIter_in:
-  forall (tls: list TraceLink) (name: string)
+  forall (tls: list PoorTraceLink.TraceLink) (name: string)
           (sps: list(InputPiece)) (iter: nat)
     (te: TargetElementType),
     (exists tes: list TargetElementType,
@@ -265,15 +266,15 @@ Qed.
 
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
 Theorem tr_resolveIter_leaf: 
-  forall (tls:list TraceLink)  (name: string)
+  forall (tls:list PoorTraceLink.TraceLink)  (name: string)
     (sp: InputPiece) (iter: nat) (x: TargetElementType),
     resolveIter tls name sp iter = return x ->
-      (exists (tl : TraceLink),
+      (exists (tl : PoorTraceLink.TraceLink),
         In tl tls /\
-        Is_true (list_beq _ (@elements_eqdec tc.(SourceMetamodel)) (TraceLink.getSourcePattern tl) sp) /\
-        ((TraceLink.getIteration tl) = iter) /\ 
-        ((TraceLink.getName tl) = name)%string /\
-        tl.(produced) = x).
+        Is_true (list_beq _ (@elements_eqdec tc.(SourceMetamodel)) (PoorTraceLink.getSourcePattern tl) sp) /\
+        ((PoorTraceLink.getIteration tl) = iter) /\ 
+        ((PoorTraceLink.getName tl) = name)%string /\
+        tl.(PoorTraceLink.produced) = x).
 Proof.
 intros.
 unfold resolveIter in H.
@@ -314,7 +315,7 @@ Program Instance CoqTLEngine :
     applyIterationOnPattern := applyIterationOnPiece;
     applyElementOnPattern := applyUnitOnPiece;
 
-    trace := traceTrOnModel ;
+    trace := (fun a b => convert2 (traceTrOnModel a b)) ;
 
     resolveAll := (fun a b c d => resolveAllIter a c d) ;
     resolve := (fun a b c d => resolveIter a c d);

@@ -19,7 +19,7 @@ Require Import transformations.Class2Relational.RelationalMetamodel.
 From transformations.Class2Relational 
   Require C2RTactics.
 
-Import TraceLink.
+Import PoorTraceLink.
 
 (** * Utilities on traces built by the Class2Relational transformation. *)
 
@@ -57,7 +57,7 @@ Definition wf t : Prop :=
 
 
 Lemma trace_wf :
-  forall cm, wf (traceTrOnModel Class2Relational cm).
+  forall cm, wf (RichTraceLink.convert2 (traceTrOnModel Class2Relational cm)).
 Proof.
   intro cm. 
   unfold wf.
@@ -207,16 +207,26 @@ Lemma in_trace c (cm : ClassModel) :
           |}
          )
     ) 
-    (traceTrOnModel Class2Relational cm).
+    (RichTraceLink.convert2 (traceTrOnModel Class2Relational cm)).
 Proof.
   intro IN1.
 
-  Tactics.destruct_in_trace_G.
+  unfold RichTraceLink.convert2.
+  apply in_map_iff.
 
-  exists ([ClassElement c]).
+  eexists.
   split.
-  { apply C2RTactics.allModelElements_allTuples ; auto. } 
-  { compute. left. reflexivity. }
+
+  
+  2:{
+    Tactics.destruct_in_trace_G.
+    
+    exists ([ClassElement c]).
+    split.
+    { apply C2RTactics.allModelElements_allTuples ; auto. } 
+    { compute. left. reflexivity. }
+  }
+  { reflexivity. }
 Qed.
 
 
@@ -224,7 +234,7 @@ Lemma in_maybeResolve_trace_2 c (cm : ClassModel) :
   
   In (ClassElement c) cm.(modelElements) -> 
   
-  Resolve.maybeResolve (traceTrOnModel Class2Relational cm) "tab" (Some [ClassElement c])  =  
+  Resolve.maybeResolve (RichTraceLink.convert2 (traceTrOnModel Class2Relational cm)) "tab" (Some [ClassElement c])  =  
     Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}) 
   
   /\ In 

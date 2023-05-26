@@ -310,7 +310,7 @@ Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
   forall
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))} 
   {cm} {l},
-  In l (traceTrOnModel t cm) ->
+  In l (RichTraceLink.convert2 ((traceTrOnModel) t cm)) ->
   exists p r i outpat te,   
     In p (allTuples t cm)
     /\ In r (Syntax.rules t) 
@@ -318,12 +318,15 @@ Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
     /\ In i (seq 0 (EvalUserExpressions.evalIterator r cm p))
     /\ In outpat (Syntax.r_outputPattern r)
     /\ l = {|
-             TraceLink.source := (p, i, Syntax.opu_name outpat);
-             TraceLink.produced := te
+             PoorTraceLink.source := (p, i, Syntax.opu_name outpat);
+             PoorTraceLink.produced := te
            |} 
     /\ EvalUserExpressions.evalOutputPatternElement outpat cm p i = return te .
 Proof.
   intros.
+  unfold RichTraceLink.convert2 in H.
+  apply in_map_iff in H.
+  destruct H as (lk0, (CONV, H)).
   destruct_trace H ; 
   destruct_traceOnPiece H ; 
   destruct_traceRuleOnPiece H ; 
@@ -333,13 +336,14 @@ Proof.
   unfold traceElementOnPiece in H.
  
   OptionUtils.monadInv H.
+  unfold RichTraceLink.convert ; simpl.
   eauto 12.
 Qed.
 
 Corollary in_trace_in_models_source {MM1} {T1} {T2} {BEQ1} {BEQ2} :  
   forall (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2)))
  cm a b s i,
-    In (TraceLink.buildTraceLink ([a],i,s) b ) (traceTrOnModel t cm) ->
+    In (PoorTraceLink.buildTraceLink ([a],i,s) b ) (RichTraceLink.convert2 (traceTrOnModel t cm)) ->
     In a cm.(modelElements) .
 Proof.
   intros t cm a b s i IN.
@@ -361,7 +365,7 @@ Lemma in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
   forall 
     (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2)))
     cm a b,
-     In (TraceLink.buildTraceLink a b) (traceTrOnModel t cm) ->
+     In (PoorTraceLink.buildTraceLink a b) (RichTraceLink.convert2 (traceTrOnModel t cm)) ->
     In b (execute t cm).(modelElements).
 Proof.
   intros t cm a b IN.
@@ -428,7 +432,7 @@ Proof.
   unfold traceElementOnPiece in H.
   OptionUtils.monadInv H.
   OptionUtils.monadInv H.
-  simpl TraceLink.produced.
+  simpl RichTraceLink.produced.
   destruct_in_matchingRules NEW1 NEW4. 
   eauto 10.
 Qed.
@@ -449,7 +453,7 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
       /\ EvalUserExpressions.evalOutputPatternElement p m sp n =
          return te
   
-  /\ EvalUserExpressions.evalOutputPatternLink m sp te n (traceTrOnModel t m) p = return tls
+  /\ EvalUserExpressions.evalOutputPatternLink m sp te n (RichTraceLink.convert2(traceTrOnModel t m)) p = return tls
   /\ In l tls.
 
 Proof.
@@ -613,7 +617,7 @@ Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
     
     EvalUserExpressions.evalOutputPatternElement opu cm sp i = Some produced_element ->
     
-    EvalUserExpressions.evalOutputPatternLink cm sp produced_element i (traceTrOnModel t cm) opu = Some produced_links ->
+    EvalUserExpressions.evalOutputPatternLink cm sp produced_element i (RichTraceLink.convert2(traceTrOnModel t cm)) opu = Some produced_links ->
     
     forall l, In l  produced_links -> In l (modelLinks (execute t cm)).
 Proof.

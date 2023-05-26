@@ -21,7 +21,8 @@ core/EvalUserExpressions.v
 core/Model.v
 core/Metamodel.v
 core/TransformationConfiguration.v
-core/TraceLink.v
+core/PoorTraceLink.v
+core/RichTraceLink.v
 core/Syntax.v
 core/Semantics.v
 core/Resolve.v

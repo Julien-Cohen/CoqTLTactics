@@ -1,7 +1,7 @@
 Require Import Semantics.
 
 Import String List Utils.
-Import core.TraceLink core.TransformationConfiguration.
+Import core.PoorTraceLink core.TransformationConfiguration.
 
 
 (** * User read access in traces ([resolve]) *)
@@ -13,7 +13,7 @@ Context {tc: TransformationConfiguration}.
 Definition resolveIter (tls: list TraceLink) (name: string)
             (sp: InputPiece)
             (iter : nat) : option TargetElementType :=
-  option_map TraceLink.produced (find (source_compare (sp,iter,name)) tls) .
+  option_map PoorTraceLink.produced (find (source_compare (sp,iter,name)) tls) .
 
 Definition resolve (tr: list TraceLink)  (name: string)
   (sp: InputPiece) : option TargetElementType :=

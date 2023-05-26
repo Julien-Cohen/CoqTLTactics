@@ -9,8 +9,9 @@ Require Import TransformationConfiguration.
 Require Import EvalUserExpressions.
 Scheme Equality for list.
 
+Require Import RichTraceLink.
 
-Notation elements_proj := (map TraceLink.produced).
+Notation elements_proj := (map RichTraceLink.produced).
 
 Section Semantics.
 
@@ -31,24 +32,27 @@ Definition matchingRules (tr: Transformation) (sm : SourceModel) (sp: InputPiece
 Definition traceElementOnPiece (o: OutputPatternUnit) (sm: SourceModel) (sp: InputPiece) (iter: nat)
   : option TraceLink :=
   match (evalOutputPatternElement o sm sp iter) with
-  | Some e => Some {| source := (sp, iter, o.(opu_name)) ; produced :=  e |}
+  | Some e => Some 
+                {| source := (sp, iter, o.(opu_name)) ;
+                  produced :=  e ;
+                  linkPattern := o.(opu_link) |}
   | None => None
   end.
 
-Definition traceIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) :  list TraceLink :=
+Definition traceIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) :  RichTraceLink.Trace :=
   flat_map (fun o => optionToList (traceElementOnPiece o sm sp iter))
     r.(r_outputPattern).
 
-Definition traceRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :  list TraceLink :=
+Definition traceRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :  RichTraceLink.Trace :=
   flat_map (traceIterationOnPiece r sm sp)
     (seq 0 (evalIterator r sm sp)).
 
-Definition traceTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TraceLink :=
+Definition traceTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : RichTraceLink.Trace :=
   flat_map (fun r => traceRuleOnPiece r sm sp) (matchingRules tr sm sp).
 
 
 
-Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) : list TraceLink :=
+Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) :  RichTraceLink.Trace :=
   flat_map (traceTrOnPiece tr sm) (allTuples tr sm).  
 
 
@@ -60,7 +64,7 @@ Definition applyUnitOnPiece
             (sm: SourceModel)
             (sp: InputPiece) (iter: nat) : list TargetLinkType :=
   match (evalOutputPatternElement opu sm sp iter) with 
-  | Some l => optionListToList (evalOutputPatternLink sm sp l iter (traceTrOnModel tr sm) opu)
+  | Some l => optionListToList (evalOutputPatternLink sm sp l iter (convert2 (traceTrOnModel tr sm)) opu)
   | None => nil
   end.
 
@@ -78,6 +82,166 @@ Definition applyTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiec
 Definition applyTrOnModel (tr: Transformation) (sm : SourceModel) 
   : list TargetLinkType
   :=  flat_map (applyTrOnPiece tr sm) (allTuples tr sm).
+
+
+(** Alternate definition. (proof of equivalence below) *)
+Definition applyTrOnModel_alt (tr: Transformation) (sm : SourceModel) : list TargetLinkType :=
+  let t := traceTrOnModel tr sm 
+  in concat (
+         optionList2List (
+             map 
+               (fun lk => lk.(linkPattern) (convert2 t) (getIteration lk) sm (getSourcePattern lk) lk.(produced)) 
+               t)
+       ). 
+
+
+
+Lemma exploit_in_traceTrOnModel tr sm :
+  forall tlk,
+    In tlk (traceTrOnModel tr sm) <-> 
+    exists r  opu, 
+    In (getSourcePattern tlk) (allTuples tr sm) 
+    /\ In r (matchingRules tr sm (getSourcePattern tlk))
+    /\ In (getIteration tlk) (seq 0 (evalIterator r sm (getSourcePattern tlk) )) 
+    /\ In opu (r_outputPattern r) 
+    /\ opu.(opu_element)  (getIteration tlk) sm (getSourcePattern tlk)  = return tlk.(produced)
+    /\ tlk.(linkPattern) = opu.(opu_link)
+    /\ getName tlk = opu.(opu_name).
+Proof.
+  intro ; split ; intro H.
+{  
+  unfold traceTrOnModel.
+    apply in_flat_map in H. destruct H as (ip, (IN1, IN2)).
+  unfold traceTrOnPiece in IN2.
+  apply in_flat_map in IN2. destruct IN2 as (r, (IN2, IN3)).
+  unfold traceRuleOnPiece in IN3.
+  apply in_flat_map in IN3.
+  destruct IN3 as (i, (IN3,IN4)).
+  unfold traceIterationOnPiece in IN4.
+  apply in_flat_map in IN4. destruct IN4 as (opu, (IN4,IN5)).
+  apply in_optionToList in IN5.
+  unfold traceElementOnPiece in IN5.
+  monadInv IN5.
+  unfold getSourcePattern. simpl.
+  unfold evalOutputPatternElement in IN5.
+  eauto 11.
+}
+{  
+
+  destruct H as (r, (opu, (H1, (H2, (H3, (H4, (H5, (H6, H7)))))))). 
+  
+  unfold applyTrOnModel.  apply in_flat_map.
+  exists (getSourcePattern tlk).
+  split ; [ assumption|  ].
+  unfold applyTrOnPiece.  apply in_flat_map.
+  exists r.
+  split ; [ assumption | ].
+  unfold applyRuleOnPiece.  apply in_flat_map.
+  exists (getIteration tlk).
+  split ; [ assumption | ].
+  unfold applyIterationOnPiece.  apply in_flat_map.
+  exists opu.
+  split ; [ assumption | ].
+  unfold traceElementOnPiece.
+  unfold evalOutputPatternElement.
+  rewrite H5.
+  simpl.
+  rewrite <- H7.
+  rewrite <- H6.
+  left.
+  
+  
+  destruct tlk. 
+  destruct source.
+  destruct p. auto.
+}
+Qed.
+
+Lemma included_1 tr sm :
+  incl  (applyTrOnModel_alt tr sm)  (applyTrOnModel tr sm).
+Proof.
+  intro link.
+  unfold applyTrOnModel_alt.
+  intro H.
+  apply in_concat in H. destruct H as (links, (IN1, IN2)).
+  unfold optionList2List in IN1.
+  apply in_flat_map in IN1. destruct IN1 as (opt1, (IN1, IN3)).
+  apply in_map_iff in IN1. destruct IN1 as (trl, (IN1,IN4)).
+  apply in_optionToList in IN3.
+  subst opt1.
+
+  apply (exploit_in_traceTrOnModel) in IN4. 
+   destruct IN4 as  (r, (opu, (E1, (E2, (E3, (E4, (E5, (E6, E7)))))))).
+
+  unfold applyTrOnModel.  apply in_flat_map.
+  exists (getSourcePattern trl).
+  split ; [ assumption|  ].
+  unfold applyTrOnPiece.  apply in_flat_map.
+  exists r.
+  split ; [ assumption | ].
+  unfold applyRuleOnPiece.  apply in_flat_map.
+  exists (getIteration trl).
+  split ; [ assumption | ].
+  unfold applyIterationOnPiece.  apply in_flat_map.
+  exists opu.
+  split ; [ assumption | ].
+  unfold applyUnitOnPiece.
+  unfold evalOutputPatternElement.
+  rewrite E5.
+  unfold evalOutputPatternLink.
+  destruct trl ; simpl in *.
+  unfold getSourcePattern in *.
+  unfold getIteration in *.
+  unfold getName in *.
+  simpl in *.
+  subst.
+  destruct source ; simpl in *.
+  destruct p ; simpl in *.
+  subst.
+  rewrite IN3.
+  exact IN2.
+Qed.
+
+Lemma included_2 tr sm :
+  incl (applyTrOnModel tr sm) (applyTrOnModel_alt tr sm).
+Proof.
+  intro link.
+  intro H.
+  unfold applyTrOnModel_alt.
+  apply in_concat.
+  unfold applyTrOnModel in H.
+  apply in_flat_map in H. destruct H as (ip, (H1,H2)).
+  unfold applyTrOnPiece in H2.
+  apply in_flat_map in H2. destruct H2 as (r, (H3,H4)).
+  unfold applyRuleOnPiece in H4.
+  apply in_flat_map in H4. destruct H4 as (i, (H5,H6)).
+  unfold applyIterationOnPiece in H6.
+  apply in_flat_map in H6. destruct H6 as (opu, (H7,H8)).
+  unfold applyUnitOnPiece in H8.
+  destruct (evalOutputPatternElement opu sm ip i) eqn:E ; [ | crush ].
+  apply in_optionListToList in H8. destruct H8 as (links, (H9, H10)). 
+  exists links ; split ; [ | assumption].
+  unfold optionList2List.
+  apply in_flat_map.
+  destruct opu ; simpl in *.
+  exists (Some links).
+  split ; [ | crush ].
+  apply in_map_iff.
+  exists ({| source := (ip, i, opu_name) ; produced := t ; linkPattern := opu_link |} ). 
+  simpl.
+  unfold getIteration ; simpl.
+  unfold getSourcePattern ; simpl.
+  split ; [ assumption | ].
+  
+  apply exploit_in_traceTrOnModel.
+
+  exists r.
+  eexists.
+  unfold linkPattern, getName, getSourcePattern, getIteration, source, produced.
+  repeat (split ; eauto ).
+Qed.
+
+
 
 (** * Execute **)
 
@@ -118,7 +282,7 @@ Lemma in_applyUnitOnPiece {A B C D E} :
   In a (applyUnitOnPiece opu tr sm sp it) ->
   exists g, 
     evalOutputPatternElement opu sm sp it = Some g
-    /\ In a (optionListToList (evalOutputPatternLink sm sp g it (traceTrOnModel tr sm) opu)).
+    /\ In a (optionListToList (evalOutputPatternLink sm sp g it (convert2 (traceTrOnModel tr sm)) opu)).
 Proof.  
   unfold applyUnitOnPiece.
   intros until it ; intro IN.

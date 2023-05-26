@@ -4,6 +4,8 @@ Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.TransformationConfiguration.
 
+Require Syntax.
+
 (** * Syntax
 
       In this section, we introduce _one possible_ abstract syntax of the CoqTL transformation engine.  
@@ -22,7 +24,8 @@ Record TraceLink : Type :=
   buildTraceLink  
     { 
       source : InputPiece * nat * string ;
-      produced : TargetElementType 
+      produced : TargetElementType ;
+      linkPattern : list PoorTraceLink.TraceLink -> nat -> SourceModel -> InputPiece -> TargetElementType -> option (list TargetLinkType)
     }.
 
 Definition getSourcePattern (tl: TraceLink):=
@@ -55,10 +58,10 @@ Definition source_compare (s:InputPiece * nat * string) (t:TraceLink) : bool :=
 
 Lemma source_compare_refl : 
   (forall a,  SourceElement_eqb a a = true) ->
-  forall a b, 
-    source_compare a {| source := a ; produced := b |} = true.
+  forall a b c, 
+    source_compare a {| source := a ; produced := b ; linkPattern := c |} = true.
 Proof.
-  intros R a b.
+  intros R a b c.
   destruct a as ((l & i) & n). 
   simpl.
   unfold getSourcePattern, getIteration, getName ; simpl.
@@ -89,9 +92,16 @@ Proof.
   + exact H1. 
 Qed.
 
+Definition convert (a:TraceLink) : PoorTraceLink.TraceLink :=
+  PoorTraceLink.buildTraceLink a.(source) a.(produced).
+
+Definition convert2 := map convert.
 
 End TraceLink.
 
 Arguments TraceLink {_}.
 
 Arguments source_compare : simpl never.
+
+Notation Trace := (list TraceLink).
+
