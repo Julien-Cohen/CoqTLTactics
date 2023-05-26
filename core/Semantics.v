@@ -58,12 +58,10 @@ Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) :  RichTraceLi
 
 (** * Apply link part of the r.h.s of rules (uses traces) **)
 
-Definition applyTrOnModel (tr: Transformation) (sm : SourceModel) : list TargetLinkType :=
-  let t := traceTrOnModel tr sm 
-  in
+Definition applyTrOnModel (sm : SourceModel) (tls:Trace): list TargetLinkType :=
   flat_map 
-    (fun lk => lk.(linkPattern) (convert2 t) (getIteration lk) sm (getSourcePattern lk) lk.(produced)) 
-    t. 
+    (fun lk => lk.(linkPattern) (convert2 tls) (getIteration lk) sm (getSourcePattern lk) lk.(produced)) 
+    tls. 
 
 
 
@@ -72,9 +70,11 @@ Definition applyTrOnModel (tr: Transformation) (sm : SourceModel) : list TargetL
 
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
+  let t := traceTrOnModel tr sm
+  in
   {|
-    modelElements := elements_proj (traceTrOnModel tr sm) ;
-    modelLinks := applyTrOnModel tr sm
+    modelElements := elements_proj t ;
+    modelLinks := applyTrOnModel sm t
   |}.
 
 End Semantics.
@@ -194,7 +194,7 @@ Proof.
 Qed.
 
 Lemma included_1 {tc:TransformationConfiguration} tr sm :
-  incl  (applyTrOnModel tr sm)  (applyTrOnModel_old tr sm).
+  incl  (applyTrOnModel sm (traceTrOnModel tr sm))  (applyTrOnModel_old tr sm).
 Proof.
   intro link.
   unfold applyTrOnModel.
@@ -233,7 +233,7 @@ Proof.
 Qed.
 
 Lemma included_2 {tc:TransformationConfiguration} tr sm :
-  incl (applyTrOnModel_old tr sm) (applyTrOnModel tr sm).
+  incl (applyTrOnModel_old tr sm) (applyTrOnModel sm (traceTrOnModel tr sm)).
 Proof.
   intro link.
   intro H.
@@ -266,7 +266,7 @@ Proof.
 Qed.
 
 Lemma included_3 {tc:TransformationConfiguration} tr sm :
-  forall lk, In lk (applyTrOnModel_old tr sm) <-> In lk (applyTrOnModel tr sm).
+  forall lk, In lk (applyTrOnModel_old tr sm) <-> In lk (applyTrOnModel sm (traceTrOnModel tr sm)).
 Proof.
   intro link.
   split.
