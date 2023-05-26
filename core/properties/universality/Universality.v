@@ -36,7 +36,7 @@ Proof.
   exists (toTransformation tc f).
   intros.
   unfold execute.
-  unfold applyTrOnModel_alt.
+  unfold applyTrOnModel.
   unfold traceTrOnModel.
   unfold traceTrOnPiece.
   unfold traceRuleOnPiece.

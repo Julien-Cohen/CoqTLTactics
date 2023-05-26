@@ -56,9 +56,55 @@ Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) :  RichTraceLi
   flat_map (traceTrOnPiece tr sm) (allTuples tr sm).  
 
 
-(** * Apply link part of the r.h.s of rules (with traces) **)
+(** * Apply link part of the r.h.s of rules (uses traces) **)
 
-Definition applyUnitOnPiece
+Definition applyTrOnModel (tr: Transformation) (sm : SourceModel) : list TargetLinkType :=
+  let t := traceTrOnModel tr sm 
+  in
+  flat_map 
+    (fun lk => lk.(linkPattern) (convert2 t) (getIteration lk) sm (getSourcePattern lk) lk.(produced)) 
+    t. 
+
+
+
+
+(** * Execute **)
+
+
+Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
+  {|
+    modelElements := elements_proj (traceTrOnModel tr sm) ;
+    modelLinks := applyTrOnModel tr sm
+  |}.
+
+End Semantics.
+
+
+
+(** * Some tactics *)
+
+(* tactics need to be outside the section to be visible *)
+
+
+Ltac exploit_in_allTuples H :=
+  match type of H with 
+    In _ (allTuples _ _) => 
+      unfold allTuples in H ; 
+      apply tuples_up_to_n_incl in H ;
+      incl_inv H
+  end.
+
+Ltac in_allTuples_auto :=
+  match goal with 
+    [ H : In _ (allTuples _ _) |- _ ] =>
+       exploit_in_allTuples H
+  end.
+
+(** * Old Semantics for link generation *)
+
+(** We keep the old semantics for compatibility with the [TransformationEngine] class (see [Certification]).*)
+
+Definition applyUnitOnPiece {tc:TransformationConfiguration}
             (opu: OutputPatternUnit)
             (tr: Transformation)
             (sm: SourceModel)
@@ -68,33 +114,25 @@ Definition applyUnitOnPiece
   | None => nil
   end.
 
-Definition applyIterationOnPiece (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: InputPiece) (iter: nat) : list TargetLinkType :=
+Definition applyIterationOnPiece {tc:TransformationConfiguration} (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: InputPiece) (iter: nat) : list TargetLinkType :=
   flat_map (fun o => applyUnitOnPiece o tr sm sp iter)
     r.(r_outputPattern).
 
-Definition applyRuleOnPiece (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: InputPiece): list TargetLinkType :=
+Definition applyRuleOnPiece {tc:TransformationConfiguration} (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: InputPiece): list TargetLinkType :=
   flat_map (applyIterationOnPiece r tr sm sp)
     (seq 0 (evalIterator r sm sp)).
 
-Definition applyTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetLinkType :=
+Definition applyTrOnPiece {tc:TransformationConfiguration} (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetLinkType :=
   flat_map (fun r => applyRuleOnPiece r tr sm sp) (matchingRules tr sm sp).
 
-Definition applyTrOnModel (tr: Transformation) (sm : SourceModel) 
+Definition applyTrOnModel_old {tc:TransformationConfiguration} (tr: Transformation) (sm : SourceModel) 
   : list TargetLinkType
   :=  flat_map (applyTrOnPiece tr sm) (allTuples tr sm).
 
 
-(** Alternate definition. (proof of equivalence below) *)
-Definition applyTrOnModel_alt (tr: Transformation) (sm : SourceModel) : list TargetLinkType :=
-  let t := traceTrOnModel tr sm 
-  in
-  flat_map 
-    (fun lk => lk.(linkPattern) (convert2 t) (getIteration lk) sm (getSourcePattern lk) lk.(produced)) 
-    t. 
 
-
-
-Lemma exploit_in_traceTrOnModel tr sm :
+(** Equivalence between the old semantics for links and the current one. *)
+Lemma exploit_in_traceTrOnModel {tc:TransformationConfiguration} tr sm :
   forall tlk,
     In tlk (traceTrOnModel tr sm) <-> 
     exists r  opu, 
@@ -155,11 +193,11 @@ Proof.
 }
 Qed.
 
-Lemma included_1 tr sm :
-  incl  (applyTrOnModel_alt tr sm)  (applyTrOnModel tr sm).
+Lemma included_1 {tc:TransformationConfiguration} tr sm :
+  incl  (applyTrOnModel tr sm)  (applyTrOnModel_old tr sm).
 Proof.
   intro link.
-  unfold applyTrOnModel_alt.
+  unfold applyTrOnModel.
   intro H.
   apply in_flat_map in H. destruct H as (trl, (IN1, IN2)).
 
@@ -194,12 +232,12 @@ Proof.
   exact IN2.
 Qed.
 
-Lemma included_2 tr sm :
-  incl (applyTrOnModel tr sm) (applyTrOnModel_alt tr sm).
+Lemma included_2 {tc:TransformationConfiguration} tr sm :
+  incl (applyTrOnModel_old tr sm) (applyTrOnModel tr sm).
 Proof.
   intro link.
   intro H.
-  unfold applyTrOnModel_alt.
+  unfold applyTrOnModel.
   apply in_flat_map.
   unfold applyTrOnModel in H.
   apply in_flat_map in H. destruct H as (ip, (H1,H2)).
@@ -227,8 +265,8 @@ Proof.
   repeat (split ; eauto ).
 Qed.
 
-Lemma included_3 tr sm :
-  forall lk, In lk (applyTrOnModel tr sm) <-> In lk (applyTrOnModel_alt tr sm).
+Lemma included_3 {tc:TransformationConfiguration} tr sm :
+  forall lk, In lk (applyTrOnModel_old tr sm) <-> In lk (applyTrOnModel tr sm).
 Proof.
   intro link.
   split.
@@ -236,39 +274,6 @@ Proof.
   apply included_1.
 Qed.
 
-
-
-(** * Execute **)
-
-
-Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
-  {|
-    modelElements := elements_proj (traceTrOnModel tr sm) ;
-    modelLinks := applyTrOnModel_alt tr sm
-  |}.
-
-End Semantics.
-
-
-
-(** * Some tactics *)
-
-(* tactics need to be outside the section to be visible *)
-
-
-Ltac exploit_in_allTuples H :=
-  match type of H with 
-    In _ (allTuples _ _) => 
-      unfold allTuples in H ; 
-      apply tuples_up_to_n_incl in H ;
-      incl_inv H
-  end.
-
-Ltac in_allTuples_auto :=
-  match goal with 
-    [ H : In _ (allTuples _ _) |- _ ] =>
-       exploit_in_allTuples H
-  end.
 
 (** FIXME : move-me to Certification ? *)
 Lemma in_applyUnitOnPiece {A B C D E} :
