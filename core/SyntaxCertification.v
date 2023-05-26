@@ -30,7 +30,7 @@ Instance CoqTLSyntax :
       
       evalOutputPatternElementExpr := fun a b c d => evalOutputPatternElement d a b c ; (* change the order of parameters *)
       evalIteratorExpr := evalIterator ;
-      evalOutputPatternLinkExpr := evalOutputPatternLink ;
+      evalOutputPatternLinkExpr := fun a b c d e f => Some (evalOutputPatternLink a b c d e f) ;
       evalGuardExpr := Syntax.r_guard;
   }.
 

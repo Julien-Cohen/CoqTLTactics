@@ -25,7 +25,7 @@ Record TraceLink : Type :=
     { 
       source : InputPiece * nat * string ;
       produced : TargetElementType ;
-      linkPattern : list PoorTraceLink.TraceLink -> nat -> SourceModel -> InputPiece -> TargetElementType -> option (list TargetLinkType)
+      linkPattern : list PoorTraceLink.TraceLink -> nat -> SourceModel -> InputPiece -> TargetElementType -> list TargetLinkType
     }.
 
 Definition getSourcePattern (tl: TraceLink):=

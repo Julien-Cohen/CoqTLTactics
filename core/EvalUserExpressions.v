@@ -33,7 +33,7 @@ Definition evalOutputPatternElement (o: OutputPatternUnit) (sm: SourceModel) (sp
 Definition evalOutputPatternLink
             (sm: SourceModel) (sp: InputPiece) (oe: TargetElementType) (iter: nat) (tra: list TraceLink)
             (o: OutputPatternUnit)
-  : option (list TargetLinkType) :=
+  : list TargetLinkType :=
   o.(opu_link) tra iter sm sp oe.
 
 End Expressions.

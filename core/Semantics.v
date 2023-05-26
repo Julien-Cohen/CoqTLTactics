@@ -64,7 +64,7 @@ Definition applyUnitOnPiece
             (sm: SourceModel)
             (sp: InputPiece) (iter: nat) : list TargetLinkType :=
   match (evalOutputPatternElement opu sm sp iter) with 
-  | Some l => optionListToList (evalOutputPatternLink sm sp l iter (convert2 (traceTrOnModel tr sm)) opu)
+  | Some l => evalOutputPatternLink sm sp l iter (convert2 (traceTrOnModel tr sm)) opu
   | None => nil
   end.
 
@@ -88,11 +88,9 @@ Definition applyTrOnModel (tr: Transformation) (sm : SourceModel)
 Definition applyTrOnModel_alt (tr: Transformation) (sm : SourceModel) : list TargetLinkType :=
   let t := traceTrOnModel tr sm 
   in concat (
-         optionList2List (
-             map 
-               (fun lk => lk.(linkPattern) (convert2 t) (getIteration lk) sm (getSourcePattern lk) lk.(produced)) 
-               t)
-       ). 
+         map 
+           (fun lk => lk.(linkPattern) (convert2 t) (getIteration lk) sm (getSourcePattern lk) lk.(produced)) 
+           t). 
 
 
 
@@ -164,11 +162,7 @@ Proof.
   unfold applyTrOnModel_alt.
   intro H.
   apply in_concat in H. destruct H as (links, (IN1, IN2)).
-  unfold optionList2List in IN1.
-  apply in_flat_map in IN1. destruct IN1 as (opt1, (IN1, IN3)).
   apply in_map_iff in IN1. destruct IN1 as (trl, (IN1,IN4)).
-  apply in_optionToList in IN3.
-  subst opt1.
 
   apply (exploit_in_traceTrOnModel) in IN4. 
    destruct IN4 as  (r, (opu, (E1, (E2, (E3, (E4, (E5, (E6, E7)))))))).
@@ -198,7 +192,6 @@ Proof.
   destruct source ; simpl in *.
   destruct p ; simpl in *.
   subst.
-  rewrite IN3.
   exact IN2.
 Qed.
 
@@ -219,19 +212,17 @@ Proof.
   apply in_flat_map in H6. destruct H6 as (opu, (H7,H8)).
   unfold applyUnitOnPiece in H8.
   destruct (evalOutputPatternElement opu sm ip i) eqn:E ; [ | crush ].
-  apply in_optionListToList in H8. destruct H8 as (links, (H9, H10)). 
-  exists links ; split ; [ | assumption].
-  unfold optionList2List.
-  apply in_flat_map.
+
+  eexists.
+  split ; [ | eassumption].
+
   destruct opu ; simpl in *.
-  exists (Some links).
-  split ; [ | crush ].
   apply in_map_iff.
   exists ({| source := (ip, i, opu_name) ; produced := t ; linkPattern := opu_link |} ). 
   simpl.
   unfold getIteration ; simpl.
   unfold getSourcePattern ; simpl.
-  split ; [ assumption | ].
+  split ; [ reflexivity | ].
   
   apply exploit_in_traceTrOnModel.
 
@@ -282,7 +273,7 @@ Lemma in_applyUnitOnPiece {A B C D E} :
   In a (applyUnitOnPiece opu tr sm sp it) ->
   exists g, 
     evalOutputPatternElement opu sm sp it = Some g
-    /\ In a (optionListToList (evalOutputPatternLink sm sp g it (convert2 (traceTrOnModel tr sm)) opu)).
+    /\ In a (evalOutputPatternLink sm sp g it (convert2 (traceTrOnModel tr sm)) opu).
 Proof.  
   unfold applyUnitOnPiece.
   intros until it ; intro IN.

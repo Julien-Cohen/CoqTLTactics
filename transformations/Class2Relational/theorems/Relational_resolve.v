@@ -87,7 +87,7 @@ Proof.
   
   (* (1) *)
   destruct (Tactics.destruct_in_modelLinks_execute_lem R_IN1) 
-    as ( elts & r & i & out_pat_el & te & tls & IN_E & IN_RULE & MATCH_RULE & IN_IT & IN_OUTPAT & EV_PE & EV_LINK & IN_LINK).
+    as ( elts & r & i & out_pat_el & te & IN_E & IN_RULE & MATCH_RULE & IN_IT & IN_OUTPAT & EV_PE & IN_LINK).
 
   (* (2) Case analysis on the rule that has matched. *)
   Tactics.progress_in_In_rules IN_RULE ; [ | ] ; 
@@ -101,14 +101,14 @@ Proof.
   (* (5.E) *)
   Tactics.exploit_evaloutpat EV_PE ;
 
-  (* (5.L) now we can progress in EV_LINK. *)
-  unfold_parseOutputPatternUnit EV_LINK ; 
-  unfold_evalOutputPatternLink EV_LINK ; 
-  rewrite flat_map_singleton in EV_LINK ; 
-    repeat ConcreteSyntax.simpl_link_accessors EV_LINK ;
-  inj EV_LINK ; [ | ] ;
+  (* (5.L) now we can progress in IN_LINK. *)
+  unfold_parseOutputPatternUnit IN_LINK ; 
+  unfold_evalOutputPatternLink IN_LINK ; 
+      repeat ConcreteSyntax.simpl_link_accessors  IN_LINK ;
+ [ | ] ;
+  unfold Parser.dropToList in IN_LINK ; simpl in IN_LINK ;
   
-  (* Rem : the value computed in EV_LINK appears now in IN_LINK *)
+  rewrite <- app_nil_end in IN_LINK ;
   ListUtils.destruct_in_optionListToList IN_LINK ;
   
   ConcreteExpressions.inv_makeLink IN_LINK ; 
@@ -183,8 +183,8 @@ Proof.
   { simpl. instantiate (1:=0). auto. }
   { simpl ; auto. }
   { crush. }
-  { crush. }
   { crush. 
+    unfold Parser.dropToList ; simpl.
     unfold getAttributeTypeElement.
     unfold Parser.parseOutputPatternLink.
     simpl.

@@ -444,17 +444,14 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
      {l}
      {m},
     In l (modelLinks (execute t m)) ->
-    exists sp r n p te tls,
+    exists sp r n p te,
       In sp (allTuples t m) 
       /\ In r (Syntax.rules t) 
       /\ EvalUserExpressions.evalGuard r m sp = true
       /\ In n (seq 0 (EvalUserExpressions.evalIterator r m sp))
       /\ In p (Syntax.r_outputPattern r) 
-      /\ EvalUserExpressions.evalOutputPatternElement p m sp n =
-         return te
-  
-  /\ EvalUserExpressions.evalOutputPatternLink m sp te n (RichTraceLink.convert2(traceTrOnModel t m)) p = return tls
-  /\ In l tls.
+      /\ EvalUserExpressions.evalOutputPatternElement p m sp n = return te
+      /\ In l (EvalUserExpressions.evalOutputPatternLink m sp te n (RichTraceLink.convert2(traceTrOnModel t m)) p).
 
 Proof.
   intros.
@@ -465,7 +462,6 @@ Proof.
   destruct_in_matchingRules IN_RULE H_MATCH_RULE.
   unfold applyUnitOnPiece in IN_APP_PAT.
   PropUtils.destruct_match IN_APP_PAT ; [ | ListUtils.unfold_In_cons IN_APP_PAT ].
-  ListUtils.destruct_in_optionListToList IN_APP_PAT.
   eauto 15.
 Qed.
 
@@ -600,7 +596,7 @@ Qed.
 
 
 Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
-  forall (sp:InputPiece) (r:Syntax.Rule) i opu produced_element produced_links,
+  forall (sp:InputPiece) (r:Syntax.Rule) i opu produced_element,
 
     incl sp (modelElements cm) ->
     
@@ -617,13 +613,12 @@ Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
     
     EvalUserExpressions.evalOutputPatternElement opu cm sp i = Some produced_element ->
     
-    EvalUserExpressions.evalOutputPatternLink cm sp produced_element i (RichTraceLink.convert2(traceTrOnModel t cm)) opu = Some produced_links ->
     
-    forall l, In l  produced_links -> In l (modelLinks (execute t cm)).
+    forall l, In l  (EvalUserExpressions.evalOutputPatternLink cm sp produced_element i (RichTraceLink.convert2(traceTrOnModel t cm)) opu) -> In l (modelLinks (execute t cm)).
 Proof.
-  intros sp r i opu produced_element produced_links.
+  intros sp r i opu produced_element.
   intros IN_MOD A IN_R EVAL_GUARD  EVAL_IT IN_OPU  EVAL_OUT_EL EVAL_OUT_LINK. 
-  intros l INLV  .
+  intro INLV.
 
   apply Certification.tr_execute_in_links.
 
@@ -656,11 +651,7 @@ Proof.
         { exact IN_OPU. }
         { 
           rewrite Certification.tr_applyUnitOnPiece_leaf with (te:=produced_element).
-          { 
-            rewrite EVAL_OUT_LINK.
-            simpl.
-            exact INLV.
-          }
+          { exact INLV. }
           { exact EVAL_OUT_EL. }
         }
       }

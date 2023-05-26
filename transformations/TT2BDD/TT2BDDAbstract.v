@@ -13,6 +13,8 @@ Require Import core.Resolve.
 Require Import core.Model.
 Require Import core.TransformationConfiguration.
 
+Require core.modeling.Parser.
+
 Require Import TT2BDD.TT.
 Require Import TT2BDD.BDD.
 
@@ -102,11 +104,11 @@ Definition TT2BDD :=
       (fun m sp => return iter_col sp)
       [buildOutputPatternUnit "node"
           (fun i m col => return BuildBDDNode (oelem_name col i))
-          (fun tls i m col output => 
-            ulv <- (upper_level col);
+          (Parser.dropToList (fun tls i m col output => 
+                         ulv <- (upper_level col);
             ucol <- locate m ulv;
             parent <- resolveIter tls "node" [ucol] ((div_roundup i 2)-1);
-            return [BuildBDDEdge output parent])
+            return [BuildBDDEdge output parent]))
       ]
     ) ;
     (buildRule "Row2Output"  
@@ -114,13 +116,13 @@ Definition TT2BDD :=
       (fun m sp => return 1)
       [buildOutputPatternUnit "output"
           (fun i m sp => return BuildBDDNode (output_name sp))
-          (fun tls i m sp output => 
-            height <- Some (maxLv m);           (* get depth *)
+          (Parser.dropToList (fun tls i m sp output => 
+             height <- Some (maxLv m);           (* get depth *)
             col <- locate m height;             (* get node of depth *)
             row <- hd_error sp;
             input <- (Row_Input row);
             parent <- resolveIter tls "node" [col] ((div_roundup (semantic input) 2)-1);   (* attach output to the corresponding leaf node*)
-            return [BuildBDDEdge output parent])
+            return [BuildBDDEdge output parent]))
       ]
     )
   ]. 

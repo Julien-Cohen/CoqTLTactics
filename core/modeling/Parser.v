@@ -27,11 +27,16 @@ Definition parseOutputPatternLinks (inkinds: list SourceEKind) (outtype: TargetE
     fun (tls:list TraceLink) (iter:nat) (sm:SourceModel) (sp: list SourceElementType) (te: TargetElementType) =>
     Some (flat_map (fun (x: ConcreteOutputPatternLink inkinds outtype) => optionListToList (parseOutputPatternLink inkinds outtype x tls iter sm sp te)) cr).
 
+Definition dropToList : 
+  (list TraceLink -> nat -> SourceModel -> InputPiece -> TargetElementType -> option (list TargetLinkType) )
+  -> (list TraceLink -> nat -> SourceModel -> InputPiece -> TargetElementType -> list TargetLinkType ) 
+  := fun f => (fun a b c d e => optionListToList (f a b c d e)).
+  
 Definition parseOutputPatternUnit (inkinds: list SourceEKind) (co: ConcreteOutputPatternElement inkinds) : OutputPatternUnit :=
   buildOutputPatternUnit
     co.(e_name)
     (makeElement inkinds co.(e_OutKind) co.(e_outpat))
-    (parseOutputPatternLinks inkinds co.(e_OutKind) co.(e_outlink)).
+    (dropToList (parseOutputPatternLinks inkinds co.(e_OutKind) co.(e_outlink))).
 
 Definition parseRule(cr: ConcreteRule) : Rule :=
   buildRule
