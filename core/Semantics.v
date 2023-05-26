@@ -87,10 +87,10 @@ Definition applyTrOnModel (tr: Transformation) (sm : SourceModel)
 (** Alternate definition. (proof of equivalence below) *)
 Definition applyTrOnModel_alt (tr: Transformation) (sm : SourceModel) : list TargetLinkType :=
   let t := traceTrOnModel tr sm 
-  in concat (
-         map 
-           (fun lk => lk.(linkPattern) (convert2 t) (getIteration lk) sm (getSourcePattern lk) lk.(produced)) 
-           t). 
+  in
+  flat_map 
+    (fun lk => lk.(linkPattern) (convert2 t) (getIteration lk) sm (getSourcePattern lk) lk.(produced)) 
+    t. 
 
 
 
@@ -161,11 +161,10 @@ Proof.
   intro link.
   unfold applyTrOnModel_alt.
   intro H.
-  apply in_concat in H. destruct H as (links, (IN1, IN2)).
-  apply in_map_iff in IN1. destruct IN1 as (trl, (IN1,IN4)).
+  apply in_flat_map in H. destruct H as (trl, (IN1, IN2)).
 
-  apply (exploit_in_traceTrOnModel) in IN4. 
-   destruct IN4 as  (r, (opu, (E1, (E2, (E3, (E4, (E5, (E6, E7)))))))).
+  apply (exploit_in_traceTrOnModel) in IN1. 
+   destruct IN1 as  (r, (opu, (E1, (E2, (E3, (E4, (E5, (E6, E7)))))))).
 
   unfold applyTrOnModel.  apply in_flat_map.
   exists (getSourcePattern trl).
@@ -201,7 +200,7 @@ Proof.
   intro link.
   intro H.
   unfold applyTrOnModel_alt.
-  apply in_concat.
+  apply in_flat_map.
   unfold applyTrOnModel in H.
   apply in_flat_map in H. destruct H as (ip, (H1,H2)).
   unfold applyTrOnPiece in H2.
@@ -213,16 +212,12 @@ Proof.
   unfold applyUnitOnPiece in H8.
   destruct (evalOutputPatternElement opu sm ip i) eqn:E ; [ | crush ].
 
-  eexists.
-  split ; [ | eassumption].
-
   destruct opu ; simpl in *.
-  apply in_map_iff.
   exists ({| source := (ip, i, opu_name) ; produced := t ; linkPattern := opu_link |} ). 
   simpl.
   unfold getIteration ; simpl.
   unfold getSourcePattern ; simpl.
-  split ; [ reflexivity | ].
+  split ; [ | assumption ].
   
   apply exploit_in_traceTrOnModel.
 
