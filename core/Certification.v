@@ -14,7 +14,7 @@ Require Import core.Resolve.
 Require Import core.Metamodel.
 Require Import core.TransformationConfiguration.
 Require Import core.SyntaxCertification.
-Require Import core.EvalUserExpressions.
+Require Import core.UserExpressions.
 
 Import RichTraceLink.
 
@@ -56,7 +56,7 @@ forall (tr: Transformation) (sm : SourceModel),
   forall (sp : InputPiece)(r : Rule),
     In r (matchingRules tr sm sp) <->
       In r tr.(rules) /\
-      EvalUserExpressions.evalGuard r sm sp = true.
+      UserExpressions.evalGuard r sm sp = true.
 Proof.
   intros.
   apply filter_In.

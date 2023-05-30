@@ -37,7 +37,7 @@ Record ConcreteOutputPatternLink (InKinds: list SourceEKind) (OutKind:TargetEKin
   link 
     {
       o_OutRefKind: TargetLKind ;
-      o_outpat : list TraceLink -> nat -> SourceModel -> (outputPatternLink InKinds OutKind o_OutRefKind)
+      o_outpat : Trace -> nat -> SourceModel -> (outputPatternLink InKinds OutKind o_OutRefKind)
     }.
 
 Global Arguments o_OutRefKind {_ _}.

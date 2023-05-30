@@ -192,11 +192,11 @@ Definition makeElement (l : list SourceEKind) (k : TargetEKind)
   fun it sm => wrapElement l k (imp it sm).
 
 Definition LinkFunction : Type :=
-  list TraceLink
+  Trace
   -> nat -> SourceModel -> (list SourceElementType) -> TargetElementType -> option (list TargetLinkType).
 
 Definition makeLink (l : list SourceEKind) (k : TargetEKind) (r : TargetLKind)
-  (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteEDatatype k -> option (denoteLDatatype r))) :
+  (imp : Trace -> nat -> SourceModel -> denoteSignature l (denoteEDatatype k -> option (denoteLDatatype r))) :
   LinkFunction :=
   fun mt it sm => wrapLink l k r (imp mt it sm).
 

@@ -42,8 +42,8 @@ Proof.
   unfold traceRuleOnPiece.
   unfold traceIterationOnPiece.
   unfold traceElementOnPiece.
-  unfold EvalUserExpressions.evalOutputPatternElement.
-  unfold EvalUserExpressions.evalIterator.
+  unfold UserExpressions.evalOutputPatternElement.
+  unfold UserExpressions.evalIterator.
   simpl.
   repeat rewrite <- app_nil_end.
   rewrite map_flat_map.

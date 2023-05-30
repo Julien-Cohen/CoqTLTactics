@@ -68,7 +68,7 @@ Ltac unfold_parseOutputPatternUnit H :=
     repeat ConcreteSyntax.simpl_elem_accessors H.
   
 Ltac unfold_evalOutputPatternLink H :=
-    unfold EvalUserExpressions.evalOutputPatternLink in H ;
+    unfold UserExpressions.evalOutputPatternLink in H ;
     ConcreteSyntax.simpl_cr_accessors H ;
     Syntax.simpl_opu_accessors H.
 

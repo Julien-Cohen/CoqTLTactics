@@ -314,14 +314,14 @@ Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
   exists p r i outpat te,   
     In p (allTuples t cm)
     /\ In r (Syntax.rules t) 
-    /\ EvalUserExpressions.evalGuard r cm p = true 
-    /\ In i (seq 0 (EvalUserExpressions.evalIterator r cm p))
+    /\ UserExpressions.evalGuard r cm p = true 
+    /\ In i (seq 0 (UserExpressions.evalIterator r cm p))
     /\ In outpat (Syntax.r_outputPattern r)
     /\ l = {|
              PoorTraceLink.source := (p, i, Syntax.opu_name outpat);
              PoorTraceLink.produced := te
            |} 
-    /\ EvalUserExpressions.evalOutputPatternElement outpat cm p i = return te .
+    /\ UserExpressions.evalOutputPatternElement outpat cm p i = return te .
 Proof.
   intros.
   unfold RichTraceLink.convert2 in H.
@@ -418,10 +418,10 @@ Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
   exists r sp n0 opu,
     In sp (allTuples t cm)
     /\ In r (Syntax.rules t) 
-    /\ EvalUserExpressions.evalGuard r cm sp = true 
-    /\ In n0 (seq 0 (EvalUserExpressions.evalIterator r cm sp))
+    /\ UserExpressions.evalGuard r cm sp = true 
+    /\ In n0 (seq 0 (UserExpressions.evalIterator r cm sp))
     /\ In opu (Syntax.r_outputPattern r) 
-    /\ EvalUserExpressions.evalOutputPatternElement opu cm sp n0 =
+    /\ UserExpressions.evalOutputPatternElement opu cm sp n0 =
          return a.
 Proof.
   intros. 
@@ -447,11 +447,11 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
     exists sp r n p te,
       In sp (allTuples t m) 
       /\ In r (Syntax.rules t) 
-      /\ EvalUserExpressions.evalGuard r m sp = true
-      /\ In n (seq 0 (EvalUserExpressions.evalIterator r m sp))
+      /\ UserExpressions.evalGuard r m sp = true
+      /\ In n (seq 0 (UserExpressions.evalIterator r m sp))
       /\ In p (Syntax.r_outputPattern r) 
-      /\ EvalUserExpressions.evalOutputPatternElement p m sp n = return te
-      /\ In l (EvalUserExpressions.evalOutputPatternLink m sp te n (RichTraceLink.convert2(traceTrOnModel t m)) p).
+      /\ UserExpressions.evalOutputPatternElement p m sp n = return te
+      /\ In l (UserExpressions.evalOutputPatternLink m sp te n (RichTraceLink.convert2(traceTrOnModel t m)) p).
 
 Proof.
   intros.
@@ -485,11 +485,11 @@ Ltac progress_in_In_rules H :=
 Ltac exploit_evaloutpat H :=
   match type of H with 
 
-  | EvalUserExpressions.evalOutputPatternElement _ _ _ (Parser.parseOutputPatternUnit _) = Some _ =>
+  | UserExpressions.evalOutputPatternElement _ _ _ (Parser.parseOutputPatternUnit _) = Some _ =>
       unfold Parser.parseOutputPatternUnit in H ;
       exploit_evaloutpat H (* recursion *)
        
-  | EvalUserExpressions.evalOutputPatternElement _ _ _ _ = Some _ =>
+  | UserExpressions.evalOutputPatternElement _ _ _ _ = Some _ =>
       simpl in H ;
       ConcreteExpressions.inv_makeElement H
   end.
@@ -532,8 +532,8 @@ Ltac exploit_in_it H :=
         unfold_parseRule H ;
         exploit_in_it H (* recursion *)
 
-    | In ?I (seq _ (EvalUserExpressions.evalIterator (Syntax.buildRule _ _ _ _ ) _ _)) => 
-      unfold EvalUserExpressions.evalIterator in H ; 
+    | In ?I (seq _ (UserExpressions.evalIterator (Syntax.buildRule _ _ _ _ ) _ _)) => 
+      unfold UserExpressions.evalIterator in H ; 
       unfold Syntax.r_iterator in H ; 
       unfold ConcreteSyntax.r_iter in H ;
       simpl seq in H ;
@@ -547,8 +547,8 @@ Ltac exploit_evalGuard H :=
          unfold_parseRule H ;
          exploit_evalGuard H (* recursion *)
 
-      | EvalUserExpressions.evalGuard (Syntax.buildRule _ _ _ _) _ _ = true => 
-          unfold EvalUserExpressions.evalGuard in H ; 
+      | UserExpressions.evalGuard (Syntax.buildRule _ _ _ _) _ _ = true => 
+          unfold UserExpressions.evalGuard in H ; 
           unfold Syntax.r_guard in H ; 
           unfold ConcreteSyntax.r_guard in H ; 
           unfold ConcreteSyntax.r_InKinds in H ; 
@@ -605,16 +605,16 @@ Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
     
     In r t.(Syntax.rules)  ->
     
-    EvalUserExpressions.evalGuard r cm sp = true ->
+    UserExpressions.evalGuard r cm sp = true ->
     
-    In i (seq 0 (EvalUserExpressions.evalIterator r cm sp)) ->
+    In i (seq 0 (UserExpressions.evalIterator r cm sp)) ->
     
     In opu (Syntax.r_outputPattern r) ->
     
-    EvalUserExpressions.evalOutputPatternElement opu cm sp i = Some produced_element ->
+    UserExpressions.evalOutputPatternElement opu cm sp i = Some produced_element ->
     
     
-    forall l, In l  (EvalUserExpressions.evalOutputPatternLink cm sp produced_element i (RichTraceLink.convert2(traceTrOnModel t cm)) opu) -> In l (modelLinks (execute t cm)).
+    forall l, In l  (UserExpressions.evalOutputPatternLink cm sp produced_element i (RichTraceLink.convert2(traceTrOnModel t cm)) opu) -> In l (modelLinks (execute t cm)).
 Proof.
   intros sp r i opu produced_element.
   intros IN_MOD A IN_R EVAL_GUARD  EVAL_IT IN_OPU  EVAL_OUT_EL EVAL_OUT_LINK. 

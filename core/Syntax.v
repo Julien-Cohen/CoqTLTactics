@@ -30,7 +30,7 @@ Record OutputPatternUnit : Type :=
       nat -> SourceModel -> InputPiece -> option TargetElementType ; 
 
     opu_link :
-      list TraceLink -> nat -> SourceModel -> InputPiece -> TargetElementType -> list TargetLinkType
+      Trace -> nat -> SourceModel -> InputPiece -> TargetElementType -> list TargetLinkType
 
 }.
 

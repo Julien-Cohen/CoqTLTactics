@@ -24,12 +24,12 @@ Definition parseOutputPatternLink (inkinds: list SourceEKind) (outtype: TargetEK
 
 Definition parseOutputPatternLinks (inkinds: list SourceEKind) (outtype: TargetEKind)
   (cr: list (ConcreteOutputPatternLink inkinds outtype)) := 
-    fun (tls:list TraceLink) (iter:nat) (sm:SourceModel) (sp: list SourceElementType) (te: TargetElementType) =>
+    fun (tls:Trace) (iter:nat) (sm:SourceModel) (sp: list SourceElementType) (te: TargetElementType) =>
     Some (flat_map (fun (x: ConcreteOutputPatternLink inkinds outtype) => optionListToList (parseOutputPatternLink inkinds outtype x tls iter sm sp te)) cr).
 
 Definition dropToList : 
-  (list TraceLink -> nat -> SourceModel -> InputPiece -> TargetElementType -> option (list TargetLinkType) )
-  -> (list TraceLink -> nat -> SourceModel -> InputPiece -> TargetElementType -> list TargetLinkType ) 
+  (Trace -> nat -> SourceModel -> InputPiece -> TargetElementType -> option (list TargetLinkType) )
+  -> (Trace -> nat -> SourceModel -> InputPiece -> TargetElementType -> list TargetLinkType ) 
   := fun f => (fun a b c d e => optionListToList (f a b c d e)).
   
 Definition parseOutputPatternUnit (inkinds: list SourceEKind) (co: ConcreteOutputPatternElement inkinds) : OutputPatternUnit :=

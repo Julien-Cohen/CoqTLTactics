@@ -101,7 +101,7 @@ Proof.
       unfold traceRuleOnPiece.
       rewrite map_flat_map.
       simpl.
-      unfold EvalUserExpressions.evalIterator.
+      unfold UserExpressions.evalIterator.
       rewrite HeqR at 1 ; simpl.
       rewrite List.app_nil_r.
       rewrite HeqR ; unfold Syntax.r_outputPattern ; simpl.
