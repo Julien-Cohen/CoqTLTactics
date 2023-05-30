@@ -159,7 +159,7 @@ Proof.
   intros cm rm  WF2 E PRE.  intros col IN_COL. 
   subst rm.
 
-  C2RTactics.exploit_element_in_result IN_COL ; []; 
+  Tactics.exploit_element_in_result IN_COL ; []; 
   clear IN_COL.
   
   specialize (PRE _ IN_E).

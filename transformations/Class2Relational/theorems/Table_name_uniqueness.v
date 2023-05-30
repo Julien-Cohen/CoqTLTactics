@@ -45,10 +45,10 @@ Proof.
   intros cm rm E PRE t1 t2 IN1 IN2 D.
   subst rm.
 
-  C2RTactics.exploit_element_in_result IN1 ; [] ;
+  Tactics.exploit_element_in_result IN1 ; [] ;
   clear IN1.
 
-  C2RTactics.exploit_element_in_result IN2 ; [] ;
+  Tactics.exploit_element_in_result IN2 ; [] ;
   clear IN2.
 
   simpl in *.

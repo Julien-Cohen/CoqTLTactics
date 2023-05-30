@@ -149,30 +149,8 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
 
-  (* (1) *)
-  destruct (Tactics.destruct_in_modelElements_execute_lem H) 
-    as (r & sp & nn & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & H'). 
-
-  (* (2) *)
-  Tactics.progress_in_In_rules IN_RULE ; [ exfalso | ] ;
-
-  (* (3) make the ouput-pattern-element appear *)
-  Tactics.progress_in_In_outpat IN_OP ;
-
-  (* (4) *) 
-  (* needed here to get that derived = false *)
-  Tactics.exploit_evalGuard MATCH_GUARD ; 
-  
-  (* (5.E) make the matched element appear *)
-  Tactics.exploit_evaloutpat H' ;
-
-  (* (6) *)
-  (* not useful here *) 
-  Tactics.exploit_in_it IN_IT ;
-
-  (* (7) *)
-  Semantics.exploit_in_allTuples IN_E.
-  
+  Tactics.exploit_element_in_result H ; [] ; 
+  clear H.
 
   C2RTactics.exploit_guard MATCH_GUARD.
 
@@ -192,30 +170,10 @@ Lemma transform_class_bw :
 Proof.
   intros cm rm H ; subst.
   intros i n H.
-
-  (* (1) *)
-  destruct (Tactics.destruct_in_modelElements_execute_lem H) 
-    as (r & sp & nn & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & H'). 
-
-  (* (2) *)
-  Tactics.progress_in_In_rules IN_RULE ; [ | exfalso ] ; 
-
-  (* (3) *)
-  Tactics.progress_in_In_outpat IN_OP ;
   
-  (* (4) *)
-  (* not useful here *)
-  Tactics.exploit_evalGuard MATCH_GUARD ; 
+  Tactics.exploit_element_in_result H ; [] ; 
+  clear H.
 
-  (* (5.E) *)
-  Tactics.exploit_evaloutpat H' ;
-
-  (* (6) *)
-  (* not useful here *) 
-  Tactics.exploit_in_it IN_IT ;
-  
-  (* (7) *)
-  Semantics.exploit_in_allTuples IN_E.
   
   destruct t0 ; exact IN_E.
 

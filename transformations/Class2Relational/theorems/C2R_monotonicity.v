@@ -31,7 +31,7 @@ Proof.
   unfold incl.
   intros sm1 sm2 INC a IN.
 
-  C2RTactics.exploit_element_in_result IN ; [ | ] ;
+  Tactics.exploit_element_in_result IN ; [ | ] ;
   clear IN.
 
   {

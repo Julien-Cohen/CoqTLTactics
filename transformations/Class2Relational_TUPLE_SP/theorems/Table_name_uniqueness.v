@@ -43,53 +43,11 @@ Proof.
     intros cm rm E PRE t1 t2 IN1 IN2 D.
     subst rm.
 
-    (* (1) *)
-    destruct (Tactics.destruct_in_modelElements_execute_lem IN1) 
-      as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN1').    
-    
-    (* (2) *)
-    Tactics.progress_in_In_rules IN_RULE ; [ | ] ;
+    Tactics.exploit_element_in_result IN1 ; [] ; 
+    clear IN1.
+    Tactics.exploit_element_in_result IN2 ; [] ; 
+    clear IN2.
 
-    (* (3) *)
-    Tactics.progress_in_In_outpat IN_OP ;
-
-    (* (4) *)
-    (* not useful here *)
-    Tactics.exploit_evalGuard MATCH_GUARD ;
-
-    (* (5.E) *)
-    Tactics.exploit_evaloutpat IN1' ; [] ;
-    
-    (* (6) *)
-    Tactics.exploit_in_it IN_IT ;
-    
-    (* (7) *)
-    Semantics.exploit_in_allTuples IN_E.
-
-      
-    (* (1) *)
-    destruct (Tactics.destruct_in_modelElements_execute_lem IN2) 
-      as (r & sp & n & ope & IN_E2 & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN2') ;   
-
-    (* (2) *)
-    Tactics.progress_in_In_rules IN_RULE ; [ | ] ; 
-    
-    (* (3) *)
-    Tactics.progress_in_In_outpat IN_OP ;         
-
-    (* (4) *)
-    (* not useful here *)
-    Tactics.exploit_evalGuard MATCH_GUARD ;
-    
-    (* (5.E) *)
-    Tactics.exploit_evaloutpat IN2' ; [] ;
-
-    (* (6) *)
-    clear IN_IT ;
-    
-    (* (7) *)
-    Semantics.exploit_in_allTuples IN_E2 ; [].
-        
     simpl.
         
     apply PRE ; auto.

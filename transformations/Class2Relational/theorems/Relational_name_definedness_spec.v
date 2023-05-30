@@ -45,7 +45,7 @@ Proof.
   intros T P e IN; intros.
   subst rm.
 
-  C2RTactics.exploit_element_in_result IN ; [ | ] ;
+  Tactics.exploit_element_in_result IN ; [ | ] ;
   clear IN.
 
   { apply P in IN_E. apply IN_E. }

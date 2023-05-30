@@ -74,7 +74,7 @@ Proof.
   intros cm rm H ; subst rm.
   intros i nm IN_ATTR.
 
-  C2RTactics.exploit_element_in_result IN_ATTR ; [] ; 
+  Tactics.exploit_element_in_result IN_ATTR ; [] ; 
   clear IN_ATTR.
 
   C2RTactics.negb_inv MATCH_GUARD.
@@ -97,7 +97,7 @@ Proof.
   intros cm rm H ; subst.
   intros i nm H.
 
-  C2RTactics.exploit_element_in_result H ; []; 
+  Tactics.exploit_element_in_result H ; []; 
   clear H.
 
   destruct t0 ; exact IN_E.
