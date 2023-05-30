@@ -93,22 +93,21 @@ Ltac exploit_element_in_result H :=
       (* (2) *)
       (* Case analysis on the rule that has matched. *)
       Tactics.progress_in_In_rules IN_RULE ;
+
+      (* (_) *) 
+      (* Consider the fact that the guard was true. *)
+      Tactics.exploit_evalGuard MATCH_GUARD ; 
+
+      (* (_) *)
+      Tactics.exploit_in_it IN_IT ;
       
-      (* (3) *) 
+      (* (_) *) 
       (* Make the ouput-pattern-element appear. *)
       Tactics.progress_in_In_outpat IN_OP ;
-      
-      (* (4) *) 
-      (* Consider the fact that the guard was true. *)
-      (* (needed here to get that derived = false) *)
-      Tactics.exploit_evalGuard MATCH_GUARD ; 
-      
-      (* (5) *)
+        
+      (* (_) *)
       (* Make the matched element appear *)
       Tactics.exploit_evaloutpat EV ;
-      
-      (* (6) *)
-      Tactics.exploit_in_it IN_IT ;
       
       (* (7) *)
       Semantics.exploit_in_allTuples IN_E

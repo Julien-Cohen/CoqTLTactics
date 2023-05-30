@@ -71,17 +71,17 @@ Proof.
   (* 2 *)
   Tactics.progress_in_In_rules IN_RULE ;
 
+  (* _ *)
+  Tactics.exploit_evalGuard MATCH_GUARD  ; 
+
+  (* _ *)
+  Tactics.exploit_in_it IN_IT ;
+
   (* 3 *)
   Tactics.progress_in_In_outpat IN_OUTPAT ;
 
-  (* 4 *)
-  Tactics.exploit_evalGuard MATCH_GUARD  ; 
-
   (* 5 *) 
   Tactics.exploit_evaloutpat EV ; 
-
-  (* 6 *)
-  Tactics.exploit_in_it IN_IT ;
 
   (* (7) *)
   (* not useful here *)

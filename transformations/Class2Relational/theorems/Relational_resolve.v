@@ -92,11 +92,15 @@ Proof.
   (* (2) Case analysis on the rule that has matched. *)
   Tactics.progress_in_In_rules IN_RULE ; [ | ] ; 
 
-  (* (3) *)
-  Tactics.progress_in_In_outpat IN_OUTPAT ; 
-
-  (* (4) Now we can progress in the guard. *)
+  (* (_) Now we can progress in the guard. *)
   Tactics.exploit_evalGuard MATCH_RULE ;
+
+  (* (_) *)
+  Tactics.exploit_in_it IN_IT ; 
+
+
+  (* (_) *)
+  Tactics.progress_in_In_outpat IN_OUTPAT ; 
 
   (* (5.E) *)
   Tactics.exploit_evaloutpat EV_PE ;
@@ -116,9 +120,6 @@ Proof.
   first [discriminate IN | inj IN] ; [].
 
   compute in E (* (toEData) *) ; PropUtils.inj E. 
-
-  (* (6) *)
-  Tactics.exploit_in_it IN_IT. 
 
   (* (7) *)
   Semantics.exploit_in_allTuples IN_E.

@@ -91,7 +91,7 @@ Ltac exploit_in_allTuples H :=
     In _ (allTuples _ _) => 
       unfold allTuples in H ; 
       apply tuples_up_to_n_incl in H ;
-      incl_inv H
+      ListUtils.incl_inv H
   end.
 
 Ltac in_allTuples_auto :=
