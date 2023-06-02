@@ -291,13 +291,14 @@ Ltac inv_makeLink H :=
   match type of H with
   | makeLink _ _ _ _ _ _ _ _ _ = Some _ =>
       unfold makeLink in H ;
-      unfold wrapLink in H ; 
+      unfold wrapLink in H ;
+      unfold toEData in H ;
+      simpl (unbox _ _) in H; 
       let H2:= fresh "H" in
       match type of H with 
         _ <- ?E ; _ = Some _ => 
           destruct E eqn:H2 ; [ | discriminate H]
       end ;
       repeat ConcreteExpressions.wrap_inv H2 ;
-      OptionUtils.monadInv H ;
-      OptionUtils.monadInv H
+      OptionUtils.monadInv H 
   end.

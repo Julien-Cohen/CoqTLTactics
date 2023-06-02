@@ -80,7 +80,7 @@ Proof.
   C2RTactics.negb_inv MATCH_GUARD.
 
   destruct t0 ; simpl in *. subst derived. 
-  exact IN_E.
+  assumption.
   
 Qed.
 
@@ -100,6 +100,6 @@ Proof.
   Tactics.exploit_element_in_result H ; []; 
   clear H.
 
-  destruct t0 ; exact IN_E.
+  destruct t0 ; assumption.
 
 Qed.

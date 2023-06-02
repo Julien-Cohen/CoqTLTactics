@@ -49,17 +49,17 @@ Instance ValueString : ValueOption string := {
 Ltac monadInv H :=
   match type of H with 
 
-  |  _ <- ?E ; Some _ = Some _ => 
-       let N := fresh "EQ" in
+  |  _ <- ?EXP ; Some _ = Some _ => 
+       let EQ := fresh "EQ" in
        
-       destruct E eqn:N ; 
+       destruct EXP eqn:EQ ; 
        [ PropUtils.inj H | discriminate H];
-       rename N into H
+       rename EQ into H
          
-  | _ <- ?E ; _ = Some _ => 
-      let N := fresh "E" in
+  | _ <- ?EXP ; _ = Some _ => 
+      let EQ := fresh "EQ" in
 
-      destruct E eqn:N ;
+      destruct EXP eqn:EQ ;
       [  | discriminate H ]
         
   | option_map _ _ = Some _ =>

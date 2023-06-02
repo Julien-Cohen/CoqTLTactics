@@ -348,14 +348,11 @@ Corollary in_trace_in_models_source {MM1} {T1} {T2} {BEQ1} {BEQ2} :
 Proof.
   intros t cm a b s i IN.
 
-  (* 1 *)
   destruct (destruct_in_trace_lem IN) 
     as (se & r & n & e & te & IN_SOURCE & _ & _ & _ & _ & EQ & _).
 
   inj EQ.
- 
 
-  (* (7) *)
   Semantics.in_allTuples_auto.
 
   exact IN_SOURCE.
@@ -369,42 +366,16 @@ Lemma in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
     In b (execute t cm).(modelElements).
 Proof.
   intros t cm a b IN.
-  destruct a as ((a & i) & s).
-
-  (* 1 *) 
-  destruct (destruct_in_trace_lem IN) 
-    as (se & r & n & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV).
-  
-  inj EQ.
-
   unfold execute. 
-  unfold modelElements.
-
-  unfold traceTrOnModel.
-  rewrite map_flat_map.
-  apply in_flat_map.
-  exists se ; split ; [ exact IN_SOURCE | ].
-
-  unfold traceTrOnPiece.
-  rewrite map_flat_map.
-  apply in_flat_map.
-  unfold matchingRules.
-  exists r ;  split ; [ apply List.filter_In ; split ; assumption | ].
-
-  unfold traceRuleOnPiece.
-  rewrite map_flat_map.
-  apply in_flat_map.
-  exists n ; split ; [ exact IN_IT | ].
-
-  unfold traceIterationOnPiece.
-  rewrite map_flat_map.
-  apply in_flat_map.
-  exists e ; split ; [ exact IN_OUTPAT | ].
-
-  unfold traceElementOnPiece.
-  rewrite EV.
-  compute ; auto.
-
+  unfold modelElements. 
+  unfold RichTraceLink.convert2 in IN.
+  apply in_map_iff. 
+  apply in_map_iff in IN. 
+  destruct IN as (x & C & IN). 
+  exists x. 
+  split ; [ | assumption ]. 
+  destruct x ; unfold RichTraceLink.convert in C. 
+  congruence.
 Qed.
 
 
@@ -564,8 +535,8 @@ Ltac exploit_element_in_result H :=
       let r := fresh "r" in
       let sp := fresh "sp" in
       let n := fresh "n" in
-      let ope := fresh "ope" in
-      let IN_E := fresh "IN_E" in
+      let opu := fresh "opu" in
+      let IN_ELTS := fresh "IN_ELTS" in
       let IN_RULE := fresh "IN_RULE" in
       let MATCH_GUARD := fresh "MATCH_GUARD" in
       let IN_IT := fresh "IN_IT" in
@@ -574,7 +545,7 @@ Ltac exploit_element_in_result H :=
             
       (* (1) *)
       destruct (Tactics.destruct_in_modelElements_execute_lem H)
-      as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & EV) ;
+      as (r & sp & n & opu & IN_ELTS & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & EV) ;
       
       (* (2) *)
       (* Case analysis on the rule that has matched. *)
@@ -596,8 +567,87 @@ Ltac exploit_element_in_result H :=
       Tactics.exploit_evaloutpat EV ;
       
       (* (7) *)
-      Semantics.exploit_in_allTuples IN_E
+      Semantics.exploit_in_allTuples IN_ELTS
   end. 
+
+Ltac unfold_parseOutputPatternUnit H :=
+    unfold Parser.parseOutputPatternUnit in H ;
+    unfold Parser.parseOutputPatternLinks in H ;
+    unfold Parser.parseOutputPatternLink in H ;
+    repeat ConcreteSyntax.simpl_elem_accessors H.
+  
+Ltac unfold_evalOutputPatternLink H :=
+    unfold UserExpressions.evalOutputPatternLink in H ;
+    ConcreteSyntax.simpl_cr_accessors H ;
+    Syntax.simpl_opu_accessors H.
+
+Ltac exploit_in_eval_link H :=
+    match type of H with
+    | In _ (UserExpressions.evalOutputPatternLink _ _ _ _ _ (Parser.parseOutputPatternUnit _ _)) => 
+        let TMP := fresh "TMP" in
+        let pl := fresh "pl" in
+        let IN := fresh "IN" in
+        let l := fresh "l" in
+        unfold_parseOutputPatternUnit H ; 
+        unfold_evalOutputPatternLink H ;
+        unfold Parser.dropToList in H ;
+        rewrite optionListToList_Some in H ;
+        apply in_flat_map in H ; destruct H as (pl, (TMP, H)) ;
+        apply ListUtils.in_singleton in TMP ; (* works only for pattern links with one link *)
+        subst pl ;
+        apply ListUtils.in_optionListToList in H ; 
+        destruct H as (l & H & IN) ;
+        ConcreteExpressions.inv_makeLink H ;
+          apply in_singleton in IN 
+    end.
+
+
+Ltac exploit_link_in_result H :=
+  match type of H with
+  | In _ (modelLinks (execute _ _)) =>
+      
+      let r := fresh "r" in
+      let sp := fresh "sp" in
+      let n := fresh "n" in
+      let opu := fresh "opu" in
+      let te := fresh "te" in
+      let IN_ELTS := fresh "IN_ELTS" in
+      let IN_RULE := fresh "IN_RULE" in
+      let MATCH_GUARD := fresh "MATCH_GUARD" in
+      let IN_IT := fresh "IN_IT" in
+      let IN_OP := fresh "IN_OP" in
+      let EV := fresh "EV" in
+      let IN_L := fresh "IN_L" in
+            
+      (* (1) *)
+      destruct (Tactics.destruct_in_modelLinks_execute_lem H)
+      as (sp & r & n & opu & te & IN_ELTS & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & EV & IN_L) ;
+      
+      (* (2) *)
+      (* Case analysis on the rule that has matched. *)
+      Tactics.progress_in_In_rules IN_RULE ;
+
+      (* (_) *) 
+      (* Consider the fact that the guard was true. *)
+      Tactics.exploit_evalGuard MATCH_GUARD ; 
+
+      (* (_) *)
+      Tactics.exploit_in_it IN_IT ;
+      
+      (* (_) *) 
+      (* Make the ouput-pattern-element appear. *)
+      Tactics.progress_in_In_outpat IN_OP ;
+        
+      (* (_) *)
+      (* Make the matched element appear *)
+      Tactics.exploit_evaloutpat EV ;
+      
+      (* (7) *)
+      Semantics.exploit_in_allTuples IN_ELTS ;
+
+      Tactics.exploit_in_eval_link IN_L  
+  end. 
+
 
 (** Tactics to progress in the goal (not in the hypothesis) *)
 

@@ -155,7 +155,7 @@ Proof.
   C2RTactics.exploit_guard MATCH_GUARD.
 
   destruct t1 ; simpl in *. subst derived. 
-  exact IN_E.
+  assumption.
 Qed.
 
 
@@ -175,6 +175,6 @@ Proof.
   clear H.
 
   
-  destruct t0 ; exact IN_E.
+  destruct t0 ; assumption.
 
 Qed.

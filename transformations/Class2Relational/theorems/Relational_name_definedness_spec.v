@@ -48,8 +48,8 @@ Proof.
   Tactics.exploit_element_in_result IN ; [ | ] ;
   clear IN.
 
-  { apply P in IN_E. apply IN_E. }
-  { apply P in IN_E. apply IN_E. }
+  { apply P in IN_ELTS. apply IN_ELTS. }
+  { apply P in IN_ELTS. apply IN_ELTS. }
 Qed.
 
 

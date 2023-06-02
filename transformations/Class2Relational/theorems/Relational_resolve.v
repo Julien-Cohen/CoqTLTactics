@@ -61,17 +61,6 @@ Ltac progress_in_maybeBuildColumnReference H :=
      PropUtils.inj H
   end.
 
-Ltac unfold_parseOutputPatternUnit H :=
-    unfold Parser.parseOutputPatternUnit in H ;
-    unfold Parser.parseOutputPatternLinks in H ;
-    unfold Parser.parseOutputPatternLink in H ;
-    repeat ConcreteSyntax.simpl_elem_accessors H.
-  
-Ltac unfold_evalOutputPatternLink H :=
-    unfold UserExpressions.evalOutputPatternLink in H ;
-    ConcreteSyntax.simpl_cr_accessors H ;
-    Syntax.simpl_opu_accessors H.
-
 (** ** Important lemma *)
 
 Lemma wf_stable cm rm :
@@ -84,58 +73,29 @@ Proof.
   intros T C_WF1 C_WF2 C_WF3.
   intros c tb R_IN1.
   subst rm.
+
+  Tactics.exploit_link_in_result R_IN1 ; [ | ] ;  
+    
+  clear R_IN1 ;
   
-  (* (1) *)
-  destruct (Tactics.destruct_in_modelLinks_execute_lem R_IN1) 
-    as ( elts & r & i & out_pat_el & te & IN_E & IN_RULE & MATCH_RULE & IN_IT & IN_OUTPAT & EV_PE & IN_LINK).
-
-  (* (2) Case analysis on the rule that has matched. *)
-  Tactics.progress_in_In_rules IN_RULE ; [ | ] ; 
-
-  (* (_) Now we can progress in the guard. *)
-  Tactics.exploit_evalGuard MATCH_RULE ;
-
-  (* (_) *)
-  Tactics.exploit_in_it IN_IT ; 
-
-
-  (* (_) *)
-  Tactics.progress_in_In_outpat IN_OUTPAT ; 
-
-  (* (5.E) *)
-  Tactics.exploit_evaloutpat EV_PE ;
-
-  (* (5.L) now we can progress in IN_LINK. *)
-  unfold_parseOutputPatternUnit IN_LINK ; 
-  unfold_evalOutputPatternLink IN_LINK ; 
-      repeat ConcreteSyntax.simpl_link_accessors  IN_LINK ;
- [ | ] ;
-  unfold Parser.dropToList in IN_LINK ; simpl in IN_LINK ;
+  first [discriminate IN | inj IN ] ; []. 
   
-  rewrite <- app_nil_end in IN_LINK ;
-  ListUtils.destruct_in_optionListToList IN_LINK ;
-  
-  ConcreteExpressions.inv_makeLink IN_LINK ; 
-  apply ListUtils.in_singleton in IN ;
-  first [discriminate IN | inj IN] ; [].
+  simpl in IN_L.
 
-  compute in E (* (toEData) *) ; PropUtils.inj E. 
 
-  (* (7) *)
-  Semantics.exploit_in_allTuples IN_E.
+  C2RTactics.negb_inv MATCH_GUARD.
+  destruct t ; simpl in MATCH_GUARD ; subst derived.
+  
+  progress_in_maybeBuildColumnReference IN_L.
+  
+  core.Resolve.progress_maybeResolve EQ. 
+  
+  ListUtils.inv_maybeSingleton EQ0.
+  
+  inv_getAttributeTypeElement EQ0.
 
-  C2RTactics.negb_inv MATCH_RULE.
-  destruct t ; simpl in MATCH_RULE ; subst derived.
-  
-  progress_in_maybeBuildColumnReference IN_LINK.
-  
-  core.Resolve.progress_maybeResolve E. 
-  
-  ListUtils.inv_maybeSingleton E0.
-  
-  inv_getAttributeTypeElement E0.
+  destruct t ; simpl in H ; subst.   
 
-  destruct t ; simpl in H ; subst ; auto.   
   eapply Tactics.in_trace_in_models_target ; eauto. 
 
 Qed.
@@ -162,7 +122,7 @@ Proof.
   Tactics.exploit_element_in_result IN_COL ; []; 
   clear IN_COL.
   
-  specialize (PRE _ IN_E).
+  specialize (PRE _ IN_ELTS).
   destruct PRE as (c & G1).
 
   C2RTactics.negb_inv MATCH_GUARD.

@@ -35,7 +35,7 @@ Proof.
   clear IN.
 
   {
-    apply INC in IN_E.
+    apply INC in IN_ELTS.
     destruct t0.
     eapply Elements.transform_class_fw (* why ? *) ; eauto.
   }
@@ -43,7 +43,7 @@ Proof.
     C2RTactics.negb_inv MATCH_GUARD.
     destruct t0 ; simpl in MATCH_GUARD. 
     subst derived.
-    apply INC in IN_E.
+    apply INC in IN_ELTS.
     eapply Elements.transform_attribute_fw (* why ? *) ; eauto.
   }    
 Qed.
