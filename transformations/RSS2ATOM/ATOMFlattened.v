@@ -1105,14 +1105,14 @@ Definition Author_getAtomObject (au_arg : Author) (m : ATOMModel) : option (ATOM
 
 
 (* Typeclass Instances *)	
-Instance ATOMMetamodel_ElementDenotation : Denotation ATOMMetamodel_Object ATOMMetamodel_Class :=
+Global Instance ATOMMetamodel_ElementDenotation : Denotation ATOMMetamodel_Object ATOMMetamodel_Class :=
 {
 	denoteDatatype := ATOMMetamodel_getTypeByClass;
 	unbox := ATOMMetamodel_toClass;
 	constructor := ATOMMetamodel_toObject;
 }.
 
-Instance ATOMMetamodel_LinkDenotation : Denotation ATOMMetamodel_Link ATOMMetamodel_Reference :=
+Global Instance ATOMMetamodel_LinkDenotation : Denotation ATOMMetamodel_Link ATOMMetamodel_Reference :=
 {
 	denoteDatatype := ATOMMetamodel_getTypeByReference;
 	unbox := ATOMMetamodel_toReference;
@@ -1121,7 +1121,7 @@ Instance ATOMMetamodel_LinkDenotation : Denotation ATOMMetamodel_Link ATOMMetamo
 
 
 
-Instance ATOMMetamodel_ModelingMetamodel_Instance : 
+Global Instance ATOMMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel ATOMMetamodel_Metamodel_Instance :=
 { 
     elements := ATOMMetamodel_ElementDenotation;
