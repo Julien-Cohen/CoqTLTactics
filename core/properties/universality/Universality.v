@@ -42,7 +42,7 @@ Proof.
   unfold traceRuleOnPiece.
   unfold traceIterationOnPiece.
   unfold traceElementOnPiece.
-  unfold UserExpressions.evalOutputPatternElement.
+  unfold UserExpressions.evalOutputPatternUnit.
   unfold UserExpressions.evalIterator.
   simpl.
   repeat rewrite <- app_nil_end.

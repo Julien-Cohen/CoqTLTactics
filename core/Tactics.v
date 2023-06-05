@@ -321,7 +321,7 @@ Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
              PoorTraceLink.source := (p, i, Syntax.opu_name outpat);
              PoorTraceLink.produced := te
            |} 
-    /\ UserExpressions.evalOutputPatternElement outpat cm p i = return te .
+    /\ UserExpressions.evalOutputPatternUnit outpat cm p i = return te .
 Proof.
   intros.
   unfold RichTraceLink.convert2 in H.
@@ -392,7 +392,7 @@ Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
     /\ UserExpressions.evalGuard r cm sp = true 
     /\ In n0 (seq 0 (UserExpressions.evalIterator r cm sp))
     /\ In opu (Syntax.r_outputPattern r) 
-    /\ UserExpressions.evalOutputPatternElement opu cm sp n0 =
+    /\ UserExpressions.evalOutputPatternUnit opu cm sp n0 =
          return a.
 Proof.
   intros. 
@@ -421,7 +421,7 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
       /\ UserExpressions.evalGuard r m sp = true
       /\ In n (seq 0 (UserExpressions.evalIterator r m sp))
       /\ In p (Syntax.r_outputPattern r) 
-      /\ UserExpressions.evalOutputPatternElement p m sp n = return te
+      /\ UserExpressions.evalOutputPatternUnit p m sp n = return te
       /\ In l (UserExpressions.evalOutputPatternLink m sp te n (RichTraceLink.convert2(traceTrOnModel t m)) p).
 
 Proof.
@@ -456,11 +456,11 @@ Ltac progress_in_In_rules H :=
 Ltac exploit_evaloutpat H :=
   match type of H with 
 
-  | UserExpressions.evalOutputPatternElement _ _ _ (Parser.parseOutputPatternUnit _) = Some _ =>
+  | UserExpressions.evalOutputPatternUnit _ _ _ (Parser.parseOutputPatternUnit _) = Some _ =>
       unfold Parser.parseOutputPatternUnit in H ;
       exploit_evaloutpat H (* recursion *)
        
-  | UserExpressions.evalOutputPatternElement _ _ _ _ = Some _ =>
+  | UserExpressions.evalOutputPatternUnit _ _ _ _ = Some _ =>
       simpl in H ;
       ConcreteExpressions.inv_makeElement H
   end.
@@ -703,7 +703,7 @@ Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
     
     In opu (Syntax.r_outputPattern r) ->
     
-    UserExpressions.evalOutputPatternElement opu cm sp i = Some produced_element ->
+    UserExpressions.evalOutputPatternUnit opu cm sp i = Some produced_element ->
     
     
     forall l, In l  (UserExpressions.evalOutputPatternLink cm sp produced_element i (RichTraceLink.convert2(traceTrOnModel t cm)) opu) -> In l (modelLinks (execute t cm)).

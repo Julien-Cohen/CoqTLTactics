@@ -28,7 +28,7 @@ Definition evalIterator (r : Rule) (sm: SourceModel) (sp: InputPiece) :
   | _ => 0
   end.
 
-Definition evalOutputPatternElement (o: OutputPatternUnit) (sm: SourceModel) (sp: InputPiece) (iter: nat) 
+Definition evalOutputPatternUnit (o: OutputPatternUnit) (sm: SourceModel) (sp: InputPiece) (iter: nat) 
   : option TargetElementType := 
   o.(opu_element) iter sm sp.
 

@@ -28,7 +28,7 @@ Instance CoqTLSyntax :
       TraceLink_getName := PoorTraceLink.getName;
       TraceLink_getTargetElement := produced ;    
       
-      evalOutputPatternElementExpr := fun a b c d => evalOutputPatternElement d a b c ; (* change the order of parameters *)
+      evalOutputPatternElementExpr := fun a b c d => evalOutputPatternUnit d a b c ; (* change the order of parameters *)
       evalIteratorExpr := evalIterator ;
       evalOutputPatternLinkExpr := fun a b c d e f => Some (evalOutputPatternLink a b c d e f) ;
       evalGuardExpr := Syntax.r_guard;

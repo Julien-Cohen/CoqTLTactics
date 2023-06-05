@@ -121,11 +121,11 @@ Qed.
 
 Lemma  tr_instantiateElementOnPiece_leaf:
       forall (o: OutputPatternUnit) (sm: SourceModel) (sp: InputPiece) (iter: nat),
-        option_map produced (traceElementOnPiece o sm sp iter) = evalOutputPatternElement o sm sp iter.
+        option_map produced (traceElementOnPiece o sm sp iter) = evalOutputPatternUnit o sm sp iter.
 Proof.
   intros.
   unfold traceElementOnPiece.
-  destruct (evalOutputPatternElement o sm sp iter) ; reflexivity.
+  destruct (evalOutputPatternUnit o sm sp iter) ; reflexivity.
 Qed.
 
 Lemma tr_applyOnPiece_in :
@@ -164,7 +164,7 @@ Qed.
 Lemma tr_applyUnitOnPiece_leaf : 
 forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (te: TargetElementType) 
        (i:nat) (opu: OutputPatternUnit),
-  evalOutputPatternElement opu sm sp i = Some te ->
+  evalOutputPatternUnit opu sm sp i = Some te ->
   applyUnitOnPiece opu tr sm sp i = evalOutputPatternLink sm sp te i (convert2 (traceTrOnModel tr sm)) opu.
 Proof.
   intros.
@@ -395,7 +395,7 @@ Qed.
 Lemma tr_match_injective :
   forall (sm : SourceModel)(sp : InputPiece)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIterator r sm sp)) /\ 
-      (exists opu, In opu r.(r_outputPattern) /\  (evalOutputPatternElement opu sm sp iter) <> None ) ->
+      (exists opu, In opu r.(r_outputPattern) /\  (evalOutputPatternUnit opu sm sp iter) <> None ) ->
     (exists (te: TargetElementType),  In te (elements_proj (traceRuleOnPiece r sm sp)) ).
 Proof.
   intros.

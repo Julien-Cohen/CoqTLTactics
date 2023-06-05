@@ -31,7 +31,7 @@ Definition matchingRules (tr: Transformation) (sm : SourceModel) (sp: InputPiece
 
 Definition traceElementOnPiece (o: OutputPatternUnit) (sm: SourceModel) (sp: InputPiece) (iter: nat)
   : option TraceLink :=
-  match (evalOutputPatternElement o sm sp iter) with
+  match (evalOutputPatternUnit o sm sp iter) with
   | Some e => Some 
                 {| source := (sp, iter, o.(opu_name)) ;
                   produced :=  e ;
@@ -109,7 +109,7 @@ Definition applyUnitOnPiece {tc:TransformationConfiguration}
             (tr: Transformation)
             (sm: SourceModel)
             (sp: InputPiece) (iter: nat) : list TargetLinkType :=
-  match (evalOutputPatternElement opu sm sp iter) with 
+  match (evalOutputPatternUnit opu sm sp iter) with 
   | Some l => evalOutputPatternLink sm sp l iter (convert2 (traceTrOnModel tr sm)) opu
   | None => nil
   end.
@@ -159,7 +159,7 @@ Proof.
   unfold traceElementOnPiece in IN5.
   monadInv IN5.
   unfold getSourcePattern. simpl.
-  unfold evalOutputPatternElement in IN5.
+  unfold evalOutputPatternUnit in IN5.
   eauto 11.
 }
 {  
@@ -179,7 +179,7 @@ Proof.
   exists opu.
   split ; [ assumption | ].
   unfold traceElementOnPiece.
-  unfold evalOutputPatternElement.
+  unfold evalOutputPatternUnit.
   rewrite H5.
   simpl.
   rewrite <- H7.
@@ -217,7 +217,7 @@ Proof.
   exists opu.
   split ; [ assumption | ].
   unfold applyUnitOnPiece.
-  unfold evalOutputPatternElement.
+  unfold evalOutputPatternUnit.
   rewrite E5.
   unfold evalOutputPatternLink.
   destruct trl ; simpl in *.
@@ -248,7 +248,7 @@ Proof.
   unfold applyIterationOnPiece in H6.
   apply in_flat_map in H6. destruct H6 as (opu, (H7,H8)).
   unfold applyUnitOnPiece in H8.
-  destruct (evalOutputPatternElement opu sm ip i) eqn:E ; [ | crush ].
+  destruct (evalOutputPatternUnit opu sm ip i) eqn:E ; [ | crush ].
 
   destruct opu ; simpl in *.
   exists ({| source := (ip, i, opu_name) ; produced := t ; linkPattern := opu_link |} ). 
@@ -281,7 +281,7 @@ Lemma in_applyUnitOnPiece {A B C D E} :
          a opu sm sp it,
   In a (applyUnitOnPiece opu tr sm sp it) ->
   exists g, 
-    evalOutputPatternElement opu sm sp it = Some g
+    evalOutputPatternUnit opu sm sp it = Some g
     /\ In a (evalOutputPatternLink sm sp g it (convert2 (traceTrOnModel tr sm)) opu).
 Proof.  
   unfold applyUnitOnPiece.
