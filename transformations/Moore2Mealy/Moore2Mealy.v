@@ -31,32 +31,32 @@ Definition Moore2Mealy' :=
     transformation
     [
       rule "state"
-      from [Moore.StateClass]
+      from [Moore.State_K]
       to [
-        ELEM "s" ::: Mealy.StateClass  
-          << fun _ _ s => BuildState (Moore.State_getName s) >>
+        ELEM "s" ::: Mealy.State_K  
+          << fun _ _ s => BuildState s.(Moore.name) >>
           
       ];
 
       rule "transition"
-      from [Moore.TransitionClass]
+      from [Moore.Transition_K]
       to [
-        ELEM "t" ::: Mealy.TransitionClass
+        ELEM "t" ::: Mealy.Transition_K
           << fun _ m t => BuildTransition 
-                          (Moore.Transition_getInput t)
-                          (value (option_map Moore.State_getOutput (Moore.Transition_getTarget t m))) >> 
+                          t.(Moore.input)
+                          (value (option_map Moore.output (Moore.Transition_getTarget t m))) >> 
           <<<
              LINK  
-              Mealy.TransitionSourceReference //
+              Mealy.TransitionSource_K //
               (fun tls _ m moore_tr mealy_tr =>
                 maybeBuildTransitionSource mealy_tr
-                  (maybeResolve tls "s" Mealy.StateClass 
+                  (maybeResolve tls "s" Mealy.State_K 
                     (maybeSingleton (Moore.Transition_getSourceObject moore_tr m)))) ;
             LINK 
-              Mealy.TransitionTargetReference //
+              Mealy.TransitionTarget_K //
               (fun tls _ m moore_tr mealy_tr =>
                 maybeBuildTransitionTarget mealy_tr
-                  (maybeResolve tls "s" Mealy.StateClass 
+                  (maybeResolve tls "s" Mealy.State_K 
                     (maybeSingleton (Moore.Transition_getTargetObject moore_tr m)))) 
           >>>
       ]

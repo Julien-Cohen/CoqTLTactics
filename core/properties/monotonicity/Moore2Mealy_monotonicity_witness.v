@@ -33,15 +33,15 @@ Definition Moore2Mealy' :=
     transformation
     [
       rule "state"
-      from [Moore.StateClass]
+      from [Moore.State_K]
       where (fun m s => 
               negb (existsb (Moore.beq_State s) 
                        (optionList2List (map 
                           (fun tr => Moore.Transition_getTarget tr m)
                           (MooreMetamodel_allTransitions m)))))
       to [
-        elem [Moore.StateClass] Mealy.StateClass "s"
-          (fun _ _ s => BuildState (Moore.State_getName s)) nil
+        elem [Moore.State_K] Mealy.State_K "s"
+          (fun _ _ s => BuildState s.(Moore.name)) nil
       ]
 ].
 

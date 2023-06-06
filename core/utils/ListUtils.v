@@ -426,3 +426,21 @@ Proof.
     f_equal ; auto.
 Qed.
 
+Lemma find_some_left {A}:
+  forall f (l:list A) e,
+    List.In e l ->
+    f e = true ->
+    (exists e', List.find f l = Some e').
+Proof.
+  intro f.
+  induction l ; intros e IN F.
+  + solve [inversion IN].
+  + simpl in IN. destruct IN.
+    - subst.
+      exists e.
+      simpl.
+      rewrite F.
+      reflexivity.
+    - simpl.
+      destruct (f a) ; eauto.
+Qed.

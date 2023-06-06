@@ -6,10 +6,10 @@ Require Import core.Model.
 Require Import core.utils.Utils.
 
 Definition MealyMetamodel_toStates (m: list MealyMetamodel_Object) : list State :=
-    optionList2List (map (fun s => (MealyMetamodel_toClass StateClass s)) m).
+    optionList2List (map (fun s => (MealyMetamodel_toClass State_K s)) m).
 
 Definition MealyMetamodel_toTransitions (m: list MealyMetamodel_Object) : list Transition :=
-    optionList2List (map (fun s => (MealyMetamodel_toClass TransitionClass s)) m).
+    optionList2List (map (fun s => (MealyMetamodel_toClass Transition_K s)) m).
 
 Definition MealyMetamodel_allStates (m: MealyModel) : list State :=
     MealyMetamodel_toStates m.(modelElements).
@@ -18,7 +18,7 @@ Definition MealyMetamodel_allTransitions (m: MealyModel) : list Transition :=
     MealyMetamodel_toTransitions m.(modelElements).
 
 Definition initialState (m: MealyModel) : option State :=
-    find (fun s => eqb "S0" (State_getName s)) (MealyMetamodel_allStates m).
+    find (fun s => eqb "S0" s.(name)) (MealyMetamodel_allStates m).
 
 Definition State_outTransitions (s: State) (m: MealyModel) : list Transition :=
     filter (fun t => 
@@ -29,7 +29,7 @@ Definition State_outTransitions (s: State) (m: MealyModel) : list Transition :=
         (MealyMetamodel_allTransitions m).
 
 Definition State_acceptTransition (s: State) (m: MealyModel) (i: string) : option Transition :=
-    find (fun t => eqb i (Transition_getInput t)) (State_outTransitions s m).        
+    find (fun t => eqb i t.(input)) (State_outTransitions s m).        
 
 Fixpoint executeFromState (m: MealyModel) (current: State) (remainingInput: list string) : list string :=
     match remainingInput with 
@@ -43,7 +43,7 @@ Fixpoint executeFromState (m: MealyModel) (current: State) (remainingInput: list
         match trgState with
         | Some s => 
             match outTransition with 
-            | Some t =>  (Transition_getOutput t) :: (executeFromState m s is)
+            | Some t =>  t.(input) :: (executeFromState m s is)
             | None => (executeFromState m s is)
             end
         | None => nil
