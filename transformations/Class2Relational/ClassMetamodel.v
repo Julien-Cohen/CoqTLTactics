@@ -82,7 +82,7 @@ Proof.
   Tactics.beq_eq_tac.
 Qed.
 
-Hint Resolve lem_beq_Attribute_id : beq_eq_database.
+Global Hint Resolve lem_beq_Attribute_id : beq_eq_database.
 (* this is necessary for the success of the [beq_eq_tac] tactics in the lemma below *)
 
 Lemma lem_beq_ClassAttributes_id:

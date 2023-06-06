@@ -41,7 +41,7 @@ Class ValueOption (A: Type) := {
    value : option A -> A
 }.
 
-Instance ValueString : ValueOption string := {
+Global Instance ValueString : ValueOption string := {
    value (a: option string) := valueOption a ""%string
 }.
 

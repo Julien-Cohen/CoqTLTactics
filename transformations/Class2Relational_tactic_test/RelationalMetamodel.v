@@ -94,7 +94,7 @@ Proof.
   Tactics.beq_eq_tac.
 Qed.
 
-Hint Resolve lem_beq_Column_id : beq_eq_database.
+Global Hint Resolve lem_beq_Column_id : beq_eq_database.
 (* (needed for the two lemmas below) *)
 
 Lemma lem_beq_TableColumns_id:
