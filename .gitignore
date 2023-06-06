@@ -36,3 +36,4 @@ CoqMakefile.conf
 *.vok
 *.vos
 .vscode/settings.json
+html/
