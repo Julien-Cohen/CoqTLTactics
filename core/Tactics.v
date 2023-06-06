@@ -392,8 +392,7 @@ Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
     /\ UserExpressions.evalGuard r cm sp = true 
     /\ In n0 (seq 0 (UserExpressions.evalIterator r cm sp))
     /\ In opu (Syntax.r_outputPattern r) 
-    /\ UserExpressions.evalOutputPatternUnit opu cm sp n0 =
-         return a.
+    /\ UserExpressions.evalOutputPatternUnit opu cm sp n0 = Some a.
 Proof.
   intros. 
   destruct_in_modelElements_execute H.  
@@ -408,6 +407,35 @@ Proof.
   eauto 10.
 Qed.
 
+Lemma in_modelElements_execute_left {MM1} {T1} {T2} {BEQ1} {BEQ2} :
+  forall 
+    {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))} 
+    {cm} {a},
+    
+  forall r sp n0 opu,
+    In sp (allTuples t cm) ->
+    In r (Syntax.rules t) ->
+    UserExpressions.evalGuard r cm sp = true ->
+    In n0 (seq 0 (UserExpressions.evalIterator r cm sp)) ->
+    In opu (Syntax.r_outputPattern r) ->
+    UserExpressions.evalOutputPatternUnit opu cm sp n0 = Some a ->
+    In a (modelElements (execute t cm)).
+Proof.
+  intros. 
+  apply Certification.tr_execute_in_elements.
+  exists sp. split ; [assumption | ].
+  apply Certification.tr_instantiateOnPiece_in. (* FIXME : name incoherence *)
+  exists r. 
+  split.
+  + apply Certification.tr_matchingRules_in. split ; assumption.
+  + apply Certification.tr_instantiateRuleOnPiece_in.
+    exists n0.
+    split ; [ assumption | ].
+    apply Certification.tr_instantiateIterationOnPiece_in.
+    exists opu. split ; [ assumption | ].
+    rewrite Certification.tr_instantiateElementOnPiece_leaf.
+    assumption.
+Qed.
 
 Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
   forall 
