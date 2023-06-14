@@ -31,25 +31,27 @@ Definition State_outTransitions (s: State) (m: MealyModel) : list Transition :=
 Definition State_acceptTransition (s: State) (m: MealyModel) (i: string) : option Transition :=
     find (fun t => eqb i t.(input)) (State_outTransitions s m).        
 
+Definition search m current i :=
+  match State_acceptTransition current m i with
+  | None => None
+  | Some t => match Transition_getTarget t m
+              with
+              | Some s => Some (t, s)
+              | None => None (* impossible when models are well formed *)
+              end
+  end.
+
+
 Fixpoint executeFromState (m: MealyModel) (current: State) (remainingInput: list string) : list string :=
-    match remainingInput with 
-    | i :: is => 
-        let outTransition := State_acceptTransition current m i in            
-        let trgState := 
-            match outTransition with 
-            | Some t =>  Transition_getTarget t m
-            | None => None
-            end in
-        match trgState with
-        | Some s => 
-            match outTransition with 
-            | Some t =>  t.(input) :: (executeFromState m s is)
-            | None => (executeFromState m s is)
-            end
+  match remainingInput with 
+   | i :: inputs => 
+       match search m current i with 
         | None => nil
-        end
-    | _ => nil 
-    end.
+        | Some (t, s) =>    t.(input) :: (executeFromState m s inputs)
+
+       end
+   | nil => nil 
+  end.
 
 Definition Mealy_execute (m: MealyModel) (input: list string) : list string :=
     match (initialState m) with 

@@ -21,7 +21,7 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 #[export]
 Instance Moore2MealyTransformationConfiguration : TransformationConfiguration := 
-  Build_TransformationConfiguration Metamodel_Instance MealyMetamodel_Metamodel_Instance.
+  Build_TransformationConfiguration MooreMM MealyMetamodel_Metamodel_Instance.
 
 #[export]  
 Instance Moore2MealyModelingTransformationConfiguration : ModelingTransformationConfiguration Moore2MealyTransformationConfiguration :=
@@ -35,13 +35,13 @@ Definition Moore2Mealy' :=
       rule "state"
       from [Moore.State_K]
       where (fun m s => 
-              negb (existsb (Moore.beq_State s) 
+              negb (existsb (Moore.State_t_beq s) 
                        (optionList2List (map 
-                          (fun tr => Moore.Transition_getTarget tr m)
+                          (fun tr => Moore.getTransition_target tr m)
                           (MooreMetamodel_allTransitions m)))))
       to [
         elem [Moore.State_K] Mealy.State_K "s"
-          (fun _ _ s => BuildState s.(Moore.name)) nil
+          (fun _ _ s => BuildState s.(Moore.State_name)) nil
       ]
 ].
 

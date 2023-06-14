@@ -14,8 +14,8 @@ Open Scope string_scope.
 	 	   <-"0"--
 	*)
 
-Definition InputModel : Model Metamodel_Instance :=
-	(Build_Model Metamodel_Instance
+Definition InputModel : Model MooreMM :=
+	(Build_Model MooreMM
 		(
 		(TransitionElement (BuildTransition  "0")) :: 
 		(StateElement (BuildState  "S0" "1")) :: 
@@ -23,9 +23,9 @@ Definition InputModel : Model Metamodel_Instance :=
 		(TransitionElement (BuildTransition  "1")) :: 
 		nil)
 		(
-		(TransitionSourceLink (BuildTransitionSource (BuildTransition  "0") (BuildState  "S1" "0"))) ::
-		(TransitionTargetLink (BuildTransitionTarget (BuildTransition  "0") (BuildState  "S0" "1"))) ::
-		(TransitionSourceLink (BuildTransitionSource (BuildTransition  "1") (BuildState  "S0" "1"))) ::
-		(TransitionTargetLink (BuildTransitionTarget (BuildTransition  "1") (BuildState  "S1" "0"))) ::
+		(Transition_sourceLink (BuildTransitionSource (BuildTransition  "0") (BuildState  "S1" "0"))) ::
+		(Transition_targetLink (BuildTransitionTarget (BuildTransition  "0") (BuildState  "S0" "1"))) ::
+		(Transition_sourceLink (BuildTransitionSource (BuildTransition  "1") (BuildState  "S0" "1"))) ::
+		(Transition_targetLink (BuildTransitionTarget (BuildTransition  "1") (BuildState  "S1" "0"))) ::
 		nil)
 	).

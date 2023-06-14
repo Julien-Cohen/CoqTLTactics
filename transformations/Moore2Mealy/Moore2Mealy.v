@@ -19,7 +19,7 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 #[export]
 Instance Moore2MealyTransformationConfiguration : TransformationConfiguration := 
-  Build_TransformationConfiguration Metamodel_Instance MealyMetamodel_Metamodel_Instance.
+  Build_TransformationConfiguration MooreMM MealyMetamodel_Metamodel_Instance.
 
 #[export]  
 Instance Moore2MealyModelingTransformationConfiguration : ModelingTransformationConfiguration Moore2MealyTransformationConfiguration :=
@@ -34,7 +34,7 @@ Definition Moore2Mealy' :=
       from [Moore.State_K]
       to [
         ELEM "s" ::: Mealy.State_K  
-          << fun _ _ s => BuildState s.(Moore.name) >>
+          << fun _ _ s => BuildState s.(Moore.State_name) >>
           
       ];
 
@@ -43,8 +43,8 @@ Definition Moore2Mealy' :=
       to [
         ELEM "t" ::: Mealy.Transition_K
           << fun _ m t => BuildTransition 
-                          t.(Moore.input)
-                          (value (option_map Moore.output (Moore.Transition_getTarget t m))) >> 
+                          t.(Moore.Transition_input)
+                          (value (option_map Moore.State_output (Moore.getTransition_target t m))) >> 
           <<<
              LINK  
               Mealy.TransitionSource_K //

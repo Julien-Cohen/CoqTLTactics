@@ -89,6 +89,7 @@ def records_elem(eClasses):
         lst.append("Proof. Admitted. ")
         lst.append(f"Lemma lem_{eClass.name}_t_beq_refl : forall (e : {eClass.name}_t), {eClass.name}_t_beq e e = true.")
         lst.append("Proof. Admitted. ")
+        lst.append(br())
     lst.append(br())
 
     return join(lst)
@@ -101,8 +102,8 @@ def records_link_multiplicity(eReference):
 
 def records_link_scheme_equality_list(eClass, eReference):
     lst = []
-    lst.append(f"Definition {eClass.name}{eReference.name}_t_beq (a1 a2: {eClass.name}{eReference.name}_t) : bool := ") 
-    lst.append(f"  {eClass.name}_t_beq a1.({eClass.name}{eReference.name}_t_source) a2.({eClass.name}{eReference.name}_t_source) && list_beq {eReference.eType.name}_t_beq a1.({eClass.name}{eReference.name}_t_target) a2.({eClass.name}{eReference.name}_t_target).")
+    lst.append(f"Definition {eClass.name}_{eReference.name}_t_beq (a1 a2: {eClass.name}_{eReference.name}_t) : bool := ") 
+    lst.append(f"  {eClass.name}_t_beq a1.({eClass.name}_{eReference.name}_t_source) a2.({eClass.name}_{eReference.name}_t_source) && list_beq {eReference.eType.name}_t_beq a1.({eClass.name}_{eReference.name}_t_target) a2.({eClass.name}_{eReference.name}_t_target).")
     return join(lst)
 
 def records_link(eClasses):
@@ -111,18 +112,19 @@ def records_link(eClasses):
 
     for eClass in eClasses:
         for eReference in eClass.eReferences:
-            lst.append(f"Record {eClass.name}{eReference.name}_t := {{ {eClass.name}{eReference.name}_t_source : {eClass.name}_t ; {eClass.name}{eReference.name}_t_target : {records_link_multiplicity(eReference)}_t }}.")
+            lst.append(f"Record {eClass.name}_{eReference.name}_t := {{ {eClass.name}_{eReference.name}_t_source : {eClass.name}_t ; {eClass.name}_{eReference.name}_t_target : {records_link_multiplicity(eReference)}_t }}.")
 
             # hack : scheme equality for list
             if eReference.upperBound == 1:
-                lst.append(f"Scheme Equality for {eClass.name}{eReference.name}_t.")
+                lst.append(f"Scheme Equality for {eClass.name}_{eReference.name}_t.")
             else:
                 lst.append(records_link_scheme_equality_list(eClass, eReference))
 
-            lst.append(f"Lemma lem_{eClass.name}{eReference.name}_t_beq_id : forall (e1 e2 : {eClass.name}{eReference.name}_t), {eClass.name}{eReference.name}_t_beq e1 e2 = true -> e1 = e2.")
+            lst.append(f"Lemma lem_{eClass.name}_{eReference.name}_t_beq_id : forall (e1 e2 : {eClass.name}_{eReference.name}_t), {eClass.name}_{eReference.name}_t_beq e1 e2 = true -> e1 = e2.")
             lst.append("Proof. Admitted. ")
-            lst.append(f"Lemma lem_{eClass.name}{eReference.name}_t_beq_refl : forall (e : {eClass.name}{eReference.name}_t), {eClass.name}{eReference.name}_t_beq e e = true.")
+            lst.append(f"Lemma lem_{eClass.name}_{eReference.name}_t_beq_refl : forall (e : {eClass.name}_{eReference.name}_t), {eClass.name}_{eReference.name}_t_beq e e = true.")
             lst.append("Proof. Admitted. ")
+            lst.append(br())
 
     lst.append(br())
 
@@ -146,7 +148,7 @@ def top_link_scheme_equality_list(eClasses):
     lst.append("  match c1, c2 with")
     for eClass in eClasses:
         for eReference in eClass.eReferences:
-            lst.append(f"  | {eClass.name}{eReference.name}Link o1, {eClass.name}{eReference.name}Link o2 => {eClass.name}{eReference.name}_t_beq o1 o2")
+            lst.append(f"  | {eClass.name}_{eReference.name}Link o1, {eClass.name}_{eReference.name}Link o2 => {eClass.name}_{eReference.name}_t_beq o1 o2")
     lst.append("  | _, _ => false")
     lst.append("  end.")
 
@@ -158,7 +160,7 @@ def top_link(eClasses):
     lst.append("Inductive Link : Set :=")
     for eClass in eClasses:
         for eReference in eClass.eReferences:
-            lst.append(f"  | {eClass.name}{eReference.name}Link : {eClass.name}{eReference.name}_t -> Link")
+            lst.append(f"  | {eClass.name}_{eReference.name}Link : {eClass.name}_{eReference.name}_t -> Link")
     lst.append(".")
     
     # hack : scheme equality for list
@@ -181,7 +183,7 @@ def meta_type(eClasses):
     lst.append("Inductive LinkKind : Set :=")
     for eClass in eClasses:
         for eReference in eClass.eReferences:
-            lst.append(f"  | {eClass.name}{eReference.name}_K")
+            lst.append(f"  | {eClass.name}_{eReference.name}_K")
     lst.append(".")  
     lst.append("Scheme Equality for LinkKind.")   
     lst.append(br())
@@ -220,7 +222,7 @@ def reflective_function(eClasses):
     lst.append("  match k with")
     for eClass in eClasses:
         for eReference in eClass.eReferences:
-            lst.append(f"  | {eClass.name}{eReference.name}_K => {eClass.name}{eReference.name}_t")
+            lst.append(f"  | {eClass.name}_{eReference.name}_K => {eClass.name}_{eReference.name}_t")
     lst.append("  end.")
     lst.append(br())
 
@@ -228,7 +230,7 @@ def reflective_function(eClasses):
     lst.append("  match k with")
     for eClass in eClasses:
         for eReference in eClass.eReferences:
-            lst.append(f"  | {eClass.name}{eReference.name}_K => {eClass.name}{eReference.name}Link")
+            lst.append(f"  | {eClass.name}_{eReference.name}_K => {eClass.name}_{eReference.name}Link")
     lst.append("  end.")
     lst.append(br())
 
@@ -236,7 +238,7 @@ def reflective_function(eClasses):
     lst.append("  match (t,c) as e return (option (getTypeByLKind (fst e))) with")
     for eClass in eClasses:
         for eReference in eClass.eReferences:
-            lst.append(f"  | ({eClass.name}{eReference.name}_K, {eClass.name}{eReference.name}Link v)  => Some v")
+            lst.append(f"  | ({eClass.name}_{eReference.name}_K, {eClass.name}_{eReference.name}Link v)  => Some v")
     lst.append("  | (_ , _) => None")
     lst.append("  end.")
     lst.append(br())
@@ -295,19 +297,19 @@ def general_function(eClasses, metamodel):
 
     for eClass in eClasses:
         for eReference in eClass.eReferences:
-            lst.append(f"Fixpoint get{eClass.name}{eReference.name}OnLinks ({arg(eClass.name[0])} : {eClass.name}_t) (l : list Link) : option ({records_link_multiplicity(eReference)}_t) :=")
+            lst.append(f"Fixpoint get{eClass.name}_{eReference.name}OnLinks ({arg(eClass.name[0])} : {eClass.name}_t) (l : list Link) : option ({records_link_multiplicity(eReference)}_t) :=")
             lst.append(f"match l with")
-            lst.append(f"  | ({eClass.name}{eReference.name}Link x) :: l1 =>")
-            lst.append(f"    if {eClass.name}_t_beq x.({eClass.name}{eReference.name}_t_source) {arg(eClass.name[0])}")
-            lst.append(f"      then (Some x.({eClass.name}{eReference.name}_t_target))")
-            lst.append(f"      else get{eClass.name}{eReference.name}OnLinks {arg(eClass.name[0])} l1")
-            lst.append(f"  | _ :: l1 => get{eClass.name}{eReference.name}OnLinks {arg(eClass.name[0])} l1")
+            lst.append(f"  | ({eClass.name}_{eReference.name}Link x) :: l1 =>")
+            lst.append(f"    if {eClass.name}_t_beq x.({eClass.name}_{eReference.name}_t_source) {arg(eClass.name[0])}")
+            lst.append(f"      then (Some x.({eClass.name}_{eReference.name}_t_target))")
+            lst.append(f"      else get{eClass.name}_{eReference.name}OnLinks {arg(eClass.name[0])} l1")
+            lst.append(f"  | _ :: l1 => get{eClass.name}_{eReference.name}OnLinks {arg(eClass.name[0])} l1")
             lst.append( "  | nil => None")
             lst.append("end.")
             lst.append(br())
 
-            lst.append(f"Definition get{eClass.name}{eReference.name} ({arg(eClass.name[0])} : {eClass.name}_t) (m : {metamodel.name}Model) : option ({records_link_multiplicity(eReference)}_t) :=")
-            lst.append(f"  get{eClass.name}{eReference.name}OnLinks {arg(eClass.name[0])} m.(modelLinks).")
+            lst.append(f"Definition get{eClass.name}_{eReference.name} ({arg(eClass.name[0])} : {eClass.name}_t) (m : {metamodel.name}Model) : option ({records_link_multiplicity(eReference)}_t) :=")
+            lst.append(f"  get{eClass.name}_{eReference.name}OnLinks {arg(eClass.name[0])} m.(modelLinks).")
             lst.append(br())
 
     lst.append(br())

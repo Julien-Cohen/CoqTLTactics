@@ -1,5 +1,4 @@
 
-
 (********************************************************************
 	@name Coq declarations for metamodel: <Moore>
 	@date 2022/01/29 12:14:47
@@ -7,7 +6,7 @@
  ********************************************************************)
 
 (* Coq libraries *)
-Require Import String.
+Require  Import String.
 Require Import Bool.
 Require Import List.      (* sequence *)
 Require Import Multiset.  (* bag *)
@@ -15,7 +14,6 @@ Require Import ListSet.   (* set *)
 Require Import PeanoNat.
 Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
-Scheme Equality for option. (* equality for option type *)
 
 From core Require Import 
   utils.Utils
@@ -25,245 +23,239 @@ From core Require Import
   utils.CpdtTactics
   Tactics.
 
-(* Base types *)
+(** Base types for elements *)
+Record State_t :=  BuildState { State_name : string ; State_output : string }.
+Scheme Equality for State_t.
+Lemma lem_State_t_beq_id : forall (e1 e2 : State_t), State_t_beq e1 e2 = true -> e1 = e2.
+Proof. exact internal_State_t_dec_bl. Qed. 
+Lemma lem_State_t_beq_refl : forall (e : State_t), State_t_beq e e = true.
+Proof. intro ; apply internal_State_t_dec_lb ; auto. Qed. 
+
+Record Transition_t :=  BuildTransition { Transition_input : string }.
+Scheme Equality for Transition_t.
+Lemma lem_Transition_t_beq_id : forall (e1 e2 : Transition_t), Transition_t_beq e1 e2 = true -> e1 = e2.
+Proof. exact internal_Transition_t_dec_bl. Qed. 
+Lemma lem_Transition_t_beq_refl : forall (e : Transition_t), Transition_t_beq e e = true.
+Proof. intro ; apply internal_Transition_t_dec_lb ; auto. Qed. 
 
 
-Record State : Set :=
-  BuildState 
-  {  name : string ;
-     output : string 
-  }.
 
-Record Transition : Set :=
-  BuildTransition { input : string }.
+(** Base types for links *)
+Record Transition_source_t :=  BuildTransitionSource { Transition_source_t_source : Transition_t ; Transition_source_t_target : State_t   }.
+Scheme Equality for Transition_source_t.
+Lemma lem_Transition_source_t_beq_id : forall (e1 e2 : Transition_source_t), Transition_source_t_beq e1 e2 = true -> e1 = e2.
+Proof. exact internal_Transition_source_t_dec_bl. Qed. 
+Lemma lem_Transition_source_t_beq_refl : forall (e : Transition_source_t), Transition_source_t_beq e e = true.
+Proof. intro ; apply internal_Transition_source_t_dec_lb ; auto. Qed. 
+
+
+Record Transition_target_t :=   BuildTransitionTarget { Transition_target_t_source : Transition_t ; Transition_target_t_target : State_t   }.
+Scheme Equality for Transition_target_t.
+Lemma lem_Transition_target_t_beq_id : forall (e1 e2 : Transition_target_t), Transition_target_t_beq e1 e2 = true -> e1 = e2.
+Proof. exact internal_Transition_target_t_dec_bl. Qed. 
+Lemma lem_Transition_target_t_beq_refl : forall (e : Transition_target_t), Transition_target_t_beq e e = true.
+Proof. intro ; apply internal_Transition_target_t_dec_lb ; auto. Qed. 
 
 
 
-Record TransitionSource : Set :=
-  BuildTransitionSource 
-    { s_tr : Transition ;
-      s_st : State 
-    }.
+(** Data types for element (to build models) *)
+Inductive Element : Set :=
+  | StateElement : State_t -> Element
+  | TransitionElement : Transition_t -> Element
+.
+Scheme Equality for Element.
 
-Definition maybeBuildTransitionSource (tr_arg: Transition) (so_arg: option (State)) : option TransitionSource :=
+(** Data types for link (to build models) *)
+Inductive Link : Set :=
+  | Transition_sourceLink : Transition_source_t -> Link
+  | Transition_targetLink : Transition_target_t -> Link
+. (* pourquoi pas Scheme Equality for Link ? *)
+Definition Link_beq (c1 : Link) (c2 : Link) : bool :=
+  match c1, c2 with
+  | Transition_sourceLink o1, Transition_sourceLink o2 => Transition_source_t_beq o1 o2
+  | Transition_targetLink o1, Transition_targetLink o2 => Transition_target_t_beq o1 o2
+  | _, _ => false
+  end.
+
+(** Meta-types (or kinds, to be used in rules) *)
+Inductive ElementKind : Set :=
+| State_K
+| Transition_K
+.
+Scheme Equality for ElementKind.
+
+
+Inductive LinkKind : Set :=
+  | Transition_source_K
+  | Transition_target_K
+.
+Scheme Equality for LinkKind.
+
+(** Reflective functions (typing : correspondence between abstract types (kinds) and model data) *)
+Definition getTypeByEKind (k : ElementKind) : Set :=
+  match k with
+  | State_K => State_t
+  | Transition_K => Transition_t
+  end.
+
+
+Definition lift_EKind k : (getTypeByEKind k) -> Element := 
+  match k with
+  | State_K => StateElement
+  | Transition_K => TransitionElement
+  end.
+
+
+Definition get_E_data (k : ElementKind) (c : Element) : option (getTypeByEKind k) :=
+  match (k,c) as e return (option (getTypeByEKind (fst e))) with
+  | (State_K, StateElement v)  => Some v
+  | (Transition_K, TransitionElement v)  => Some v
+  | (_ , _) => None
+  end.
+
+
+Definition getTypeByLKind (k : LinkKind) : Set :=
+  match k with
+  | Transition_source_K => Transition_source_t
+  | Transition_target_K => Transition_target_t
+  end.
+
+
+Definition lift_LKind k : (getTypeByLKind k) -> Link :=
+  match k with
+  | Transition_source_K => Transition_sourceLink
+  | Transition_target_K => Transition_targetLink
+  end.
+
+
+Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
+  match (t,c) as e return (option (getTypeByLKind (fst e))) with
+  | (Transition_source_K, Transition_sourceLink v)  => Some v
+  | (Transition_target_K, Transition_targetLink v)  => Some v
+  | (_ , _) => None
+  end.
+
+(** Typeclass Instance *)
+Definition MooreMM : Metamodel :=
+{|
+  ElementType := Element ;
+  LinkType := Link ;
+  elements_eqdec := Element_beq ;
+  links_eqdec := Link_beq
+|}.
+
+
+#[export]
+Instance MooreElementDenotation : Denotation Element ElementKind :=
+{
+  denoteDatatype := getTypeByEKind ;
+  unbox := get_E_data ;
+  constructor := lift_EKind ;
+}.
+
+
+#[export]
+Instance MooreLinkDenotation : Denotation Link LinkKind :=
+{
+  denoteDatatype := getTypeByLKind ;
+  unbox := get_L_data ;
+  constructor := lift_LKind ;
+}.
+
+
+#[export]
+Instance ModelingMetamodel_Instance : ModelingMetamodel MooreMM :=
+{
+  elements := MooreElementDenotation ;
+  links := MooreLinkDenotation ;
+}.
+
+
+Definition MooreModel := Model MooreMM.
+
+(** General functions (used in transformations) *)
+Fixpoint getTransition_sourceOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
+match l with
+  | (Transition_sourceLink x) :: l1 =>
+    if Transition_t_beq x.(Transition_source_t_source) t
+      then (Some x.(Transition_source_t_target))
+      else getTransition_sourceOnLinks t l1
+  | _ :: l1 => getTransition_sourceOnLinks t l1
+  | nil => None
+end.
+
+
+Definition getTransition_source (t : Transition_t) (m : MooreModel) : option (State_t) :=
+  getTransition_sourceOnLinks t m.(modelLinks).
+
+
+Fixpoint getTransition_targetOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
+match l with
+  | (Transition_targetLink x) :: l1 =>
+    if Transition_t_beq x.(Transition_target_t_source) t
+      then (Some x.(Transition_target_t_target))
+      else getTransition_targetOnLinks t l1
+  | _ :: l1 => getTransition_targetOnLinks t l1
+  | nil => None
+end.
+
+
+Definition getTransition_target (t : Transition_t) (m : MooreModel) : option (State_t) :=
+  getTransition_targetOnLinks t m.(modelLinks).
+
+ 
+Definition Transition_getSourceObject (t : Transition_t) (m : MooreModel) : option (Element) :=
+match getTransition_source t m with
+  | Some st_arg => Some (StateElement st_arg) 
+  | None => None
+  end.
+
+Definition Transition_getTargetObject (tr_arg : Transition_t) (m : MooreModel) : option (Element) :=
+  match getTransition_target tr_arg m with
+  | Some st_arg => Some (StateElement st_arg) 
+  | None => None
+  end.
+
+
+(** For user *)
+Definition maybeBuildTransitionSource (tr_arg: Transition_t) (so_arg: option (State_t)) : option Transition_source_t :=
   match tr_arg, so_arg with
   | tr_arg_succ, Some so_arg_succ => Some (BuildTransitionSource tr_arg_succ so_arg_succ)
   | _, _ => None
   end.
 
-Record TransitionTarget : Set :=
-   BuildTransitionTarget 
-   { t_tr : Transition ;
-     t_st : State 
-   }.
 
-Definition maybeBuildTransitionTarget (tr_arg: Transition) (ta_arg: option (State)) : option TransitionTarget :=
+Definition maybeBuildTransitionTarget (tr_arg: Transition_t) (ta_arg: option (State_t)) : option Transition_target_t :=
   match tr_arg, ta_arg with
   | tr_arg_succ, Some ta_arg_succ => Some (BuildTransitionTarget tr_arg_succ ta_arg_succ)
   | _, _ => None
   end.
 
 
+(** Useful lemmas *)
+Lemma Moore_invert : 
+  forall (k: ElementKind) (t1 t2: getTypeByEKind k),
+    constructor k t1 = constructor k t2 -> t1 = t2.
+Proof. intro k ; destruct k ; simpl; congruence.  Qed. 
 
-(* Accessors *)
 
-Definition beq_State (st_arg1 : State) (st_arg2 : State) : bool :=
-  ( beq_string st_arg1.(name) st_arg2.(name) ) 
-  &&  ( beq_string st_arg1.(output) st_arg2.(output) )
+Lemma Element_dec : 
+  forall (a: Element),
+(instanceof State_K a) = true\/(instanceof Transition_K a) = true
 .
-
-Definition beq_Transition (tr_arg1 : Transition) (tr_arg2 : Transition) : bool :=
-  beq_string tr_arg1.(input) tr_arg2.(input)
-.
+Proof. destruct a ; auto. Qed. 
 
 
-(* Meta-types (or kinds, to be used in rules) *)	
-
-Inductive ElementKind : Set :=
-  | State_K
-  | Transition_K
-.
-
-Definition getTypeByEKind (mocl_arg : ElementKind) : Set :=
-  match mocl_arg with
-    | State_K => State
-    | Transition_K => Transition
-  end.	
-
-Inductive LinkKind : Set :=
-    | TransitionSource_K
-    | TransitionTarget_K
-.
-
-Definition getTypeByLKind (more_arg : LinkKind) : Set :=
-  match more_arg with
-  | TransitionSource_K => TransitionSource
-  | TransitionTarget_K => TransitionTarget
-  end.
-
-(* used ? *)
-Definition getERoleTypesByLKind (more_arg : LinkKind) : Set :=
-  match more_arg with
-  | TransitionSource_K => (Transition * State)
-  | TransitionTarget_K => (Transition * State)
-  end.
-
-(* Data types *)			
-Inductive Element : Set :=
-  | StateElement : State -> Element
-  | TransitionElement : Transition ->Element. 
+Lemma StateElement_cast :
+  forall x y,
+    unbox State_K x = return y -> StateElement y = x.
+Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
 
 
-Definition beq_Element (c1 : Element) (c2 : Element) : bool :=
-  match c1, c2 with
-  | StateElement o1, StateElement o2 => beq_State o1 o2
-  | TransitionElement o1, TransitionElement o2 => beq_Transition o1 o2
-  | _, _ => false
-  end.
-
-Inductive Link : Set :=
-  | TransitionSourceLink : TransitionSource -> Link
-  | TransitionTargetLink : TransitionTarget -> Link.
+Lemma TransitionElement_cast :
+  forall x y,
+    unbox Transition_K x = return y -> TransitionElement y = x.
+Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
 
 
-(* FIXME *)
-Definition beq_Link (l1 : Link) (l2 : Link) : bool := true.
-
-(* Reflective functions *)
-Lemma MooreMetamodel_eqEClass_dec : 
- forall (mocl_arg1: ElementKind) (mocl_arg2: ElementKind), { mocl_arg1 = mocl_arg2 } + { mocl_arg1 <> mocl_arg2 }.
-Proof. repeat decide equality. Defined.
-
-Lemma MooreMetamodel_eqEReference_dec : 
- forall (more_arg1: LinkKind) (more_arg2: LinkKind), { more_arg1 = more_arg2 } + { more_arg1 <> more_arg2 }.
-Proof. repeat decide equality. Defined.
-
-(* not used *)
-Definition getEKind (moob_arg : Element) : ElementKind :=
-   match moob_arg with
-   | StateElement _ => State_K
-   | TransitionElement _ => Transition_K
-   end.
-
-(* not used *)
-Definition getLKind (moli_arg : Link) : LinkKind := 
-  match moli_arg with
-  | TransitionSourceLink _  => TransitionSource_K
-  | TransitionTargetLink _  => TransitionTarget_K
-  end.
-
-
-
-Definition get_E_Data (mocl_arg : ElementKind) (moob_arg : Element) : option (getTypeByEKind mocl_arg).
-  destruct moob_arg ; destruct mocl_arg ; unfold getTypeByEKind.
-  + exact (Some s).
-  + exact None.
-  + exact None.
-  + exact (Some t).
-Defined.
-
-Definition get_L_Data (more_arg : LinkKind) (moli_arg : Link) : option (getTypeByLKind more_arg).
-  destruct moli_arg ; destruct more_arg ; simpl.
-  exact (Some t).
-  exact None.
-  exact None.
-  exact (Some t).
-Defined.
-
-
-(* Generic functions *)
-
-Definition Metamodel_Instance : Metamodel :=
-  {|
-    ElementType := Element;
-    LinkType := Link;
-    elements_eqdec := beq_Element ;
-    links_eqdec := beq_Link
-  |}.
-
-
-Definition MooreModel := Model Metamodel_Instance.
-
-
-Definition toElement (mocl_arg: ElementKind) (t: getTypeByEKind mocl_arg) : Element.  
-  destruct mocl_arg.
-  exact (StateElement t).
-  exact (TransitionElement t).
-Defined.
-(* Personal Remark : I discover that it is easier to program interactively as above than writing the correct match cases because the match cases are generated by destruct. However, the effort falls on the reader. *) 
-
-
-Definition toLink (more_arg: LinkKind) (t: getTypeByLKind more_arg) : Link.
-  destruct more_arg.
-  exact (TransitionSourceLink t).
-  exact (TransitionTargetLink t).
-Defined.
-
-
-
-
-Fixpoint Transition_getSourceOnLinks (tr_arg : Transition) (l : list Link) : option (State) :=
-  match l with
-  | (TransitionSourceLink (BuildTransitionSource Transition_ctr source_ctr)) :: l' => 
-      if beq_Transition Transition_ctr tr_arg 
-      then Some source_ctr 
-      else Transition_getSourceOnLinks tr_arg l'
-  | _ :: l' => Transition_getSourceOnLinks tr_arg l'
-  | nil => None
-end.
-
-Definition Transition_getSource (tr_arg : Transition) (m : MooreModel) : option (State) :=
-  Transition_getSourceOnLinks tr_arg m.(modelLinks).
-  
-Definition Transition_getSourceObject (tr_arg : Transition) (m : MooreModel) : option (Element) :=
-  match Transition_getSource tr_arg m with
-  | Some st_arg => Some (StateElement st_arg) 
-  | None => None
-  end.
-
-Fixpoint Transition_getTargetOnLinks (tr_arg : Transition) (l : list Link) : option (State) :=
-  match l with
-   | (TransitionTargetLink (BuildTransitionTarget Transition_ctr target_ctr)) :: l' => 
-       if beq_Transition Transition_ctr tr_arg 
-       then Some target_ctr 
-       else Transition_getTargetOnLinks tr_arg l'
-   | _ :: l' => Transition_getTargetOnLinks tr_arg l'
-   | nil => None
-  end.
-
-Definition Transition_getTarget (tr_arg : Transition) (m : MooreModel) : option (State) :=
-  Transition_getTargetOnLinks tr_arg m.(modelLinks).
-  
-Definition Transition_getTargetObject (tr_arg : Transition) (m : MooreModel) : option (Element) :=
-  match Transition_getTarget tr_arg m with
-  | Some st_arg => Some (StateElement st_arg) 
-  | None => None
-  end.
-
-
-(* Typeclass Instances *)	
-#[export]
-Instance ElementDenotation : Denotation Element ElementKind :=
-  {
-	denoteDatatype := getTypeByEKind;
-	unbox := get_E_Data ;
-	constructor := toElement;
-  }.
-
-#[export]
-Instance LinkDenotation : Denotation Link LinkKind :=
-  {
-	denoteDatatype := getTypeByLKind ;
-	unbox := get_L_Data ;
-	constructor := toLink;
-  }.
-
-
-#[export]
-Instance ModelingMetamodel_Instance : 
-	ModelingMetamodel Metamodel_Instance :=
-  { 
-    elements := ElementDenotation;
-    links := LinkDenotation; 
-  }.
 

@@ -30,7 +30,7 @@ Require Import transformations.Moore2Mealy.Mealy.
 
 #[export]
 Instance Moore2MealyTransformationConfiguration : TransformationConfiguration := 
-  Build_TransformationConfiguration Moore.Metamodel_Instance MealyMetamodel_Metamodel_Instance.
+  Build_TransformationConfiguration Moore.MooreMM MealyMetamodel_Metamodel_Instance.
 
 #[export]  
 Instance Moore2MealyModelingTransformationConfiguration : ModelingTransformationConfiguration Moore2MealyTransformationConfiguration :=
