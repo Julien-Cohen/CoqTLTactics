@@ -13,22 +13,18 @@
 (* Moore models as counterexample to prove injectivity of CoqTL *)
 
  
-Definition Moore_m1 : Model MooreMetamodel_Metamodel_Instance :=
-(Build_Model MooreMetamodel_Metamodel_Instance
+Definition Moore_m1 : Model Metamodel_Instance :=
+(Build_Model Metamodel_Instance
     (
-        (Build_MooreMetamodel_Object State_K (BuildState  "S0" "1")) :: nil
+        (StateElement (BuildState  "S0" "1")) :: nil
     )
-    (
-        nil
-    )
+    ( nil )
 ).
 
-Definition Moore_m2 : Model MooreMetamodel_Metamodel_Instance :=
-(Build_Model MooreMetamodel_Metamodel_Instance
+Definition Moore_m2 : Model Metamodel_Instance :=
+(Build_Model Metamodel_Instance
     (
-        (Build_MooreMetamodel_Object State_K (BuildState  "S0" "0")) :: nil
+        (StateElement (BuildState  "S0" "0")) :: nil
     )
-    (
-        nil
-    )
+    ( nil )
 ).

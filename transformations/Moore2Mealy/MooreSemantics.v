@@ -5,11 +5,11 @@ Require Import Moore.
 Require Import core.Model.
 Require Import core.utils.Utils.
 
-Definition MooreMetamodel_toStates (m: list MooreMetamodel_Object) : list State :=
-    optionList2List (map (fun s => (MooreMetamodel_toClass State_K s)) m).
+Definition MooreMetamodel_toStates (m: list Element) : list State :=
+    optionList2List (map (fun s => get_E_Data State_K s) m).
 
-Definition MooreMetamodel_toTransitions (m: list MooreMetamodel_Object) : list Transition :=
-    optionList2List (map (fun s => (MooreMetamodel_toClass Transition_K s)) m).
+Definition MooreMetamodel_toTransitions (m: list Element) : list Transition :=
+    optionList2List (map (fun s => get_E_Data Transition_K s) m).
 
 Definition MooreMetamodel_allStates (m: MooreModel) : list State :=
     MooreMetamodel_toStates m.(modelElements).

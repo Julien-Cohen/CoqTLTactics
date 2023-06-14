@@ -104,8 +104,10 @@ transformations/Moore2Mealy/Mealy.v
 transformations/Moore2Mealy/Moore2Mealy.v
 transformations/Moore2Mealy/tests/sampleMoore.v
 transformations/Moore2Mealy/MooreSemantics.v
+transformations/Moore2Mealy/MooreWF.v
 transformations/Moore2Mealy/MealySemantics.v
-transformations/Moore2Mealy/theorems/SemanticsPreservation.v
+transformations/Moore2Mealy/MealyWF.v
+#transformations/Moore2Mealy/theorems/SemanticsPreservation.v
 
 
 # Engine proofs

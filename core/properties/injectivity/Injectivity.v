@@ -56,7 +56,7 @@ Proof.
     apply incl_cons_inv in H0.
     destruct H0.
     destruct H.
-    + apply Moore_invert in H.
+    + injection H.
       crush.
     + destruct H.
   - unfold TargetModel_elem_eq.

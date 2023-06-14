@@ -14,18 +14,18 @@ Open Scope string_scope.
 	 	   <-"0"--
 	*)
 
-Definition InputModel : Model MooreMetamodel_Metamodel_Instance :=
-	(Build_Model MooreMetamodel_Metamodel_Instance
+Definition InputModel : Model Metamodel_Instance :=
+	(Build_Model Metamodel_Instance
 		(
-		(Build_MooreMetamodel_Object Transition_K (BuildTransition  "0")) :: 
-		(Build_MooreMetamodel_Object State_K (BuildState  "S0" "1")) :: 
-		(Build_MooreMetamodel_Object State_K (BuildState  "S1" "0")) :: 
-		(Build_MooreMetamodel_Object Transition_K (BuildTransition  "1")) :: 
+		(TransitionElement (BuildTransition  "0")) :: 
+		(StateElement (BuildState  "S0" "1")) :: 
+		(StateElement (BuildState  "S1" "0")) :: 
+		(TransitionElement (BuildTransition  "1")) :: 
 		nil)
 		(
-		(Build_MooreMetamodel_Link TransitionSource_K (BuildTransitionSource (BuildTransition  "0") (BuildState  "S1" "0"))) ::
-		(Build_MooreMetamodel_Link TransitionTarget_K (BuildTransitionTarget (BuildTransition  "0") (BuildState  "S0" "1"))) ::
-		(Build_MooreMetamodel_Link TransitionSource_K (BuildTransitionSource (BuildTransition  "1") (BuildState  "S0" "1"))) ::
-		(Build_MooreMetamodel_Link TransitionTarget_K (BuildTransitionTarget (BuildTransition  "1") (BuildState  "S1" "0"))) ::
+		(TransitionSourceLink (BuildTransitionSource (BuildTransition  "0") (BuildState  "S1" "0"))) ::
+		(TransitionTargetLink (BuildTransitionTarget (BuildTransition  "0") (BuildState  "S0" "1"))) ::
+		(TransitionSourceLink (BuildTransitionSource (BuildTransition  "1") (BuildState  "S0" "1"))) ::
+		(TransitionTargetLink (BuildTransitionTarget (BuildTransition  "1") (BuildState  "S1" "0"))) ::
 		nil)
 	).

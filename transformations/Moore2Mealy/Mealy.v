@@ -149,10 +149,12 @@ Definition MealyMetamodel_getEReference (meli_arg : MealyMetamodel_Link) : LinkK
 Definition MealyMetamodel_toClass (mecl_arg : ElementKind) (meob_arg : MealyMetamodel_Object) : option (MealyMetamodel_getTypeByClass mecl_arg).
 Proof.
   destruct meob_arg as [arg1 arg2].
-  destruct (MealyMetamodel_eqEClass_dec arg1 mecl_arg) as [e|] eqn:dec_case.
-  - rewrite e in arg2.
-    exact (Some arg2).
-  - exact None.
+  unfold MealyMetamodel_getTypeByClass in arg2.
+  destruct arg1 ; destruct mecl_arg.
+  exact (Some arg2).
+  exact (None).
+  exact (None).
+  exact (Some arg2).
 Defined.
 
 Definition MealyMetamodel_toReference (mere_arg : LinkKind) (meli_arg : MealyMetamodel_Link) : option (MealyMetamodel_getTypeByReference mere_arg).

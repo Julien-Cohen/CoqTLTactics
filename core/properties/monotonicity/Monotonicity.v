@@ -49,7 +49,7 @@ Proof.
   split.
   - unfold SourceModel_elem_incl.
     simpl.
-    remember (Moore.Build_MooreMetamodel_Object Moore.State_K
+    remember (Moore.StateElement
                 (Moore.BuildState "S0" "1")) as elem.
     unfold incl.
     intros.

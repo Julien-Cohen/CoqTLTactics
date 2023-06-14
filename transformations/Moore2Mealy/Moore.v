@@ -67,65 +67,67 @@ Definition maybeBuildTransitionTarget (tr_arg: Transition) (ta_arg: option (Stat
 
 (* Accessors *)
 
-
-
 Definition beq_State (st_arg1 : State) (st_arg2 : State) : bool :=
-(  beq_string st_arg1.(name) st_arg2.(name) ) && 
-(  beq_string st_arg1.(output) st_arg2.(output) )
+  ( beq_string st_arg1.(name) st_arg2.(name) ) 
+  &&  ( beq_string st_arg1.(output) st_arg2.(output) )
 .
 
 Definition beq_Transition (tr_arg1 : Transition) (tr_arg2 : Transition) : bool :=
-(  beq_string tr_arg1.(input) tr_arg2.(input) )
+  beq_string tr_arg1.(input) tr_arg2.(input)
 .
 
 
 (* Meta-types (or kinds, to be used in rules) *)	
+
 Inductive ElementKind : Set :=
   | State_K
   | Transition_K
 .
 
-Definition MooreMetamodel_getTypeByEKind (mocl_arg : ElementKind) : Set :=
+Definition getTypeByEKind (mocl_arg : ElementKind) : Set :=
   match mocl_arg with
     | State_K => State
     | Transition_K => Transition
   end.	
 
 Inductive LinkKind : Set :=
-| TransitionSource_K
-| TransitionTarget_K
+    | TransitionSource_K
+    | TransitionTarget_K
 .
 
-Definition MooreMetamodel_getTypeByReference (more_arg : LinkKind) : Set :=
+Definition getTypeByLKind (more_arg : LinkKind) : Set :=
   match more_arg with
-| TransitionSource_K => TransitionSource
-| TransitionTarget_K => TransitionTarget
+  | TransitionSource_K => TransitionSource
+  | TransitionTarget_K => TransitionTarget
   end.
 
-Definition MooreMetamodel_getERoleTypesByEReference (more_arg : LinkKind) : Set :=
+(* used ? *)
+Definition getERoleTypesByLKind (more_arg : LinkKind) : Set :=
   match more_arg with
-| TransitionSource_K => (Transition * State)
-| TransitionTarget_K => (Transition * State)
+  | TransitionSource_K => (Transition * State)
+  | TransitionTarget_K => (Transition * State)
   end.
 
-(* Generic types *)			
-Inductive MooreMetamodel_Object : Set :=
- | Build_MooreMetamodel_Object : 
-    forall (mocl_arg: ElementKind), (MooreMetamodel_getTypeByEKind mocl_arg) -> MooreMetamodel_Object.
+(* Data types *)			
+Inductive Element : Set :=
+  | StateElement : State -> Element
+  | TransitionElement : Transition ->Element. 
 
-Definition beq_MooreMetamodel_Object (c1 : MooreMetamodel_Object) (c2 : MooreMetamodel_Object) : bool :=
+
+Definition beq_Element (c1 : Element) (c2 : Element) : bool :=
   match c1, c2 with
-  | Build_MooreMetamodel_Object State_K o1, Build_MooreMetamodel_Object State_K o2 => beq_State o1 o2
-  | Build_MooreMetamodel_Object Transition_K o1, Build_MooreMetamodel_Object Transition_K o2 => beq_Transition o1 o2
+  | StateElement o1, StateElement o2 => beq_State o1 o2
+  | TransitionElement o1, TransitionElement o2 => beq_Transition o1 o2
   | _, _ => false
   end.
 
-Inductive MooreMetamodel_Link : Set :=
- | Build_MooreMetamodel_Link : 
-    forall (more_arg: LinkKind), (MooreMetamodel_getTypeByReference more_arg) -> MooreMetamodel_Link.
+Inductive Link : Set :=
+  | TransitionSourceLink : TransitionSource -> Link
+  | TransitionTargetLink : TransitionTarget -> Link.
+
 
 (* FIXME *)
-Definition beq_MooreMetamodel_Link (l1 : MooreMetamodel_Link) (l2 : MooreMetamodel_Link) : bool := true.
+Definition beq_Link (l1 : Link) (l2 : Link) : bool := true.
 
 (* Reflective functions *)
 Lemma MooreMetamodel_eqEClass_dec : 
@@ -136,135 +138,132 @@ Lemma MooreMetamodel_eqEReference_dec :
  forall (more_arg1: LinkKind) (more_arg2: LinkKind), { more_arg1 = more_arg2 } + { more_arg1 <> more_arg2 }.
 Proof. repeat decide equality. Defined.
 
-Definition MooreMetamodel_getEClass (moob_arg : MooreMetamodel_Object) : ElementKind :=
+(* not used *)
+Definition getEKind (moob_arg : Element) : ElementKind :=
    match moob_arg with
-  | (Build_MooreMetamodel_Object moob_arg _) => moob_arg
+   | StateElement _ => State_K
+   | TransitionElement _ => Transition_K
    end.
 
-Definition MooreMetamodel_getEReference (moli_arg : MooreMetamodel_Link) : LinkKind :=
-   match moli_arg with
-  | (Build_MooreMetamodel_Link moli_arg _) => moli_arg
-   end.
+(* not used *)
+Definition getLKind (moli_arg : Link) : LinkKind := 
+  match moli_arg with
+  | TransitionSourceLink _  => TransitionSource_K
+  | TransitionTargetLink _  => TransitionTarget_K
+  end.
 
 
 
-Definition MooreMetamodel_toClass (mocl_arg : ElementKind) (moob_arg : MooreMetamodel_Object) : option (MooreMetamodel_getTypeByEKind mocl_arg).
-Proof.
-  destruct moob_arg as [arg1 arg2].
-  destruct (MooreMetamodel_eqEClass_dec arg1 mocl_arg) as [e|] eqn:dec_case.
-  - rewrite e in arg2.
-    exact (Some arg2).
-  - exact None.
+Definition get_E_Data (mocl_arg : ElementKind) (moob_arg : Element) : option (getTypeByEKind mocl_arg).
+  destruct moob_arg ; destruct mocl_arg ; unfold getTypeByEKind.
+  + exact (Some s).
+  + exact None.
+  + exact None.
+  + exact (Some t).
 Defined.
 
-Definition MooreMetamodel_toReference (more_arg : LinkKind) (moli_arg : MooreMetamodel_Link) : option (MooreMetamodel_getTypeByReference more_arg).
-Proof.
-  destruct moli_arg as [arg1 arg2].
-  destruct (MooreMetamodel_eqEReference_dec arg1 more_arg) as [e|] eqn:dec_case.
-  - rewrite e in arg2.
-  	exact (Some arg2).
-  - exact None.
+Definition get_L_Data (more_arg : LinkKind) (moli_arg : Link) : option (getTypeByLKind more_arg).
+  destruct moli_arg ; destruct more_arg ; simpl.
+  exact (Some t).
+  exact None.
+  exact None.
+  exact (Some t).
 Defined.
+
 
 (* Generic functions *)
 
-Definition MooreMetamodel_Metamodel_Instance : 
-  Metamodel :=
+Definition Metamodel_Instance : Metamodel :=
   {|
-    ElementType := MooreMetamodel_Object;
-    LinkType := MooreMetamodel_Link;
-    elements_eqdec := beq_MooreMetamodel_Object ;
-    links_eqdec := beq_MooreMetamodel_Link
+    ElementType := Element;
+    LinkType := Link;
+    elements_eqdec := beq_Element ;
+    links_eqdec := beq_Link
   |}.
 
 
-Definition MooreModel := Model MooreMetamodel_Metamodel_Instance.
-
-Definition MooreMetamodel_toObject (mocl_arg: ElementKind) (t: MooreMetamodel_getTypeByEKind mocl_arg) : MooreMetamodel_Object :=
-  (Build_MooreMetamodel_Object mocl_arg t).
-
-Definition MooreMetamodel_toLink (more_arg: LinkKind) (t: MooreMetamodel_getTypeByReference more_arg) : MooreMetamodel_Link :=
-  (Build_MooreMetamodel_Link more_arg t).
+Definition MooreModel := Model Metamodel_Instance.
 
 
+Definition toElement (mocl_arg: ElementKind) (t: getTypeByEKind mocl_arg) : Element.  
+  destruct mocl_arg.
+  exact (StateElement t).
+  exact (TransitionElement t).
+Defined.
+(* Personal Remark : I discover that it is easier to program interactively as above than writing the correct match cases because the match cases are generated by destruct. However, the effort falls on the reader. *) 
+
+
+Definition toLink (more_arg: LinkKind) (t: getTypeByLKind more_arg) : Link.
+  destruct more_arg.
+  exact (TransitionSourceLink t).
+  exact (TransitionTargetLink t).
+Defined.
 
 
 
-Fixpoint Transition_getSourceOnLinks (tr_arg : Transition) (l : list MooreMetamodel_Link) : option (State) :=
-match l with
-| (Build_MooreMetamodel_Link TransitionSource_K (BuildTransitionSource Transition_ctr source_ctr)) :: l' => 
-	  if beq_Transition Transition_ctr tr_arg then Some source_ctr else Transition_getSourceOnLinks tr_arg l'
-| _ :: l' => Transition_getSourceOnLinks tr_arg l'
-| nil => None
+
+Fixpoint Transition_getSourceOnLinks (tr_arg : Transition) (l : list Link) : option (State) :=
+  match l with
+  | (TransitionSourceLink (BuildTransitionSource Transition_ctr source_ctr)) :: l' => 
+      if beq_Transition Transition_ctr tr_arg 
+      then Some source_ctr 
+      else Transition_getSourceOnLinks tr_arg l'
+  | _ :: l' => Transition_getSourceOnLinks tr_arg l'
+  | nil => None
 end.
 
 Definition Transition_getSource (tr_arg : Transition) (m : MooreModel) : option (State) :=
   Transition_getSourceOnLinks tr_arg m.(modelLinks).
   
-Definition Transition_getSourceObject (tr_arg : Transition) (m : MooreModel) : option (MooreMetamodel_Object) :=
+Definition Transition_getSourceObject (tr_arg : Transition) (m : MooreModel) : option (Element) :=
   match Transition_getSource tr_arg m with
-  | Some st_arg => Some (MooreMetamodel_toObject State_K st_arg) 
-  | _ => None
+  | Some st_arg => Some (StateElement st_arg) 
+  | None => None
   end.
-Fixpoint Transition_getTargetOnLinks (tr_arg : Transition) (l : list MooreMetamodel_Link) : option (State) :=
-match l with
-| (Build_MooreMetamodel_Link TransitionTarget_K (BuildTransitionTarget Transition_ctr target_ctr)) :: l' => 
-	  if beq_Transition Transition_ctr tr_arg then Some target_ctr else Transition_getTargetOnLinks tr_arg l'
-| _ :: l' => Transition_getTargetOnLinks tr_arg l'
-| nil => None
-end.
+
+Fixpoint Transition_getTargetOnLinks (tr_arg : Transition) (l : list Link) : option (State) :=
+  match l with
+   | (TransitionTargetLink (BuildTransitionTarget Transition_ctr target_ctr)) :: l' => 
+       if beq_Transition Transition_ctr tr_arg 
+       then Some target_ctr 
+       else Transition_getTargetOnLinks tr_arg l'
+   | _ :: l' => Transition_getTargetOnLinks tr_arg l'
+   | nil => None
+  end.
 
 Definition Transition_getTarget (tr_arg : Transition) (m : MooreModel) : option (State) :=
   Transition_getTargetOnLinks tr_arg m.(modelLinks).
   
-Definition Transition_getTargetObject (tr_arg : Transition) (m : MooreModel) : option (MooreMetamodel_Object) :=
+Definition Transition_getTargetObject (tr_arg : Transition) (m : MooreModel) : option (Element) :=
   match Transition_getTarget tr_arg m with
-  | Some st_arg => Some (MooreMetamodel_toObject State_K st_arg) 
-  | _ => None
+  | Some st_arg => Some (StateElement st_arg) 
+  | None => None
   end.
 
 
 (* Typeclass Instances *)	
 #[export]
-Instance MooreMetamodel_ElementDenotation : Denotation MooreMetamodel_Object ElementKind :=
-{
-	denoteDatatype := MooreMetamodel_getTypeByEKind;
-	unbox := MooreMetamodel_toClass;
-	constructor := MooreMetamodel_toObject;
-}.
+Instance ElementDenotation : Denotation Element ElementKind :=
+  {
+	denoteDatatype := getTypeByEKind;
+	unbox := get_E_Data ;
+	constructor := toElement;
+  }.
 
 #[export]
-Instance MooreMetamodel_LinkDenotation : Denotation MooreMetamodel_Link LinkKind :=
-{
-	denoteDatatype := MooreMetamodel_getTypeByReference;
-	unbox := MooreMetamodel_toReference;
-	constructor := MooreMetamodel_toLink;
-}.
+Instance LinkDenotation : Denotation Link LinkKind :=
+  {
+	denoteDatatype := getTypeByLKind ;
+	unbox := get_L_Data ;
+	constructor := toLink;
+  }.
 
 
 #[export]
-Instance MooreMetamodel_ModelingMetamodel_Instance : 
-	ModelingMetamodel MooreMetamodel_Metamodel_Instance :=
-{ 
-    elements := MooreMetamodel_ElementDenotation;
-    links := MooreMetamodel_LinkDenotation; 
-}.
-
-(* Useful lemmas *)
-
-Lemma Moore_invert : 
-  forall (mocl_arg: ElementKind) (t1 t2: MooreMetamodel_getTypeByEKind mocl_arg), 
-    Build_MooreMetamodel_Object mocl_arg t1 = Build_MooreMetamodel_Object mocl_arg t2 -> t1 = t2.
-Proof.
-  intros. Tactics.dep_inversion H. assumption.
-Qed.
-
-(* Not Used *)
-Definition MooreMetamodel_instanceOfEClass :
-  ElementKind -> MooreMetamodel_Object -> bool :=
-  MooreMetamodel_ElementDenotation.(instanceof).
-
-Definition MooreMetamodel_instanceOfEReference :
-  LinkKind -> MooreMetamodel_Link -> bool :=
-  MooreMetamodel_LinkDenotation.(instanceof).
+Instance ModelingMetamodel_Instance : 
+	ModelingMetamodel Metamodel_Instance :=
+  { 
+    elements := ElementDenotation;
+    links := LinkDenotation; 
+  }.
 
