@@ -32,6 +32,16 @@
             "problemMatcher": []
         },
         {
+            "label": "coqtl model importer on current file",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "./libs/coqtl-model-import.py",
+                "${relativeFile}"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "xmi2v on current file",
             "type": "shell",
             "command": "java",
