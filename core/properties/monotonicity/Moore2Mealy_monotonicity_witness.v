@@ -21,11 +21,11 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 #[export]
 Instance Moore2MealyTransformationConfiguration : TransformationConfiguration := 
-  Build_TransformationConfiguration Moore.MM MealyMetamodel_Metamodel_Instance.
+  Build_TransformationConfiguration Moore.MM Mealy.MM.
 
 #[export]  
 Instance Moore2MealyModelingTransformationConfiguration : ModelingTransformationConfiguration Moore2MealyTransformationConfiguration :=
- Build_ModelingTransformationConfiguration Moore2MealyTransformationConfiguration Moore.MMM MealyMetamodel_ModelingMetamodel_Instance.
+ Build_ModelingTransformationConfiguration Moore2MealyTransformationConfiguration Moore.MMM Mealy.MMM.
 
 Open Scope coqtl.
 
@@ -41,7 +41,7 @@ Definition Moore2Mealy' :=
                           (MooreMetamodel_allTransitions m)))))
       to [
         elem [Moore.State_K] Mealy.State_K "s"
-          (fun _ _ s => BuildState s.(Moore.State_name)) nil
+          (fun _ _ s => Build_State_t s.(Moore.State_name)) nil
       ]
 ].
 

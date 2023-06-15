@@ -2,11 +2,11 @@
 Require Import Mealy MealySemantics. 
 Import String.
 
-Definition unique_names (m:MealyModel) := 
+Definition unique_names (m:M) := 
   forall e1 e2,
-  List.In (Build_MealyMetamodel_Object State_K e1) m.(Model.modelElements) ->
-  List.In (Build_MealyMetamodel_Object State_K e2) m.(Model.modelElements) ->
-  e1.(name) = e2.(name) ->
+  List.In (StateElement e1) m.(Model.modelElements) ->
+  List.In (StateElement e2) m.(Model.modelElements) ->
+  e1.(State_name) = e2.(State_name) ->
   e1 = e2.
 
 (** Two states with the same name are equals because a state only contains a name. *)
@@ -23,9 +23,9 @@ Lemma in_find :
   forall m n e,
     unique_names m ->
     List.In e (MealyMetamodel_allStates m) ->
-    e.(name) = n ->
+    e.(State_name) = n ->
     List.find
-           (fun s : State => (n =? s.(name))%string)
+           (fun s : State_t => (n =? s.(State_name))%string)
            (MealyMetamodel_allStates m) = 
          Some e.
 Proof.
@@ -38,7 +38,7 @@ Proof.
     destruct s.
     f_equal.
     apply String.eqb_eq in EQ. subst ; reflexivity. 
-   + apply List.find_none with (x:={| name := n |}) in E ; [ | assumption ].
+   + apply List.find_none with (x:={| State_name := n |}) in E ; [ | assumption ].
      apply String.eqb_neq in E.
      simpl in E.
      contradiction.

@@ -5,36 +5,36 @@ Require Import Mealy.
 Require Import core.Model.
 Require Import core.utils.Utils.
 
-Definition MealyMetamodel_toStates (m: list MealyMetamodel_Object) : list State :=
-    optionList2List (map (fun s => (MealyMetamodel_toClass State_K s)) m).
+Definition MealyMetamodel_toStates (m: list Element) : list State_t :=
+    optionList2List (map (fun s => (get_E_data State_K s)) m).
 
-Definition MealyMetamodel_toTransitions (m: list MealyMetamodel_Object) : list Transition :=
-    optionList2List (map (fun s => (MealyMetamodel_toClass Transition_K s)) m).
+Definition MealyMetamodel_toTransitions (m: list Element) : list Transition_t :=
+    optionList2List (map (fun s => (get_E_data Transition_K s)) m).
 
-Definition MealyMetamodel_allStates (m: MealyModel) : list State :=
+Definition MealyMetamodel_allStates (m: M) : list State_t :=
     MealyMetamodel_toStates m.(modelElements).
 
-Definition MealyMetamodel_allTransitions (m: MealyModel) : list Transition :=
+Definition MealyMetamodel_allTransitions (m: M) : list Transition_t :=
     MealyMetamodel_toTransitions m.(modelElements).
 
-Definition initialState (m: MealyModel) : option State :=
-    find (fun s => eqb "S0" s.(name)) (MealyMetamodel_allStates m).
+Definition initialState (m: M) : option State_t :=
+    find (fun s => eqb "S0" s.(State_name)) (MealyMetamodel_allStates m).
 
-Definition State_outTransitions (s: State) (m: MealyModel) : list Transition :=
+Definition State_outTransitions (s: State_t) (m: M) : list Transition_t :=
     filter (fun t => 
-        match (Transition_getSource t m) with
-        | Some s' => beq_State s s'
+        match (getTransition_source t m) with
+        | Some s' => State_t_beq s s'
         | None => false
         end)
         (MealyMetamodel_allTransitions m).
 
-Definition State_acceptTransition (s: State) (m: MealyModel) (i: string) : option Transition :=
-    find (fun t => eqb i t.(input)) (State_outTransitions s m).        
+Definition State_acceptTransition (s: State_t) (m: M) (i: string) : option Transition_t :=
+    find (fun t => eqb i t.(Transition_input)) (State_outTransitions s m).        
 
 Definition search m current i :=
   match State_acceptTransition current m i with
   | None => None
-  | Some t => match Transition_getTarget t m
+  | Some t => match getTransition_target t m
               with
               | Some s => Some (t, s)
               | None => None (* impossible when models are well formed *)
@@ -42,18 +42,18 @@ Definition search m current i :=
   end.
 
 
-Fixpoint executeFromState (m: MealyModel) (current: State) (remainingInput: list string) : list string :=
+Fixpoint executeFromState (m: M) (current: State_t) (remainingInput: list string) : list string :=
   match remainingInput with 
    | i :: inputs => 
        match search m current i with 
         | None => nil
-        | Some (t, s) =>    t.(input) :: (executeFromState m s inputs)
+        | Some (t, s) =>    t.(Transition_input) :: (executeFromState m s inputs)
 
        end
    | nil => nil 
   end.
 
-Definition Mealy_execute (m: MealyModel) (input: list string) : list string :=
+Definition Mealy_execute (m: M) (input: list string) : list string :=
     match (initialState m) with 
     | Some s => executeFromState m s input
     | None => nil

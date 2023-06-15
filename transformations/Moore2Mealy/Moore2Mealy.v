@@ -19,11 +19,11 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 #[export]
 Instance Moore2MealyTransformationConfiguration : TransformationConfiguration := 
-  Build_TransformationConfiguration Moore.MM MealyMetamodel_Metamodel_Instance.
+  Build_TransformationConfiguration Moore.MM Mealy.MM.
 
 #[export]  
 Instance Moore2MealyModelingTransformationConfiguration : ModelingTransformationConfiguration Moore2MealyTransformationConfiguration :=
- Build_ModelingTransformationConfiguration Moore2MealyTransformationConfiguration Moore.MMM MealyMetamodel_ModelingMetamodel_Instance.
+ Build_ModelingTransformationConfiguration Moore2MealyTransformationConfiguration Moore.MMM Mealy.MMM.
 
 Open Scope coqtl.
 
@@ -34,7 +34,7 @@ Definition Moore2Mealy' :=
       from [Moore.State_K]
       to [
         ELEM "s" ::: Mealy.State_K  
-          << fun _ _ s => BuildState s.(Moore.State_name) >>
+          << fun _ _ s => Build_State_t s.(Moore.State_name) >>
           
       ];
 
@@ -42,18 +42,18 @@ Definition Moore2Mealy' :=
       from [Moore.Transition_K]
       to [
         ELEM "t" ::: Mealy.Transition_K
-          << fun _ m t => BuildTransition 
+          << fun _ m t => Build_Transition_t 
                           t.(Moore.Transition_input)
                           (value (option_map Moore.State_output (Moore.getTransition_target t m))) >> 
           <<<
              LINK  
-              Mealy.TransitionSource_K //
+              Mealy.Transition_source_K //
               (fun tls _ m moore_tr mealy_tr =>
                 maybeBuildTransitionSource mealy_tr
                   (maybeResolve tls "s" Mealy.State_K 
                     (maybeSingleton (Moore.Transition_getSourceObject moore_tr m)))) ;
             LINK 
-              Mealy.TransitionTarget_K //
+              Mealy.Transition_target_K //
               (fun tls _ m moore_tr mealy_tr =>
                 maybeBuildTransitionTarget mealy_tr
                   (maybeResolve tls "s" Mealy.State_K 
