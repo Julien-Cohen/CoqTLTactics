@@ -50,7 +50,7 @@ Proof.
   - unfold SourceModel_elem_incl.
     simpl.
     remember (Moore.StateElement
-                (Moore.BuildState "S0" "1")) as elem.
+                (Moore.Build_State_t "S0" "1")) as elem.
     unfold incl.
     intros.
     destruct H.

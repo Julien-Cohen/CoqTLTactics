@@ -17,15 +17,15 @@ Open Scope string_scope.
 Definition InputModel : Model MooreMM :=
 	(Build_Model MooreMM
 		(
-		(TransitionElement (BuildTransition  "0")) :: 
-		(StateElement (BuildState  "S0" "1")) :: 
-		(StateElement (BuildState  "S1" "0")) :: 
-		(TransitionElement (BuildTransition  "1")) :: 
+		(TransitionElement (Build_Transition_t  "0")) :: 
+		(StateElement (Build_State_t  "S0" "1")) :: 
+		(StateElement (Build_State_t  "S1" "0")) :: 
+		(TransitionElement (Build_Transition_t  "1")) :: 
 		nil)
 		(
-		(Transition_sourceLink (BuildTransitionSource (BuildTransition  "0") (BuildState  "S1" "0"))) ::
-		(Transition_targetLink (BuildTransitionTarget (BuildTransition  "0") (BuildState  "S0" "1"))) ::
-		(Transition_sourceLink (BuildTransitionSource (BuildTransition  "1") (BuildState  "S0" "1"))) ::
-		(Transition_targetLink (BuildTransitionTarget (BuildTransition  "1") (BuildState  "S1" "0"))) ::
+		(Transition_sourceLink (Build_Transition_source_t (Build_Transition_t  "0") (Build_State_t  "S1" "0"))) ::
+		(Transition_targetLink (Build_Transition_target_t (Build_Transition_t  "0") (Build_State_t  "S0" "1"))) ::
+		(Transition_sourceLink (Build_Transition_source_t (Build_Transition_t  "1") (Build_State_t  "S0" "1"))) ::
+		(Transition_targetLink (Build_Transition_target_t (Build_Transition_t  "1") (Build_State_t  "S1" "0"))) ::
 		nil)
 	).

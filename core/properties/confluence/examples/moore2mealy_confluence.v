@@ -34,7 +34,7 @@ Instance Moore2MealyTransformationConfiguration : TransformationConfiguration :=
 
 #[export]  
 Instance Moore2MealyModelingTransformationConfiguration : ModelingTransformationConfiguration Moore2MealyTransformationConfiguration :=
- Build_ModelingTransformationConfiguration Moore2MealyTransformationConfiguration Moore.ModelingMetamodel_Instance MealyMetamodel_ModelingMetamodel_Instance.
+ Build_ModelingTransformationConfiguration Moore2MealyTransformationConfiguration Moore.MooreModelingMetamodel MealyMetamodel_ModelingMetamodel_Instance.
 
 Open Scope coqtl.
 
