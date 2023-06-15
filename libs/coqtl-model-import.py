@@ -161,7 +161,7 @@ def meta_type(eClasses):
     lst.append("(** Meta-types (or kinds, to be used in rules) *)")
     lst.append("Inductive ElementKind : Set :=")
     for eClass in eClasses:
-        lst.append(f"| {eClass.name}_K")
+        lst.append(f"  | {eClass.name}_K")
     lst.append(".")
     lst.append("Scheme Equality for ElementKind.")   
     lst.append(br())
@@ -284,14 +284,14 @@ def general_function(eClasses, metamodel):
     for eClass in eClasses:
         for eReference in eClass.eReferences:
             lst.append(f"Fixpoint get{eClass.name}_{eReference.name}OnLinks ({arg(eClass.name[0])} : {eClass.name}_t) (l : list Link) : option ({records_link_multiplicity(eReference)}_t) :=")
-            lst.append(f"match l with")
+            lst.append(f" match l with")
             lst.append(f"  | ({eClass.name}_{eReference.name}Link x) :: l1 =>")
             lst.append(f"    if {eClass.name}_t_beq x.({eClass.name}_{eReference.name}_t_source) {arg(eClass.name[0])}")
             lst.append(f"      then (Some x.({eClass.name}_{eReference.name}_t_target))")
             lst.append(f"      else get{eClass.name}_{eReference.name}OnLinks {arg(eClass.name[0])} l1")
             lst.append(f"  | _ :: l1 => get{eClass.name}_{eReference.name}OnLinks {arg(eClass.name[0])} l1")
             lst.append( "  | nil => None")
-            lst.append("end.")
+            lst.append(" end.")
             lst.append(br())
 
             lst.append(f"Definition get{eClass.name}_{eReference.name} ({arg(eClass.name[0])} : {eClass.name}_t) (m : M) : option ({records_link_multiplicity(eReference)}_t) :=")

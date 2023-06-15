@@ -66,8 +66,8 @@ Scheme Equality for Link.
 
 (** Meta-types (or kinds, to be used in rules) *)
 Inductive ElementKind : Set :=
-| State_K
-| Transition_K
+  | State_K
+  | Transition_K
 .
 Scheme Equality for ElementKind.
 
@@ -162,14 +162,14 @@ Definition M := Model MM.
 
 (** General functions (used in transformations) *)
 Fixpoint getTransition_sourceOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
-match l with
+ match l with
   | (Transition_sourceLink x) :: l1 =>
     if Transition_t_beq x.(Transition_source_t_source) t
       then (Some x.(Transition_source_t_target))
       else getTransition_sourceOnLinks t l1
   | _ :: l1 => getTransition_sourceOnLinks t l1
   | nil => None
-end.
+ end.
 
 
 Definition getTransition_source (t : Transition_t) (m : M) : option (State_t) :=
@@ -177,14 +177,14 @@ Definition getTransition_source (t : Transition_t) (m : M) : option (State_t) :=
 
 
 Fixpoint getTransition_targetOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
-match l with
+ match l with
   | (Transition_targetLink x) :: l1 =>
     if Transition_t_beq x.(Transition_target_t_source) t
       then (Some x.(Transition_target_t_target))
       else getTransition_targetOnLinks t l1
   | _ :: l1 => getTransition_targetOnLinks t l1
   | nil => None
-end.
+ end.
 
 
 Definition getTransition_target (t : Transition_t) (m : M) : option (State_t) :=
