@@ -2,7 +2,7 @@
 Require Import Moore MooreSemantics. 
 Import String.
 
-Definition unique_names (m:MooreModel) := 
+Definition unique_names (m:Moore.M) := 
   forall e1 e2,
   List.In (StateElement e1) m.(Model.modelElements) ->
   List.In (StateElement e2) m.(Model.modelElements) ->

@@ -14,8 +14,8 @@
 (* Moore models as counterexample to prove monotonicity of CoqTL *)
 
 
- Definition Moore_m1 : Model MooreMM :=
-     (Build_Model MooreMM
+ Definition Moore_m1 : Model Moore.MM :=
+     (Build_Model Moore.MM
         (
             (StateElement (Build_State_t  "S0" "1")) :: nil
         )
@@ -24,8 +24,8 @@
         )
      ).
  
-Definition Moore_m2 : Model MooreMM :=
-        (Build_Model MooreMM
+Definition Moore_m2 : Model Moore.MM :=
+        (Build_Model Moore.MM
             (
                 (TransitionElement (Build_Transition_t  "0")) :: 
                 (TransitionElement (Build_Transition_t  "1")) ::

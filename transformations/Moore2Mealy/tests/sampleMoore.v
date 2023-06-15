@@ -14,8 +14,8 @@ Open Scope string_scope.
 	 	   <-"0"--
 	*)
 
-Definition InputModel : Model MooreMM :=
-	(Build_Model MooreMM
+Definition InputModel : Model Moore.MM :=
+	(Build_Model Moore.MM
 		(
 		(TransitionElement (Build_Transition_t  "0")) :: 
 		(StateElement (Build_State_t  "S0" "1")) :: 

@@ -19,11 +19,11 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 #[export]
 Instance Moore2MealyTransformationConfiguration : TransformationConfiguration := 
-  Build_TransformationConfiguration MooreMM MealyMetamodel_Metamodel_Instance.
+  Build_TransformationConfiguration Moore.MM MealyMetamodel_Metamodel_Instance.
 
 #[export]  
 Instance Moore2MealyModelingTransformationConfiguration : ModelingTransformationConfiguration Moore2MealyTransformationConfiguration :=
- Build_ModelingTransformationConfiguration Moore2MealyTransformationConfiguration MooreModelingMetamodel MealyMetamodel_ModelingMetamodel_Instance.
+ Build_ModelingTransformationConfiguration Moore2MealyTransformationConfiguration Moore.MMM MealyMetamodel_ModelingMetamodel_Instance.
 
 Open Scope coqtl.
 

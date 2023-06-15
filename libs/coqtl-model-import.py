@@ -235,7 +235,7 @@ def reflective_function(eClasses):
 def type_instance(metamodel):
     lst = []  
     lst.append("(** Typeclass Instance *)")
-    lst.append(f"Definition {metamodel.name}MM : Metamodel :=")
+    lst.append(f"Definition MM : Metamodel :=")
     lst.append("{|")
     lst.append("  ElementType := Element ;")
     lst.append("  LinkType := Link ;")
@@ -263,14 +263,14 @@ def type_instance(metamodel):
     lst.append(br())
 
     lst.append("#[export]")
-    lst.append(f"Instance {metamodel.name}Metamodel : ModelingMetamodel {metamodel.name}MM :=")
+    lst.append(f"Instance MMM : ModelingMetamodel MM :=")
     lst.append("{")
     lst.append(f"  elements := {metamodel.name}ElementDenotation ;")
     lst.append(f"  links := {metamodel.name}LinkDenotation ;")
     lst.append("}.")
     lst.append(br())
 
-    lst.append(f"Definition {metamodel.name}Model := Model {metamodel.name}MM.")
+    lst.append(f"Definition M := Model MM.")
     lst.append(br())
 
     return join(lst)
@@ -294,7 +294,7 @@ def general_function(eClasses, metamodel):
             lst.append("end.")
             lst.append(br())
 
-            lst.append(f"Definition get{eClass.name}_{eReference.name} ({arg(eClass.name[0])} : {eClass.name}_t) (m : {metamodel.name}Model) : option ({records_link_multiplicity(eReference)}_t) :=")
+            lst.append(f"Definition get{eClass.name}_{eReference.name} ({arg(eClass.name[0])} : {eClass.name}_t) (m : M) : option ({records_link_multiplicity(eReference)}_t) :=")
             lst.append(f"  get{eClass.name}_{eReference.name}OnLinks {arg(eClass.name[0])} m.(modelLinks).")
             lst.append(br())
 

@@ -11,17 +11,17 @@ Definition MooreMetamodel_toStates (m: list Element) : list State_t :=
 Definition MooreMetamodel_toTransitions (m: list Element) : list Transition_t :=
     optionList2List (map (fun s => get_E_data Transition_K s) m).
 
-Definition MooreMetamodel_allStates (m: MooreModel) : list State_t :=
+Definition MooreMetamodel_allStates (m: Moore.M) : list State_t :=
     MooreMetamodel_toStates m.(modelElements).
 
-Definition MooreMetamodel_allTransitions (m: MooreModel) : list Transition_t :=
+Definition MooreMetamodel_allTransitions (m: Moore.M) : list Transition_t :=
     MooreMetamodel_toTransitions m.(modelElements).
 
-Definition initialState (m: MooreModel) : option State_t :=
+Definition initialState (m: Moore.M) : option State_t :=
     find (fun s => eqb "S0" s.(State_name)) (MooreMetamodel_allStates m).
 
 
-Definition State_outTransitions (s: State_t) (m: MooreModel) : list Transition_t :=
+Definition State_outTransitions (s: State_t) (m: Moore.M) : list Transition_t :=
     filter (fun t => 
         match (getTransition_source t m) with
         | Some s' => State_t_beq s s'
@@ -29,7 +29,7 @@ Definition State_outTransitions (s: State_t) (m: MooreModel) : list Transition_t
         end)
         (MooreMetamodel_allTransitions m).
 
-Definition State_acceptTransition (s: State_t) (m: MooreModel) (i: string) : option Transition_t :=
+Definition State_acceptTransition (s: State_t) (m: Moore.M) (i: string) : option Transition_t :=
     find (fun t => eqb i t.(Transition_input)) (State_outTransitions s m).
         
 Definition search m current i :=
@@ -39,7 +39,7 @@ Definition search m current i :=
     | None => None
     end.
 
-Fixpoint executeFromState (m: MooreModel) (current: State_t) (remainingInput: list string) : list string :=
+Fixpoint executeFromState (m: Moore.M) (current: State_t) (remainingInput: list string) : list string :=
     match remainingInput with 
     | i :: is =>      
         match search m current i with
@@ -49,7 +49,7 @@ Fixpoint executeFromState (m: MooreModel) (current: State_t) (remainingInput: li
     | _ => nil 
     end.
 
-Definition Moore_execute (m: MooreModel) (input: list string) : list string :=
+Definition Moore_execute (m: Moore.M) (input: list string) : list string :=
     match initialState m with 
     | Some s => executeFromState m s input
     | None => nil

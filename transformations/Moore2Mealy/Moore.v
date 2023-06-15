@@ -122,7 +122,7 @@ Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
   end.
 
 (** Typeclass Instance *)
-Definition MooreMM : Metamodel :=
+Definition MM : Metamodel :=
 {|
   ElementType := Element ;
   LinkType := Link ;
@@ -150,14 +150,14 @@ Instance MooreLinkDenotation : Denotation Link LinkKind :=
 
 
 #[export]
-Instance MooreModelingMetamodel : ModelingMetamodel MooreMM :=
+Instance MMM : ModelingMetamodel MM :=
 {
   elements := MooreElementDenotation ;
   links := MooreLinkDenotation ;
 }.
 
 
-Definition MooreModel := Model MooreMM.
+Definition M := Model MM.
 
 (** General functions (used in transformations) *)
 Fixpoint getTransition_sourceOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
@@ -171,7 +171,7 @@ match l with
 end.
 
 
-Definition getTransition_source (t : Transition_t) (m : MooreModel) : option (State_t) :=
+Definition getTransition_source (t : Transition_t) (m : M) : option (State_t) :=
   getTransition_sourceOnLinks t m.(modelLinks).
 
 
@@ -186,7 +186,7 @@ match l with
 end.
 
 
-Definition getTransition_target (t : Transition_t) (m : MooreModel) : option (State_t) :=
+Definition getTransition_target (t : Transition_t) (m : M) : option (State_t) :=
   getTransition_targetOnLinks t m.(modelLinks).
 
 
@@ -217,13 +217,13 @@ Lemma TransitionElement_cast :
 Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
 
 (** Manual addition *)
-Definition Transition_getSourceObject (t : Transition_t) (m : MooreModel) : option (Element) :=
+Definition Transition_getSourceObject (t : Transition_t) (m : M) : option (Element) :=
 match getTransition_source t m with
   | Some st_arg => Some (StateElement st_arg) 
   | None => None
   end.
 
-Definition Transition_getTargetObject (tr_arg : Transition_t) (m : MooreModel) : option (Element) :=
+Definition Transition_getTargetObject (tr_arg : Transition_t) (m : M) : option (Element) :=
   match getTransition_target tr_arg m with
   | Some st_arg => Some (StateElement st_arg) 
   | None => None
