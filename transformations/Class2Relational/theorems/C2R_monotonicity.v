@@ -42,7 +42,7 @@ Proof.
   {
     C2RTactics.negb_inv MATCH_GUARD.
     destruct t0 ; simpl in MATCH_GUARD. 
-    subst derived.
+    subst Attribute_derived.
     apply INC in IN_ELTS.
     eapply Elements.transform_attribute_fw (* why ? *) ; eauto.
   }    

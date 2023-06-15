@@ -35,7 +35,7 @@ forall (cm : ClassModel) (rm : RelationalModel),
         In (AttributeElement at2) cm.(modelElements) ->
 
         at1 <> at2 ->
-        attr_name at1 <> attr_name at2) ->
+        Attribute_name at1 <> Attribute_name at2) ->
     (* postcondition *)
     (forall (co1: Column_t) (co2: Column_t),
         In (ColumnElement co1) rm.(modelElements) ->
@@ -72,7 +72,7 @@ forall (cm : ClassModel) (rm : RelationalModel),
         In (AttributeElement at2) cm.(modelElements) ->
 
         at1 <> at2 ->
-        attr_name at1 <> attr_name at2) ->
+        Attribute_name at1 <> Attribute_name at2) ->
     (* postcondition *)
     (forall (co1: Column_t) (co2: Column_t),
         In (ColumnElement co1) rm.(modelElements) ->

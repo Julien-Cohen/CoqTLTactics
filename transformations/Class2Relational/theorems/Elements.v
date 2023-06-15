@@ -30,7 +30,7 @@ Lemma transform_attribute_fw :
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
   (* precondition *)  forall id name,
-    In (AttributeElement {| attr_id:= id ; derived := false ; attr_name := name|}) cm.(modelElements) ->
+    In (AttributeElement {| Attribute_id:= id ; Attribute_derived := false ; Attribute_name := name|}) cm.(modelElements) ->
   (* postcondition *) 
     In (ColumnElement {| column_id := id; column_name := name |}) (rm.(modelElements)). 
 Proof.
@@ -46,7 +46,7 @@ Lemma transform_class_fw :
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
   (* precondition *)  forall id name,
-    In (ClassElement {| class_id:= id ; class_name := name|}) cm.(modelElements) ->
+    In (ClassElement {| Class_id:= id ; Class_name := name|}) cm.(modelElements) ->
   (* postcondition *) 
     In (TableElement {| table_id := id; table_name := name |}) (rm.(modelElements)). 
 Proof.
@@ -68,7 +68,7 @@ Lemma transform_attribute_bw :
   (* precondition *)  forall id name,
       In (ColumnElement {| column_id := id; column_name := name |}) (rm.(modelElements)) ->
   (* postcondition *) 
-    In (AttributeElement {| attr_id:= id ; derived := false ; attr_name := name|}) (cm.(modelElements))
+    In (AttributeElement {| Attribute_id:= id ; Attribute_derived := false ; Attribute_name := name|}) (cm.(modelElements))
 . 
 Proof.
   intros cm rm H ; subst rm.
@@ -79,7 +79,7 @@ Proof.
 
   C2RTactics.negb_inv MATCH_GUARD.
 
-  destruct t0 ; simpl in *. subst derived. 
+  destruct t0 ; simpl in *. subst Attribute_derived. 
   assumption.
   
 Qed.
@@ -91,7 +91,7 @@ Lemma transform_class_bw :
   (* precondition *)  forall id name,
       In (TableElement {| table_id := id; table_name := name |}) (rm.(modelElements)) ->
   (* postcondition *) 
-    In (ClassElement {| class_id:= id ; class_name := name|}) (cm.(modelElements))
+    In (ClassElement {| Class_id:= id ; Class_name := name|}) (cm.(modelElements))
 . 
 Proof.
   intros cm rm H ; subst.

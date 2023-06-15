@@ -11,8 +11,8 @@ Require Import transformations.Class2Relational.ClassMetamodel.
       Attribute id=2 derived=true name='sibling' type='Person'
 *)
 
-Definition PersonModel : Model ClassMM :=
-  (Build_Model ClassMM
+Definition PersonModel : Model ClassMetamodel.MM :=
+  (Build_Model ClassMetamodel.MM
      (* elements *)
      (     (ClassElement (Build_Class_t 0 "Person")) 
         :: (AttributeElement (Build_Attribute_t 1 false "parent")) 
@@ -20,9 +20,9 @@ Definition PersonModel : Model ClassMM :=
         :: nil)
 
      (* links *)
-     (     (ClassAttributeLink (Build_ClassAttributes_t (Build_Class_t 0 "Person") ((Build_Attribute_t 1 false "parent")::nil))) 
-        :: (AttributeTypeLink (Build_AttributeType_t (Build_Attribute_t 1 false "parent") (Build_Class_t 0 "Person"))) 
-        :: (ClassAttributeLink (Build_ClassAttributes_t (Build_Class_t 0 "Person") ((Build_Attribute_t 2 true "sibling")::nil))) 
-        :: (AttributeTypeLink (Build_AttributeType_t (Build_Attribute_t 2 true "sibling") (Build_Class_t 0 "Person"))) 
+     (     (Class_attributesLink (Build_Class_attributes_t (Build_Class_t 0 "Person") ((Build_Attribute_t 1 false "parent")::nil))) 
+        :: (Attribute_typeLink (Build_Attribute_type_t (Build_Attribute_t 1 false "parent") (Build_Class_t 0 "Person"))) 
+        :: (Class_attributesLink (Build_Class_attributes_t (Build_Class_t 0 "Person") ((Build_Attribute_t 2 true "sibling")::nil))) 
+        :: (Attribute_typeLink (Build_Attribute_type_t (Build_Attribute_t 2 true "sibling") (Build_Class_t 0 "Person"))) 
         :: nil)
   ).

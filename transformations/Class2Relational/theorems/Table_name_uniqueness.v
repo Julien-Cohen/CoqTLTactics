@@ -34,7 +34,7 @@ forall (cm : ClassModel) (rm : RelationalModel),
     In (ClassElement c1) cm.(modelElements) -> 
     In (ClassElement c2) cm.(modelElements) -> 
     c1 <> c2 -> 
-    class_name c1 <> class_name c2) ->
+    Class_name c1 <> Class_name c2) ->
 (* postcondition *)  
 (forall (t1: Table_t) (t2: Table_t), 
     In (TableElement t1) rm.(modelElements) -> 

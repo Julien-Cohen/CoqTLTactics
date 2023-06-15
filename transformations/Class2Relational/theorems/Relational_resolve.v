@@ -30,7 +30,7 @@ Definition all_attributes_are_typed (cm : ClassModel) :=
   forall (att : Attribute_t),
       In (AttributeElement att) cm.(modelElements) ->
       exists (r:Class_t), 
-        In (AttributeTypeLink {| source_attribute := att ; a_type := r |}) cm.(modelLinks) .
+        In (Attribute_typeLink {| Attribute_type_t_source := att ; Attribute_type_t_target := r |}) cm.(modelLinks) .
 
 
 (** *** On relational models *)
@@ -84,7 +84,7 @@ Proof.
 
 
   C2RTactics.negb_inv MATCH_GUARD.
-  destruct t ; simpl in MATCH_GUARD ; subst derived.
+  destruct t ; simpl in MATCH_GUARD ; subst Attribute_derived.
   
   progress_in_maybeBuildColumnReference IN_L.
   
@@ -92,7 +92,7 @@ Proof.
   
   ListUtils.inv_maybeSingleton EQ0.
   
-  inv_getAttributeTypeElement EQ0.
+  inv_getAttribute_typeElement EQ0.
 
   destruct t ; simpl in H ; subst.   
 
@@ -126,14 +126,14 @@ Proof.
   destruct PRE as (c & G1).
 
   C2RTactics.negb_inv MATCH_GUARD.
-  destruct t0. simpl (ClassMetamodel.attr_id _)  in * ; simpl (ClassMetamodel.attr_name _) in * ; simpl ClassMetamodel.derived in *. (* derived a = false *)
-  subst derived. 
+  destruct t0. simpl (ClassMetamodel.Attribute_id _)  in * ; simpl (ClassMetamodel.Attribute_name _) in * ; simpl ClassMetamodel.Attribute_derived in *. (* derived a = false *)
+  subst Attribute_derived. 
 
  
   apply ClassModelProperties.getAttributeType_In_left in G1 ; (* here we should exploit ClassModelProperties.getAttributeType_In_left_wf *)
     destruct G1 as [r G1].
 
-  exists{| table_id := r.(class_id); table_name := r.(class_name) |}.
+  exists{| table_id := r.(Class_id); table_name := r.(Class_name) |}.
 
   eapply Tactics.in_links_fw with (tc:=C2RConfiguration) ; simpl.
   
@@ -146,7 +146,7 @@ Proof.
   { crush. }
   { crush. 
     unfold Parser.dropToList ; simpl.
-    unfold getAttributeTypeElement.
+    unfold getAttribute_typeElement.
     unfold Parser.parseOutputPatternLink.
     simpl.
     unfold ConcreteExpressions.makeLink ; simpl.
@@ -216,7 +216,7 @@ Definition all_attributes_are_typed_2 (cm : ClassModel) :=
   forall (att : Attribute_t),
     In (AttributeElement att) cm.(modelElements) ->
     exists (r:Class_t), 
-      getAttributeType att cm = Some r.
+      getAttribute_type att cm = Some r.
 
 (** *** On relational models *)
 

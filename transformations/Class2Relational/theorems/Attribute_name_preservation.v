@@ -23,13 +23,13 @@ Theorem Attribute_name_preservation_fw:
         (* postcondition *)  
         forall (a: Attribute_t),
         In (AttributeElement a) cm.(modelElements) ->
-        derived a = false ->
+        Attribute_derived a = false ->
         exists (c: Column_t),
             In (ColumnElement c) rm.(modelElements) /\
-            column_name c = attr_name a.
+            column_name c = Attribute_name a.
 Proof.
     intros.
-    exists (Build_Column_t (attr_id a) (attr_name a)).
+    exists (Build_Column_t (Attribute_id a) (Attribute_name a)).
     split.
     - rewrite H.
       rewrite (tr_execute_in_elements Class2Relational).
@@ -39,7 +39,7 @@ Proof.
         * apply incl_singleton ; assumption.
         * simpl. lia.
       + destruct a ; simpl in *.
-        subst derived.
+        subst Attribute_derived.
         simpl. 
         auto.
     - reflexivity.

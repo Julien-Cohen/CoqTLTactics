@@ -41,11 +41,11 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 #[export]   
 Instance C2RConfiguration : TransformationConfiguration := 
-  Build_TransformationConfiguration ClassMM RelationalMM.
+  Build_TransformationConfiguration ClassMetamodel.MM RelationalMM.
 
 #[export] 
 Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration :=
-  Build_ModelingTransformationConfiguration C2RConfiguration ClassMetamodel RelationalMetamodel.
+  Build_ModelingTransformationConfiguration C2RConfiguration ClassMetamodel.MMM RelationalMetamodel.
 
 Open Scope coqtl.
 
@@ -55,25 +55,25 @@ Definition R1 : ConcreteRule :=
     from [Class_K]
 
     to [ ELEM "tab" ::: Table_K  
-        << fun _ _ c => Build_Table_t c.(class_id) c.(class_name) >>
+        << fun _ _ c => Build_Table_t c.(Class_id) c.(Class_name) >>
         <<< LINK TableColumns_K //
                fun tra _ m c t =>
                   maybeBuildTableColumns t
                     (maybeResolveAll tra "col" Column_K 
-                       (maybeSingletons (getClassAttributesElements c m)))
+                       (maybeSingletons (getClass_attributesElements c m)))
                     >>> ].
 
 Definition R2 : ConcreteRule :=
   rule "Attribute2Column"
     from [Attribute_K]
-    where (fun _ a => negb a.(derived))
+    where (fun _ a => negb a.(Attribute_derived))
     to [ ELEM "col" ::: Column_K 
-        << fun _ _ a => Build_Column_t a.(attr_id) a.(attr_name) >>
+        << fun _ _ a => Build_Column_t a.(Attribute_id) a.(Attribute_name) >>
         <<< LINK ColumnReference_K //
                fun tra _ m a c =>
                   maybeBuildColumnReference c
                     (maybeResolve tra "tab" Table_K 
-                       (maybeSingleton (getAttributeTypeElement a m)))
+                       (maybeSingleton (getAttribute_typeElement a m)))
         >>> ].
 
 Definition Class2Relational' :=

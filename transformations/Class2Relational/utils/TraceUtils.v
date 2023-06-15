@@ -33,8 +33,8 @@ Inductive CoherentTraceLink : TraceLink -> Prop :=
           ([ClassElement c], 0, "tab")
           (TableElement
              {|
-               table_id := c.(class_id); 
-               table_name := c.(class_name) 
+               table_id := c.(Class_id); 
+               table_name := c.(Class_name) 
              |}))
 
  | ct_attribute :
@@ -44,8 +44,8 @@ Inductive CoherentTraceLink : TraceLink -> Prop :=
           ([AttributeElement a], 0, "col")
           (ColumnElement
              {|
-               column_id := a.(attr_id) ;
-               column_name :=  a.(attr_name) 
+               column_id := a.(Attribute_id) ;
+               column_name :=  a.(Attribute_name) 
              |})).
 
 
@@ -105,14 +105,14 @@ Lemma in_find t :
   forall c,
     In (buildTraceLink
           ([ClassElement c], 0, "tab")
-          (TableElement {| table_id := c.(class_id); 
-                          table_name := c.(class_name)  |})) t ->
+          (TableElement {| table_id := c.(Class_id); 
+                          table_name := c.(Class_name)  |})) t ->
     exists r1 , 
       find (source_compare ([ClassElement c], 0, "tab")) t = 
         Some 
           (buildTraceLink r1 
-             (TableElement {| table_id := c.(class_id); 
-                             table_name := c.(class_name) |})).
+             (TableElement {| table_id := c.(Class_id); 
+                             table_name := c.(Class_name) |})).
 Proof.
   induction t ; intros WF c IN1 ; [ simpl in IN1 ; contradict IN1 | ].
   simpl find.
@@ -121,7 +121,7 @@ Proof.
 
   compare a (buildTraceLink ([ClassElement c], 0, "tab")
           (TableElement
-             {| table_id := c.(class_id); table_name := c.(class_name) |})). 
+             {| table_id := c.(Class_id); table_name := c.(Class_name) |})). 
 
 
   { (* case where the class/table is the first element of the list : no induction *)
@@ -134,8 +134,8 @@ Proof.
         (* FIXME : add reflexivity as a constraint in Metamodels *)
         clear.
         destruct a.
-        apply beq_Class_refl. 
-        apply beq_Attribute_refl.
+        apply lem_Class_t_beq_refl. 
+        apply lem_Attribute_t_beq_refl.
       }           
     }
   }  
@@ -153,8 +153,8 @@ Proof.
       unfold TransformationConfiguration.SourceElement_eqb ; simpl.
 
       repeat rewrite Bool.andb_true_r.
-      destruct (beq_Class c0 c) eqn:BEQ.
-      {  apply lem_beq_Class_id in BEQ ; subst ; eauto.  }
+      destruct (Class_t_beq c0 c) eqn:BEQ.
+      {  apply lem_Class_t_beq_id in BEQ ; subst ; eauto.  }
       {
         rewrite H1.
         eauto. 
@@ -178,9 +178,9 @@ Lemma in_resolve t c :
   In (buildTraceLink
         ([ClassElement c], 0, "tab")
         (TableElement
-           {| table_id := c.(class_id); table_name := c.(class_name) |})) t ->
+           {| table_id := c.(Class_id); table_name := c.(Class_name) |})) t ->
   Resolve.resolveIter t "tab" [ClassElement c] 0 = 
-    Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}).
+    Some (TableElement {| table_id := c.(Class_id); table_name := c.(Class_name) |}).
 Proof.
   unfold Resolve.resolveIter. 
   intros C IN1.
@@ -202,8 +202,8 @@ Lemma in_trace c (cm : ClassModel) :
        ([ClassElement c],0,"tab") 
        (TableElement 
           {| 
-            table_id := c.(class_id); 
-            table_name := c.(class_name) 
+            table_id := c.(Class_id); 
+            table_name := c.(Class_name) 
           |}
          )
     ) 
@@ -235,10 +235,10 @@ Lemma in_maybeResolve_trace_2 c (cm : ClassModel) :
   In (ClassElement c) cm.(modelElements) -> 
   
   Resolve.maybeResolve (RichTraceLink.convert2 (traceTrOnModel Class2Relational cm)) "tab" (Some [ClassElement c])  =  
-    Some (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}) 
+    Some (TableElement {| table_id := c.(Class_id); table_name := c.(Class_name) |}) 
   
   /\ In 
-       (TableElement {| table_id := c.(class_id); table_name := c.(class_name) |}) 
+       (TableElement {| table_id := c.(Class_id); table_name := c.(Class_name) |}) 
        (execute Class2Relational cm).(modelElements).
 Proof.
   intro H.

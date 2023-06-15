@@ -47,6 +47,7 @@ Ltac duplicate H1 H2 := remember H1 as H2 eqn:TMP ; clear TMP.
 
 (** (When we have generated a boolean equality function [eqb] on a type [T], [beq_eq_tac] proves that [forall (a:T) (b:T), eqb a b = true => a = b]. *)
 
+(** DEPRECATED with the use of Scheme Equality *)
 Ltac basetype_eqb_eq_tac :=
   match goal with 
   | [ H : Nat.eqb    _ _ = true |- _ ] => apply EqNat.beq_nat_true in H ; subst 

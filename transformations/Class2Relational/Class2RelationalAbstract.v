@@ -42,11 +42,11 @@ Require Import Class2Relational.RelationalMetamodel.
 
 #[export]
 Instance C2RConfiguration : TransformationConfiguration := 
-   Build_TransformationConfiguration ClassMM RelationalMM.
+   Build_TransformationConfiguration ClassMetamodel.MM RelationalMM.
 
 #[export]
 Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration :=
-   Build_ModelingTransformationConfiguration C2RConfiguration ClassMetamodel RelationalMetamodel.
+   Build_ModelingTransformationConfiguration C2RConfiguration ClassMetamodel.MMM RelationalMetamodel.
 
 Definition Class2Relational :=
   buildTransformation 1
@@ -56,23 +56,23 @@ Definition Class2Relational :=
         (makeIterator [Class_K] (fun m c => 1))
         [buildOutputPatternUnit "tab"
           (makeElement [Class_K] Table_K
-            (fun i m c => Build_Table_t (class_id c) (class_name c)))
+            (fun i m c => Build_Table_t (Class_id c) (Class_name c)))
             (Parser.dropToList(makeLink [Class_K] Table_K TableColumns_K
             (fun tls i m c t =>
-              attrs <- getClassAttributes c m;
+              attrs <- getClass_attributes c m;
               cols <- resolveAll tls "col" Column_K 
                 (singletons (map (ClassMetamodel.lift_EKind Attribute_K) attrs));
               return Build_TableColumns_t t cols)))
         ];
       buildRule "Attribute2Column"
-        (makeGuard [Attribute_K] (fun m a => negb (derived a)))
+        (makeGuard [Attribute_K] (fun m a => negb (Attribute_derived a)))
         (makeIterator [Attribute_K] (fun m a => 1))
         [buildOutputPatternUnit "col"
           (makeElement [Attribute_K] Column_K
-            (fun i m a => Build_Column_t (attr_id a) (attr_name a)))
+            (fun i m a => Build_Column_t (Attribute_id a) (Attribute_name a)))
             (Parser.dropToList(makeLink [Attribute_K] Column_K ColumnReference_K
               (fun tls i m a c =>
-                cl <- getAttributeType a m;
+                cl <- getAttribute_type a m;
                 tb <- resolve tls "tab" Table_K [ClassMetamodel.lift_EKind Class_K cl];
                 return Build_ColumnReference_t c tb)))
         ]

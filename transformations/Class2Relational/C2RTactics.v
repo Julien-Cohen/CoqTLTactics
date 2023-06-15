@@ -15,7 +15,7 @@ From core Require Tactics Certification.
 
 Ltac negb_inv H :=
   match type of H with
-    negb (derived _) = true => 
+    negb (Attribute_derived _) = true => 
       apply Bool.negb_true_iff in H
   end.
   
@@ -28,7 +28,7 @@ Ltac negb_inv H :=
 (** *** Utilities on [allTuples] *)
 
 
-Lemma allModelElements_allTuples e (cm:Model ClassMM): 
+Lemma allModelElements_allTuples e (cm:Model ClassMetamodel.MM): 
   In e cm.(modelElements) ->
   In [e] (allTuples Class2Relational cm).
 Proof. 
