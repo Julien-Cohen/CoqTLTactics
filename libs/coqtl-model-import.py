@@ -142,18 +142,6 @@ def top_element(eClasses):
 
     return join(lst)
 
-def top_link_scheme_equality_list(eClasses):
-    lst = []  
-    lst.append("Definition Link_beq (c1 : Link) (c2 : Link) : bool :=")
-    lst.append("  match c1, c2 with")
-    for eClass in eClasses:
-        for eReference in eClass.eReferences:
-            lst.append(f"  | {eClass.name}_{eReference.name}Link o1, {eClass.name}_{eReference.name}Link o2 => {eClass.name}_{eReference.name}_t_beq o1 o2")
-    lst.append("  | _, _ => false")
-    lst.append("  end.")
-
-    return join(lst)
-
 def top_link(eClasses):
     lst = []  
     lst.append("(** Data types for link (to build models) *)")
@@ -162,9 +150,7 @@ def top_link(eClasses):
         for eReference in eClass.eReferences:
             lst.append(f"  | {eClass.name}_{eReference.name}Link : {eClass.name}_{eReference.name}_t -> Link")
     lst.append(".")
-    
-    # hack : scheme equality for list
-    lst.append(top_link_scheme_equality_list(eClasses))
+    lst.append("Scheme Equality for Link.")   
     lst.append(br())
 
     return join(lst)
