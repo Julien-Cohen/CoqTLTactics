@@ -301,5 +301,5 @@ Ltac inv_makeLink H :=
           destruct E eqn:H2 ; [ | discriminate H]
       end ;
       repeat ConcreteExpressions.wrap_inv H2 ;
-      OptionUtils.monadInv H 
+      repeat OptionUtils.monadInv H 
   end.

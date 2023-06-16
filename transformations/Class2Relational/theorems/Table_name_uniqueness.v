@@ -40,7 +40,7 @@ forall (cm : ClassModel) (rm : RelationalModel),
     In (TableElement t1) rm.(modelElements) -> 
     In (TableElement t2) rm.(modelElements) -> 
     t1 <> t2 -> 
-    table_name t1 <> table_name t2).
+    Table_name t1 <> Table_name t2).
 Proof.
   intros cm rm E PRE t1 t2 IN1 IN2 D.
   subst rm.

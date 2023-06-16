@@ -4,14 +4,12 @@ Require Import Bool.
 Require Import List.
 Require Import PeanoNat.
 Require Import EqNat.
-Require Import Coq.Logic.Eqdep_dec.
 
 (** Imports CoqTL *)
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
-Require Import core.utils.CpdtTactics.
 Require        core.Tactics.
 
 (** Base types for elements *)

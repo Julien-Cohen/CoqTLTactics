@@ -38,7 +38,6 @@ def imports_native():
     * List
     * PeanoNat
     * EqNat
-    * Coq.Logic.Eqdep_dec
     '''
     
     lst = []
@@ -48,7 +47,6 @@ def imports_native():
     lst.append("Require Import List.")    
     lst.append("Require Import PeanoNat.")
     lst.append("Require Import EqNat.")
-    lst.append("Require Import Coq.Logic.Eqdep_dec.") 
     lst.append(br())
 
     return join(lst)
@@ -60,7 +58,6 @@ def imports_coqtl():
     * core.Metamodel
     * core.modeling.ModelingMetamodel
     * core.Model
-    * core.utils.CpdtTactics
     * core.Tactics
     '''
         
@@ -70,7 +67,6 @@ def imports_coqtl():
     lst.append("Require Import core.Metamodel.")
     lst.append("Require Import core.modeling.ModelingMetamodel.")
     lst.append("Require Import core.Model.")
-    lst.append("Require Import core.utils.CpdtTactics.")
     lst.append("Require        core.Tactics.")
     lst.append(br())
 

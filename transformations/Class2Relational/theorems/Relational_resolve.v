@@ -38,7 +38,7 @@ Definition all_attributes_are_typed (cm : ClassModel) :=
 Definition all_columns_have_a_reference (rm : RelationalModel) :=
 forall (col: Column_t),
       In (ColumnElement col) rm.(modelElements) ->
-      exists r', In (ColumnReferenceLink {| cr := col ;  ct := r' |}) rm.(modelLinks).
+      exists r', In (Column_referenceLink {| Column_reference_t_source := col ;  Column_reference_t_target := r' |}) rm.(modelLinks).
  
   
 
@@ -62,7 +62,6 @@ Ltac progress_in_maybeBuildColumnReference H :=
   end.
 
 (** ** Important lemma *)
-
 Lemma wf_stable cm rm :
   rm = execute Class2Relational cm ->
   all_attributes_are_typed cm ->
@@ -88,11 +87,12 @@ Proof.
   
   progress_in_maybeBuildColumnReference IN_L.
   
-  core.Resolve.progress_maybeResolve EQ. 
+  unfold get_E_data in EQ ; inj EQ.
+  core.Resolve.progress_maybeResolve EQ0. 
   
-  ListUtils.inv_maybeSingleton EQ0.
+  ListUtils.inv_maybeSingleton EQ.
   
-  inv_getAttribute_typeElement EQ0.
+  inv_getAttribute_typeElement EQ.
 
   destruct t ; simpl in H ; subst.   
 
@@ -133,7 +133,7 @@ Proof.
   apply ClassModelProperties.getAttributeType_In_left in G1 ; (* here we should exploit ClassModelProperties.getAttributeType_In_left_wf *)
     destruct G1 as [r G1].
 
-  exists{| table_id := r.(Class_id); table_name := r.(Class_name) |}.
+  exists{| Table_id := r.(Class_id); Table_name := r.(Class_name) |}.
 
   eapply Tactics.in_links_fw with (tc:=C2RConfiguration) ; simpl.
   
@@ -188,13 +188,13 @@ Corollary Relational_Column_Reference_definedness_not_used :
     (* postcondition *)  
     forall (col: Column_t),
         In (ColumnElement col) rm.(modelElements) ->
-        exists r', (In (ColumnReferenceLink {| cr := col ;  ct := r' |}) rm.(modelLinks) 
+        exists r', (In (Column_referenceLink {| Column_reference_t_source := col ;  Column_reference_t_target := r' |}) rm.(modelLinks) 
                     /\ In (TableElement r') rm.(modelElements)). 
 
 Proof. 
   intros cm rm WF1 WF2 T WF3 col IN .
   cut (exists r' : Table_t,
-          In (ColumnReferenceLink {| cr := col ;  ct := r' |}) rm.(modelLinks)
+          In (Column_referenceLink {| Column_reference_t_source := col ;  Column_reference_t_target := r' |}) rm.(modelLinks)
        ).
   {
     intros (r & G).
@@ -224,7 +224,7 @@ Definition all_attributes_are_typed_2 (cm : ClassModel) :=
 Definition all_columns_have_a_reference_2 (rm : RelationalModel) :=
 forall (col: Column_t),
       In (ColumnElement col) rm.(modelElements) ->
-      exists r',  getColumnReference col rm =Some r'.
+      exists r',  getColumn_reference col rm =Some r'.
 
 (** ** Results *)
 
@@ -284,14 +284,14 @@ Corollary Relational_Column_Reference_definedness_3 :
     (* postcondition *)  
     forall (col: Column_t),
         In (ColumnElement col) rm.(modelElements) ->
-        exists r', (getColumnReference col rm = Some r' 
+        exists r', (getColumn_reference col rm = Some r' 
                     /\ In (TableElement r') rm.(modelElements)). 
 
 Proof. 
   intros cm rm WF1 WF2 T WF3 col IN .
 (* FIXME : can we use [Relational_Column_Reference_definedness_not_used] here ? *)
   cut (exists r' : Table_t,
-          getColumnReference col rm = return r').
+          getColumn_reference col rm = return r').
   {
     intros (r & G).
     exists r.

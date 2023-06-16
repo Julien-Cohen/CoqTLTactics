@@ -17,17 +17,17 @@ From transformations.Class2Relational
 (* Not Used *)
 Remark getColumnsReferenceOnLinks_app :
         forall a b c,
-         getColumnReferenceOnLinks c (a++b) = 
-           match getColumnReferenceOnLinks c a with 
+         getColumn_referenceOnLinks c (a++b) = 
+           match getColumn_referenceOnLinks c a with 
              Some r => Some r 
-           | None => getColumnReferenceOnLinks c b end.
+           | None => getColumn_referenceOnLinks c b end.
 Proof.
   induction a ; simpl ; intros b c.
   + reflexivity.
   + destruct a.
   - auto.
   - destruct c0.
-    destruct (beq_Column cr c).
+    destruct (Column_t_beq Column_reference_t_source c).
     * reflexivity.
     * auto.
 Qed.
@@ -35,15 +35,15 @@ Qed.
 (* Used *)
 Lemma in_getColumnReferenceOnLinks_right :
   forall (l: list Link) v (x:Table_t),
-    In (ColumnReferenceLink {| cr := v ;  ct := x |}) l -> 
+    In (Column_referenceLink {| Column_reference_t_source := v ;  Column_reference_t_target := x |}) l -> 
       exists r' : Table_t,
-        getColumnReferenceOnLinks v l = return r'.
+        getColumn_referenceOnLinks v l = return r'.
 Proof.
   induction l ; simpl ; intros v x IN ; [ contradict IN | ].
   destruct_or IN.
   {
     subst a.
-    rewrite lem_beq_Column_refl.
+    rewrite lem_Column_t_beq_refl.
     eauto.
   }
   {
@@ -52,16 +52,16 @@ Proof.
     rewrite G.
     destruct a ; eauto ; [].
     destruct c.
-    destruct ( beq_Column cr v) ; eauto.
+    destruct ( Column_t_beq Column_reference_t_source v) ; eauto.
   }
 Qed.
 
 (* Used *)
 Corollary in_getColumnReferenceOnLinks_right_2 :
   forall (l: list Link) v, 
-      (exists (x:Table_t), In (ColumnReferenceLink {| cr := v ;  ct := x |}) l) -> 
+      (exists (x:Table_t), In (Column_referenceLink {| Column_reference_t_source := v ;  Column_reference_t_target := x |}) l) -> 
       exists r' : Table_t,
-        getColumnReferenceOnLinks v l = return r'.
+        getColumn_referenceOnLinks v l = return r'.
 Proof.
   intros. 
   destruct H.
@@ -72,8 +72,8 @@ Qed.
 (* Used *)
 Lemma in_getColumnReferenceOnLinks_left :
   forall (l: list Link) col t, 
-    getColumnReferenceOnLinks col l = return t -> 
-    In (ColumnReferenceLink {| cr := col ;  ct := t |}) l  
+    getColumn_referenceOnLinks col l = return t -> 
+    In (Column_referenceLink {| Column_reference_t_source := col ;  Column_reference_t_target := t |}) l  
       .
 Proof.
   induction l ; simpl ; intros c r IN ; [ discriminate IN | ].
@@ -85,10 +85,10 @@ Proof.
   }    
   { (* columns *)
     destruct c0.
-    destruct(beq_Column cr c) eqn:E.
+    destruct(Column_t_beq Column_reference_t_source c) eqn:E.
     {
       PropUtils.inj IN.
-      apply lem_beq_Column_id in E ; subst cr.
+      apply lem_Column_t_beq_id in E ; subst Column_reference_t_source.
       left ; reflexivity.
     }
     {
@@ -104,6 +104,6 @@ Qed.
 (* Used *)
 Definition wf_all_table_references_exist (rm:RelationalModel) :=
   forall col r, 
-    In (ColumnReferenceLink {| cr := col ;  ct := r |}) rm.(modelLinks) ->
+    In (Column_referenceLink {| Column_reference_t_source := col ;  Column_reference_t_target := r |}) rm.(modelLinks) ->
     In (TableElement r) rm.(modelElements).
 

@@ -32,7 +32,7 @@ Lemma transform_attribute_fw :
   (* precondition *)  forall id name,
     In (AttributeElement {| Attribute_id:= id ; Attribute_derived := false ; Attribute_name := name|}) cm.(modelElements) ->
   (* postcondition *) 
-    In (ColumnElement {| column_id := id; column_name := name |}) (rm.(modelElements)). 
+    In (ColumnElement {| Column_id := id; Column_name := name |}) (rm.(modelElements)). 
 Proof.
   intros cm rm H ; subst.
   intros i n H.
@@ -48,7 +48,7 @@ Lemma transform_class_fw :
   (* precondition *)  forall id name,
     In (ClassElement {| Class_id:= id ; Class_name := name|}) cm.(modelElements) ->
   (* postcondition *) 
-    In (TableElement {| table_id := id; table_name := name |}) (rm.(modelElements)). 
+    In (TableElement {| Table_id := id; Table_name := name |}) (rm.(modelElements)). 
 Proof.
   intros cm rm H ; subst.
   intros i n H.
@@ -66,7 +66,7 @@ Lemma transform_attribute_bw :
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
   (* precondition *)  forall id name,
-      In (ColumnElement {| column_id := id; column_name := name |}) (rm.(modelElements)) ->
+      In (ColumnElement {| Column_id := id; Column_name := name |}) (rm.(modelElements)) ->
   (* postcondition *) 
     In (AttributeElement {| Attribute_id:= id ; Attribute_derived := false ; Attribute_name := name|}) (cm.(modelElements))
 . 
@@ -89,7 +89,7 @@ Lemma transform_class_bw :
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
   (* precondition *)  forall id name,
-      In (TableElement {| table_id := id; table_name := name |}) (rm.(modelElements)) ->
+      In (TableElement {| Table_id := id; Table_name := name |}) (rm.(modelElements)) ->
   (* postcondition *) 
     In (ClassElement {| Class_id:= id ; Class_name := name|}) (cm.(modelElements))
 . 

@@ -42,7 +42,7 @@ forall (cm : ClassModel) (rm : RelationalModel),
         In (ColumnElement co2) rm.(modelElements) ->
 
         co1 <> co2 ->
-        column_name co1 <> column_name co2).
+        Column_name co1 <> Column_name co2).
 Proof.
     intros cm rm E PRE co1 co2 IN1 IN2 D.
     subst rm.
@@ -79,7 +79,7 @@ forall (cm : ClassModel) (rm : RelationalModel),
         In (ColumnElement co2) rm.(modelElements) ->
 
         co1 <> co2 ->
-        column_name co1 <> column_name co2).
+        Column_name co1 <> Column_name co2).
 Proof.
     intros cm rm E PRE co1 co2 IN1 IN2 D.
     subst rm.

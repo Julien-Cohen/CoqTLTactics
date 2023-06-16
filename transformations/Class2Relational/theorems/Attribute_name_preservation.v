@@ -26,7 +26,7 @@ Theorem Attribute_name_preservation_fw:
         Attribute_derived a = false ->
         exists (c: Column_t),
             In (ColumnElement c) rm.(modelElements) /\
-            column_name c = Attribute_name a.
+            Column_name c = Attribute_name a.
 Proof.
     intros.
     exists (Build_Column_t (Attribute_id a) (Attribute_name a)).

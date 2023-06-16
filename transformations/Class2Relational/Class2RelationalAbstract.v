@@ -42,11 +42,11 @@ Require Import Class2Relational.RelationalMetamodel.
 
 #[export]
 Instance C2RConfiguration : TransformationConfiguration := 
-   Build_TransformationConfiguration ClassMetamodel.MM RelationalMM.
+   Build_TransformationConfiguration ClassMetamodel.MM RelationalMetamodel.MM.
 
 #[export]
 Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration :=
-   Build_ModelingTransformationConfiguration C2RConfiguration ClassMetamodel.MMM RelationalMetamodel.
+   Build_ModelingTransformationConfiguration C2RConfiguration ClassMetamodel.MMM RelationalMetamodel.MMM.
 
 Definition Class2Relational :=
   buildTransformation 1
@@ -57,12 +57,12 @@ Definition Class2Relational :=
         [buildOutputPatternUnit "tab"
           (makeElement [Class_K] Table_K
             (fun i m c => Build_Table_t (Class_id c) (Class_name c)))
-            (Parser.dropToList(makeLink [Class_K] Table_K TableColumns_K
+            (Parser.dropToList(makeLink [Class_K] Table_K Table_columns_K
             (fun tls i m c t =>
               attrs <- getClass_attributes c m;
               cols <- resolveAll tls "col" Column_K 
                 (singletons (map (ClassMetamodel.lift_EKind Attribute_K) attrs));
-              return Build_TableColumns_t t cols)))
+              return Build_Table_columns_t t cols)))
         ];
       buildRule "Attribute2Column"
         (makeGuard [Attribute_K] (fun m a => negb (Attribute_derived a)))
@@ -70,10 +70,10 @@ Definition Class2Relational :=
         [buildOutputPatternUnit "col"
           (makeElement [Attribute_K] Column_K
             (fun i m a => Build_Column_t (Attribute_id a) (Attribute_name a)))
-            (Parser.dropToList(makeLink [Attribute_K] Column_K ColumnReference_K
+            (Parser.dropToList(makeLink [Attribute_K] Column_K Column_reference_K
               (fun tls i m a c =>
                 cl <- getAttribute_type a m;
                 tb <- resolve tls "tab" Table_K [ClassMetamodel.lift_EKind Class_K cl];
-                return Build_ColumnReference_t c tb)))
+                return Build_Column_reference_t c tb)))
         ]
     ].

@@ -40,16 +40,16 @@ Compute
   (Model_beq   
     (execute Class2Relational PersonModel) 
     (Build_Model  
-       RelationalMM 
+       RelationalMetamodel.MM 
        (RelationalMetamodel.TableElement
           (Build_Table_t 0 "Person")
           :: RelationalMetamodel.ColumnElement
           (Build_Column_t 1 "parent") :: nil)
-       (RelationalMetamodel.TableColumnLink
-          (Build_TableColumns_t (Build_Table_t 0 "Person")
+       (RelationalMetamodel.Table_columnsLink
+          (Build_Table_columns_t (Build_Table_t 0 "Person")
              (Build_Column_t 1 "parent" :: nil))
-          :: RelationalMetamodel.ColumnReferenceLink
-          (Build_ColumnReference_t
+          :: RelationalMetamodel.Column_referenceLink
+          (Build_Column_reference_t
              (Build_Column_t 1 "parent")
              (Build_Table_t 0 "Person")) :: nil))).
 
