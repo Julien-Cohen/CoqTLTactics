@@ -30,17 +30,19 @@ Proof. exact internal_Attribute_t_dec_bl. Qed.
 Lemma lem_Attribute_t_beq_refl : forall (e : Attribute_t), Attribute_t_beq e e = true.
 Proof. intro ; apply internal_Attribute_t_dec_lb ; auto. Qed. 
 
+Global Hint Resolve lem_Attribute_t_beq_id : beq_eq_database.
+(* this is necessary for the success of the [beq_eq_tac] tactics in the lemma below *)
 
 
 (** Base types for links *)
 Record Class_attributes_t := { Class_attributes_t_source : Class_t ; Class_attributes_t_target : list Attribute_t }.
-(*Scheme Equality for Class_attributes_t. ==Does not work== *)
+(*Scheme Equality for Class_attributes_t. ==Does not work 8.15 8.17 == *)
 Definition Class_attributes_t_beq (a1 a2: Class_attributes_t) : bool := 
   Class_t_beq a1.(Class_attributes_t_source) a2.(Class_attributes_t_source) && list_beq Attribute_t_beq a1.(Class_attributes_t_target) a2.(Class_attributes_t_target).
 Lemma lem_Class_attributes_t_beq_id : forall (e1 e2 : Class_attributes_t), Class_attributes_t_beq e1 e2 = true -> e1 = e2.
-Proof. Admitted. 
+Proof. Tactics.beq_eq_tac. Qed.
 Lemma lem_Class_attributes_t_beq_refl : forall (e : Class_attributes_t), Class_attributes_t_beq e e = true.
-Proof. Admitted. 
+Proof. destruct e. unfold Class_attributes_t_beq. rewrite lem_Class_t_beq_refl. rewrite list_beq_refl. reflexivity. exact lem_Attribute_t_beq_refl. Qed. 
 
 
 Record Attribute_type_t := { Attribute_type_t_source : Attribute_t ; Attribute_type_t_target : Class_t }.

@@ -48,11 +48,16 @@ Ltac duplicate H1 H2 := remember H1 as H2 eqn:TMP ; clear TMP.
 (** (When we have generated a boolean equality function [eqb] on a type [T], [beq_eq_tac] proves that [forall (a:T) (b:T), eqb a b = true => a = b]. *)
 
 (** DEPRECATED with the use of Scheme Equality *)
+Scheme Equality for nat.
+Require String.
+Scheme Equality for String.string.
 Ltac basetype_eqb_eq_tac :=
   match goal with 
-  | [ H : Nat.eqb    _ _ = true |- _ ] => apply EqNat.beq_nat_true in H ; subst 
-  | [ H : Bool.eqb   _ _ = true |- _ ] => apply Bool.eqb_prop      in H ; subst 
-  | [ H : beq_string _ _ = true |- _ ] => apply lem_beq_string_eq2 in H ; subst 
+  | [ H : Nat.eqb             _ _ = true |- _ ] => apply EqNat.beq_nat_true in H ; subst 
+  | [ H : nat_beq             _ _ = true |- _ ] => apply internal_nat_dec_bl in H ; subst
+  | [ H : Bool.eqb            _ _ = true |- _ ] => apply Bool.eqb_prop      in H ; subst 
+  | [ H : beq_string          _ _ = true |- _ ] => apply lem_beq_string_eq2 in H ; subst
+  | [ H : string_beq _ _ = true |- _ ] => apply internal_string_dec_bl in H ; subst
 end.
 
 
