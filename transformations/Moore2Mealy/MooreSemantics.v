@@ -29,11 +29,11 @@ Definition State_outTransitions (s: State_t) (m: Moore.M) : list Transition_t :=
         end)
         (MooreMetamodel_allTransitions m).
 
-Definition State_acceptTransition (s: State_t) (m: Moore.M) (i: string) : option Transition_t :=
+Definition State_acceptTransition (m: Moore.M) (s: State_t) (i: string) : option Transition_t :=
     find (fun t => eqb i t.(Transition_input)) (State_outTransitions s m).
         
 Definition search m current i :=
-  let outTransition :=  State_acceptTransition current m i in
+  let outTransition :=  State_acceptTransition m current i in
   match outTransition with 
     | Some t =>  getTransition_target t m
     | None => None

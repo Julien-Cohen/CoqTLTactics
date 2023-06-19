@@ -28,11 +28,11 @@ Definition State_outTransitions (s: State_t) (m: M) : list Transition_t :=
         end)
         (MealyMetamodel_allTransitions m).
 
-Definition State_acceptTransition (s: State_t) (m: M) (i: string) : option Transition_t :=
+Definition State_acceptTransition (m: M) (s: State_t) (i: string) : option Transition_t :=
     find (fun t => eqb i t.(Transition_input)) (State_outTransitions s m).        
 
 Definition search m current i :=
-  match State_acceptTransition current m i with
+  match State_acceptTransition m current i with
   | None => None
   | Some t => match getTransition_target t m
               with
