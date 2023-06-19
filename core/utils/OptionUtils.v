@@ -78,3 +78,5 @@ Proof.
   destruct a ;
     reflexivity.
 Qed.
+
+Notation SUCCESS e := (exists r, e = Some r). 

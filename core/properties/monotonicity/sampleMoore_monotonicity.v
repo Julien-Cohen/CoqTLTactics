@@ -27,17 +27,17 @@
 Definition Moore_m2 : Model Moore.MM :=
         (Build_Model Moore.MM
             (
-                (TransitionElement (Build_Transition_t  "0")) :: 
-                (TransitionElement (Build_Transition_t  "1")) ::
+                (TransitionElement (Build_Transition_t 0 "0")) :: 
+                (TransitionElement (Build_Transition_t 1 "1")) ::
                 (StateElement (Build_State_t  "S0" "1")) :: 
                 (StateElement (Build_State_t  "S1" "0")) ::  
                 nil
             )
             (
-                (Transition_sourceLink (Build_Transition_source_t (Build_Transition_t  "0") (Build_State_t  "S1" "0"))) ::
-		        (Transition_targetLink (Build_Transition_target_t (Build_Transition_t  "0") (Build_State_t  "S0" "1"))) ::
-                (Transition_sourceLink (Build_Transition_source_t (Build_Transition_t  "1") (Build_State_t  "S0" "1"))) ::
-		        (Transition_targetLink (Build_Transition_target_t (Build_Transition_t  "1") (Build_State_t  "S1" "0"))) ::
+                (Transition_sourceLink (Build_Transition_source_t (Build_Transition_t 0 "0") (Build_State_t  "S1" "0"))) ::
+		        (Transition_targetLink (Build_Transition_target_t (Build_Transition_t 0 "0") (Build_State_t  "S0" "1"))) ::
+                (Transition_sourceLink (Build_Transition_source_t (Build_Transition_t 1 "1") (Build_State_t  "S0" "1"))) ::
+		        (Transition_targetLink (Build_Transition_target_t (Build_Transition_t 1 "1") (Build_State_t  "S1" "0"))) ::
                 nil
             )
         ).

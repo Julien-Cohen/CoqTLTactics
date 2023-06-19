@@ -20,7 +20,7 @@ Proof. exact internal_State_t_dec_bl. Qed.
 Lemma lem_State_t_beq_refl : forall (e : State_t), State_t_beq e e = true.
 Proof. intro ; apply internal_State_t_dec_lb ; auto. Qed. 
 
-Record Transition_t := { Transition_input : string }.
+Record Transition_t := { Transition_id : nat ; Transition_input : string }.
 Scheme Equality for Transition_t.
 Lemma lem_Transition_t_beq_id : forall (e1 e2 : Transition_t), Transition_t_beq e1 e2 = true -> e1 = e2.
 Proof. exact internal_Transition_t_dec_bl. Qed. 
@@ -168,7 +168,6 @@ Fixpoint getTransition_sourceOnLinks (t : Transition_t) (l : list Link) : option
   | nil => None
  end.
 
-
 Definition getTransition_source (t : Transition_t) (m : M) : option (State_t) :=
   getTransition_sourceOnLinks t m.(modelLinks).
 
@@ -187,7 +186,17 @@ Fixpoint getTransition_targetOnLinks (t : Transition_t) (l : list Link) : option
 Definition getTransition_target (t : Transition_t) (m : M) : option (State_t) :=
   getTransition_targetOnLinks t m.(modelLinks).
 
+(* FIXME : generate-me*)
+Definition WF1 (m:M) : Prop :=
+  forall t, 
+    List.In (TransitionElement t) m.(modelElements) ->
+    SUCCESS ( getTransition_target t m ).
 
+(* FIXME : generate-me*)
+Definition WF2 (m:M) :Prop :=
+  forall t, 
+    List.In (TransitionElement t) m.(modelElements) ->
+    SUCCESS ( getTransition_source t m ).
 
 (** Useful lemmas *)
 Lemma Moore_invert : 

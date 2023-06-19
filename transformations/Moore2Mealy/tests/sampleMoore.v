@@ -15,17 +15,23 @@ Open Scope string_scope.
 	*)
 
 Definition InputModel : Model Moore.MM :=
-	(Build_Model Moore.MM
-		(
-		(TransitionElement (Build_Transition_t  "0")) :: 
-		(StateElement (Build_State_t  "S0" "1")) :: 
-		(StateElement (Build_State_t  "S1" "0")) :: 
-		(TransitionElement (Build_Transition_t  "1")) :: 
-		nil)
-		(
-		(Transition_sourceLink (Build_Transition_source_t (Build_Transition_t  "0") (Build_State_t  "S1" "0"))) ::
-		(Transition_targetLink (Build_Transition_target_t (Build_Transition_t  "0") (Build_State_t  "S0" "1"))) ::
-		(Transition_sourceLink (Build_Transition_source_t (Build_Transition_t  "1") (Build_State_t  "S0" "1"))) ::
-		(Transition_targetLink (Build_Transition_target_t (Build_Transition_t  "1") (Build_State_t  "S1" "0"))) ::
-		nil)
-	).
+  let t0 := Build_Transition_t 0 "0" in 
+  let t1 := Build_Transition_t 1 "1" in
+  let s0 := Build_State_t "S0" "1" in
+  let s1 := Build_State_t "S1" "0" in
+  Build_Model Moore.MM
+    (
+      (TransitionElement t0) :: 
+	(StateElement s0) :: 
+	(StateElement s1) :: 
+	(TransitionElement t1) :: 
+	nil
+    )
+    (
+      (Transition_sourceLink (Build_Transition_source_t t0 s1)) ::
+	(Transition_targetLink (Build_Transition_target_t t0 s0)) ::
+	(Transition_sourceLink (Build_Transition_source_t t1 s0)) ::
+	(Transition_targetLink (Build_Transition_target_t t1 s1)) ::
+	nil
+    )
+.

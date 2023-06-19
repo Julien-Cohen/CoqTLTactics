@@ -43,6 +43,7 @@ Definition Moore2Mealy' :=
       to [
         ELEM "t" ::: Mealy.Transition_K
           << fun _ m t => Build_Transition_t 
+                          t.(Moore.Transition_id)
                           t.(Moore.Transition_input)
                           (value (option_map Moore.State_output (Moore.getTransition_target t m))) >> 
           <<<
