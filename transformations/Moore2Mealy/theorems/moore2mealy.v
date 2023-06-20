@@ -14,7 +14,6 @@ Require PropUtils.
 Module Moore.
 (** * Moore machine *)
 
-(* Node: id x output *)
 Record Node := { id : nat ; output : nat }.
 
 Definition beq_N n1 n2 :=
@@ -48,17 +47,16 @@ Fixpoint search (p: P) (i: IPair) : option Node :=
   end.
 
 (* Semantics of Moore machine  *)
-Fixpoint eval (p: P) (q0: Node) (I: list nat) : option (list nat) :=
+Fixpoint eval (p: P) (q: Node) (I: list nat) : option (list nat) :=
   match I with 
   | nil => Some nil
   | i :: I' => 
       
-      match search p (q0, i) with
+      match search p (q, i) with
       | None => None 
-      | Some (Build_Node a b) => 
-          (*res <- eval p (node a b) I' ; return res*)
-          match eval p (Build_Node a b) I' with 
-          | Some res => Some (b :: res) 
+      | Some n => 
+          match eval p n I' with 
+          | Some res => Some (n.(output) :: res) 
           | None => None
           end 
       end
@@ -69,7 +67,8 @@ End Moore.
 Module Mealy.
 (** * Mealy machine *)
 
-Record Node := { id : nat ; output : nat }.
+Record Node := { id : nat ; output : nat }. (* FIXME *)
+
 Definition beq_N n1 n2 :=
     beq_nat n1.(id) n2.(id) && beq_nat n1.(output) n2.(output).
 
@@ -81,10 +80,10 @@ Definition beq_IPair p1 p2 :=
   end.
 
 (* Output pair: trg node x output *)
-Definition OPair : Set := Node * nat. (* FIXME *)
+Definition OPair : Set := Node * nat. 
 
 
-(* Transition rule of Mealy machine : Input pair x trg node *)
+(* Transition rule of Mealy machine : Input pair x (trg node x output) *)
 Definition R : Set := IPair * OPair.
 
 (* Mealy machine *)
@@ -103,11 +102,11 @@ Fixpoint search (p: P) (i: IPair) : option OPair :=
 end.
 
 (* Semantics of Mealy machine *)
-Fixpoint eval (p: P) (q0: Node) (I: list nat) : option (list nat) :=
+Fixpoint eval (p: P) (q: Node) (I: list nat) : option (list nat) :=
   match I with 
   | nil => Some nil
   | i :: I' => 
-      match search p (q0, i) with
+      match search p (q, i) with
       | None => None
       | Some (a, b) => 
           match eval p a I' with
@@ -194,17 +193,17 @@ Qed.
 (* Main theorem: compile is correct
    evaluation the same inputs produce the same output *)
 Theorem compile_correct:
-  forall (p: Moore.P) (q0: Moore.Node) (I: list nat),
-    Moore.eval p q0 I = Mealy.eval (compile p) (compile_node q0) I.
+  forall (p: Moore.P) (q: Moore.Node) (I: list nat),
+    Moore.eval p q I = Mealy.eval (compile p) (compile_node q) I.
 Proof.
-  intros p q0 I. revert q0.
+  intros p q I. revert q.
   induction I as [ | i I ].
   - (* I = nil *)
     intro ; reflexivity.
   - (* I = i :: I /\ P(I') *) 
     simpl. intro.
-    fold (compile_input_pair (q0,i)). 
-    destruct (Moore.search p (q0, i)) as [ n | ] eqn: s_of_P ; [ apply compile_s_correct_ca2 in s_of_P | apply compile_s_correct_ca1 in s_of_P] ; rewrite s_of_P.
+    fold (compile_input_pair (q,i)). 
+    destruct (Moore.search p (q, i)) as [ n | ] eqn: s_of_P ; [ apply compile_s_correct_ca2 in s_of_P | apply compile_s_correct_ca1 in s_of_P] ; rewrite s_of_P.
     + (* input pair is matched by moore machine *)
       destruct n.
       rewrite IHI. reflexivity. 
