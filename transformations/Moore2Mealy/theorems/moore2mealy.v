@@ -16,8 +16,9 @@ Module Moore.
 
 Record Node := { id : nat ; output : nat }.
 
+(** Nodes are identified only by their identifiers. This is a relation of equivalence under the hypothesis that two different nodes cannot have the same identifier. *)
 Definition beq_N n1 n2 :=
-    beq_nat n1.(id) n2.(id) && beq_nat n1.(output) n2.(output).
+    beq_nat n1.(id) n2.(id).
 
 (* Input pair: src node x input *)
 Definition IPair : Set := Node * nat.
@@ -70,7 +71,7 @@ Module Mealy.
 Record Node := { id : nat ; output : nat }. (* FIXME *)
 
 Definition beq_N n1 n2 :=
-    beq_nat n1.(id) n2.(id) && beq_nat n1.(output) n2.(output).
+    beq_nat n1.(id) n2.(id).
 
 Definition IPair : Set := Node * nat.
 
