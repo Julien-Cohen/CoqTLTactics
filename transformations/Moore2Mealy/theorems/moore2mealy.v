@@ -28,14 +28,14 @@ Definition beq_IPair p1 p2 :=
     (n1, i1), (n2, i2) => beq_N n1 n2 && beq_nat i1 i2
   end.
 
-(* Transition rule of moore machine: Input pair x trg node *)
+(* Transition rule of Moore machine: Input pair x trg node *)
 Definition R :Set := IPair * Node.
 
 
-(* moore machine *)
+(* Moore machine *)
 Definition P := list R.
 
-(* search output node in moore machine *)
+(* Search output node in Moore machine *)
 Fixpoint search (p: P) (i: IPair) : option Node :=
   match p with
   | nil => None
@@ -47,7 +47,7 @@ Fixpoint search (p: P) (i: IPair) : option Node :=
         search rs i 
   end.
 
-(* semantics of moore machine  *)
+(* Semantics of Moore machine  *)
 Fixpoint eval (p: P) (q0: Node) (I: list nat) : option (list nat) :=
   match I with 
   | nil => Some nil
@@ -69,30 +69,41 @@ End Moore.
 Module Mealy.
 (** * Mealy machine *)
 
+Record Node := { id : nat ; output : nat }.
+Definition beq_N n1 n2 :=
+    beq_nat n1.(id) n2.(id) && beq_nat n1.(output) n2.(output).
+
+Definition IPair : Set := Node * nat.
+
+Definition beq_IPair p1 p2 :=
+  match p1, p2 with
+    (n1, i1), (n2, i2) => beq_N n1 n2 && beq_nat i1 i2
+  end.
+
 (* Output pair: trg node x output *)
-Definition OPair : Set := Moore.Node * nat. (* FIXME *)
+Definition OPair : Set := Node * nat. (* FIXME *)
 
 
-(* Transition rule of mealy machine : Input pair x trg node *)
-Definition R : Set := Moore.IPair * OPair.
+(* Transition rule of Mealy machine : Input pair x trg node *)
+Definition R : Set := IPair * OPair.
 
-(* mealy machine *)
+(* Mealy machine *)
 Definition P := list R.
 
-(* search output node *)
-Fixpoint search (p: P) (i: Moore.IPair) : option OPair :=
+(* Search output node *)
+Fixpoint search (p: P) (i: IPair) : option OPair :=
   match p with
   | nil => None
   | (a, b) :: rs => 
-      if Moore.beq_IPair a i 
+      if beq_IPair a i 
       then 
         Some b 
       else 
         search rs i 
 end.
 
-(* semantics of mealy machine *)
-Fixpoint eval (p: P) (q0: Moore.Node) (I: list nat) : option (list nat) :=
+(* Semantics of Mealy machine *)
+Fixpoint eval (p: P) (q0: Node) (I: list nat) : option (list nat) :=
   match I with 
   | nil => Some nil
   | i :: I' => 
@@ -108,30 +119,54 @@ Fixpoint eval (p: P) (q0: Moore.Node) (I: list nat) : option (list nat) :=
 
 End Mealy.
 
-(** * compiler *)
+(** * Compiler *)
 
-(* compile moore to mealy *)
+(* Compile Moore to Mealy *)
+Definition compile_node (t:Moore.Node) : Mealy.Node :=
+  {| Mealy.id := t.(Moore.id) ; Mealy.output := t.(Moore.output) |}. 
 
-Definition compile_rule (t:Moore.R) : Mealy.R := 
-  match t with 
-    (a, n) => (a, (n, n.(Moore.output))) 
+Definition compile_input_pair (i:Moore.IPair) : Mealy.IPair :=
+  match i with 
+    (node,input) => (compile_node node, input)
+  end.
+
+Definition compile_rule (t:Moore.R) : Mealy.R :=
+  match t with
+    (ipair, out_node) => (compile_input_pair ipair, (compile_node out_node, out_node.(Moore.output)))
   end.
 
 Definition compile : Moore.P -> Mealy.P := 
   List.map compile_rule.
+
+Lemma beq_node_stable :
+  forall a b, 
+    Moore.beq_N a b = Mealy.beq_N (compile_node a) (compile_node b).
+Proof.
+  intros ; reflexivity.
+Qed.
+
+Lemma beq_pair_stable : 
+  forall a b, 
+    Moore.beq_IPair a b =  Mealy.beq_IPair (compile_input_pair a) (compile_input_pair b).
+Proof.
+  destruct a ; destruct b. 
+  reflexivity.
+Qed.
 
 (* Lemma: when input pair is not matched by moore machine, 
    it is also not matched by the compiled mealy machine *)
 Lemma compile_s_correct_ca1:
   forall (p: Moore.P) i,
      Moore.search p i = None ->
-     Mealy.search (compile p) i = None.
+     Mealy.search (compile p) (compile_input_pair i) = None.
 Proof.
   intros p i s_of_P.
   induction p; simpl in s_of_P; simpl.
   - reflexivity.
   - destruct a. destruct n. simpl.
-    destruct (Moore.beq_IPair i0 i).
+    rewrite <- beq_pair_stable.
+    unfold compile_input_pair.
+    destruct (Moore.beq_IPair i0 i) eqn:E.
     + discriminate s_of_P.
     + auto.
 Qed.
@@ -144,22 +179,23 @@ Qed.
 Lemma compile_s_correct_ca2:
   forall (p: Moore.P) i n,
     Moore.search p i = Some n ->
-    Mealy.search (compile p) i = Some (n, n.(Moore.output)).
+    Mealy.search (compile p) (compile_input_pair i) = Some (compile_node n, n.(Moore.output)).
 Proof.
   intros p i n s_of_P.
   induction p; simpl in s_of_P; simpl.
   - discriminate s_of_P.
-  - destruct a. destruct n. simpl. 
+  - destruct a. destruct n. simpl.
+    rewrite <- beq_pair_stable.
     destruct (Moore.beq_IPair i0 i).
     + destruct n0. PropUtils.inj s_of_P. reflexivity.
     + auto.
 Qed.
 
-(* main theorem: compile is correct
+(* Main theorem: compile is correct
    evaluation the same inputs produce the same output *)
 Theorem compile_correct:
   forall (p: Moore.P) (q0: Moore.Node) (I: list nat),
-    Moore.eval p q0 I = Mealy.eval (compile p) q0 I.
+    Moore.eval p q0 I = Mealy.eval (compile p) (compile_node q0) I.
 Proof.
   intros p q0 I. revert q0.
   induction I as [ | i I ].
@@ -167,15 +203,12 @@ Proof.
     intro ; reflexivity.
   - (* I = i :: I /\ P(I') *) 
     simpl. intro.
-    destruct (Moore.search p (q0, i)) as [ n | ] eqn: s_of_P.
+    fold (compile_input_pair (q0,i)). 
+    destruct (Moore.search p (q0, i)) as [ n | ] eqn: s_of_P ; [ apply compile_s_correct_ca2 in s_of_P | apply compile_s_correct_ca1 in s_of_P] ; rewrite s_of_P.
     + (* input pair is matched by moore machine *)
       destruct n.
-      replace (Mealy.search (compile p) (q0, i)) with (Some ((Moore.Build_Node id output), output)).
-      * rewrite IHI. reflexivity. 
-      * symmetry ; apply compile_s_correct_ca2. assumption. 
+      rewrite IHI. reflexivity. 
     + (* input pair is not matched by moore machine *)
-      replace (Mealy.search (compile p) (q0, i)) with (@None Mealy.OPair).
-      * reflexivity.
-      * symmetry ; apply compile_s_correct_ca1. assumption.
+       reflexivity.
 Qed.
 
