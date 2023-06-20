@@ -68,7 +68,7 @@ End Moore.
 Module Mealy.
 (** * Mealy machine *)
 
-Record Node := { id : nat ; output : nat }. (* FIXME *)
+Record Node := { id : nat }. (* FIXME *)
 
 Definition beq_N n1 n2 :=
     beq_nat n1.(id) n2.(id).
@@ -123,7 +123,7 @@ End Mealy.
 
 (* Compile Moore to Mealy *)
 Definition compile_node (t:Moore.Node) : Mealy.Node :=
-  {| Mealy.id := t.(Moore.id) ; Mealy.output := t.(Moore.output) |}. 
+  {| Mealy.id := t.(Moore.id) |}. 
 
 Definition compile_input_pair (i:Moore.IPair) : Mealy.IPair :=
   match i with 
