@@ -110,6 +110,7 @@ transformations/Moore2Mealy/MealySemantics.v
 transformations/Moore2Mealy/MealyWF.v
 #transformations/Moore2Mealy/theorems/SemanticsPreservation.v
 
+transformations/Moore2MealyALT/Id.v
 transformations/Moore2MealyALT/Moore.v
 transformations/Moore2MealyALT/Mealy.v
 transformations/Moore2MealyALT/Moore2Mealy.v

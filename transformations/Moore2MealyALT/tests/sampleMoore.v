@@ -10,15 +10,20 @@ Require Import String.
 Require Import transformations.Moore2MealyALT.Moore.
 Open Scope string_scope.
 
+Import Id.
+
 (* S0("1") --"1"-> S1("0")  
 	 	   <-"0"--
 	*)
 
+Definition id0 := Id "S0".
+Definition id1 := Id "S1".
+
 Definition InputModel : Model Moore.MM :=
-  let t0 := Build_Transition_t 0 "0" in 
-  let t1 := Build_Transition_t 1 "1" in
-  let s0 := Build_State_t "S0" "1" in
-  let s1 := Build_State_t "S1" "0" in
+  let t0 := Build_Transition_t id0 "0" id1 in 
+  let t1 := Build_Transition_t id1 "1" id1 in
+  let s0 := Build_State_t id0 "1" in
+  let s1 := Build_State_t id1 "0" in
   Build_Model Moore.MM
     (
       (TransitionElement t0) :: 
@@ -27,11 +32,6 @@ Definition InputModel : Model Moore.MM :=
 	(TransitionElement t1) :: 
 	nil
     )
-    (
-      (Transition_sourceLink (Build_Transition_source_t t0 s1)) ::
-	(Transition_targetLink (Build_Transition_target_t t0 s0)) ::
-	(Transition_sourceLink (Build_Transition_source_t t1 s0)) ::
-	(Transition_targetLink (Build_Transition_target_t t1 s1)) ::
-	nil
+    (	nil
     )
 .

@@ -1,6 +1,7 @@
 
 Require Import Moore2MealyALT.Mealy Moore2MealyALT.MealySemantics. 
 Import String.
+Import Id.
 
 Definition unique_names (m:M) := 
   forall e1 e2,
@@ -46,7 +47,7 @@ Lemma in_find : (* fixme : use the concept of discriminant proposition for the p
     e.(State_name) = n ->
     OptionListUtils.find_lift 
       (get_E_data State_K)
-      (fun s : State_t => (n =? s.(State_name))%string)
+      (fun s : State_t => (NodeId_beq n s.(State_name))%string)
            m.(Model.modelElements) = 
          Some e.
 Proof.
@@ -58,11 +59,10 @@ Proof.
     apply List.find_some in E.
     destruct E as (IN2 & EQ).
     apply In_1 in IN2.
-    apply String.eqb_eq in EQ. subst. apply H ; auto.
+    apply internal_NodeId_dec_bl in EQ. subst. apply H ; auto.
   + apply List.find_none with (x:= {| State_name := n |}) in E ; [ |  ].
-     apply String.eqb_neq in E.
-     simpl in E.
-     contradiction.
+    simpl in E.
+    rewrite internal_NodeId_dec_lb in E. discriminate. reflexivity.
      apply In_1.  assumption.
 Qed.
 

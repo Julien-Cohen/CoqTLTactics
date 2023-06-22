@@ -12,8 +12,10 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require        core.Tactics.
 
+Require Import Id.
+
 (** Base types for elements *)
-Record State_t := { State_name : string }.
+Record State_t := { State_name : NodeId }.
 Scheme Equality for State_t.
 Lemma lem_State_t_beq_id : forall (e1 e2 : State_t), State_t_beq e1 e2 = true -> e1 = e2.
 Proof. exact internal_State_t_dec_bl. Qed. 
@@ -21,7 +23,7 @@ Lemma lem_State_t_beq_refl : forall (e : State_t), State_t_beq e e = true.
 Proof. intro ; apply internal_State_t_dec_lb ; auto. Qed. 
 
 
-Record Transition_t := { Transition_id : nat ; Transition_input : string ; Transition_output : string }.
+Record Transition_t := { Transition_id : NodeId ; Transition_input : string ; Transition_output : string }.
 Scheme Equality for Transition_t.
 Lemma lem_Transition_t_beq_id : forall (e1 e2 : Transition_t), Transition_t_beq e1 e2 = true -> e1 = e2.
 Proof. exact internal_Transition_t_dec_bl. Qed. 

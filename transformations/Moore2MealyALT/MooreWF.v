@@ -1,6 +1,7 @@
 
-Require Import Moore2MealyALT.Moore Moore2MealyALT.MooreSemantics.
+Require Import Moore2MealyALT.Moore Moore2MealyALT.MooreSemantics. 
 Import String.
+Import Id.
 
 Definition unique_names (m:Moore.M) := 
   forall e1 e2,
@@ -34,7 +35,7 @@ Lemma in_find :
     List.In (StateElement e) m.(Model.modelElements) ->
     e.(State_name) = n ->
     OptionListUtils.find_lift (get_E_data State_K)
-           (fun s : State_t => (n =? s.(State_name))%string)
+           (fun s : State_t => (NodeId_beq n  s.(State_name))%string)
            m.(Model.modelElements) = 
          Some e.
 Proof.
@@ -47,11 +48,12 @@ Proof.
     apply In_1 in IN2.
     f_equal.
     apply H ; [ exact IN2 | exact H0 | ].
-    apply String.eqb_eq in EQ.
+    apply internal_NodeId_dec_bl in EQ.
     congruence.
    + apply List.find_none with (x:= e) in E ; [ |  ].
-     apply String.eqb_neq in E.
-     congruence.
+     subst.
+     rewrite internal_NodeId_dec_lb in E ; auto. discriminate E.
+
      apply In_1 ; assumption.
      
 Qed.
