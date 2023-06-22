@@ -1,70 +1,62 @@
 Require Import String.
 Require Import List.
 
-Require Import Mealy.
+Require Import transformations.Moore2Mealy.Mealy.
 Require Import core.Model.
 Require Import core.utils.Utils.
 
-Definition MealyMetamodel_toStates (m: list Element) : list State_t :=
-    optionList2List (map (fun s => (get_E_data State_K s)) m).
-
-Definition MealyMetamodel_toTransitions (m: list Element) : list Transition_t :=
-    optionList2List (map (fun s => (get_E_data Transition_K s)) m).
-
-Definition MealyMetamodel_allStates (m: M) : list State_t :=
-    MealyMetamodel_toStates m.(modelElements).
-
-Definition MealyMetamodel_allTransitions (m: M) : list Transition_t :=
-    MealyMetamodel_toTransitions m.(modelElements).
 
 Definition initialState (m: M) : option State_t :=
-    find (fun s => eqb "S0" s.(State_name)) (MealyMetamodel_allStates m).
+    find_lift (get_E_data State_K) (fun s => eqb "S0" s.(State_name)) m.(modelElements).
 
-Definition State_outTransitions (s: State_t) (m: M) : list Transition_t :=
-    filter (fun t => 
-        match (getTransition_source t m) with
-        | Some s' => State_t_beq s s'
-        | None => false
-        end)
-        (MealyMetamodel_allTransitions m).
+Definition State_outTransitions (m: M) (s: State_t) : list Transition_t :=
+    filter_lift 
+      (get_E_data Transition_K) 
+      (fun t => 
+         match (getTransition_source m t) with
+         | Some s' => State_t_beq s s'
+         | None => false
+         end)
+      m.(Model.modelElements).
 
 Definition State_acceptTransition (m: M) (s: State_t) (i: string) : option Transition_t :=
-    find (fun t => eqb i t.(Transition_input)) (State_outTransitions s m).        
+    find (fun t => eqb i t.(Transition_input)) (State_outTransitions m s).
 
-Definition search m current i :=
+Definition search (m: M) (current: State_t) i :=
   match State_acceptTransition m current i with
   | None => None
-  | Some t => match getTransition_target t m
+  | Some t => match getTransition_target m t
               with
               | Some s => Some (t, s)
               | None => None (* impossible when models are well formed *)
               end
   end.
 
-
-Fixpoint executeFromState (m: M) (current: State_t) (remainingInput: list string) : list string :=
+Fixpoint executeFromState (m: M) (current: State_t) (remainingInput: list string) : option (list string) :=
   match remainingInput with 
    | i :: inputs => 
-       match search m current i with 
-        | None => nil
-        | Some (t, s) =>    t.(Transition_input) :: (executeFromState m s inputs)
-
+       match search m current i with
+        | None => None 
+        | Some (t, s) =>  
+            match executeFromState m s inputs with
+            | Some r => Some (t.(Transition_input) :: r)
+            | None => None
+            end
        end
-   | nil => nil 
+   | nil => Some nil 
   end.
 
-Definition Mealy_execute (m: M) (input: list string) : list string :=
-    match (initialState m) with 
+Definition execute (m: M) (input: list string) : option (list string) :=
+    match initialState m with 
     | Some s => executeFromState m s input
-    | None => nil
+    | None => None
     end.
 
-
-Require Import tests.sampleMoore.
-Require Import core.Semantics.
+Require Import transformations.Moore2Mealy.tests.sampleMoore.
+Require        core.Semantics.
 Require Import transformations.Moore2Mealy.Moore2Mealy.
 
-Compute Mealy_execute (execute Moore2Mealy InputModel) ("1"::"0"::"1"::nil).
+Compute execute (Semantics.execute Moore2Mealy InputModel) ("1"::"0"::"1"::nil).
 
 
 

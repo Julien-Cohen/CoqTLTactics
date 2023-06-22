@@ -284,7 +284,7 @@ intros.
 unfold resolveIter in H.
 match type of H with context[find ?F tls] => destruct (find F tls) eqn: find_ca end.
 - exists t.
-  apply find_some in find_ca.
+  apply List.find_some in find_ca.
   destruct find_ca.
   symmetry in H1.
   apply andb_true_eq in H1.

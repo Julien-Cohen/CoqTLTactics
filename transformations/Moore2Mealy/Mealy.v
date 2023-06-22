@@ -170,7 +170,7 @@ Fixpoint getTransition_sourceOnLinks (t : Transition_t) (l : list Link) : option
  end.
 
 
-Definition getTransition_source (t : Transition_t) (m : M) : option (State_t) :=
+Definition getTransition_source (m : M) (t : Transition_t) : option (State_t) :=
   getTransition_sourceOnLinks t m.(modelLinks).
 
 
@@ -185,20 +185,20 @@ Fixpoint getTransition_targetOnLinks (t : Transition_t) (l : list Link) : option
  end.
 
 
-Definition getTransition_target (t : Transition_t) (m : M) : option (State_t) :=
+Definition getTransition_target (m : M) (t : Transition_t) : option (State_t) :=
   getTransition_targetOnLinks t m.(modelLinks).
 
 (* FIXME : generate-me*)
 Definition WF1 (m:M) : Prop :=
   forall t, 
     List.In (TransitionElement t) m.(modelElements) ->
-    SUCCESS ( getTransition_target t m ).
+    SUCCESS ( getTransition_target m t ).
 
 (* FIXME : generate-me*)
 Definition WF2 (m:M) : Prop :=
   forall t, 
     List.In (TransitionElement t) m.(modelElements) ->
-    SUCCESS ( getTransition_source t m ).
+    SUCCESS ( getTransition_source m t ).
 
 (** Useful lemmas *)
 Lemma Mealy_invert : 
@@ -229,13 +229,13 @@ Proof. destruct x ; destruct y ; compute ; congruence. Qed.
 (** Added Manually *)
 
 Definition getTransition_sourceObject (t : Transition_t) (m : M) : option Element :=
-  match getTransition_source t m with
+  match getTransition_source m t with
   | Some st_arg => Some (lift_EKind State_K st_arg) 
   | _ => None
   end.
 
 Definition getTransition_TargetObject (tr_arg : Transition_t) (m : M) : option Element :=
-  match getTransition_target tr_arg m with
+  match getTransition_target m tr_arg with
   | Some st_arg => Some (lift_EKind State_K st_arg) 
   | _ => None
   end.

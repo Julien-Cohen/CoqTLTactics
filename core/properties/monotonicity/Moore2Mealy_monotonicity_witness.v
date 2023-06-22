@@ -37,8 +37,8 @@ Definition Moore2Mealy' :=
       where (fun m s => 
               negb (existsb (Moore.State_t_beq s) 
                        (optionList2List (map 
-                          (fun tr => Moore.getTransition_target tr m)
-                          (MooreMetamodel_allTransitions m)))))
+                          (fun tr => Moore.getTransition_target m tr)
+                          (lift_list (Moore.get_E_data Moore.Transition_K) m.(Model.modelElements)))))) (* fixme *)
       to [
         elem [Moore.State_K] Mealy.State_K "s"
           (fun _ _ s => Build_State_t s.(Moore.State_name)) nil

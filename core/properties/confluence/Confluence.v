@@ -67,8 +67,8 @@ assert (find find_cond rs1 = find find_cond rs2).
 {
   destruct (find find_cond rs1) eqn: find_ca1.
   destruct (find find_cond rs2) eqn: find_ca2.
-  + apply find_some in find_ca1.
-  apply find_some in find_ca2.
+  + apply List.find_some in find_ca1.
+  apply List.find_some in find_ca2.
   f_equal.
   unfold Transformation_equiv in tr_eq.
   destruct tr_eq.
@@ -82,8 +82,8 @@ assert (find find_cond rs1 = find find_cond rs2).
   unfold well_form in H7.
   specialize (H7 r r0 sm sp).
   crush.
-  + apply find_some in find_ca1.
-    specialize (find_none find_cond rs2 find_ca2).
+  + apply List.find_some in find_ca1.
+    specialize (List.find_none find_cond rs2 find_ca2).
     intro.
     unfold Transformation_equiv in tr_eq.
     destruct tr_eq.
@@ -91,8 +91,8 @@ assert (find find_cond rs1 = find find_cond rs2).
     assert (In r rs2). { unfold set_eq in H1. destruct H1. unfold incl in H0. crush. }
     specialize (H r H0). crush.
   + destruct (find find_cond rs2) eqn: find_ca2.
-  ++ apply find_some in find_ca2.
-     specialize (find_none find_cond rs1 find_ca1).
+  ++ apply List.find_some in find_ca2.
+     specialize (List.find_none find_cond rs1 find_ca1).
      intro.
      unfold Transformation_equiv in tr_eq.
      destruct tr_eq.

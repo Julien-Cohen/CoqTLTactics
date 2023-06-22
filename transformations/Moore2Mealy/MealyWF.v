@@ -1,5 +1,5 @@
 
-Require Import Mealy MealySemantics. 
+Require Import Moore2Mealy.Mealy Moore2Mealy.MealySemantics. 
 Import String.
 
 Definition unique_names (m:M) := 
@@ -19,27 +19,58 @@ Lemma always_unique_names :
   congruence.
 Qed.
 
-Lemma in_find : 
+(* fixme : generalise-me *)
+Lemma In_1 : forall (m:Mealy.M) e,
+         List.In (StateElement e) (Model.modelElements m) <-> List.In e
+    (OptionListUtils.lift_list (get_E_data State_K)
+       (Model.modelElements m)).
+Proof.
+  intros m e.
+  split ; intro H.
+  {
+    apply OptionListUtils.In_lift.
+    exists (StateElement e). auto.
+  }
+  {
+    apply OptionListUtils.In_lift in H.
+    destruct H as (e2 & (G & IN2)).
+    destruct e2 ; [ unfold get_E_data in G ; injection G ; intro ; subst| discriminate G]. 
+    assumption.
+  }
+Qed.
+
+Lemma in_find : (* fixme : use the concept of discriminant proposition for the proof *)
   forall m n e,
     unique_names m ->
-    List.In e (MealyMetamodel_allStates m) ->
+    List.In (StateElement e) m.(Model.modelElements) ->
     e.(State_name) = n ->
-    List.find
-           (fun s : State_t => (n =? s.(State_name))%string)
-           (MealyMetamodel_allStates m) = 
+    OptionListUtils.find_lift 
+      (get_E_data State_K)
+      (fun s : State_t => (n =? s.(State_name))%string)
+           m.(Model.modelElements) = 
          Some e.
 Proof.
   intros.
+  rewrite OptionListUtils.find_lift_filter_lift.
   destruct e ; simpl in * ; subst.
   match goal with [ |- ?F = _] => destruct F eqn:E ; [ | exfalso ] end.
   + f_equal. 
     apply List.find_some in E.
     destruct E as (IN2 & EQ).
-    destruct s.
-    f_equal.
-    apply String.eqb_eq in EQ. subst ; reflexivity. 
-   + apply List.find_none with (x:={| State_name := n |}) in E ; [ | assumption ].
+    apply In_1 in IN2.
+    apply String.eqb_eq in EQ. subst. apply H ; auto.
+  + apply List.find_none with (x:= {| State_name := n |}) in E ; [ |  ].
      apply String.eqb_neq in E.
      simpl in E.
      contradiction.
+     apply In_1.  assumption.
 Qed.
+
+
+(** Each node has only one transition getting out of it for a same input. *)
+Definition determinist m :=
+  forall s t1 t2,
+      List.In t1 (State_outTransitions m s) ->
+      List.In t2 (State_outTransitions m s) ->
+      t1.(Transition_input) = t2.(Transition_input) ->
+      t1 = t2.
