@@ -629,7 +629,7 @@ Ltac exploit_in_eval_link H :=
         apply in_flat_map in H ; destruct H as (pl, (TMP, H)) ;
         apply ListUtils.in_singleton in TMP ; (* works only for pattern links with one link *)
         subst pl ;
-        apply ListUtils.in_optionListToList in H ; 
+        apply OptionListUtils.in_optionListToList in H ; 
         destruct H as (l & H & IN) ;
         ConcreteExpressions.inv_makeLink H ;
           apply in_singleton in IN 

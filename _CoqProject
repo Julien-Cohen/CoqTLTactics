@@ -8,6 +8,7 @@ core/utils/NotationUtils.v
 core/utils/ListUtils.v
 core/utils/ArithUtils.v
 core/utils/BoolUtils.v
+core/utils/OptionListUtils.v
 core/utils/ConcatUtils.v
 core/utils/DatatypeUtils.v
 core/utils/PrintUtils.v
