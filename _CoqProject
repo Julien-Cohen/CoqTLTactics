@@ -110,14 +110,14 @@ transformations/Moore2Mealy/MealySemantics.v
 transformations/Moore2Mealy/MealyWF.v
 #transformations/Moore2Mealy/theorems/SemanticsPreservation.v
 
-#transformations/Moore2MealyALT/Moore.v
-#transformations/Moore2MealyALT/Mealy.v
-#transformations/Moore2MealyALT/Moore2Mealy.v
-#transformations/Moore2MealyALT/tests/sampleMoore.v
-#transformations/Moore2MealyALT/MooreSemantics.v
-#transformations/Moore2MealyALT/MooreWF.v
-#transformations/Moore2MealyALT/MealySemantics.v
-#transformations/Moore2MealyALT/MealyWF.v
+transformations/Moore2MealyALT/Moore.v
+transformations/Moore2MealyALT/Mealy.v
+transformations/Moore2MealyALT/Moore2Mealy.v
+transformations/Moore2MealyALT/tests/sampleMoore.v
+transformations/Moore2MealyALT/MooreSemantics.v
+transformations/Moore2MealyALT/MooreWF.v
+transformations/Moore2MealyALT/MealySemantics.v
+transformations/Moore2MealyALT/MealyWF.v
 #transformations/Moore2MealyALT/theorems/SemanticsPreservation.v
 
 
