@@ -119,6 +119,8 @@ transformations/Moore2MealyALT/MooreSemantics.v
 transformations/Moore2MealyALT/MooreWF.v
 transformations/Moore2MealyALT/MealySemantics.v
 transformations/Moore2MealyALT/MealyWF.v
+transformations/Moore2MealyALT/theorems/Elements.v
+transformations/Moore2MealyALT/theorems/WFStable.v
 #transformations/Moore2MealyALT/theorems/SemanticsPreservation.v
 
 

@@ -68,9 +68,11 @@ Qed.
 
 
 (** Each node has only one transition getting out of it for a same input. *)
-Definition determinist m :=
-  forall s t1 t2,
-      List.In t1 (State_outTransitions m s) ->
-      List.In t2 (State_outTransitions m s) ->
+Definition determinist (m:Mealy.M) := 
+  forall t1 t2,
+      List.In (TransitionElement t1) m.(Model.modelElements)->
+      List.In (TransitionElement t2) m.(Model.modelElements)->
+      t1.(Transition_source) = t2.(Transition_source) ->
       t1.(Transition_input) = t2.(Transition_input) ->
       t1 = t2.
+
