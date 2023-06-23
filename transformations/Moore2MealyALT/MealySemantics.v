@@ -40,7 +40,7 @@ Fixpoint executeFromState (m: M) (current: State_t) (remainingInput: list string
         | None => None 
         | Some (t, s) =>  
             match executeFromState m s inputs with
-            | Some r => Some (t.(Transition_input) :: r)
+            | Some r => Some (t.(Transition_output) :: r)
             | None => None
             end
        end
@@ -57,7 +57,12 @@ Require Import transformations.Moore2MealyALT.tests.sampleMoore.
 Require        core.Semantics.
 Require Import transformations.Moore2MealyALT.Moore2Mealy.
 
-Compute execute (Semantics.execute Moore2Mealy InputModel) ("1"::"0"::"1"::nil).
+Definition MealyTest := Semantics.execute Moore2Mealy InputModel.
+
+Compute execute MealyTest ("A"::nil).      (* "b"  *)
+Compute execute MealyTest ("A"::"B"::nil). (* "bb" *)
+Compute execute MealyTest ("B"::nil).      (* None *)
+Compute execute MealyTest ("A"::"A"::nil). (* None *)
 
 
 

@@ -50,5 +50,10 @@ Definition execute (m: M) (input: list string) : option (list string) :=
 
 Require Import transformations.Moore2Mealy.tests.sampleMoore.
 
-Compute execute InputModel ("1"::"0"::"1"::nil).
+Compute execute InputModel ("A"::nil).      (* "b"  *)
+Compute execute InputModel ("A"::"B"::nil). (* "bb" *)
+Compute execute InputModel ("B"::nil).      (* None *)
+Compute execute InputModel ("A"::"A"::nil). (* None *)
+
+
 
