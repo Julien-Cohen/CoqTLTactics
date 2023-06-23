@@ -23,7 +23,7 @@ Lemma lem_State_t_beq_refl : forall (e : State_t), State_t_beq e e = true.
 Proof. intro ; apply internal_State_t_dec_lb ; auto. Qed. 
 
 
-Record Transition_t := { Transition_id : NodeId ; Transition_input : string ; Transition_output : string }.
+Record Transition_t := { Transition_source : NodeId ; Transition_input : string ; Transition_output : string ; Transition_dest : NodeId }.
 Scheme Equality for Transition_t.
 Lemma lem_Transition_t_beq_id : forall (e1 e2 : Transition_t), Transition_t_beq e1 e2 = true -> e1 = e2.
 Proof. exact internal_Transition_t_dec_bl. Qed. 
@@ -33,21 +33,7 @@ Proof. intro ; apply internal_Transition_t_dec_lb ; auto. Qed.
 
 
 (** Base types for links *)
-Record Transition_source_t := { Transition_source_t_source : Transition_t ; Transition_source_t_target : State_t }.
-Scheme Equality for Transition_source_t.
-Lemma lem_Transition_source_t_beq_id : forall (e1 e2 : Transition_source_t), Transition_source_t_beq e1 e2 = true -> e1 = e2.
-Proof. exact internal_Transition_source_t_dec_bl. Qed. 
-Lemma lem_Transition_source_t_beq_refl : forall (e : Transition_source_t), Transition_source_t_beq e e = true.
-Proof. intro ; apply internal_Transition_source_t_dec_lb ; auto. Qed. 
-
-
-Record Transition_target_t := { Transition_target_t_source : Transition_t ; Transition_target_t_target : State_t }.
-Scheme Equality for Transition_target_t.
-Lemma lem_Transition_target_t_beq_id : forall (e1 e2 : Transition_target_t), Transition_target_t_beq e1 e2 = true -> e1 = e2.
-Proof. exact internal_Transition_target_t_dec_bl. Qed. 
-Lemma lem_Transition_target_t_beq_refl : forall (e : Transition_target_t), Transition_target_t_beq e e = true.
-Proof. intro ; apply internal_Transition_target_t_dec_lb ; auto. Qed. 
-
+(* No Links *)
 
 
 (** Data types for element (to build models) *)
@@ -59,9 +45,7 @@ Scheme Equality for Element.
 
 (** Data types for link (to build models) *)
 Inductive Link : Set :=
-  | Transition_sourceLink : Transition_source_t -> Link
-  | Transition_targetLink : Transition_target_t -> Link
-.
+. (* Empty *)
 Scheme Equality for Link.
 
 (** Meta-types (or kinds, to be used in rules) *)
@@ -73,9 +57,7 @@ Scheme Equality for ElementKind.
 
 
 Inductive LinkKind : Set :=
-  | Transition_source_K
-  | Transition_target_K
-.
+. (* Empty *)
 Scheme Equality for LinkKind.
 
 (** Reflective functions (typing : correspondence between abstract types (kinds) and model data) *)
@@ -102,25 +84,15 @@ Definition get_E_data (k : ElementKind) (c : Element) : option (getTypeByEKind k
 
 
 Definition getTypeByLKind (k : LinkKind) : Set :=
-  match k with
-  | Transition_source_K => Transition_source_t
-  | Transition_target_K => Transition_target_t
-  end.
+  match k with end.
 
 
 Definition lift_LKind k : (getTypeByLKind k) -> Link :=
-  match k with
-  | Transition_source_K => Transition_sourceLink
-  | Transition_target_K => Transition_targetLink
-  end.
+  match k with end.
 
 
 Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
-  match (t,c) as e return (option (getTypeByLKind (fst e))) with
-  | (Transition_source_K, Transition_sourceLink v)  => Some v
-  | (Transition_target_K, Transition_targetLink v)  => Some v
-  | (_ , _) => None
-  end.
+  match t with end.
 
 (** Typeclass Instance *)
 Definition MM : Metamodel :=
@@ -161,34 +133,13 @@ Instance MMM : ModelingMetamodel MM :=
 Definition M := Model MM.
 
 (** General functions (used in transformations) *)
-Fixpoint getTransition_sourceOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
- match l with
-  | (Transition_sourceLink x) :: l1 =>
-    if Transition_t_beq x.(Transition_source_t_source) t
-      then (Some x.(Transition_source_t_target))
-      else getTransition_sourceOnLinks t l1
-  | _ :: l1 => getTransition_sourceOnLinks t l1
-  | nil => None
- end.
-
 
 Definition getTransition_source (m : M) (t : Transition_t) : option (State_t) :=
-  getTransition_sourceOnLinks t m.(modelLinks).
-
-
-Fixpoint getTransition_targetOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
- match l with
-  | (Transition_targetLink x) :: l1 =>
-    if Transition_t_beq x.(Transition_target_t_source) t
-      then (Some x.(Transition_target_t_target))
-      else getTransition_targetOnLinks t l1
-  | _ :: l1 => getTransition_targetOnLinks t l1
-  | nil => None
- end.
+  find_lift (get_E_data State_K) (fun s => NodeId_beq t.(Transition_source) s.(State_name)) m.(modelElements).  
 
 
 Definition getTransition_target (m : M) (t : Transition_t) : option (State_t) :=
-  getTransition_targetOnLinks t m.(modelLinks).
+  find_lift (get_E_data State_K) (fun s => NodeId_beq t.(Transition_dest) s.(State_name)) m.(modelElements).  
 
 (* FIXME : generate-me*)
 Definition WF1 (m:M) : Prop :=
@@ -242,15 +193,4 @@ Definition getTransition_TargetObject (tr_arg : Transition_t) (m : M) : option E
   | _ => None
   end.
 
-Definition maybeBuildTransitionSource (tr_arg: Transition_t) (so_arg: option State_t) : option Transition_source_t :=
-  match tr_arg, so_arg with
-  | tr_arg_succ, Some so_arg_succ => Some (Build_Transition_source_t tr_arg_succ so_arg_succ)
-  | _, _ => None
-  end.
 
-
-Definition maybeBuildTransitionTarget (tr_arg: Transition_t) (ta_arg: option State_t) : option Transition_target_t :=
-  match tr_arg, ta_arg with
-  | tr_arg_succ, Some ta_arg_succ => Some (Build_Transition_target_t tr_arg_succ ta_arg_succ)
-  | _, _ => None
-  end.

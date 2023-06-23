@@ -45,21 +45,10 @@ Definition Moore2Mealy' :=
           << fun _ m t => Mealy.Build_Transition_t 
                           t.(Moore.Transition_source)
                           t.(Moore.Transition_input)
-                          (value (option_map Moore.State_output (Moore.getTransition_target m t))) >> 
-          <<<
-             LINK  
-              Mealy.Transition_source_K //
-              (fun tls _ m moore_tr mealy_tr =>
-                maybeBuildTransitionSource mealy_tr
-                  (maybeResolve tls "s" Mealy.State_K 
-                    (maybeSingleton (Moore.Transition_getSourceObject moore_tr m)))) ;
-            LINK 
-              Mealy.Transition_target_K //
-              (fun tls _ m moore_tr mealy_tr =>
-                maybeBuildTransitionTarget mealy_tr
-                  (maybeResolve tls "s" Mealy.State_K 
-                    (maybeSingleton (Moore.Transition_getTargetObject moore_tr m)))) 
-          >>>
+                          (value (option_map Moore.State_output (Moore.getTransition_target m t)))
+                          t.(Moore.Transition_dest)
+            >> 
+         
       ]
 ].
 
