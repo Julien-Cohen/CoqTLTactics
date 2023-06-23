@@ -143,13 +143,13 @@ Definition getTransition_target (m : M) (t : Transition_t) : option (State_t) :=
   find_lift (get_E_data State_K) (fun s => NodeId_beq t.(Transition_dest) s.(State_name)) m.(modelElements).  
 
 (* FIXME : generate-me*)
-Definition WF1 (m:M) : Prop :=
+Definition WF_target (m:M) : Prop :=
   forall t, 
     List.In (TransitionElement t) m.(modelElements) ->
     SUCCESS ( getTransition_target m t ).
 
 (* FIXME : generate-me*)
-Definition WF2 (m:M) :Prop :=
+Definition WF_source (m:M) :Prop :=
   forall t, 
     List.In (TransitionElement t) m.(modelElements) ->
     SUCCESS ( getTransition_source m t ).
@@ -193,4 +193,28 @@ Definition Transition_getTargetObject (tr_arg : Transition_t) (m : M) : option (
   end.
 
 
+Lemma getTransition_source_inv m t s : 
+  getTransition_source m t = Some s ->
+  List.In (StateElement s) (Model.modelElements m) /\ Transition_source t = State_name s.
+Proof.
+  intro H.
+  unfold getTransition_source in H.
+  apply OptionListUtils.find_lift_some in H.
+  destruct H as (? & ? & ? & ?).
+  destruct x ; [ PropUtils.inj H | discriminate H].
+  apply Id.internal_NodeId_dec_bl in H1.
+  auto.
+Qed.
 
+Lemma getTransition_target_inv m t s : 
+  getTransition_target m t = Some s ->
+  List.In (StateElement s) (Model.modelElements m) /\ Transition_dest t = State_name s.
+Proof.
+  intro H.
+  unfold getTransition_target in H.
+  apply OptionListUtils.find_lift_some in H.
+  destruct H as (? & ? & ? & ?).
+  destruct x ; [ PropUtils.inj H | discriminate H].
+  apply Id.internal_NodeId_dec_bl in H1.
+  auto.
+Qed.

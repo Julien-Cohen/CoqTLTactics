@@ -1,6 +1,7 @@
 Require Import List.
 
 Require PropUtils.
+Require ListUtils.
 
 (** Lists and Options *)
 
@@ -195,7 +196,7 @@ Proof.
   apply List.find_some ; exact H.
 Qed.
 
-Lemma find_some {A} {B} : 
+Lemma find_lift_some {A} {B} : 
   forall (f1:A->option B) (f2:B->bool) s r,
     find_lift f1 f2 s = Some r ->
     exists v, f1 v = Some r /\ In v s /\ f2 r = true.
@@ -228,7 +229,7 @@ Proof.
   {
     intro H.
     match goal with [ |- ?F = None] => destruct F eqn:? end ; [ exfalso | reflexivity ].
-    apply find_some in Heqo.
+    apply find_lift_some in Heqo.
     destruct Heqo as (? & ? & ? & ?).
     apply H in H1 ; clear H.
     destruct H1 ; [ congruence | ].
@@ -236,6 +237,21 @@ Proof.
     rewrite H0 in H. PropUtils.inj H.
     congruence.
   }
+Qed.
+
+
+
+Lemma in_find_lift {A} {B} e a (l:list A) (f1:A->option B) (f2:B->bool) :
+  ListUtils.discriminating_predicate (fun x => f2 x = true) (OptionListUtils.lift_list f1 l) ->
+  f1 e = Some a ->
+  f2 a = true ->
+  List.In e l ->
+  OptionListUtils.find_lift f1 f2 l = Some a.
+Proof.
+  intros.
+  rewrite find_lift_filter_lift.
+  apply ListUtils.in_find ; auto.
+  apply In_lift ; eauto.
 Qed.
 
 Fixpoint filter_lift {A} {B} (f1:A->option B) (f2:B->bool)(s:list A): list B :=

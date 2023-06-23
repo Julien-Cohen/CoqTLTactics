@@ -339,3 +339,35 @@ Proof.
     - simpl.
       destruct (f a) ; eauto.
 Qed.
+
+(** Equivalence between find and In *)
+
+Definition discriminating_predicate {A} (f:A->Prop) (l: list A) := 
+  forall a b, List.In a l -> List.In b l -> f a -> f b -> a = b.
+
+
+Lemma in_find {A} e (l:list A) f :
+  discriminating_predicate (fun x => f x = true) l ->
+  f e = true ->
+  List.In e l ->
+  List.find f l = Some e.
+Proof.
+  intros WF H .
+  induction l ; simpl.
+  {  contradiction. }
+  { intro H2. 
+    destruct H2.
+    + subst a.
+      rewrite H.
+      reflexivity.
+    + destruct (f a) eqn:?.
+      - f_equal.
+        apply WF ; simpl ; auto.
+      - apply IHl ; auto.
+        revert WF ; clear ; unfold discriminating_predicate ; intro H.
+        intros.
+        apply H ; auto.
+        apply List.in_cons ; auto.
+        apply List.in_cons ; auto.
+  }
+Qed.

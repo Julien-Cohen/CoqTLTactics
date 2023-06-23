@@ -16,7 +16,7 @@ Definition convert_transition  (m: Moore.M)  (t : Moore.Transition_t)   :option 
   end.
 
 Lemma convert_transition_ok : forall (m:Moore.M) t,
-    Moore.WF1 m ->
+    Moore.WF_target m ->
     List.In (Moore.TransitionElement t) m.(Model.modelElements) -> 
     SUCCESS (convert_transition m t).
 Proof.
@@ -63,7 +63,7 @@ Qed.
 
 Lemma transition_element_bw :
   forall (t:Mealy.Transition_t) (m:Moore.M),
-    Moore.WF1 m ->
+    Moore.WF_target m ->
     List.In (Mealy.TransitionElement t) (Model.modelElements (Semantics.execute  Moore2Mealy.Moore2Mealy m)) ->
     exists t0,
       List.In (Moore.TransitionElement t0) (Model.modelElements m) /\ Some t = convert_transition m t0.
@@ -82,7 +82,7 @@ Qed.
 
 Lemma transition_element_fw : 
   forall (t:Moore.Transition_t) (m:Moore.M),
-    Moore.WF1 m ->
+    Moore.WF_target m ->
     List.In (Moore.TransitionElement t) (Model.modelElements m) ->
     exists t', 
       convert_transition m t = Some t' /\

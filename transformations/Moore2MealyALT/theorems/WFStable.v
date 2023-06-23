@@ -7,7 +7,7 @@ Require Moore2MealyALT.theorems.Elements.
 
 
 Lemma determinist_preserved m :
-  Moore.WF1 m ->
+  Moore.WF_target m ->
   MooreWF.determinist m ->
   MealyWF.determinist (Semantics.execute  Moore2Mealy.Moore2Mealy m).
 Proof.
@@ -35,4 +35,57 @@ Lemma unique_names_preserved_fw : forall m,
     MealyWF.unique_names (Semantics.execute Moore2Mealy.Moore2Mealy m).
 Proof.
   intros ; apply MealyWF.always_unique_names.
+Qed.
+
+Lemma WF_source_stable : 
+  forall m,
+    Moore.WF_target m ->
+    Moore.WF_source m ->
+    Mealy.WF_source (Semantics.execute Moore2Mealy.Moore2Mealy m).
+Proof.
+  intros m WF_1 WF_2. 
+  intros t H.
+  apply Elements.transition_element_bw in H ; auto.
+  destruct H as ( t0 & ? & ?).
+  unfold Elements.convert_transition in H0.
+  PropUtils.destruct_match H0 ; [ PropUtils.inj H0 | discriminate H0].
+  destruct (WF_2 _ H) as (s0 & G).
+  clear Heqo.
+  exists (Elements.convert s0).
+
+  apply Moore.getTransition_source_inv in G.
+  destruct G.
+  apply MealyWF.getTransition_source_some.
+  { apply MealyWF.always_unique_names. }
+  { apply Elements.state_element_fw. assumption. }
+  { unfold Mealy.Transition_source.
+    unfold Elements.convert.
+    auto.
+  }
+Qed.
+
+Lemma WF_target_stable : (* same proof *) 
+  forall m,
+    Moore.WF_target m ->
+    Mealy.WF_target (Semantics.execute Moore2Mealy.Moore2Mealy m).
+Proof.
+  intros m WF_1. 
+  intros t H.
+  apply Elements.transition_element_bw in H ; auto.
+  destruct H as ( t0 & ? & ?).
+  unfold Elements.convert_transition in H0.
+  PropUtils.destruct_match H0 ; [ PropUtils.inj H0 | discriminate H0].
+  destruct (WF_1 _ H) as (s0 & G).
+  clear Heqo.
+  exists (Elements.convert s0).
+
+  apply Moore.getTransition_target_inv in G.
+  destruct G.
+  apply MealyWF.getTransition_target_some.
+  { apply MealyWF.always_unique_names. }
+  { apply Elements.state_element_fw. assumption. }
+  { unfold Mealy.Transition_dest.
+    unfold Elements.convert.
+    auto.
+  }
 Qed.

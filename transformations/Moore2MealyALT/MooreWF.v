@@ -10,7 +10,7 @@ Definition unique_names (m:Moore.M) :=
     e1.(State_name) = e2.(State_name) ->
     e1 = e2.
 
-Lemma In_1 : forall (m:Moore.M) e,
+Lemma In_state : forall (m:Moore.M) e,
          List.In (StateElement e) (Model.modelElements m) <-> List.In e
     (OptionListUtils.lift_list (get_E_data State_K)
        (Model.modelElements m)).
@@ -24,10 +24,48 @@ Proof.
   {
     apply OptionListUtils.In_lift in H.
     destruct H as (e2 & (G & IN2)).
-    destruct e2 ; [ unfold get_E_data in G ; injection G ; intro ; subst| discriminate G]. 
+    destruct e2 ; [ PropUtils.inj G| discriminate G]. 
     assumption.
   }
 Qed.
+
+Lemma In_transition : forall (m:Moore.M) e,
+         List.In (TransitionElement e) (Model.modelElements m) <-> List.In e
+    (OptionListUtils.lift_list (get_E_data Transition_K)
+       (Model.modelElements m)).
+Proof.
+  intros m e.
+  split ; intro H.
+  {
+    apply OptionListUtils.In_lift.
+    exists (TransitionElement e). auto.
+  }  
+  {
+    apply OptionListUtils.In_lift in H.
+    destruct H as (e2 & (G & IN2)).
+    destruct e2 ; [ discriminate G | PropUtils.inj G]. 
+    assumption.
+  }
+Qed.
+
+
+Lemma discr  (m : M) : 
+  unique_names m ->
+  forall (i : NodeId),
+    ListUtils.discriminating_predicate
+      (fun x : State_t => NodeId_beq i (State_name x) = true)
+      (OptionListUtils.lift_list (get_E_data State_K)
+         (Model.modelElements m)).
+Proof.
+  intros WF i.
+  unfold ListUtils.discriminating_predicate ; intros.
+  apply WF.
+  apply In_state ; assumption.
+  apply In_state ; assumption.
+  apply internal_NodeId_dec_bl in H1, H2.
+  congruence.
+Qed.
+
 
 Lemma in_find : 
   forall m n e,
@@ -40,23 +78,42 @@ Lemma in_find :
          Some e.
 Proof.
   intros.
-  rewrite OptionListUtils.find_lift_filter_lift.
-  match goal with [ |- ?F = _] => destruct F eqn:E ; [ | exfalso ] end.
-  + 
-    apply List.find_some in E.
-    destruct E as (IN2 & EQ).
-    apply In_1 in IN2.
-    f_equal.
-    apply H ; [ exact IN2 | exact H0 | ].
-    apply internal_NodeId_dec_bl in EQ.
-    congruence.
-   + apply List.find_none with (x:= e) in E ; [ |  ].
-     subst.
-     rewrite internal_NodeId_dec_lb in E ; auto. discriminate E.
-
-     apply In_1 ; assumption.
-     
+  eapply OptionListUtils.in_find_lift ; [ | | | exact H0 ].
+  { apply discr. assumption. }
+  { reflexivity. }
+  { apply internal_NodeId_dec_lb. auto. }  
 Qed.
+
+
+
+Lemma getTransition_sourcet_some (s:State_t) t (m:Moore.M) :
+  unique_names m ->
+  List.In (StateElement s) m.(Model.modelElements) ->
+  State_name s = t.(Transition_source) ->
+  getTransition_source m t = Some s. 
+Proof.
+  intros WF H1 H2.
+  unfold getTransition_source.
+  eapply OptionListUtils.in_find_lift ; [ | | | exact H1 ].
+  { apply discr. assumption. }
+  { reflexivity. }
+  { apply internal_NodeId_dec_lb. auto. }  
+Qed.
+ 
+Lemma getTransition_target_some (s:State_t) t (m:Moore.M) :
+  unique_names m ->
+  List.In (StateElement s) m.(Model.modelElements) ->
+  State_name s = t.(Transition_dest) ->
+  getTransition_target m t = Some s. 
+Proof.
+  intros WF H1 H2.
+  unfold getTransition_target.
+  eapply OptionListUtils.in_find_lift ; [ | | | exact H1 ].
+  { apply discr. assumption. }
+  { reflexivity. }
+  { apply internal_NodeId_dec_lb. auto. }  
+Qed.
+ 
 
 (** Each node has only one transition getting out of it for a same input. *)
 Definition determinist (m:Moore.M) := 
