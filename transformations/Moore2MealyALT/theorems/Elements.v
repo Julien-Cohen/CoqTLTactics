@@ -29,6 +29,21 @@ Proof.
   reflexivity.
 Qed.  
 
+Lemma convert_transition_inv m t t':
+  convert_transition m t = Some t' ->
+  exists s,
+  Moore.getTransition_target m t = Some s /\ t' ={|
+    Mealy.Transition_source := Moore.Transition_source t;
+    Mealy.Transition_input := Moore.Transition_input t;
+    Mealy.Transition_output := Moore.State_output s;
+    Mealy.Transition_dest := Moore.Transition_dest t
+  |}.
+Proof.    
+  unfold Elements.convert_transition ; intro.
+  PropUtils.destruct_match H ; [ PropUtils.inj H | discriminate H].
+  eauto.
+Qed.
+
 Lemma state_element_fw : 
   forall (s:Moore.State_t) (m:Moore.M),
     List.In (Moore.StateElement s) (Model.modelElements m) ->
