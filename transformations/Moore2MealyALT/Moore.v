@@ -15,7 +15,7 @@ Require        core.Tactics.
 Require Import Id.
 
 (** Base types for elements *)
-Record State_t := { State_name : NodeId ; State_output : string }.
+Record State_t := { State_id : NodeId ; State_output : string }.
 Scheme Equality for State_t.
 Lemma lem_State_t_beq_id : forall (e1 e2 : State_t), State_t_beq e1 e2 = true -> e1 = e2.
 Proof. exact internal_State_t_dec_bl. Qed. 
@@ -136,11 +136,11 @@ Definition M := Model MM.
 (** General functions (used in transformations) *)
 
 Definition getTransition_source (m : M) (t : Transition_t) : option (State_t) :=
-  find_lift (get_E_data State_K) (fun s => NodeId_beq t.(Transition_source) s.(State_name)) m.(modelElements).  
+  find_lift (get_E_data State_K) (fun s => NodeId_beq t.(Transition_source) s.(State_id)) m.(modelElements).  
 
 
 Definition getTransition_target (m : M) (t : Transition_t) : option (State_t) :=
-  find_lift (get_E_data State_K) (fun s => NodeId_beq t.(Transition_dest) s.(State_name)) m.(modelElements).  
+  find_lift (get_E_data State_K) (fun s => NodeId_beq t.(Transition_dest) s.(State_id)) m.(modelElements).  
 
 (* FIXME : generate-me*)
 Definition WF_target (m:M) : Prop :=
@@ -195,7 +195,7 @@ Definition Transition_getTargetObject (tr_arg : Transition_t) (m : M) : option (
 
 Lemma getTransition_source_inv m t s : 
   getTransition_source m t = Some s ->
-  List.In (StateElement s) (Model.modelElements m) /\ Transition_source t = State_name s.
+  List.In (StateElement s) (Model.modelElements m) /\ Transition_source t = State_id s.
 Proof.
   intro H.
   unfold getTransition_source in H.
@@ -208,7 +208,7 @@ Qed.
 
 Lemma getTransition_target_inv m t s : 
   getTransition_target m t = Some s ->
-  List.In (StateElement s) (Model.modelElements m) /\ Transition_dest t = State_name s.
+  List.In (StateElement s) (Model.modelElements m) /\ Transition_dest t = State_id s.
 Proof.
   intro H.
   unfold getTransition_target in H.

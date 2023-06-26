@@ -8,7 +8,7 @@ Require Import core.utils.Utils.
 Require Import Id.
 
 Definition initialState (m: M) : option State_t :=
-    find_lift (get_E_data State_K) (fun s => NodeId_beq (Id "S0") s.(State_name)) m.(modelElements).
+    find_lift (get_E_data State_K) (fun s => NodeId_beq (Id "S0") s.(State_id)) m.(modelElements).
 
 Definition State_outTransitions (m: M) (s: State_t) : list Transition_t :=
     filter_lift 

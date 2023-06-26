@@ -2,11 +2,9 @@ Require Moore2MealyALT.Moore2Mealy.
 Require Moore2MealyALT.theorems.Elements.
 Require Moore2MealyALT.theorems.WFStable.
 
-(*Import String OptionUtils.*)
-
 Lemma initial_state_preserved_fw2 : 
       forall m s,
-        MooreWF.unique_names m ->
+        MooreWF.unique_ids m ->
         MooreSemantics.initialState m = Some s ->
         MealySemantics.initialState (Semantics.execute Moore2Mealy.Moore2Mealy m) = Some (Elements.convert s).
 Proof.
@@ -17,9 +15,9 @@ Proof.
   destruct v ; [ PropUtils.inj G | discriminate G].  (* monadInv *)
   apply Id.internal_NodeId_dec_bl in E.
   destruct s.
-  unfold Moore.State_name in E.
+  unfold Moore.State_id in E.
   subst.
-  apply MealyWF.in_find ; [ apply MealyWF.always_unique_names | | reflexivity ].
+  apply MealyWF.in_find ; [ apply MealyWF.always_unique_ids | | reflexivity ].
   apply Elements.state_element_fw.  exact IN.
 Qed.
 
@@ -44,14 +42,14 @@ Proof.
   unfold Moore.get_E_data in INIT.
   destruct INIT ; [ discriminate | ].
   destruct H0 as (? & ? & ?). PropUtils.inj H0.
-  destruct x0 ; unfold Elements.convert, Mealy.State_name.
-  unfold Moore.State_name in *.
+  destruct x0 ; unfold Elements.convert, Mealy.State_id.
+  unfold Moore.State_id in *.
   exact H1.
 Qed.
 
 Lemma initial_state_preserved : 
   forall m,
-    MooreWF.unique_names m ->
+    MooreWF.unique_ids m ->
     MealySemantics.initialState (Semantics.execute Moore2Mealy.Moore2Mealy m) = option_map Elements.convert (MooreSemantics.initialState m).
 Proof.
   intros m WD.

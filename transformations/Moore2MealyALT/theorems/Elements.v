@@ -7,7 +7,7 @@ Require Moore2MealyALT.MealyWF.
 Import String OptionUtils.
 
 Definition convert (s:Moore.State_t) : Mealy.State_t :=
-  {| Mealy.State_name := s.(Moore.State_name) |}.
+  {| Mealy.State_id := s.(Moore.State_id) |}.
 
 Definition convert_transition  (m: Moore.M)  (t : Moore.Transition_t)   :option Mealy.Transition_t :=
   match Moore.getTransition_target m t with

@@ -3,17 +3,17 @@ Require Import Moore2MealyALT.Mealy Moore2MealyALT.MealySemantics.
 Import String.
 Import Id.
 
-Definition unique_names (m:M) := 
+Definition unique_ids (m:M) := 
   forall e1 e2,
   List.In (StateElement e1) m.(Model.modelElements) ->
   List.In (StateElement e2) m.(Model.modelElements) ->
-  e1.(State_name) = e2.(State_name) ->
+  e1.(State_id) = e2.(State_id) ->
   e1 = e2.
 
-(** Two states with the same name are equals because a state only contains a name. *)
-Lemma always_unique_names :
-  forall m, unique_names m.
-  unfold unique_names.
+(** Two states with the same id are equals because a state only contains an id. *)
+Lemma always_unique_ids :
+  forall m, unique_ids m.
+  unfold unique_ids.
   intros m e1 e2 H1 H2 E.
   destruct e1, e2.
   simpl in E.
@@ -61,10 +61,10 @@ Qed.
 
 
 Lemma discr  (m : M) : 
-  unique_names m ->
+  unique_ids m ->
   forall (i : NodeId),
     ListUtils.discriminating_predicate
-      (fun x : State_t => NodeId_beq i (State_name x) = true)
+      (fun x : State_t => NodeId_beq i (State_id x) = true)
       (OptionListUtils.lift_list (get_E_data State_K)
          (Model.modelElements m)).
 Proof.
@@ -80,11 +80,11 @@ Qed.
 
 Lemma in_find : 
   forall m n e,
-    unique_names m ->
+    unique_ids m ->
     List.In (StateElement e) m.(Model.modelElements) ->
-    e.(State_name) = n ->
+    e.(State_id) = n ->
     OptionListUtils.find_lift (get_E_data State_K)
-           (fun s : State_t => (NodeId_beq n  s.(State_name))%string)
+           (fun s : State_t => (NodeId_beq n  s.(State_id))%string)
            m.(Model.modelElements) = 
          Some e.
 Proof.
@@ -98,9 +98,9 @@ Qed.
 
 
 Lemma getTransition_source_some (s:State_t) t (m:Mealy.M) :
-  unique_names m ->
+  unique_ids m ->
   List.In (StateElement s) m.(Model.modelElements) ->
-  State_name s = t.(Transition_source) ->
+  State_id s = t.(Transition_source) ->
   getTransition_source m t = Some s. 
 Proof.
   intros WF H1 H2.
@@ -112,9 +112,9 @@ Proof.
 Qed.
  
 Lemma getTransition_target_some  (s:State_t) t (m:Mealy.M) :
-  unique_names m ->
+  unique_ids m ->
   List.In (StateElement s) m.(Model.modelElements) ->
-  State_name s = t.(Transition_dest) ->
+  State_id s = t.(Transition_dest) ->
   getTransition_target m t = Some s. 
 Proof.
   intros WF H1 H2.

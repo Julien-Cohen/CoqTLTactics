@@ -30,11 +30,11 @@ Proof.
 Qed.
 
 
-Lemma unique_names_preserved_fw : forall m,
-    MooreWF.unique_names m -> 
-    MealyWF.unique_names (Semantics.execute Moore2Mealy.Moore2Mealy m).
+Lemma unique_ids_preserved_fw : forall m,
+    MooreWF.unique_ids m -> 
+    MealyWF.unique_ids (Semantics.execute Moore2Mealy.Moore2Mealy m).
 Proof.
-  intros ; apply MealyWF.always_unique_names.
+  intros ; apply MealyWF.always_unique_ids.
 Qed.
 
 Lemma WF_source_stable : 
@@ -56,7 +56,7 @@ Proof.
   apply Moore.getTransition_source_inv in G.
   destruct G.
   apply MealyWF.getTransition_source_some.
-  { apply MealyWF.always_unique_names. }
+  { apply MealyWF.always_unique_ids. }
   { apply Elements.state_element_fw. assumption. }
   { unfold Mealy.Transition_source.
     unfold Elements.convert.
@@ -82,7 +82,7 @@ Proof.
   apply Moore.getTransition_target_inv in G.
   destruct G.
   apply MealyWF.getTransition_target_some.
-  { apply MealyWF.always_unique_names. }
+  { apply MealyWF.always_unique_ids. }
   { apply Elements.state_element_fw. assumption. }
   { unfold Mealy.Transition_dest.
     unfold Elements.convert.

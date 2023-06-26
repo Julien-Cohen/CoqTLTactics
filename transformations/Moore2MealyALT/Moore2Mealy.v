@@ -34,7 +34,7 @@ Definition Moore2Mealy' :=
       from [Moore.State_K]
       to [
         ELEM "s" ::: Mealy.State_K  
-          << fun _ _ s => Build_State_t s.(Moore.State_name) >>
+          << fun _ _ s => Build_State_t s.(Moore.State_id) >>
           
       ];
 
