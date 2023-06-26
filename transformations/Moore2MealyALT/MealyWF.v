@@ -83,8 +83,9 @@ Lemma in_find :
     unique_ids m ->
     List.In (StateElement e) m.(Model.modelElements) ->
     e.(State_id) = n ->
-    OptionListUtils.find_lift (get_E_data State_K)
-           (fun s : State_t => (NodeId_beq n  s.(State_id))%string)
+    OptionListUtils.find_lift 
+      (get_E_data State_K)
+      (fun s : State_t => (NodeId_beq n  s.(State_id)))
            m.(Model.modelElements) = 
          Some e.
 Proof.

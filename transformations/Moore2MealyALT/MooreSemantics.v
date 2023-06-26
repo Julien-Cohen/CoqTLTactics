@@ -56,3 +56,5 @@ Compute execute InputModel ("A"::"B"::nil). (* "bb" *)
 Compute execute InputModel ("B"::nil).      (* None *)
 Compute execute InputModel ("A"::"A"::nil). (* None *)
 
+
+

@@ -12,8 +12,10 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require        core.Tactics.
 
+Require Import Id.
+
 (** Base types for elements *)
-Record State_t := { State_name : string }.
+Record State_t := { State_id : NodeId }.
 Scheme Equality for State_t.
 Lemma lem_State_t_beq_id : forall (e1 e2 : State_t), State_t_beq e1 e2 = true -> e1 = e2.
 Proof. exact internal_State_t_dec_bl. Qed. 

@@ -16,7 +16,7 @@
 Definition Moore_m1 : Model Moore.MM :=
 (Build_Model Moore.MM
     (
-        (StateElement (Build_State_t  "S0" "1")) :: nil
+        (StateElement (Build_State_t  (Id.Id "S0") "1")) :: nil
     )
     ( nil )
 ).
@@ -24,7 +24,7 @@ Definition Moore_m1 : Model Moore.MM :=
 Definition Moore_m2 : Model Moore.MM :=
 (Build_Model Moore.MM
     (
-        (StateElement (Build_State_t  "S0" "0")) :: nil
+        (StateElement (Build_State_t  (Id.Id "S0") "0")) :: nil
     )
     ( nil )
 ).

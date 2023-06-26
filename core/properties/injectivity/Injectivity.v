@@ -50,8 +50,8 @@ Proof.
     simpl.
     unfold set_eq.
     crush.
-    remember (Moore.Build_State_t "S0" "1") as e1.
-    remember (Moore.Build_State_t "S0" "0") as e2.
+    remember (Moore.Build_State_t (Id.Id "S0") "1") as e1.
+    remember (Moore.Build_State_t (Id.Id "S0") "0") as e2.
     unfold incl in H0.
     apply incl_cons_inv in H0.
     destruct H0.
