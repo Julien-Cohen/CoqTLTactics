@@ -125,6 +125,7 @@ transformations/Moore2MealyALT/MealyWF.v
 transformations/Moore2MealyALT/theorems/Elements.v
 transformations/Moore2MealyALT/theorems/WFStable.v
 transformations/Moore2MealyALT/theorems/InitStable.v
+transformations/Moore2MealyALT/theorems/StepCommut.v
 #transformations/Moore2MealyALT/theorems/SemanticsPreservation.v
 
 
