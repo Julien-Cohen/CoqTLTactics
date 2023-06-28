@@ -131,7 +131,6 @@ Qed.
 
 (** * Destructors *)
 
-
 Ltac destruct_in_modelElements_execute H :=
   match type of H with 
     In _ ( (execute ?T _).(modelElements))  =>
@@ -146,18 +145,8 @@ Ltac destruct_in_modelLinks_execute H NEWNAME :=
     In _ (modelLinks (execute ?T _)) =>
       let e := fresh "sp" in
       rewrite (core.Certification.tr_execute_in_links T) in H;
-      destruct H as [e [NEWNAME H]]                                           end.     
-
-(* deprecated *)
-Ltac destruct_execute :=
-  match goal with 
-
-    [ H : In _ ( (execute ?T _).(modelElements)) |- _ ] =>
-      destruct_in_modelElements_execute H
-
-    | [ H : In _ ( (execute ?T _).(modelLinks)) |- _ ] =>
-        destruct_in_modelLinks_execute H
-  end.
+      destruct H as [e [NEWNAME H]]                                           
+  end.     
 
 
 Ltac destruct_instantiateOnPiece H IN_MATCH_NEWNAME :=
@@ -413,6 +402,8 @@ Proof.
   eauto 10.
 Qed.
 
+
+(** For the user *) 
 Lemma in_modelElements_execute_left {MM1} {T1} {T2} {BEQ1} {BEQ2} :
   forall 
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))} 
@@ -561,7 +552,7 @@ Ltac exploit_evalGuard H :=
       
     end.
 
-
+(** Tactics foor the user (BW) *)
 Ltac exploit_element_in_result H :=
   match type of H with
   | In _ (modelElements (execute _ _)) =>
@@ -708,7 +699,7 @@ Proof.
   eauto.
 Qed.
 
-
+(* Used in Class2Relational *)
 Lemma transform_element_fw {tc} cm e te (t:Syntax.Transformation (tc:=tc)) :
   0 < Syntax.arity t ->
   In e (modelElements cm) ->
@@ -725,7 +716,6 @@ Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
   forall (sp:InputPiece) (r:Syntax.Rule) i opu produced_element,
 
     incl sp (modelElements cm) ->
-    
     
     Datatypes.length sp <= Syntax.arity t ->
     

@@ -15,6 +15,21 @@ Definition convert_transition  (m: Moore.M)  (t : Moore.Transition_t)   :option 
   | Some s => Some (Mealy.Build_Transition_t t.(Moore.Transition_source) t.(Moore.Transition_input) s.(Moore.State_output) t.(Moore.Transition_dest))
   end.
 
+
+Lemma convert_transition_inj : 
+  forall m t1 t2 a, 
+    convert_transition m t1 = Some a ->
+    convert_transition m t2 = Some a ->
+    t1 = t2.
+Proof.
+  unfold convert_transition ; intros.
+  PropUtils.destruct_match H ; [ PropUtils.inj H | discriminate H].
+  PropUtils.destruct_match H0 ; [ PropUtils.inj H0 | discriminate H0].
+  
+  destruct t1, t2 ; simpl in * ; congruence.
+Qed.
+
+
 Lemma convert_transition_ok : forall (m:Moore.M) t,
     Moore.WF_target m ->
     List.In (Moore.TransitionElement t) m.(Model.modelElements) -> 
@@ -25,6 +40,22 @@ Proof.
   destruct H as [s H].
   unfold convert_transition.
   exists (Mealy.Build_Transition_t t.(Moore.Transition_source) t.(Moore.Transition_input) s.(Moore.State_output) t.(Moore.Transition_dest)).
+  rewrite H.
+  reflexivity.
+Qed.  
+
+Lemma convert_transition_ok2 : forall (m:Moore.M) t,
+    Moore.WF_target m ->
+    List.In (Moore.TransitionElement t) m.(Model.modelElements) -> 
+    exists s, Moore.getTransition_target m t = Some s /\
+    convert_transition m t = Some (Mealy.Build_Transition_t t.(Moore.Transition_source) t.(Moore.Transition_input) s.(Moore.State_output) t.(Moore.Transition_dest)).
+Proof.
+  intros m t H0 H.
+  apply H0 in H.
+  destruct H as [s H].
+  exists s.
+  split ; [assumption | ].
+  unfold convert_transition.
   rewrite H.
   reflexivity.
 Qed.  
@@ -72,6 +103,7 @@ Lemma state_element_bw :
 Proof.
   intros s m H.
   core.Tactics.exploit_element_in_result H.
+  compute in t0.
   exists t0.
   split ; auto.
 Qed.

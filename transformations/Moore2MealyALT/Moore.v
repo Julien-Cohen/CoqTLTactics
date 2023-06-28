@@ -134,13 +134,15 @@ Instance MMM : ModelingMetamodel MM :=
 Definition M := Model MM.
 
 (** General functions (used in transformations) *)
+(* FIXME : generate-me*)
+Notation find_State := (find_lift (get_E_data State_K)).
 
 Definition getTransition_source (m : M) (t : Transition_t) : option (State_t) :=
-  find_lift (get_E_data State_K) (fun s => NodeId_beq t.(Transition_source) s.(State_id)) m.(modelElements).  
+  find_State (fun s => NodeId_beq t.(Transition_source) s.(State_id)) m.(modelElements).  
 
 
 Definition getTransition_target (m : M) (t : Transition_t) : option (State_t) :=
-  find_lift (get_E_data State_K) (fun s => NodeId_beq t.(Transition_dest) s.(State_id)) m.(modelElements).  
+  find_State (fun s => NodeId_beq t.(Transition_dest) s.(State_id)) m.(modelElements).  
 
 (* FIXME : generate-me*)
 Definition WF_target (m:M) : Prop :=

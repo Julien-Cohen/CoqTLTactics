@@ -53,6 +53,60 @@ Definition execute (m: M) (input: list string) : option (list string) :=
     | None => None
     end.
 
+(* get_Transition_target          getTransition_source *)
+(*                 \               /                   *)
+(*                  \             /                    *)
+(*                   \          State_outTransitions   *)
+(*                    \         /                      *)             
+(*                     \       /                       *)
+(*                      \    State_acceptTransition    *)
+(*                       \   /                         *)  
+(*                        \ /                          *)
+(*                       search                        *)
+(*                        /                            *)
+(*                       /                             *)
+(*     initialState    executeFromState                *)
+(*                 \   /                               *)
+(*                  \ /                                *)
+(*                execute                              *)
+
+(** Some tactics. *)
+Lemma State_out_transitions_inv m s t :
+  List.In t (State_outTransitions m s) ->
+  List.In (TransitionElement t) (Model.modelElements m)
+  /\ getTransition_source m t = Some s.
+Proof.
+  intro H.
+  unfold State_outTransitions in H.
+  apply OptionListUtils.filter_lift_in in H.
+  destruct H as (? & ? & ? & ?).                   
+  PropUtils.destruct_match H1 ; [ | discriminate H1]. 
+  apply lem_State_t_beq_id in H1. subst s0.    
+  destruct x ; [discriminate H0 | PropUtils.inj H0]. (* monadInv *) 
+  auto.
+Qed.
+
+
+
+Lemma in_State_outTransitions (m:Mealy.M) s t :
+  List.In (TransitionElement t) (Model.modelElements m) ->
+  getTransition_source m t = Some s ->
+  List.In t (State_outTransitions m s).
+Proof.
+  intros.
+  unfold State_outTransitions.
+  apply OptionListUtils.filter_lift_in.
+  exists (TransitionElement t).
+  split ; [ assumption | ].
+  split ; [ reflexivity | ].
+  rewrite H0.
+  apply internal_State_t_dec_lb.
+  reflexivity.
+Qed.
+
+
+(** Some tests *)
+
 Require Import transformations.Moore2MealyALT.tests.sampleMoore.
 Require        core.Semantics.
 Require Import transformations.Moore2MealyALT.Moore2Mealy.

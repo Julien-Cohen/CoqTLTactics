@@ -98,13 +98,15 @@ Qed.
 
 
 
-Lemma getTransition_source_some (s:State_t) t (m:Mealy.M) :
+Lemma getTransition_source_some (m:Mealy.M):
   unique_ids m ->
-  List.In (StateElement s) m.(Model.modelElements) ->
-  State_id s = t.(Transition_source) ->
-  getTransition_source m t = Some s. 
+  forall s,
+    List.In (StateElement s) m.(Model.modelElements) ->
+    forall t,
+      State_id s = t.(Transition_source) ->
+      getTransition_source m t = Some s. 
 Proof.
-  intros WF H1 H2.
+  intros WF s H1 t H2.
   unfold getTransition_source.
   eapply OptionListUtils.in_find_lift ; [ | | | exact H1 ].
   { apply discr. assumption. }
@@ -112,13 +114,15 @@ Proof.
   { apply internal_NodeId_dec_lb. auto. }  
 Qed.
  
-Lemma getTransition_target_some  (s:State_t) t (m:Mealy.M) :
-  unique_ids m ->
-  List.In (StateElement s) m.(Model.modelElements) ->
-  State_id s = t.(Transition_dest) ->
-  getTransition_target m t = Some s. 
+Lemma getTransition_target_some (m:Mealy.M) :
+  unique_ids m ->  
+  forall s,
+        List.In (StateElement s) m.(Model.modelElements) ->
+        forall t, 
+          State_id s = t.(Transition_dest) ->
+          getTransition_target m t = Some s. 
 Proof.
-  intros WF H1 H2.
+  intros WF s H1 t H2.
   unfold getTransition_target.
   eapply OptionListUtils.in_find_lift ; [ | | | exact H1 ].
   { apply discr. assumption. }
@@ -170,4 +174,20 @@ Proof.
     apply String.eqb_eq in P2.
     congruence.
   }
+Qed.
+
+
+Lemma State_acceptTransition_some :
+  forall m s i r,
+    determinist m ->
+    r.(Transition_input) = i ->
+    List.In r (State_outTransitions m s) ->
+    State_acceptTransition m s i = Some r.
+Proof.
+  intros.
+  unfold State_acceptTransition.
+  apply ListUtils.in_find.
+  { apply truc. assumption. }
+  { apply String.eqb_eq. auto. }
+  { assumption. }
 Qed.

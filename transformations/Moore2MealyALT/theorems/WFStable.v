@@ -6,7 +6,7 @@ Require Moore2MealyALT.MealyWF.
 Require Moore2MealyALT.theorems.Elements.
 
 
-Lemma determinist_preserved m :
+Lemma determinist_stable m :
   Moore.WF_target m ->
   MooreWF.determinist m ->
   MealyWF.determinist (Semantics.execute  Moore2Mealy.Moore2Mealy m).
@@ -28,6 +28,9 @@ Proof.
   rewrite Heqo in Heqo0 ; PropUtils.inj Heqo0. (* auto_unif *)
   reflexivity.
 Qed.
+
+#[global]
+Hint Resolve determinist_stable : wf.
 
 
 Lemma unique_ids_preserved_fw : forall m,
@@ -64,6 +67,9 @@ Proof.
   }
 Qed.
 
+#[global]
+Hint Resolve WF_source_stable : wf.
+
 Lemma WF_target_stable : (* same proof *) 
   forall m,
     Moore.WF_target m ->
@@ -84,8 +90,12 @@ Proof.
   apply MealyWF.getTransition_target_some.
   { apply MealyWF.always_unique_ids. }
   { apply Elements.state_element_fw. assumption. }
-  { unfold Mealy.Transition_dest.
+  { 
+    unfold Mealy.Transition_dest.
     unfold Elements.convert.
     auto.
   }
 Qed.
+
+#[global]
+Hint Resolve WF_target_stable : wf.

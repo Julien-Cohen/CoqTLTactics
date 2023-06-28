@@ -6,83 +6,122 @@ Require Moore2MealyALT.MealyWF.
 Require Moore2MealyALT.theorems.Elements.
 Require Moore2MealyALT.theorems.WFStable.
 Require Moore2MealyALT.theorems.InitStable.
+Require Moore2MealyALT.theorems.GettersCommut.
 
 Import String OptionUtils.
 
-Lemma getTransition_source_stable m t :
+
+(** [State_outTransitions] *)
+
+
+Lemma in_outTransitions_commut_fw m t s t' :
   Moore.WF_source m ->
-  forall s t',
-      Moore.getTransition_source m t = Some s ->
-      Elements.convert_transition m t = Some t' ->
-      Mealy.getTransition_source
-        (Semantics.execute Moore2Mealy.Moore2Mealy m)
-        t' = Some (Elements.convert s).
+  Moore.WF_target m ->
+  MooreWF.determinist m ->
+
+    List.In t (MooreSemantics.State_outTransitions m s) ->
+    Elements.convert_transition m t = Some t' ->
+    List.In t' (MealySemantics.State_outTransitions
+       (Semantics.execute Moore2Mealy.Moore2Mealy m)
+       (Elements.convert s)).
+Proof.
+  intros WF1 WF2 WF3. intros.
+  destruct (MooreSemantics.State_out_transitions_inv  _ _ _ H).
+  apply Elements.transition_element_fw in H1 ; auto.
+  destruct H1 as (?&?&?).
+  rewrite H0 in H1. PropUtils.inj H1. (* unif *) (* pourquoi ? *)
+
+  destruct (Elements.convert_transition_inv _ _ _ H0) as (?&?&?).
+  subst.
+  
+  apply MealySemantics.in_State_outTransitions.
+  { assumption.    }        
+  { eapply GettersCommut.getTransition_source_commut_fw ; eauto. }
+Qed.
+
+
+Lemma in_outTransitions_commut_bw m t s' t' :
+  Moore.WF_source m ->
+  Moore.WF_target m ->
+  MooreWF.determinist m ->
+
+    List.In t' 
+      (MealySemantics.State_outTransitions (Semantics.execute Moore2Mealy.Moore2Mealy m) s') ->
+    Elements.convert_transition m t = Some t' ->
+    exists s, Elements.convert s = s' /\
+    List.In t (MooreSemantics.State_outTransitions m s).
+Proof.
+  intros WF1 WF2 WF3. intros.
+  destruct (MealySemantics.State_out_transitions_inv  _ _ _ H).
+  apply Elements.transition_element_bw in H1 ; auto.
+  destruct H1 as (?&?&?).
+
+  
+
+
+  replace x with t in *.
+  2:{ eapply Elements.convert_transition_inj ; eauto. }
+  
+  
+  clear H3.
+  eapply GettersCommut.getTransition_source_commut_bw_alt in H2 ; eauto.
+
+    unfold MooreSemantics.State_outTransitions.
+    destruct H2 as (s & ? & ?).
+    exists s.
+    split ; auto.
+    
+
+    apply OptionListUtils.filter_lift_in.
+    rewrite H3.
+    eexists ; split ; eauto.
+    split ; eauto.
+    apply Moore.internal_State_t_dec_lb.
+    reflexivity.
+Qed.
+
+Lemma in_outTransitions_commut_bw_2 m s' t' :
+  Moore.WF_source m ->
+  Moore.WF_target m ->
+  MooreWF.determinist m ->
+
+    List.In t' 
+      (MealySemantics.State_outTransitions (Semantics.execute Moore2Mealy.Moore2Mealy m) s') ->
+    exists t,  Elements.convert_transition m t = Some t' /\
+    exists s, Elements.convert s = s' /\
+                 
+    List.In t (MooreSemantics.State_outTransitions m s).
 Proof.
   intros.
-  apply Moore.getTransition_source_inv in H0.
-  destruct H0.
-
-  apply MealyWF.getTransition_source_some.
-  { apply MealyWF.always_unique_ids. }
-  { apply Elements.state_element_fw. assumption. }
+  cut (exists t : Moore.Transition_t,
+          Elements.convert_transition m t = Some t').
   { 
-    apply Elements.convert_transition_inv in H1.
-    destruct H1 as (?&?&?) ; subst.
-    unfold Elements.convert.
-    simpl.
-    auto.
+    intros (t & ?).
+    exists t ; split ; auto.
+    eapply in_outTransitions_commut_bw ; eauto.
+  }    
+  {
+    destruct (MealySemantics.State_out_transitions_inv  _ _ _ H2).
+    unfold Elements.convert_transition.
+    cut (Mealy.WF_target (Semantics.execute Moore2Mealy.Moore2Mealy m)) ; auto with wf.
+    intro WF.
+    destruct  (WF _ H3).
+    eapply GettersCommut.getTransition_target_commut_bw_alt_alt in H5 ; eauto.
+    destruct H5 as (t & ?& ?& ? & ?).
+    exists t.
+    rewrite H7.
+    subst.
+    f_equal.
+    unfold Elements.convert_transition in H5.
+    rewrite H7 in H5.
+    PropUtils.inj H5.
+    reflexivity.
   }
 Qed.
 
-Lemma State_out_transitions_inv m s t :
-  List.In t (MooreSemantics.State_outTransitions m s) ->
-  List.In (Moore.TransitionElement t) (Model.modelElements m)
-  /\ Moore.getTransition_source m t = Some s.
-Proof.
-  intro H.
-  unfold MooreSemantics.State_outTransitions in H.
-  apply OptionListUtils.filter_lift_in in H.
-  destruct H as (? & ? & ? & ?).                   
-  PropUtils.destruct_match H1 ; [ | discriminate H1]. 
-  apply Moore.lem_State_t_beq_id in H1. subst s0.    
-  destruct x ; unfold Moore.get_E_data in H0 ; [discriminate H0 | PropUtils.inj H0]. (* monadInv *) 
-  auto.
-Qed.
+(** [State_acceptTransition] *)
 
-Lemma State_acceptTransition_some :
-  forall t s i r,
-    MealyWF.determinist t ->
-    r.(Mealy.Transition_input) = i ->
-    List.In r (MealySemantics.State_outTransitions t s) ->
-    MealySemantics.State_acceptTransition t s i = Some r.
-Proof.
-  intros.
-  unfold MealySemantics.State_acceptTransition.
-  apply ListUtils.in_find.
-  { apply MealyWF.truc. assumption. }
-  { apply String.eqb_eq. auto. }
-  { assumption. }
-Qed.
-
-Lemma in_State_outTransitions (m:Mealy.M) s t :
-  List.In (Mealy.TransitionElement t) (Model.modelElements m) ->
-  Mealy.getTransition_source m t = Some s ->
-  List.In t (MealySemantics.State_outTransitions m s).
-Proof.
-  intros.
-  unfold MealySemantics.State_outTransitions.
-  apply OptionListUtils.filter_lift_in.
-  exists (Mealy.TransitionElement t).
-  split ; [ assumption | ].
-  split ; [ reflexivity | ].
-  rewrite H0.
-  apply Mealy.internal_State_t_dec_lb.
-  reflexivity.
-Qed.
-
-
-
-Lemma State_acceptTransition_eq :
+Lemma State_acceptTransition_commut_fw :
   forall s m i t,
     Moore.WF_source m ->
     Moore.WF_target m ->
@@ -94,31 +133,77 @@ Proof.
 
   unfold MooreSemantics.State_acceptTransition in A.
   apply List.find_some in A. destruct A as [H1 H2].
-  apply State_out_transitions_inv in H1 ; destruct H1.
   
 
   apply String.eqb_eq in H2. subst.
-
+  
+  destruct (MooreSemantics.State_out_transitions_inv  _ _ _ H1). 
   unfold Elements.convert_transition.
-  destruct ( WF_2  _ H) as (s' & H4).
+  destruct (WF_2  _ H) as (s' & H4).
   rewrite H4.
-  apply State_acceptTransition_some.
-    { apply WFStable.determinist_preserved ; assumption. }
-    { reflexivity. }
-    { 
-      apply Elements.transition_element_fw in H ; auto.
-        destruct H as (?&?&?).
-        apply Elements.convert_transition_inv in H.
-        destruct H as (?&?&?). subst.
-        rewrite H in H4 ; PropUtils.inj H4. (* unif *)
+  apply MealyWF.State_acceptTransition_some ; auto with wf.
 
-        apply in_State_outTransitions.
-      { assumption.    }        
-      { 
-        eapply getTransition_source_stable ; eauto.
-        unfold Elements.convert_transition.
-        rewrite H.
-        reflexivity.
-      }
-    }
+  eapply in_outTransitions_commut_fw ; eauto.
+
+  unfold Elements.convert_transition. rewrite H4. reflexivity.
+
 Qed.
+
+Lemma State_acceptTransition_commut_bw :
+  forall s' m i t',
+    Moore.WF_source m ->
+    Moore.WF_target m ->
+    MooreWF.determinist m ->
+    MealySemantics.State_acceptTransition (Semantics.execute Moore2Mealy.Moore2Mealy m) s' i = Some t' ->
+
+    exists s, Elements.convert s = s' /\ 
+                exists t,
+                  Elements.convert_transition m t = Some t' /\
+                    MooreSemantics.State_acceptTransition m s i = Some t 
+    .
+Proof.
+  intros.
+  unfold MealySemantics.State_acceptTransition in H2.
+  destruct (List.find_some _ _ H2).
+  eapply in_outTransitions_commut_bw_2 in H3 ; eauto.
+  destruct H3 as (t&?& s & ? & ?).
+  exists s ; split ; auto.
+  exists t ; split ; auto.
+  unfold MooreSemantics.State_acceptTransition.
+  apply ListUtils.in_find ; eauto.
+  { apply MooreWF.truc. assumption. }
+  { apply String.eqb_eq. apply String.eqb_eq in H4.
+    destruct (Elements.convert_transition_inv _ _ _ H3) as (?& _ &?).
+    subst.
+    reflexivity.
+  }
+Qed.
+
+Corollary State_acceptTransition_none_commut_fw :
+  forall s m i,
+    MooreWF.unique_ids m ->
+    Moore.WF_source m ->
+    Moore.WF_target m ->
+    MooreWF.determinist m ->
+    List.In (Moore.StateElement s) (Model.modelElements m) ->
+    MooreSemantics.State_acceptTransition m s i = None ->
+    MealySemantics.State_acceptTransition (Semantics.execute Moore2Mealy.Moore2Mealy m) (Elements.convert s) i = None.
+Proof.
+  intros s m i WF_0 WF_1 WF_2 WF_3 IN A.
+
+  destruct (MealySemantics.State_acceptTransition
+    (Semantics.execute Moore2Mealy.Moore2Mealy m)
+    (Elements.convert s) i) eqn:? ; [ exfalso | reflexivity ].
+  apply State_acceptTransition_commut_bw in Heqo ; auto.
+  destruct Heqo as (x & ? & ? & _ & ?).
+  replace x with s in H0.
+  congruence.
+  apply WF_0 ; auto.
+  + (* inv *) unfold MooreSemantics.State_acceptTransition in H0.
+    destruct (List.find_some _ _ H0).
+    destruct (MooreSemantics.State_out_transitions_inv _ _ _ H1).
+    destruct (Moore.getTransition_source_inv _ _ _ H4).
+    assumption.
+  + destruct x ; destruct s ; unfold Elements.convert in H ; simpl in H. simpl. congruence.
+Qed.   
+
