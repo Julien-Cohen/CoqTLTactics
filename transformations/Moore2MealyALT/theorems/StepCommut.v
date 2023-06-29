@@ -56,13 +56,9 @@ Proof.
   apply Elements.transition_element_bw in H1 ; auto.
   destruct H1 as (?&?&?).
 
-  
-
-
   replace x with t in *.
-  2:{ eapply Elements.convert_transition_inj ; eauto. }
-  
-  
+  2:{ eapply Elements.convert_transition_injective ; eauto. }
+   
   clear H3.
   eapply GettersCommut.getTransition_source_commut_bw_alt in H2 ; eauto.
 
@@ -106,7 +102,7 @@ Proof.
     cut (Mealy.WF_target (Semantics.execute Moore2Mealy.Moore2Mealy m)) ; auto with wf.
     intro WF.
     destruct  (WF _ H3).
-    eapply GettersCommut.getTransition_target_commut_bw_alt_alt in H5 ; eauto.
+    eapply GettersCommut.getTransition_target_commut_bw in H5 ; eauto.
     destruct H5 as (t & ?& ?& ? & ?).
     exists t.
     rewrite H7.
@@ -118,6 +114,7 @@ Proof.
     reflexivity.
   }
 Qed.
+
 
 (** [State_acceptTransition] *)
 
@@ -131,15 +128,11 @@ Lemma State_acceptTransition_commut_fw :
 Proof.
   intros s m i t WF_1 WF_2 WF_3 A.
 
-  unfold MooreSemantics.State_acceptTransition in A.
-  apply List.find_some in A. destruct A as [H1 H2].
+  destruct (MooreSemantics.State_acceptTransition_inv _ _ _ _ A).
   
-
-  apply String.eqb_eq in H2. subst.
-  
-  destruct (MooreSemantics.State_out_transitions_inv  _ _ _ H1). 
+  destruct (MooreSemantics.State_out_transitions_inv  _ _ _ H). 
   unfold Elements.convert_transition.
-  destruct (WF_2  _ H) as (s' & H4).
+  destruct (WF_2 _ H1) as (s' & H4).
   rewrite H4.
   apply MealyWF.State_acceptTransition_some ; auto with wf.
 
@@ -163,8 +156,9 @@ Lemma State_acceptTransition_commut_bw :
     .
 Proof.
   intros.
-  unfold MealySemantics.State_acceptTransition in H2.
-  destruct (List.find_some _ _ H2).
+
+  destruct (MealySemantics.State_acceptTransition_inv _ _ _ _ H2).
+
   eapply in_outTransitions_commut_bw_2 in H3 ; eauto.
   destruct H3 as (t&?& s & ? & ?).
   exists s ; split ; auto.
@@ -172,43 +166,14 @@ Proof.
   unfold MooreSemantics.State_acceptTransition.
   apply ListUtils.in_find ; eauto.
   { apply MooreWF.truc. assumption. }
-  { apply String.eqb_eq. apply String.eqb_eq in H4.
+  { apply String.eqb_eq.
     destruct (Elements.convert_transition_inv _ _ _ H3) as (?& _ &?).
     subst.
     reflexivity.
   }
 Qed.
 
-Corollary State_acceptTransition_none_commut_fw :
-  forall s m i,
-    MooreWF.unique_ids m ->
-    Moore.WF_source m ->
-    Moore.WF_target m ->
-    MooreWF.determinist m ->
-    List.In (Moore.StateElement s) (Model.modelElements m) ->
-    MooreSemantics.State_acceptTransition m s i = None ->
-    MealySemantics.State_acceptTransition (Semantics.execute Moore2Mealy.Moore2Mealy m) (Elements.convert s) i = None.
-Proof.
-  intros s m i WF_0 WF_1 WF_2 WF_3 IN A.
-
-  destruct (MealySemantics.State_acceptTransition
-    (Semantics.execute Moore2Mealy.Moore2Mealy m)
-    (Elements.convert s) i) eqn:? ; [ exfalso | reflexivity ].
-  apply State_acceptTransition_commut_bw in Heqo ; auto.
-  destruct Heqo as (x & ? & ? & _ & ?).
-  replace x with s in H0.
-  congruence.
-  apply WF_0 ; auto.
-  + (* inv *) unfold MooreSemantics.State_acceptTransition in H0.
-    destruct (List.find_some _ _ H0).
-    destruct (MooreSemantics.State_out_transitions_inv _ _ _ H1).
-    destruct (Moore.getTransition_source_inv _ _ _ H4).
-    assumption.
-  + destruct x ; destruct s ; unfold Elements.convert in H ; simpl in H. simpl. congruence.
-Qed.   
-
 (** [ search] *)
-
 
 Lemma search_commut_fw m :
   Moore.WF_source m ->
@@ -220,27 +185,24 @@ Lemma search_commut_fw m :
       s1'= Elements.convert s1 /\
         s2'= Elements.convert s2 /\ 
         exists t',
-          MealySemantics.search (Semantics.execute Moore2Mealy.Moore2Mealy m) s1' i = Some (t',s2').
+          MealySemantics.search (Semantics.execute Moore2Mealy.Moore2Mealy m) s1' i = Some (t',s2') /\ Mealy.Transition_output t' = Moore.State_output s2.
 Proof.    
   intros WF1 WF2 WF3.
   intros.
   
-  (* inversion H *)
-  unfold MooreSemantics.search in H.
-  PropUtils.destruct_match H ; [ | discriminate H].
-  
+  destruct (MooreSemantics.search_inv _ _ _ _ H) as (?&?&?).
 
   unfold MealySemantics.search.
   unfold Elements.convert.
   eexists ; eexists ; split ; eauto. split ; eauto.
-  apply State_acceptTransition_commut_fw in Heqo ; auto.
-  unfold Elements.convert in Heqo.
-  rewrite Heqo.
-  destruct (GettersCommut.getTransition_target_commut_fw _ _ WF2 _ H).
-
+  apply State_acceptTransition_commut_fw in H0 ; auto.
+  unfold Elements.convert in H0.
   rewrite H0.
+  destruct (GettersCommut.getTransition_target_commut_fw _ _ WF2 _ H1).
 
-  rewrite H1.
+  rewrite H2.
+
+  rewrite H3.
   unfold Elements.convert.
   eauto.
 Qed.
@@ -255,37 +217,31 @@ Lemma search_commut_bw m :
       s1'= Elements.convert s1 /\
         exists s2, 
           s2'= Elements.convert s2 /\ 
-            MooreSemantics.search m s1 i = Some s2
-          .
+            MooreSemantics.search m s1 i = Some s2 /\ Mealy.Transition_output t' = Moore.State_output s2.        
 Proof.    
   intros WF1 WF2 WF3 ; intros.
   
-  (* inversion *)
-  unfold MealySemantics.search in H.
-  PropUtils.destruct_match H ; [ | discriminate  H].
-  PropUtils.destruct_match H ; [ PropUtils.inj H | discriminate H].
-
+  destruct (MealySemantics.search_inv _ _ _ _ _ H).
 
   unfold MooreSemantics.search.
   
-  destruct (State_acceptTransition_commut_bw _ _ _ _ WF1 WF2 WF3 Heqo) as (s1 & ? & t & ? & ?).
+  destruct (State_acceptTransition_commut_bw _ _ _ _ WF1 WF2 WF3 H0) as (s1 & ? & t & ? & ?).
 
   exists s1. split ; auto.
-  rewrite H1.
+  rewrite H4.
 
-  (* inversion *)
-  unfold MealySemantics.State_acceptTransition in Heqo.
-  apply List.find_some in Heqo.
-  destruct Heqo.
+  destruct (MealySemantics.State_acceptTransition_inv _ _ _ _ H0).
+  
+  destruct (MealySemantics.State_out_transitions_inv _ _ _ H5).
 
-  apply MealySemantics.State_out_transitions_inv in H2.
-  destruct H2.
-  destruct (GettersCommut.getTransition_target_commut_bw_alt_alt _ WF2 _ _ H2 Heqo0) as (?&?&s2&?&?).
+  destruct (GettersCommut.getTransition_target_commut_bw _ WF2 _ _ H7 H1) as (?&?&s2&?&?).
   replace x with t in *.
-  2:{
-    eapply Elements.convert_transition_inj ; eauto.
-  }
-  clear H5.
-  rewrite H7.
+  2:{ eapply Elements.convert_transition_injective ; eauto. }
+  clear H8. (* duplicate *)
+  rewrite H10.
+  destruct (Elements.convert_transition_inv _ _ _ H3) as (?&?&?) ; subst t'.
+  simpl.
+  rewrite H11 in H8. (* unif *)
+  PropUtils.inj H8.
   eauto.
 Qed.

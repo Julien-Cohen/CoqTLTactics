@@ -9,6 +9,20 @@ Import String OptionUtils.
 Definition convert (s:Moore.State_t) : Mealy.State_t :=
   {| Mealy.State_id := s.(Moore.State_id) |}.
 
+Lemma convert_injective : 
+  forall m s1 s2,
+    MooreWF.unique_ids m ->
+    List.In (Moore.StateElement s1) m.(Model.modelElements) ->
+    List.In (Moore.StateElement s2) m.(Model.modelElements) ->
+    convert s1 = convert s2 ->
+    s1 = s2.
+Proof.
+  intros m s1 s2 WF H1 H2 H3.
+  apply WF ; auto.
+  destruct s1, s2 ; unfold convert in H3 ; congruence.
+Qed.
+
+
 Definition convert_transition  (m: Moore.M)  (t : Moore.Transition_t)   :option Mealy.Transition_t :=
   match Moore.getTransition_target m t with
   | None => None
@@ -16,9 +30,9 @@ Definition convert_transition  (m: Moore.M)  (t : Moore.Transition_t)   :option 
   end.
 
 
-Lemma convert_transition_inj : 
+Lemma convert_transition_injective : 
   forall m t1 t2 a, 
-    convert_transition m t1 = Some a ->
+    convert_transition m t1 = Some a -> (* fixme : simplify *)
     convert_transition m t2 = Some a ->
     t1 = t2.
 Proof.

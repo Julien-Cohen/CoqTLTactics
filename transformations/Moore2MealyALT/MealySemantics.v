@@ -104,6 +104,55 @@ Proof.
   reflexivity.
 Qed.
 
+Lemma State_acceptTransition_inv :
+  forall m s1 i t,
+    State_acceptTransition m s1 i = Some t -> 
+    List.In t (State_outTransitions m s1) /\
+      i = Transition_input t.
+Proof.
+  intros.
+  unfold State_acceptTransition in H.
+  destruct (List.find_some _ _ H).
+  apply String.eqb_eq in H1.
+  split ; assumption.
+Qed.
+
+Lemma search_inv :
+  forall m s i t r,
+    search m s i = Some (t,r) -> 
+    State_acceptTransition m s i = Some t /\
+      getTransition_target m t = Some r.
+Proof.
+  unfold search ; intros.
+  OptionUtils.monadInv H.
+  OptionUtils.monadInv H.
+  eauto.
+Qed.
+
+Lemma execute_in :
+  forall m i s r,
+    i <> nil ->
+    executeFromState m s i = Some r ->
+    List.In (StateElement s) m.(Model.modelElements).
+Proof.    
+  intros.
+
+  destruct i.
+  { contradiction. }
+  { 
+    simpl in H0.
+    PropUtils.destruct_match H0 ; [ | discriminate].
+    destruct p.
+    clear H0.
+    destruct (search_inv _ _ _ _ _ Heqo).
+
+    destruct (State_acceptTransition_inv _ _ _ _ H0).
+    destruct (State_out_transitions_inv _ _ _ H2).
+    destruct (getTransition_source_inv _ _ _ H5).
+    assumption.
+  }
+Qed.    
+
 
 (** Some tests *)
 

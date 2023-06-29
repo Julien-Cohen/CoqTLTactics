@@ -127,7 +127,7 @@ transformations/Moore2MealyALT/theorems/WFStable.v
 transformations/Moore2MealyALT/theorems/InitStable.v
 transformations/Moore2MealyALT/theorems/StepCommut.v
 transformations/Moore2MealyALT/theorems/GettersCommut.v
-#transformations/Moore2MealyALT/theorems/SemanticsPreservation.v
+transformations/Moore2MealyALT/theorems/SemanticPreservation.v
 
 
 # Engine proofs

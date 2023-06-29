@@ -85,6 +85,56 @@ Proof.
   auto.
 Qed.
 
+Lemma State_acceptTransition_inv :
+  forall m s1 i t,
+    State_acceptTransition m s1 i = Some t -> 
+    List.In t (State_outTransitions m s1) /\
+      i = Transition_input t.
+Proof.
+  intros.
+  unfold State_acceptTransition in H.
+  destruct (List.find_some _ _ H).
+  apply String.eqb_eq in H1.
+  split ; assumption.
+Qed.
+
+Lemma search_inv :
+  forall m s i r,
+    search m s i = Some r ->
+    exists t, 
+      State_acceptTransition m s i = Some t /\
+        getTransition_target m t = Some r.
+Proof.
+  unfold search ; intros.
+  OptionUtils.monadInv H.
+  eauto.
+Qed.
+
+
+Lemma search_in_left :
+  forall m s1 a s2,
+  search m s1 a = Some s2 ->
+  List.In (StateElement s1) m.(Model.modelElements).
+Proof.
+  intros.
+  destruct (search_inv _ _ _ _ H) as (?&?&?).
+  destruct (State_acceptTransition_inv _ _ _ _ H0).
+  destruct (State_out_transitions_inv _ _ _ H2).
+  destruct (getTransition_source_inv _ _ _ H5).
+  assumption.
+Qed.
+
+Lemma search_in_right :
+  forall m s1 a s2,
+  search m s1 a = Some s2 ->
+  List.In (StateElement s2) m.(Model.modelElements).
+Proof.
+  intros.
+  destruct (search_inv _ _ _ _ H) as (?&?&?).
+  destruct (getTransition_target_inv _ _ _ H1).
+  assumption.
+Qed.
+
 
 (** Some tests *)
 
