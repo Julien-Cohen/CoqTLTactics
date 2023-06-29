@@ -89,24 +89,17 @@ Proof.
   eauto.
 Qed.
 
+Notation transform_element_fw := 
+  (Tactics.transform_element_fw  (tc := Moore2Mealy.Moore2MealyTransformationConfiguration)).
+
 Lemma state_element_fw : 
   forall (s:Moore.State_t) (m:Moore.M),
     List.In (Moore.StateElement s) (Model.modelElements m) ->
     List.In (Mealy.StateElement (convert s))  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
 Proof.
   intros s m IN.
-  eapply Tactics.in_modelElements_execute_left.
-  + apply Certification.allTuples_incl_length.
-    apply ListUtils.incl_singleton.
-    exact IN.
-    compute ; auto.
-  + apply List.in_eq. (* first rule *)
-  + reflexivity.
-  + compute. left. reflexivity.
-  + apply List.in_eq. 
-  + destruct s.
-    simpl.
-    reflexivity.
+  eapply transform_element_fw ; eauto. 
+  compute ; auto.
 Qed.
 
 Lemma state_element_bw :
@@ -141,6 +134,7 @@ Proof.
   reflexivity.
 Qed.
 
+
 Lemma transition_element_fw : 
   forall (t:Moore.Transition_t) (m:Moore.M),
     Moore.WF_target m ->
@@ -154,19 +148,9 @@ Proof.
   unfold convert_transition.
   rewrite G.
   eexists ; split ; [ reflexivity| ].
-  eapply Tactics.in_modelElements_execute_left.
-  + apply Certification.allTuples_incl_length.
-    apply ListUtils.incl_singleton.
-    exact IN.
-    compute ; auto.
-  + apply List.in_cons. apply List.in_eq. (* second rule *)
-  + reflexivity.
-  + compute. left. reflexivity.
-  + apply List.in_eq. 
-  + destruct s.
-    simpl.
-    unfold ConcreteExpressions.makeElement.
-    unfold ConcreteExpressions.wrapElement. simpl.
-    rewrite G.
-    reflexivity.
+  eapply transform_element_fw ; eauto.
+  (* Here we would like to "compute", but we have to do the [rewrite G] below. *)
+  simpl.
+  rewrite G.
+  auto.
 Qed.

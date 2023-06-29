@@ -19,6 +19,8 @@ From transformations.Class2Relational
 Import Class2Relational ClassMetamodel RelationalMetamodel.
 
 
+Notation transform_element_fw := 
+  (Tactics.transform_element_fw  (tc := Class2Relational.C2RConfiguration)).
 
 
 (** Utilities on transformation of elements *)
@@ -36,9 +38,8 @@ Lemma transform_attribute_fw :
 Proof.
   intros cm rm H ; subst.
   intros i n H.
-  eapply C2RTactics.transform_element_fw ; [ exact H | ].
-  compute.
-  auto.
+  eapply transform_element_fw ; eauto.
+  compute ; auto.
 Qed.
 
 
@@ -52,10 +53,8 @@ Lemma transform_class_fw :
 Proof.
   intros cm rm H ; subst.
   intros i n H.
-  eapply C2RTactics.transform_element_fw ; [ exact H | ].
-  compute.
-  auto.
-    (* Remark : exactly the same script as above. *)
+  eapply transform_element_fw ; eauto.
+  compute ; auto.
 Qed.
 
 

@@ -57,16 +57,5 @@ Ltac unfold_toEData H :=
   unfold get_E_data in H.
 
 
-(** *** Forward Descriptions *)
-
-Lemma transform_element_fw cm e te :
-  In e (modelElements cm) ->
-  In te (elements_proj (traceTrOnPiece Class2Relational cm [e])) ->
-  In te (modelElements (execute Class2Relational cm)).
-Proof.
-  intros IN1 IN2.
-  eapply Tactics.transform_element_fw ; eauto.
-Qed.
-
 
 
