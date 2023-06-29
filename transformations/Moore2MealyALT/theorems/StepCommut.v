@@ -207,3 +207,85 @@ Proof.
   + destruct x ; destruct s ; unfold Elements.convert in H ; simpl in H. simpl. congruence.
 Qed.   
 
+(** [ search] *)
+
+
+Lemma search_commut_fw m :
+  Moore.WF_source m ->
+  Moore.WF_target m ->
+  MooreWF.determinist m ->
+  forall s1 i s2,
+    MooreSemantics.search m s1 i = Some s2 ->
+    exists s1' s2',
+      s1'= Elements.convert s1 /\
+        s2'= Elements.convert s2 /\ 
+        exists t',
+          MealySemantics.search (Semantics.execute Moore2Mealy.Moore2Mealy m) s1' i = Some (t',s2').
+Proof.    
+  intros WF1 WF2 WF3.
+  intros.
+  
+  (* inversion H *)
+  unfold MooreSemantics.search in H.
+  PropUtils.destruct_match H ; [ | discriminate H].
+  
+
+  unfold MealySemantics.search.
+  unfold Elements.convert.
+  eexists ; eexists ; split ; eauto. split ; eauto.
+  apply State_acceptTransition_commut_fw in Heqo ; auto.
+  unfold Elements.convert in Heqo.
+  rewrite Heqo.
+  destruct (GettersCommut.getTransition_target_commut_fw _ _ WF2 _ H).
+
+  rewrite H0.
+
+  rewrite H1.
+  unfold Elements.convert.
+  eauto.
+Qed.
+
+Lemma search_commut_bw m :
+  Moore.WF_source m ->
+  Moore.WF_target m ->
+  MooreWF.determinist m ->
+  forall s1' i s2' t',
+ MealySemantics.search (Semantics.execute Moore2Mealy.Moore2Mealy m) s1' i = Some (t',s2') ->
+    exists s1,
+      s1'= Elements.convert s1 /\
+        exists s2, 
+          s2'= Elements.convert s2 /\ 
+            MooreSemantics.search m s1 i = Some s2
+          .
+Proof.    
+  intros WF1 WF2 WF3 ; intros.
+  
+  (* inversion *)
+  unfold MealySemantics.search in H.
+  PropUtils.destruct_match H ; [ | discriminate  H].
+  PropUtils.destruct_match H ; [ PropUtils.inj H | discriminate H].
+
+
+  unfold MooreSemantics.search.
+  
+  destruct (State_acceptTransition_commut_bw _ _ _ _ WF1 WF2 WF3 Heqo) as (s1 & ? & t & ? & ?).
+
+  exists s1. split ; auto.
+  rewrite H1.
+
+  (* inversion *)
+  unfold MealySemantics.State_acceptTransition in Heqo.
+  apply List.find_some in Heqo.
+  destruct Heqo.
+
+  apply MealySemantics.State_out_transitions_inv in H2.
+  destruct H2.
+  destruct (GettersCommut.getTransition_target_commut_bw_alt_alt _ WF2 _ _ H2 Heqo0) as (?&?&s2&?&?).
+  replace x with t in *.
+  2:{
+    eapply Elements.convert_transition_inj ; eauto.
+  }
+  clear H5.
+  rewrite H7.
+  eauto.
+Qed.

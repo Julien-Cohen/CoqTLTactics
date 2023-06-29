@@ -169,25 +169,27 @@ Qed.
 
 Lemma getTransition_target_commut_fw m t :
   Moore.WF_target m ->
-  forall s t',
+  forall s,
       Moore.getTransition_target m t = Some s ->
-      Elements.convert_transition m t = Some t' ->
+      let t' := {|
+        Mealy.Transition_source := Moore.Transition_source t;
+        Mealy.Transition_input := Moore.Transition_input t;
+        Mealy.Transition_output := Moore.State_output s;
+        Mealy.Transition_dest := Moore.Transition_dest t
+      |} in 
+      Elements.convert_transition m t = Some t' /\ 
       Mealy.getTransition_target (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some (Elements.convert s).
 Proof.
   intros.
-  apply Moore.getTransition_target_inv in H0.
-  destruct H0.
+  unfold Elements.convert_transition.
+  rewrite H0.
+  split ; [ subst t' ; reflexivity | ].
+  destruct (Moore.getTransition_target_inv _ _ _ H0).
 
   apply MealyWF.getTransition_target_some.
   { apply MealyWF.always_unique_ids. }
   { apply Elements.state_element_fw. assumption. }
-  { 
-    apply Elements.convert_transition_inv in H1.
-    destruct H1 as (?&?&?) ; subst.
-    unfold Elements.convert.
-    simpl.
-    auto.
-  }
+  { unfold Elements.convert ; simpl. auto. }
 Qed.
 
 Lemma getTransition_target_commut_none_fw m t :
@@ -321,7 +323,8 @@ Corollary getTransition_target_commut_none_bw m t :
 Proof.
   intros.
   destruct (Moore.getTransition_target m t) eqn:? ; [ exfalso | reflexivity].
-  eapply getTransition_target_commut_fw in Heqo ; eauto.
+  apply getTransition_target_commut_fw in Heqo ; eauto.
+  destruct Heqo.
   congruence.
 Qed.
  
