@@ -181,18 +181,6 @@ Proof. destruct x ; destruct y ; compute ; congruence. Qed.
 
 (** Added Manually *)
 
-Definition getTransition_sourceObject (t : Transition_t) (m : M) : option Element :=
-  match getTransition_source m t with
-  | Some st_arg => Some (lift_EKind State_K st_arg) 
-  | _ => None
-  end.
-
-Definition getTransition_TargetObject (tr_arg : Transition_t) (m : M) : option Element :=
-  match getTransition_target m tr_arg with
-  | Some st_arg => Some (lift_EKind State_K st_arg) 
-  | _ => None
-  end.
-
 Lemma getTransition_source_inv m t s : 
   getTransition_source m t = Some s ->
   List.In (StateElement s) (Model.modelElements m) /\ Transition_source t = State_id s.

@@ -182,17 +182,7 @@ Lemma TransitionElement_cast :
 Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
 
 (** Manual addition *)
-Definition Transition_getSourceObject (t : Transition_t) (m : M) : option (Element) :=
-match getTransition_source m t with
-  | Some st_arg => Some (StateElement st_arg) 
-  | None => None
-  end.
 
-Definition Transition_getTargetObject (tr_arg : Transition_t) (m : M) : option (Element) :=
-  match getTransition_target m tr_arg with
-  | Some st_arg => Some (StateElement st_arg) 
-  | None => None
-  end.
 
 
 Lemma getTransition_source_inv m t s : 
