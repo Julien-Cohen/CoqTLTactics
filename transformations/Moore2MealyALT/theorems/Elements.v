@@ -6,24 +6,30 @@ Require Moore2MealyALT.MealyWF.
 
 Import String OptionUtils.
 
+Section Foo.
+
+Variable (m:Moore.M).
+
+Hypothesis WF_U : MooreWF.unique_ids m.
+Hypothesis WF_T : Moore.WF_target m.
+
 Definition convert (s:Moore.State_t) : Mealy.State_t :=
   {| Mealy.State_id := s.(Moore.State_id) |}.
 
 Lemma convert_injective : 
-  forall m s1 s2,
-    MooreWF.unique_ids m ->
+  forall s1 s2,
     List.In (Moore.StateElement s1) m.(Model.modelElements) ->
     List.In (Moore.StateElement s2) m.(Model.modelElements) ->
     convert s1 = convert s2 ->
     s1 = s2.
 Proof.
-  intros m s1 s2 WF H1 H2 H3.
-  apply WF ; auto.
+  intros s1 s2 H1 H2 H3.
+  apply WF_U ; auto.
   destruct s1, s2 ; unfold convert in H3 ; congruence.
 Qed.
 
 
-Definition convert_transition  (m: Moore.M)  (t : Moore.Transition_t)   :option Mealy.Transition_t :=
+Definition convert_transition  (t : Moore.Transition_t)   :option Mealy.Transition_t :=
   match Moore.getTransition_target m t with
   | None => None
   | Some s => Some (Mealy.Build_Transition_t t.(Moore.Transition_source) t.(Moore.Transition_input) s.(Moore.State_output) t.(Moore.Transition_dest))
@@ -31,9 +37,9 @@ Definition convert_transition  (m: Moore.M)  (t : Moore.Transition_t)   :option 
 
 
 Lemma convert_transition_injective : 
-  forall m t1 t2 a, 
-    convert_transition m t1 = Some a -> (* would be false with None *)
-    convert_transition m t2 = Some a ->
+  forall t1 t2 a, 
+    convert_transition t1 = Some a -> (* would be false with None *)
+    convert_transition t2 = Some a ->
     t1 = t2.
 Proof.
   unfold convert_transition ; intros.
@@ -44,13 +50,12 @@ Proof.
 Qed.
 
 
-Lemma convert_transition_ok : forall (m:Moore.M) t,
-    Moore.WF_target m ->
+Lemma convert_transition_ok : forall t,
     List.In (Moore.TransitionElement t) m.(Model.modelElements) -> 
-    SUCCESS (convert_transition m t).
+    SUCCESS (convert_transition t).
 Proof.
-  intros m t H0 H.
-  apply H0 in H.
+  intros t H.
+  apply WF_T in H.
   destruct H as [s H].
   unfold convert_transition.
   exists (Mealy.Build_Transition_t t.(Moore.Transition_source) t.(Moore.Transition_input) s.(Moore.State_output) t.(Moore.Transition_dest)).
@@ -58,14 +63,13 @@ Proof.
   reflexivity.
 Qed.  
 
-Lemma convert_transition_ok2 : forall (m:Moore.M) t,
-    Moore.WF_target m ->
+Lemma convert_transition_ok2 : forall t,
     List.In (Moore.TransitionElement t) m.(Model.modelElements) -> 
     exists s, Moore.getTransition_target m t = Some s /\
-    convert_transition m t = Some (Mealy.Build_Transition_t t.(Moore.Transition_source) t.(Moore.Transition_input) s.(Moore.State_output) t.(Moore.Transition_dest)).
+    convert_transition t = Some (Mealy.Build_Transition_t t.(Moore.Transition_source) t.(Moore.Transition_input) s.(Moore.State_output) t.(Moore.Transition_dest)).
 Proof.
-  intros m t H0 H.
-  apply H0 in H.
+  intros t H.
+  apply WF_T in H.
   destruct H as [s H].
   exists s.
   split ; [assumption | ].
@@ -74,8 +78,8 @@ Proof.
   reflexivity.
 Qed.  
 
-Lemma convert_transition_inv m t t':
-  convert_transition m t = Some t' ->
+Lemma convert_transition_inv t t':
+  convert_transition t = Some t' ->
   exists s,
   Moore.getTransition_target m t = Some s /\ t' ={|
     Mealy.Transition_source := Moore.Transition_source t;
@@ -84,7 +88,7 @@ Lemma convert_transition_inv m t t':
     Mealy.Transition_dest := Moore.Transition_dest t
   |}.
 Proof.    
-  unfold Elements.convert_transition ; intro.
+  unfold convert_transition ; intro.
   PropUtils.destruct_match H ; [ PropUtils.inj H | discriminate H].
   eauto.
 Qed.
@@ -93,22 +97,22 @@ Notation transform_element_fw :=
   (Tactics.transform_element_fw  (tc := Moore2Mealy.Moore2MealyTransformationConfiguration)).
 
 Lemma state_element_fw : 
-  forall (s:Moore.State_t) (m:Moore.M),
+  forall (s:Moore.State_t),
     List.In (Moore.StateElement s) (Model.modelElements m) ->
     List.In (Mealy.StateElement (convert s))  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
 Proof.
-  intros s m IN.
+  intros s IN.
   eapply transform_element_fw ; eauto. 
   compute ; auto.
 Qed.
 
 Lemma state_element_bw :
-  forall (s:Mealy.State_t) (m:Moore.M),
+  forall (s:Mealy.State_t),
     List.In (Mealy.StateElement s) (Model.modelElements (Semantics.execute  Moore2Mealy.Moore2Mealy m)) ->
     exists s0,
       List.In (Moore.StateElement s0) (Model.modelElements m) /\ s = convert s0.
 Proof.
-  intros s m H.
+  intros s H.
   core.Tactics.exploit_element_in_result H.
   compute in t0.
   exists t0.
@@ -116,17 +120,16 @@ Proof.
 Qed.
 
 Lemma transition_element_bw :
-  forall (t:Mealy.Transition_t) (m:Moore.M),
-    Moore.WF_target m ->
+  forall (t:Mealy.Transition_t),
     List.In (Mealy.TransitionElement t) (Model.modelElements (Semantics.execute  Moore2Mealy.Moore2Mealy m)) ->
     exists t0,
-      List.In (Moore.TransitionElement t0) (Model.modelElements m) /\ Some t = convert_transition m t0.
+      List.In (Moore.TransitionElement t0) (Model.modelElements m) /\ Some t = convert_transition t0.
 Proof.
-  intros t m WF H.
+  intros t H.
   core.Tactics.exploit_element_in_result H.
   exists t1.
   split ; auto ; [].
-  apply WF in IN_ELTS.
+  apply WF_T in IN_ELTS.
   destruct IN_ELTS as (s & G).
   (* FIXME : ici on voit valueOption, c'est moche. *)
   unfold convert_transition.
@@ -136,15 +139,14 @@ Qed.
 
 
 Lemma transition_element_fw : 
-  forall (t:Moore.Transition_t) (m:Moore.M),
-    Moore.WF_target m ->
+  forall (t:Moore.Transition_t),
     List.In (Moore.TransitionElement t) (Model.modelElements m) ->
     exists t', 
-      convert_transition m t = Some t' /\
+      convert_transition t = Some t' /\
         List.In (Mealy.TransitionElement t')  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
 Proof.
-  intros t m WF IN.
-  destruct (WF _ IN) as (s & G).
+  intros t IN.
+  destruct (WF_T _ IN) as (s & G).
   unfold convert_transition.
   rewrite G.
   eexists ; split ; [ reflexivity| ].
@@ -154,3 +156,5 @@ Proof.
   rewrite G.
   auto.
 Qed.
+
+End Foo.

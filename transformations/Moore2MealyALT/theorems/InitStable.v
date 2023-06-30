@@ -2,13 +2,18 @@ Require Moore2MealyALT.Moore2Mealy.
 Require Moore2MealyALT.theorems.Elements.
 Require Moore2MealyALT.theorems.WFStable.
 
+Section Foo.
+
+Variable (m:Moore.M).
+  
+Hypothesis WF_U : MooreWF.unique_ids m.
+
 Lemma initial_state_preserved_fw2 : 
-      forall m s,
-        MooreWF.unique_ids m ->
+      forall s,
         MooreSemantics.initialState m = Some s ->
         MealySemantics.initialState (Semantics.execute Moore2Mealy.Moore2Mealy m) = Some (Elements.convert s).
 Proof.
-  intros m s WF INIT.
+  intros s INIT.
   unfold MooreSemantics.initialState in INIT.
   unfold MealySemantics.initialState.
   apply OptionListUtils.find_lift_some in INIT. destruct INIT as (v & G & IN & E).
@@ -22,12 +27,11 @@ Proof.
 Qed.
 
 Lemma initial_state_preserved_fw3 : 
-      forall m,
-        MooreSemantics.initialState m = None ->
-        MealySemantics.initialState (Semantics.execute Moore2Mealy.Moore2Mealy m) = None.
+  MooreSemantics.initialState m = None ->
+  MealySemantics.initialState (Semantics.execute Moore2Mealy.Moore2Mealy m) = None.
 Proof.
   unfold MooreSemantics.initialState, MealySemantics.initialState.
-  intros m INIT.
+  intros INIT.
   apply OptionListUtils.find_none.
   intros x H.
 
@@ -48,13 +52,12 @@ Proof.
 Qed.
 
 Lemma initial_state_preserved : 
-  forall m,
-    MooreWF.unique_ids m ->
-    MealySemantics.initialState (Semantics.execute Moore2Mealy.Moore2Mealy m) = option_map Elements.convert (MooreSemantics.initialState m).
+  MealySemantics.initialState (Semantics.execute Moore2Mealy.Moore2Mealy m) = option_map Elements.convert (MooreSemantics.initialState m).
 Proof.
-  intros m WD.
   destruct (MooreSemantics.initialState m) eqn:I ; unfold option_map.
   apply initial_state_preserved_fw2 ; assumption.
   apply initial_state_preserved_fw3 ; assumption.
   (* fixme : remove the two intermediate lemmas *)
 Qed.
+
+End Foo.

@@ -8,38 +8,42 @@ Require Moore2MealyALT.theorems.WFStable.
 
 Import String.
 
-Lemma getTransition_source_commut_fw m t :
-  Moore.WF_source m ->
+Section Foo.
+
+Variable (m:Moore.M).
+
+Hypothesis WF_S : Moore.WF_source m.
+Hypothesis WF_T : Moore.WF_target m.
+
+Lemma getTransition_source_commut_fw t :
   forall s t',
       Moore.getTransition_source m t = Some s ->
       Elements.convert_transition m t = Some t' ->
       Mealy.getTransition_source (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some (Elements.convert s).
 Proof.
   intros.
-  apply Moore.getTransition_source_inv in H0.
-  destruct H0.
+  destruct (Moore.getTransition_source_inv _ _ _ H).
 
   apply MealyWF.getTransition_source_some.
   { apply MealyWF.always_unique_ids. }
   { apply Elements.state_element_fw. assumption. }
   { 
-    apply Elements.convert_transition_inv in H1.
-    destruct H1 as (?&?&?) ; subst.
+    destruct (Elements.convert_transition_inv _ _ _ H0) as (?&?&?) ;
+      subst.
     unfold Elements.convert.
     simpl.
     auto.
   }
 Qed.
 
-Lemma getTransition_source_commut_bw m t :
-  Moore.WF_source m ->
+Lemma getTransition_source_commut_bw t :
   forall s t',
       Mealy.getTransition_source (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some (Elements.convert s) ->
       Elements.convert_transition m t = Some t' ->
       exists s', s'.(Moore.State_id) = s.(Moore.State_id) /\ 
       Moore.getTransition_source m t = Some s'. (* weak result because convert is not injective *)
 Proof.
-  intro WF ; intros.
+  intros.
   destruct (Mealy.getTransition_source_inv _ _ _ H).
   destruct (Elements.state_element_bw _ _ H1) as (?&?&?).
   unfold Elements.convert in H4.
@@ -77,8 +81,7 @@ Proof.
 Qed.
 
 (* FIXME : this should be the main bw lemma *)
-Corollary getTransition_source_commut_bw_alt m t :
-  Moore.WF_source m ->
+Corollary getTransition_source_commut_bw_alt t :
   forall s' t',
       Mealy.getTransition_source (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some s' ->
       Elements.convert_transition m t = Some t' ->
@@ -86,10 +89,10 @@ Corollary getTransition_source_commut_bw_alt m t :
                   Moore.getTransition_source m t = Some s. (* weak result because convert is not injective *)
 Proof.
   intros.
-  replace s' with (Elements.convert (Moore.Build_State_t s'.(Mealy.State_id) ""%string)) in H0.
+  replace s' with (Elements.convert (Moore.Build_State_t s'.(Mealy.State_id) ""%string)) in H.
   { 
-    eapply getTransition_source_commut_bw in H0 ; eauto.
-    destruct H0 as (?&?&?).
+    eapply getTransition_source_commut_bw in H ; eauto.
+    destruct H as (?&?&?).
     eexists ; split ; eauto.
     unfold Elements.convert.
     destruct x ; destruct s' ; simpl in * ; congruence.
@@ -100,8 +103,7 @@ Qed.
 
 (** [getTransition_target] *)
 
-Lemma getTransition_target_commut_fw m t :
-  Moore.WF_target m ->
+Lemma getTransition_target_commut_fw t :
   forall s,
       Moore.getTransition_target m t = Some s ->
       let t' := {|
@@ -115,9 +117,9 @@ Lemma getTransition_target_commut_fw m t :
 Proof.
   intros.
   unfold Elements.convert_transition.
-  rewrite H0.
+  rewrite H.
   split ; [ subst t' ; reflexivity | ].
-  destruct (Moore.getTransition_target_inv _ _ _ H0).
+  destruct (Moore.getTransition_target_inv _ _ _ H).
 
   apply MealyWF.getTransition_target_some.
   { apply MealyWF.always_unique_ids. }
@@ -126,8 +128,7 @@ Proof.
 Qed.
 
 
-Lemma getTransition_target_commut_bw m :
-  Moore.WF_target m ->
+Lemma getTransition_target_commut_bw :
   forall s' t',
     List.In (Mealy.TransitionElement t') (Semantics.execute Moore2Mealy.Moore2Mealy m).(Model.modelElements) ->  
       Mealy.getTransition_target (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some s' ->
@@ -136,10 +137,10 @@ Lemma getTransition_target_commut_bw m :
       exists s, s' = Elements.convert s /\ 
       Moore.getTransition_target m t = Some s. 
 Proof.
-  intro WF ; intros.
+  intros.
   destruct (Mealy.getTransition_target_inv _ _ _ H0).
   destruct (Elements.state_element_bw _ _ H1) as (s&?&?).
-  destruct (Elements.transition_element_bw _ _ WF H) as (t&?&?).
+  destruct (Elements.transition_element_bw _ WF_T _ H) as (t&?&?).
 
   exists t.
   split ; auto.
@@ -157,3 +158,4 @@ Proof.
   congruence.
 Qed.
 
+End Foo.
