@@ -161,30 +161,29 @@ Instance MMM : ModelingMetamodel MM :=
 Definition M := Model MM.
 
 (** General functions (used in transformations) *)
-Fixpoint getTransition_sourceOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
- match l with
-  | (Transition_sourceLink x) :: l1 =>
-    if Transition_t_beq x.(Transition_source_t_source) t
-      then (Some x.(Transition_source_t_target))
-      else getTransition_sourceOnLinks t l1
-  | _ :: l1 => getTransition_sourceOnLinks t l1
-  | nil => None
- end.
+Definition getTransition_sourceOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
+  option_map 
+    Transition_source_t_target 
+    (find_lift 
+       (get_L_data Transition_source_K) 
+       (fun s => Transition_t_beq s.(Transition_source_t_source) t)
+       l
+    ). 
 
 
 Definition getTransition_source (m : M) (t : Transition_t) : option (State_t) :=
   getTransition_sourceOnLinks t m.(modelLinks).
 
 
-Fixpoint getTransition_targetOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
- match l with
-  | (Transition_targetLink x) :: l1 =>
-    if Transition_t_beq x.(Transition_target_t_source) t
-      then (Some x.(Transition_target_t_target))
-      else getTransition_targetOnLinks t l1
-  | _ :: l1 => getTransition_targetOnLinks t l1
-  | nil => None
- end.
+Definition getTransition_targetOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
+  option_map 
+    Transition_target_t_target 
+    (find_lift 
+       (get_L_data Transition_target_K) 
+       (fun s => Transition_t_beq s.(Transition_target_t_source) t)
+       l
+    ).
+
 
 
 Definition getTransition_target (m : M) (t : Transition_t) : option (State_t) :=
@@ -249,66 +248,35 @@ Lemma getTransition_source_inv m t s :
   List.In (Transition_sourceLink lk) m.(Model.modelLinks).
   (*    List.In (StateElement s) (Model.modelElements m). *)
 Proof.
-  
   unfold getTransition_source.
   generalize (modelLinks m).
-  induction l ; simpl ; intro H. 
-  {
-    discriminate.
-    (* la liste des liens ne peut pas être vide *)
-  }
-  {
-    destruct a.
-    
-    2:{ (* cas récursif : rien à faire *)
-      apply IHl in H. eauto.
-    }
-    {
-
-      match type of H with ((if ?E then _ else _) = _) => destruct E eqn:? end. (* destruct_if *)
-      {
-        PropUtils.inj H.
-        apply internal_Transition_t_dec_bl in Heqb.
-        subst. destruct t0. eauto.
-      }
-      { (* cas récursif : rien à faire *)
-        apply IHl in H. eauto.
-      }
-    }
-  }
+  unfold getTransition_sourceOnLinks.
+  intros links H.
+  OptionUtils.monadInv H.
+  apply OptionListUtils.find_lift_some in H.
+  destruct H as (?&?&?&?).
+  destruct x ; [ PropUtils.inj H | discriminate H].
+  apply internal_Transition_t_dec_bl in H1 ; subst.
+  destruct g ; auto.
 Qed.
+
 
 Lemma getTransition_target_inv m t s : 
   getTransition_target m t = Some s -> 
   let lk := {| Transition_target_t_target := s ; Transition_target_t_source := t |} in 
     In (Transition_targetLink lk)  m.(Model.modelLinks).
-
-(*  List.In (StateElement s) (Model.modelElements m) *)
+    (*  List.In (StateElement s) (Model.modelElements m) *)
 Proof.
   unfold getTransition_target.
   generalize (modelLinks m).
-  induction l ; simpl ; intro H.
-  { discriminate. }
-  {
-    destruct a.
-    {
-      (* cas récursif. *)
-      apply IHl in H ; eauto.
-    }
-    {
-      match type of H with ((if ?E then _ else _) = _) => destruct E eqn:? end. (* destruct_if *)
-      {
-        PropUtils.inj H.
-        apply internal_Transition_t_dec_bl in Heqb.
-        subst. destruct t0.
-        eauto.
-      }
-      {
-        (* cas récursif. *)
-        apply IHl in H ; eauto.
-      }
-    }
-  }
+  unfold getTransition_targetOnLinks.
+  intros links H.
+  OptionUtils.monadInv H.
+  apply OptionListUtils.find_lift_some in H.
+  destruct H as (?&?&?&?).
+  destruct x ; [ discriminate H | PropUtils.inj H ].
+  apply internal_Transition_t_dec_bl in H1 ; subst.
+  destruct g ; auto.
 Qed.
 
 
