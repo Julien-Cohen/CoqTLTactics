@@ -242,6 +242,78 @@ Definition getTransition_TargetObject (tr_arg : Transition_t) (m : M) : option E
   | _ => None
   end.
 
+
+Lemma getTransition_source_inv m t s : 
+  getTransition_source m t = Some s ->
+  let lk := {|  Transition_source_t_source := t ;  Transition_source_t_target := s |} in
+  List.In (Transition_sourceLink lk) m.(Model.modelLinks).
+  (*    List.In (StateElement s) (Model.modelElements m). *)
+Proof.
+  
+  unfold getTransition_source.
+  generalize (modelLinks m).
+  induction l ; simpl ; intro H. 
+  {
+    discriminate.
+    (* la liste des liens ne peut pas être vide *)
+  }
+  {
+    destruct a.
+    
+    2:{ (* cas récursif : rien à faire *)
+      apply IHl in H. eauto.
+    }
+    {
+
+      match type of H with ((if ?E then _ else _) = _) => destruct E eqn:? end. (* destruct_if *)
+      {
+        PropUtils.inj H.
+        apply internal_Transition_t_dec_bl in Heqb.
+        subst. destruct t0. eauto.
+      }
+      { (* cas récursif : rien à faire *)
+        apply IHl in H. eauto.
+      }
+    }
+  }
+Qed.
+
+Lemma getTransition_target_inv m t s : 
+  getTransition_target m t = Some s -> 
+  let lk := {| Transition_target_t_target := s ; Transition_target_t_source := t |} in 
+    In (Transition_targetLink lk)  m.(Model.modelLinks).
+
+(*  List.In (StateElement s) (Model.modelElements m) *)
+Proof.
+  unfold getTransition_target.
+  generalize (modelLinks m).
+  induction l ; simpl ; intro H.
+  { discriminate. }
+  {
+    destruct a.
+    {
+      (* cas récursif. *)
+      apply IHl in H ; eauto.
+    }
+    {
+      match type of H with ((if ?E then _ else _) = _) => destruct E eqn:? end. (* destruct_if *)
+      {
+        PropUtils.inj H.
+        apply internal_Transition_t_dec_bl in Heqb.
+        subst. destruct t0.
+        eauto.
+      }
+      {
+        (* cas récursif. *)
+        apply IHl in H ; eauto.
+      }
+    }
+  }
+Qed.
+
+
+
+
 Definition maybeBuildTransitionSource (tr_arg: Transition_t) (so_arg: option State_t) : option Transition_source_t :=
   match tr_arg, so_arg with
   | tr_arg_succ, Some so_arg_succ => Some (Build_Transition_source_t tr_arg_succ so_arg_succ)
