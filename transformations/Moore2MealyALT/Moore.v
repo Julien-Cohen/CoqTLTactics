@@ -183,6 +183,44 @@ Proof. destruct x ; destruct y ; compute ; congruence. Qed.
 
 (** Manual addition *)
 
+Lemma In_state : forall (m:Moore.M) e,
+         List.In (StateElement e) (Model.modelElements m) <-> List.In e
+    (OptionListUtils.lift_list (get_E_data State_K)
+       (Model.modelElements m)).
+Proof.
+  intros m e.
+  split ; intro H.
+  {
+    apply OptionListUtils.In_lift.
+    exists (StateElement e). auto.
+  }  
+  {
+    apply OptionListUtils.In_lift in H.
+    destruct H as (e2 & (G & IN2)).
+    destruct e2 ; [ PropUtils.inj G| discriminate G]. 
+    assumption.
+  }
+Qed.
+
+
+Lemma In_transition : forall (m:Moore.M) e,
+         List.In (TransitionElement e) (Model.modelElements m) <-> List.In e
+    (OptionListUtils.lift_list (get_E_data Transition_K)
+       (Model.modelElements m)).
+Proof.
+  intros m e.
+  split ; intro H.
+  {
+    apply OptionListUtils.In_lift.
+    exists (TransitionElement e). auto.
+  }  
+  {
+    apply OptionListUtils.In_lift in H.
+    destruct H as (e2 & (G & IN2)).
+    destruct e2 ; [ discriminate G | PropUtils.inj G]. 
+    assumption.
+  }
+Qed.
 
 
 Lemma getTransition_source_inv m t s : 

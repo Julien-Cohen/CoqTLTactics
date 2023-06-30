@@ -73,7 +73,7 @@ Proof.
   }
   {
     eapply ListUtils.find_some_left.
-    apply MooreWF.In_state. (*fixme : pas défini au bon endroit. *)
+    apply Moore.In_state. 
     eassumption.
     apply Id.internal_NodeId_dec_lb.
     congruence.

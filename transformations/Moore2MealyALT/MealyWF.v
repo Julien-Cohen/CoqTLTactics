@@ -20,45 +20,6 @@ Lemma always_unique_ids :
   congruence.
 Qed.
 
-(* fixme : generalise-me *)
-Lemma In_state : forall (m:Mealy.M) e,
-         List.In (StateElement e) (Model.modelElements m) <-> List.In e
-    (OptionListUtils.lift_list (get_E_data State_K)
-       (Model.modelElements m)).
-Proof.
-  intros m e.
-  split ; intro H.
-  {
-    apply OptionListUtils.In_lift.
-    exists (StateElement e). auto.
-  }
-  {
-    apply OptionListUtils.In_lift in H.
-    destruct H as (e2 & (G & IN2)).
-    destruct e2 ; [ unfold get_E_data in G ; injection G ; intro ; subst| discriminate G]. 
-    assumption.
-  }
-Qed.
-
-Lemma In_transition : forall (m:Mealy.M) e,
-         List.In (TransitionElement e) (Model.modelElements m) <-> List.In e
-    (OptionListUtils.lift_list (get_E_data Transition_K)
-       (Model.modelElements m)).
-Proof.
-  intros m e.
-  split ; intro H.
-  {
-    apply OptionListUtils.In_lift.
-    exists (TransitionElement e). auto.
-  }  
-  {
-    apply OptionListUtils.In_lift in H.
-    destruct H as (e2 & (G & IN2)).
-    destruct e2 ; [ discriminate G | PropUtils.inj G]. 
-    assumption.
-  }
-Qed.
-
 
 Lemma discr  (m : M) : 
   unique_ids m ->
