@@ -80,3 +80,17 @@ Proof.
 Qed.
 
 Notation SUCCESS e := (exists r, e = Some r). 
+
+
+Lemma option_map_some {A} {B} : 
+  forall (f:A->B) a b r,
+    a = Some b ->
+    f b = r ->
+    option_map f a = Some r.
+Proof.
+  intros.
+  unfold option_map.
+  rewrite H.
+  rewrite H0.
+  reflexivity.
+Qed.

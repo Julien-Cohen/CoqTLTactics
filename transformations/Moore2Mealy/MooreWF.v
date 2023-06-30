@@ -10,46 +10,6 @@ Definition unique_ids (m:Moore.M) :=
     e1.(State_id) = e2.(State_id) ->
     e1 = e2.
 
-(* fixme : move-me *)
-Lemma In_state : forall (m:Moore.M) e,
-         List.In (StateElement e) (Model.modelElements m) <-> List.In e
-    (OptionListUtils.lift_list (get_E_data State_K)
-       (Model.modelElements m)).
-Proof.
-  intros m e.
-  split ; intro H.
-  {
-    apply OptionListUtils.In_lift.
-    exists (StateElement e). auto.
-  }  
-  {
-    apply OptionListUtils.In_lift in H.
-    destruct H as (e2 & (G & IN2)).
-    destruct e2 ; [ PropUtils.inj G| discriminate G]. 
-    assumption.
-  }
-Qed.
-
-(* fixme : move-me *)
-Lemma In_transition : forall (m:Moore.M) e,
-         List.In (TransitionElement e) (Model.modelElements m) <-> List.In e
-    (OptionListUtils.lift_list (get_E_data Transition_K)
-       (Model.modelElements m)).
-Proof.
-  intros m e.
-  split ; intro H.
-  {
-    apply OptionListUtils.In_lift.
-    exists (TransitionElement e). auto.
-  }  
-  {
-    apply OptionListUtils.In_lift in H.
-    destruct H as (e2 & (G & IN2)).
-    destruct e2 ; [ discriminate G | PropUtils.inj G]. 
-    assumption.
-  }
-Qed.
-
 
 Lemma discr  (m : M) : 
   unique_ids m ->
@@ -87,6 +47,115 @@ Proof.
 Qed.
 
 
+(** Two different (source) links cannot deal with the same transition. *)
+(** A transition starts at only one state. *)
+Definition WF_sourceLink_left (m:Moore.M) : Prop :=
+      forall (lk1 lk2 : Transition_source_t) (t : Transition_t),
+        List.In (Transition_sourceLink lk1)  m.(Model.modelLinks) ->
+        List.In (Transition_sourceLink lk2)  m.(Model.modelLinks) ->
+        lk1.(Transition_source_t_source) = t ->
+        lk2.(Transition_source_t_source) = t ->
+        lk1 = lk2.
+
+(** Two different (target) links cannot deal with the same transition. *)
+(** A transition aims at only one state. *)
+Definition WF_targetLink_left (m:Moore.M) : Prop :=
+      forall (lk1 lk2 : Transition_target_t) (t : Transition_t),
+        List.In (Transition_targetLink lk1)  m.(Model.modelLinks) ->
+        List.In (Transition_targetLink lk2)  m.(Model.modelLinks) ->
+        lk1.(Transition_target_t_source) = t ->
+        lk2.(Transition_target_t_source) = t ->
+        lk1 = lk2.
+  
+
+Lemma getTransition_source_some (m:Moore.M) :
+  WF_sourceLink_left m ->
+  forall s,
+    List.In (StateElement s) m.(Model.modelElements) ->
+    forall t,
+      let lk := {|
+                 Transition_source_t_source := t ;
+                 Transition_source_t_target := s 
+               |} 
+      in
+      
+      List.In (Transition_sourceLink lk) (Model.modelLinks m) ->
+(*      State_id s = t.(Transition_source)  -> *)
+      getTransition_source m t = Some s. 
+Proof.
+  intros WF s H1 t lk H2.
+  unfold getTransition_source.
+  unfold getTransition_sourceOnLinks.
+  eapply OptionUtils.option_map_some with (b:=lk).
+  2:{  subst lk. reflexivity. }
+
+  
+  subst lk.
+  eapply OptionListUtils.in_find_lift.
+
+  {
+    intro ; intros.
+    apply internal_Transition_t_dec_bl in H3.
+    apply internal_Transition_t_dec_bl in H4.
+    eapply WF ; eauto.
+    apply In_transition_sourceLink ; assumption.
+    apply In_transition_sourceLink ; assumption.
+  }    
+  { instantiate (1:=Transition_sourceLink
+            {|
+              Transition_source_t_source := t;
+              Transition_source_t_target := s
+            |}). 
+    reflexivity.
+  }        
+
+  { apply internal_Transition_t_dec_lb. reflexivity. }
+  { assumption. }
+Qed.
+
+Lemma getTransition_target_some (m:Moore.M):
+  WF_targetLink_left m ->
+  forall s,
+    List.In (StateElement s) m.(Model.modelElements) ->
+    forall t,
+      let lk := {|
+                 Transition_target_t_source := t ;
+                 Transition_target_t_target := s 
+               |} 
+      in
+      
+      List.In (Transition_targetLink lk) (Model.modelLinks m) ->
+
+      getTransition_target m t = Some s. 
+Proof.
+  intros WF s H1 t lk H2.
+  unfold getTransition_target.
+  unfold getTransition_targetOnLinks.
+  apply OptionUtils.option_map_some with (b:=lk).
+  2:{ subst lk ; reflexivity. }
+  subst lk.
+  eapply OptionListUtils.in_find_lift.
+
+  {
+    intro ; intros.
+    apply internal_Transition_t_dec_bl in H3.
+    apply internal_Transition_t_dec_bl in H4.
+    eapply WF ; eauto.
+    apply In_transition_targetLink ; assumption.
+    apply In_transition_targetLink ; assumption.
+  }    
+  { instantiate (1:=Transition_targetLink
+            {|
+              Transition_target_t_source := t;
+              Transition_target_t_target := s
+            |}). 
+    reflexivity.
+  }        
+
+  { apply internal_Transition_t_dec_lb. reflexivity. }
+  { assumption. }
+Qed.
+ 
 
 (** Each node has only one transition getting out of it for a same input. *)
 Definition determinist m := 
@@ -95,3 +164,36 @@ Definition determinist m :=
       List.In t2 (State_outTransitions m s) ->
       t1.(Transition_input) = t2.(Transition_input) ->
       t1 = t2.
+
+
+Lemma truc m :
+  determinist m ->
+  MooreSemantics.WF_sourceLink_source_in m ->
+  forall s i,
+    ListUtils.discriminating_predicate
+      (fun x : Transition_t =>
+         (i =? Transition_input x)%string = true)
+      (MooreSemantics.State_outTransitions m s).
+Proof.
+  intros WF WF2.
+  intros s i.
+  intros t1 t2 H1 H2 P1 P2.
+  unfold State_outTransitions in H1, H2.
+  apply OptionListUtils.filter_lift_in in H1, H2.
+  destruct H1 as ( ? & ? & ? & ?).
+  destruct H2 as ( ? & ? & ? & ?).
+  PropUtils.destruct_match H1 ; [ | discriminate H1].
+  PropUtils.destruct_match H4 ; [ | discriminate H4].
+  destruct x ; [ discriminate H0 | PropUtils.inj H0]. (* monadInv *)
+  destruct x0 ; [ discriminate H3 | PropUtils.inj H3]. (* monadInv *)
+  apply internal_State_t_dec_bl in H1, H4.
+  subst s1 s0.
+    apply String.eqb_eq in P1.
+    apply String.eqb_eq in P2.
+    
+  eapply WF ; auto ; [ | | ].
+  { apply in_State_outTransitions ; eauto.  }
+  { apply in_State_outTransitions ; eauto. }
+  
+  { congruence. }
+Qed.

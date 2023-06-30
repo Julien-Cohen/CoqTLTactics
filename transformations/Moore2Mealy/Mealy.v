@@ -226,6 +226,87 @@ Definition getTransition_TargetObject (tr_arg : Transition_t) (m : M) : option E
   end.
 
 
+Lemma In_state :
+ forall (m:Mealy.M) e,
+         List.In (StateElement e) (Model.modelElements m) <-> List.In e
+    (OptionListUtils.lift_list (get_E_data State_K)
+       (Model.modelElements m)).
+Proof.
+  intros m e.
+  split ; intro H.
+  {
+    apply OptionListUtils.In_lift.
+    exists (StateElement e). auto.
+  }
+  {
+    apply OptionListUtils.In_lift in H.
+    destruct H as (e2 & (G & IN2)).
+    destruct e2 ; [ unfold get_E_data in G ; injection G ; intro ; subst| discriminate G]. 
+    assumption.
+  }
+Qed.
+
+Lemma In_transition :
+ forall (m:Mealy.M) e,
+         List.In (TransitionElement e) (Model.modelElements m) <-> List.In e
+    (OptionListUtils.lift_list (get_E_data Transition_K)
+       (Model.modelElements m)).
+Proof.
+  intros m e.
+  split ; intro H.
+  {
+    apply OptionListUtils.In_lift.
+    exists (TransitionElement e). auto.
+  }  
+  {
+    apply OptionListUtils.In_lift in H.
+    destruct H as (e2 & (G & IN2)).
+    destruct e2 ; [ discriminate G | PropUtils.inj G]. 
+    assumption.
+  }
+Qed.
+
+Lemma In_transition_sourceLink : 
+  forall (m:Mealy.M) e,
+         List.In (Transition_sourceLink e) (Model.modelLinks m) <-> List.In e
+    (OptionListUtils.lift_list (get_L_data Transition_source_K)
+       (Model.modelLinks m)).
+Proof.
+  intros m e.
+  split ; intro H.
+  {
+    apply OptionListUtils.In_lift.
+    exists (Transition_sourceLink e). auto.
+  }  
+  {
+    apply OptionListUtils.In_lift in H.
+    destruct H as (e2 & (G & IN2)).
+    destruct e2 ; [ PropUtils.inj G | discriminate G]. 
+    assumption.
+  }
+Qed.
+
+Lemma In_transition_targetLink : 
+  forall (m:Mealy.M) e,
+         List.In (Transition_targetLink e) (Model.modelLinks m) <-> List.In e
+    (OptionListUtils.lift_list (get_L_data Transition_target_K)
+       (Model.modelLinks m)).
+Proof.
+  intros m e.
+  split ; intro H.
+  {
+    apply OptionListUtils.In_lift.
+    exists (Transition_targetLink e). auto.
+  }  
+  {
+    apply OptionListUtils.In_lift in H.
+    destruct H as (e2 & (G & IN2)).
+    destruct e2 ; [ discriminate G | PropUtils.inj G]. 
+    assumption.
+  }
+Qed.
+
+
 Lemma getTransition_source_inv m t s : 
   getTransition_source m t = Some s ->
   let lk := {|  Transition_source_t_source := t ;  Transition_source_t_target := s |} in
@@ -262,8 +343,6 @@ Proof.
   apply internal_Transition_t_dec_bl in H1 ; subst.
   destruct g ; auto.
 Qed.
-
-
 
 
 Definition maybeBuildTransitionSource (tr_arg: Transition_t) (so_arg: option State_t) : option Transition_source_t :=

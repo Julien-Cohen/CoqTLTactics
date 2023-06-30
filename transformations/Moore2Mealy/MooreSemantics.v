@@ -49,6 +49,127 @@ Definition execute (m: M) (input: list string) : option (list string) :=
     | None => None
     end.
 
+
+(* get_Transition_target          getTransition_source *)
+(*                 \               /                   *)
+(*                  \             /                    *)
+(*                   \          State_outTransitions   *)
+(*                    \         /                      *)             
+(*                     \       /                       *)
+(*                      \    State_acceptTransition    *)
+(*                       \   /                         *)  
+(*                        \ /                          *)
+(*                       search                        *)
+(*                        /                            *)
+(*                       /                             *)
+(*     initialState    executeFromState                *)
+(*                 \   /                               *)
+(*                  \ /                                *)
+(*                execute                              *)
+
+
+(** Some tactics *)
+
+Lemma State_out_transitions_inv m s t :
+  List.In t (State_outTransitions m s) ->
+  List.In (TransitionElement t) (Model.modelElements m)
+  /\ getTransition_source m t = Some s.
+Proof.
+  intro H.
+  unfold State_outTransitions in H.
+  apply OptionListUtils.filter_lift_in in H.
+  destruct H as (? & ? & ? & ?).                   
+  PropUtils.destruct_match H1 ; [ | discriminate H1]. 
+  apply internal_State_t_dec_bl in H1. subst s0.    
+  destruct x ;[discriminate H0 | PropUtils.inj H0]. (* monadInv *) 
+  auto.
+Qed.
+
+Lemma in_State_outTransitions (m:Moore.M) s t :
+  List.In (TransitionElement t) (Model.modelElements m) ->
+  getTransition_source m t = Some s ->
+  List.In t (State_outTransitions m s).
+Proof.
+  intros.
+  unfold State_outTransitions.
+  apply OptionListUtils.filter_lift_in.
+  exists (TransitionElement t).
+  split ; [ assumption | ].
+  split ; [ reflexivity | ].
+  rewrite H0.
+  apply internal_State_t_dec_lb.
+  reflexivity.
+Qed.
+
+Lemma State_acceptTransition_inv :
+  forall m s1 i t,
+    State_acceptTransition m s1 i = Some t -> 
+    List.In t (State_outTransitions m s1) /\
+      i = Transition_input t.
+Proof.
+  intros.
+  unfold State_acceptTransition in H.
+  destruct (List.find_some _ _ H).
+  apply String.eqb_eq in H1.
+  split ; assumption.
+Qed.
+
+Lemma search_inv :
+  forall m s i r,
+    search m s i = Some r ->
+    exists t, 
+      State_acceptTransition m s i = Some t /\
+        getTransition_target m t = Some r.
+Proof.
+  unfold search ; intros.
+  OptionUtils.monadInv H.
+  eauto.
+Qed.
+
+(* fixme : move-me *)
+Definition WF_sourceLink_source_in (m:Moore.M) :=
+      forall lk, 
+        In (Transition_sourceLink lk) m.(modelLinks) ->
+        In (StateElement lk.(Transition_source_t_target)) m.(modelElements).
+
+Lemma search_in_left m :
+  WF_sourceLink_source_in m ->
+  forall s1 a s2,
+  search m s1 a = Some s2 ->
+  List.In (StateElement s1) m.(Model.modelElements).
+Proof.
+  intro WF.
+  intros.
+  destruct (search_inv _ _ _ _ H) as (?&?&?).
+  destruct (State_acceptTransition_inv _ _ _ _ H0).
+  destruct (State_out_transitions_inv _ _ _ H2).
+  apply getTransition_source_inv in H5.
+  subst.
+  eapply WF in H5. exact H5.
+Qed.
+
+(* fixme : move-me *)
+Definition WF_targetLink_target_in (m:Moore.M) :=
+      forall lk, 
+        In (Transition_targetLink lk) m.(modelLinks) ->
+        In (StateElement lk.(Transition_target_t_target)) m.(modelElements).
+
+Lemma search_in_right m :
+  WF_targetLink_target_in m ->
+  forall s1 a s2,
+  search m s1 a = Some s2 ->
+  List.In (StateElement s2) m.(Model.modelElements).
+Proof.
+  intro WF.
+  intros.
+  destruct (search_inv _ _ _ _ H) as (?&?&?).
+  apply getTransition_target_inv in H1.
+  apply WF in H1. exact H1.
+Qed.
+
+
+(** Some tests *)
+
 Require Import transformations.Moore2Mealy.tests.sampleMoore.
 
 Compute execute InputModel ("A"::nil).      (* "b"  *)
