@@ -32,7 +32,7 @@ Definition convert_transition  (m: Moore.M)  (t : Moore.Transition_t)   :option 
 
 Lemma convert_transition_injective : 
   forall m t1 t2 a, 
-    convert_transition m t1 = Some a -> (* fixme : simplify *)
+    convert_transition m t1 = Some a -> (* would be false with None *)
     convert_transition m t2 = Some a ->
     t1 = t2.
 Proof.

@@ -5,7 +5,7 @@ Require Import transformations.Moore2Mealy.Moore.
 Require Import core.Model.
 Require Import core.utils.Utils.
 
-Require Import Id.
+Import Id.
 
 Definition initialState (m: M) : option State_t :=
     find_lift (get_E_data State_K) (fun s => NodeId_beq (Id "S0") s.(State_id)) m.(modelElements).
@@ -15,7 +15,7 @@ Definition State_outTransitions (m: M) (s: State_t) : list Transition_t :=
       (get_E_data Transition_K) 
       (fun t => 
          match (getTransition_source m t) with
-         | Some s' => State_t_beq s s'
+         | Some s' => State_t_beq s s' (* fixme : compare only the ids ? *)
          | None => false
          end)
       m.(Model.modelElements).

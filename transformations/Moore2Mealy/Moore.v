@@ -12,7 +12,7 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require        core.Tactics.
 
-Require Import Id.
+Require Import Moore2Mealy.Id.
 
 (** Base types for elements *)
 Record State_t := { State_id : NodeId ; State_output : string }.
@@ -189,13 +189,13 @@ Definition getTransition_target (m : M) (t : Transition_t) : option (State_t) :=
   getTransition_targetOnLinks t m.(modelLinks).
 
 (* FIXME : generate-me*)
-Definition WF1 (m:M) : Prop :=
+Definition WF_target (m:M) : Prop :=
   forall t, 
     List.In (TransitionElement t) m.(modelElements) ->
     SUCCESS ( getTransition_target m t ).
 
 (* FIXME : generate-me*)
-Definition WF2 (m:M) :Prop :=
+Definition WF_source (m:M) :Prop :=
   forall t, 
     List.In (TransitionElement t) m.(modelElements) ->
     SUCCESS ( getTransition_source m t ).

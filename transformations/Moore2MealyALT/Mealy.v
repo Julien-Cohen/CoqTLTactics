@@ -12,7 +12,7 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require        core.Tactics.
 
-Require Import Id.
+Require Import Moore2MealyALT.Id.
 
 (** Base types for elements *)
 Record State_t := { State_id : NodeId }.

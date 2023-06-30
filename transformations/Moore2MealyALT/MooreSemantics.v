@@ -5,7 +5,7 @@ Require Import transformations.Moore2MealyALT.Moore.
 Require Import core.Model.
 Require Import core.utils.Utils.
 
-Require Import Id.
+Import Id.
 
 Definition initialState (m: M) : option State_t :=
     find_State (fun s => NodeId_beq (Id "S0") s.(State_id)) m.(modelElements).
