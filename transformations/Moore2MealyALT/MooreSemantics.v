@@ -80,7 +80,7 @@ Proof.
   apply OptionListUtils.filter_lift_in in H.
   destruct H as (? & ? & ? & ?).                   
   PropUtils.destruct_match H1 ; [ | discriminate H1]. 
-  apply lem_State_t_beq_id in H1. subst s0.    
+  apply internal_State_t_dec_bl in H1. subst s0.    
   destruct x ;[discriminate H0 | PropUtils.inj H0]. (* monadInv *) 
   auto.
 Qed.

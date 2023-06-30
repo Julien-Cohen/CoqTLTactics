@@ -64,7 +64,7 @@ Proof.
   { reflexivity. }
   { apply internal_NodeId_dec_lb. auto. }  
 Qed.
- 
+
 Lemma getTransition_target_some (m:Moore.M) :
   unique_ids m ->  
   forall s, 
@@ -90,6 +90,7 @@ Definition determinist (m:Moore.M) :=
       t1.(Transition_source) = t2.(Transition_source) ->
       t1.(Transition_input) = t2.(Transition_input) ->
       t1 = t2.
+
 
 Lemma truc m :
   determinist m ->
