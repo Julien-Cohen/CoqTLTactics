@@ -17,35 +17,18 @@ Require Import Moore2Mealy.Id.
 (** Base types for elements *)
 Record State_t := { State_id : NodeId ; State_output : string }.
 Scheme Equality for State_t.
-Lemma lem_State_t_beq_id : forall (e1 e2 : State_t), State_t_beq e1 e2 = true -> e1 = e2.
-Proof. exact internal_State_t_dec_bl. Qed. 
-Lemma lem_State_t_beq_refl : forall (e : State_t), State_t_beq e e = true.
-Proof. intro ; apply internal_State_t_dec_lb ; auto. Qed. 
 
 Record Transition_t := { Transition_id : nat ; Transition_input : string }.
 Scheme Equality for Transition_t.
-Lemma lem_Transition_t_beq_id : forall (e1 e2 : Transition_t), Transition_t_beq e1 e2 = true -> e1 = e2.
-Proof. exact internal_Transition_t_dec_bl. Qed. 
-Lemma lem_Transition_t_beq_refl : forall (e : Transition_t), Transition_t_beq e e = true.
-Proof. intro ; apply internal_Transition_t_dec_lb ; auto. Qed. 
-
 
 
 (** Base types for links *)
 Record Transition_source_t := { Transition_source_t_source : Transition_t ; Transition_source_t_target : State_t }.
 Scheme Equality for Transition_source_t.
-Lemma lem_Transition_source_t_beq_id : forall (e1 e2 : Transition_source_t), Transition_source_t_beq e1 e2 = true -> e1 = e2.
-Proof. exact internal_Transition_source_t_dec_bl. Qed. 
-Lemma lem_Transition_source_t_beq_refl : forall (e : Transition_source_t), Transition_source_t_beq e e = true.
-Proof. intro ; apply internal_Transition_source_t_dec_lb ; auto. Qed. 
 
 
 Record Transition_target_t := { Transition_target_t_source : Transition_t ; Transition_target_t_target : State_t }.
 Scheme Equality for Transition_target_t.
-Lemma lem_Transition_target_t_beq_id : forall (e1 e2 : Transition_target_t), Transition_target_t_beq e1 e2 = true -> e1 = e2.
-Proof. exact internal_Transition_target_t_dec_bl. Qed. 
-Lemma lem_Transition_target_t_beq_refl : forall (e : Transition_target_t), Transition_target_t_beq e e = true.
-Proof. intro ; apply internal_Transition_target_t_dec_lb ; auto. Qed. 
 
 
 
