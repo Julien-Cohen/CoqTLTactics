@@ -53,8 +53,8 @@ Definition WF_sourceLink_left (m:Moore.M) : Prop :=
       forall (lk1 lk2 : Transition_source_t) (t : Transition_t),
         List.In (Transition_sourceLink lk1)  m.(Model.modelLinks) ->
         List.In (Transition_sourceLink lk2)  m.(Model.modelLinks) ->
-        lk1.(Transition_source_t_source) = t ->
-        lk2.(Transition_source_t_source) = t ->
+        lk1.(Transition_source_t_lglue) = t ->
+        lk2.(Transition_source_t_lglue) = t ->
         lk1 = lk2.
 
 (** Two different (target) links cannot deal with the same transition. *)
@@ -63,8 +63,8 @@ Definition WF_targetLink_left (m:Moore.M) : Prop :=
       forall (lk1 lk2 : Transition_target_t) (t : Transition_t),
         List.In (Transition_targetLink lk1)  m.(Model.modelLinks) ->
         List.In (Transition_targetLink lk2)  m.(Model.modelLinks) ->
-        lk1.(Transition_target_t_source) = t ->
-        lk2.(Transition_target_t_source) = t ->
+        lk1.(Transition_target_t_lglue) = t ->
+        lk2.(Transition_target_t_lglue) = t ->
         lk1 = lk2.
   
 
@@ -74,8 +74,8 @@ Lemma getTransition_source_some (m:Moore.M) :
     List.In (StateElement s) m.(Model.modelElements) ->
     forall t,
       let lk := {|
-                 Transition_source_t_source := t ;
-                 Transition_source_t_target := s 
+                 Transition_source_t_lglue := t ;
+                 Transition_source_t_rglue := s 
                |} 
       in
       
@@ -103,8 +103,8 @@ Proof.
   }    
   { instantiate (1:=Transition_sourceLink
             {|
-              Transition_source_t_source := t;
-              Transition_source_t_target := s
+              Transition_source_t_lglue := t;
+              Transition_source_t_rglue := s
             |}). 
     reflexivity.
   }        
@@ -119,8 +119,8 @@ Lemma getTransition_target_some (m:Moore.M):
     List.In (StateElement s) m.(Model.modelElements) ->
     forall t,
       let lk := {|
-                 Transition_target_t_source := t ;
-                 Transition_target_t_target := s 
+                 Transition_target_t_lglue := t ;
+                 Transition_target_t_rglue := s 
                |} 
       in
       
@@ -146,8 +146,8 @@ Proof.
   }    
   { instantiate (1:=Transition_targetLink
             {|
-              Transition_target_t_source := t;
-              Transition_target_t_target := s
+              Transition_target_t_lglue := t;
+              Transition_target_t_rglue := s
             |}). 
     reflexivity.
   }        

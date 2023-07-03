@@ -30,7 +30,7 @@ Definition all_attributes_are_typed (cm : ClassModel) :=
   forall (att : Attribute_t),
       In (AttributeElement att) cm.(modelElements) ->
       exists (r:Class_t), 
-        In (Attribute_typeLink {| Attribute_type_t_source := att ; Attribute_type_t_target := r |}) cm.(modelLinks) .
+        In (Attribute_typeLink {| Attribute_type_t_lglue := att ; Attribute_type_t_rglue := r |}) cm.(modelLinks) .
 
 
 (** *** On relational models *)
@@ -38,7 +38,7 @@ Definition all_attributes_are_typed (cm : ClassModel) :=
 Definition all_columns_have_a_reference (rm : RelationalModel) :=
 forall (col: Column_t),
       In (ColumnElement col) rm.(modelElements) ->
-      exists r', In (Column_referenceLink {| Column_reference_t_source := col ;  Column_reference_t_target := r' |}) rm.(modelLinks).
+      exists r', In (Column_referenceLink {| Column_reference_t_lglue := col ;  Column_reference_t_rglue := r' |}) rm.(modelLinks).
  
   
 
@@ -188,13 +188,13 @@ Corollary Relational_Column_Reference_definedness_not_used :
     (* postcondition *)  
     forall (col: Column_t),
         In (ColumnElement col) rm.(modelElements) ->
-        exists r', (In (Column_referenceLink {| Column_reference_t_source := col ;  Column_reference_t_target := r' |}) rm.(modelLinks) 
+        exists r', (In (Column_referenceLink {| Column_reference_t_lglue := col ;  Column_reference_t_rglue := r' |}) rm.(modelLinks) 
                     /\ In (TableElement r') rm.(modelElements)). 
 
 Proof. 
   intros cm rm WF1 WF2 T WF3 col IN .
   cut (exists r' : Table_t,
-          In (Column_referenceLink {| Column_reference_t_source := col ;  Column_reference_t_target := r' |}) rm.(modelLinks)
+          In (Column_referenceLink {| Column_reference_t_lglue := col ;  Column_reference_t_rglue := r' |}) rm.(modelLinks)
        ).
   {
     intros (r & G).

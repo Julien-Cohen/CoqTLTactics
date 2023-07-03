@@ -33,17 +33,17 @@ Global Hint Resolve lem_Attribute_t_beq_id : beq_eq_database.
 
 
 (** Base types for links *)
-Record Class_attributes_t := { Class_attributes_t_source : Class_t ; Class_attributes_t_target : list Attribute_t }.
+Record Class_attributes_t := { Class_attributes_t_lglue : Class_t ; Class_attributes_t_rglue : list Attribute_t }.
 (*Scheme Equality for Class_attributes_t. ==Does not work 8.15 8.17 == *)
 Definition Class_attributes_t_beq (a1 a2: Class_attributes_t) : bool := 
-  Class_t_beq a1.(Class_attributes_t_source) a2.(Class_attributes_t_source) && list_beq Attribute_t_beq a1.(Class_attributes_t_target) a2.(Class_attributes_t_target).
+  Class_t_beq a1.(Class_attributes_t_lglue) a2.(Class_attributes_t_lglue) && list_beq Attribute_t_beq a1.(Class_attributes_t_rglue) a2.(Class_attributes_t_rglue).
 Lemma lem_Class_attributes_t_beq_id : forall (e1 e2 : Class_attributes_t), Class_attributes_t_beq e1 e2 = true -> e1 = e2.
 Proof. Tactics.beq_eq_tac. Qed.
 Lemma lem_Class_attributes_t_beq_refl : forall (e : Class_attributes_t), Class_attributes_t_beq e e = true.
 Proof. destruct e. unfold Class_attributes_t_beq. rewrite lem_Class_t_beq_refl. rewrite list_beq_refl. reflexivity. exact lem_Attribute_t_beq_refl. Qed. 
 
 
-Record Attribute_type_t := { Attribute_type_t_source : Attribute_t ; Attribute_type_t_target : Class_t }.
+Record Attribute_type_t := { Attribute_type_t_lglue : Attribute_t ; Attribute_type_t_rglue : Class_t }.
 Scheme Equality for Attribute_type_t.
 Lemma lem_Attribute_type_t_beq_id : forall (e1 e2 : Attribute_type_t), Attribute_type_t_beq e1 e2 = true -> e1 = e2.
 Proof. exact internal_Attribute_type_t_dec_bl. Qed.
@@ -173,8 +173,8 @@ Definition ClassModel := Model MM.
 Fixpoint getClass_attributesOnLinks (c : Class_t) (l : list Link) : option (list Attribute_t) :=
  match l with
   | (Class_attributesLink x) :: l1 =>
-    if Class_t_beq x.(Class_attributes_t_source) c
-      then (Some x.(Class_attributes_t_target))
+    if Class_t_beq x.(Class_attributes_t_lglue) c
+      then (Some x.(Class_attributes_t_rglue))
       else getClass_attributesOnLinks c l1
   | _ :: l1 => getClass_attributesOnLinks c l1
   | nil => None
@@ -188,8 +188,8 @@ Definition getClass_attributes (c : Class_t) (m : ClassModel) : option (list Att
 Fixpoint getAttribute_typeOnLinks (a : Attribute_t) (l : list Link) : option (Class_t) :=
  match l with
   | (Attribute_typeLink x) :: l1 =>
-    if Attribute_t_beq x.(Attribute_type_t_source) a
-      then (Some x.(Attribute_type_t_target))
+    if Attribute_t_beq x.(Attribute_type_t_lglue) a
+      then (Some x.(Attribute_type_t_rglue))
       else getAttribute_typeOnLinks a l1
   | _ :: l1 => getAttribute_typeOnLinks a l1
   | nil => None

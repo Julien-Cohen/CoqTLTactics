@@ -27,7 +27,7 @@ Proof.
   + destruct a.
   - auto.
   - destruct c0.
-    destruct (Column_t_beq Column_reference_t_source c).
+    destruct (Column_t_beq Column_reference_t_lglue c).
     * reflexivity.
     * auto.
 Qed.
@@ -35,7 +35,7 @@ Qed.
 (* Used *)
 Lemma in_getColumnReferenceOnLinks_right :
   forall (l: list Link) v (x:Table_t),
-    In (Column_referenceLink {| Column_reference_t_source := v ;  Column_reference_t_target := x |}) l -> 
+    In (Column_referenceLink {| Column_reference_t_lglue := v ;  Column_reference_t_rglue := x |}) l -> 
       exists r' : Table_t,
         getColumn_referenceOnLinks v l = return r'.
 Proof.
@@ -52,14 +52,14 @@ Proof.
     rewrite G.
     destruct a ; eauto ; [].
     destruct c.
-    destruct ( Column_t_beq Column_reference_t_source v) ; eauto.
+    destruct ( Column_t_beq Column_reference_t_lglue v) ; eauto.
   }
 Qed.
 
 (* Used *)
 Corollary in_getColumnReferenceOnLinks_right_2 :
   forall (l: list Link) v, 
-      (exists (x:Table_t), In (Column_referenceLink {| Column_reference_t_source := v ;  Column_reference_t_target := x |}) l) -> 
+      (exists (x:Table_t), In (Column_referenceLink {| Column_reference_t_lglue := v ;  Column_reference_t_rglue := x |}) l) -> 
       exists r' : Table_t,
         getColumn_referenceOnLinks v l = return r'.
 Proof.
@@ -73,7 +73,7 @@ Qed.
 Lemma in_getColumnReferenceOnLinks_left :
   forall (l: list Link) col t, 
     getColumn_referenceOnLinks col l = return t -> 
-    In (Column_referenceLink {| Column_reference_t_source := col ;  Column_reference_t_target := t |}) l  
+    In (Column_referenceLink {| Column_reference_t_lglue := col ;  Column_reference_t_rglue := t |}) l  
       .
 Proof.
   induction l ; simpl ; intros c r IN ; [ discriminate IN | ].
@@ -85,10 +85,10 @@ Proof.
   }    
   { (* columns *)
     destruct c0.
-    destruct(Column_t_beq Column_reference_t_source c) eqn:E.
+    destruct(Column_t_beq Column_reference_t_lglue c) eqn:E.
     {
       PropUtils.inj IN.
-      apply lem_Column_t_beq_id in E ; subst Column_reference_t_source.
+      apply lem_Column_t_beq_id in E ; subst Column_reference_t_lglue.
       left ; reflexivity.
     }
     {
@@ -104,6 +104,6 @@ Qed.
 (* Used *)
 Definition wf_all_table_references_exist (rm:RelationalModel) :=
   forall col r, 
-    In (Column_referenceLink {| Column_reference_t_source := col ;  Column_reference_t_target := r |}) rm.(modelLinks) ->
+    In (Column_referenceLink {| Column_reference_t_lglue := col ;  Column_reference_t_rglue := r |}) rm.(modelLinks) ->
     In (TableElement r) rm.(modelElements).
 

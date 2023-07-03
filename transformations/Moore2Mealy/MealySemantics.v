@@ -134,7 +134,7 @@ Qed.
 Definition WF_sourceLink_source_in (m:Mealy.M) :=
       forall lk, 
         In (Transition_sourceLink lk) m.(modelLinks) ->
-        In (StateElement lk.(Transition_source_t_target)) m.(modelElements).
+        In (StateElement lk.(Transition_source_t_rglue)) m.(modelElements).
 
 Lemma execute_in m :
   WF_sourceLink_source_in m ->

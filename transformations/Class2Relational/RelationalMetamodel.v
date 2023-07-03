@@ -33,16 +33,16 @@ Global Hint Resolve lem_Column_t_beq_id : beq_eq_database.
 
 
 (** Base types for links *)
-Record Table_columns_t := { Table_columns_t_source : Table_t ; Table_columns_t_target : list Column_t }.
+Record Table_columns_t := { Table_columns_t_lglue : Table_t ; Table_columns_t_rglue : list Column_t }.
 Definition Table_columns_t_beq (a1 a2: Table_columns_t) : bool := 
-  Table_t_beq a1.(Table_columns_t_source) a2.(Table_columns_t_source) && list_beq Column_t_beq a1.(Table_columns_t_target) a2.(Table_columns_t_target).
+  Table_t_beq a1.(Table_columns_t_lglue) a2.(Table_columns_t_lglue) && list_beq Column_t_beq a1.(Table_columns_t_rglue) a2.(Table_columns_t_rglue).
 Lemma lem_Table_columns_t_beq_id : forall (e1 e2 : Table_columns_t), Table_columns_t_beq e1 e2 = true -> e1 = e2.
 Proof. Tactics.beq_eq_tac. Qed.
 Lemma lem_Table_columns_t_beq_refl : forall (e : Table_columns_t), Table_columns_t_beq e e = true.
 Proof. destruct e. unfold Table_columns_t_beq. rewrite lem_Table_t_beq_refl. rewrite list_beq_refl. reflexivity. exact lem_Column_t_beq_refl. Qed. 
 
 
-Record Column_reference_t := { Column_reference_t_source : Column_t ; Column_reference_t_target : Table_t }.
+Record Column_reference_t := { Column_reference_t_lglue : Column_t ; Column_reference_t_rglue : Table_t }.
 Scheme Equality for Column_reference_t.
 Lemma lem_Column_reference_t_beq_id : forall (e1 e2 : Column_reference_t), Column_reference_t_beq e1 e2 = true -> e1 = e2.
 Proof. Tactics.beq_eq_tac. Qed.
@@ -170,8 +170,8 @@ Definition RelationalModel := Model MM.
 Fixpoint getTable_columnsOnLinks (t : Table_t) (l : list Link) : option (list Column_t) :=
  match l with
   | (Table_columnsLink x) :: l1 =>
-    if Table_t_beq x.(Table_columns_t_source) t
-      then (Some x.(Table_columns_t_target))
+    if Table_t_beq x.(Table_columns_t_lglue) t
+      then (Some x.(Table_columns_t_rglue))
       else getTable_columnsOnLinks t l1
   | _ :: l1 => getTable_columnsOnLinks t l1
   | nil => None

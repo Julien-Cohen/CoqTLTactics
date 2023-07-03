@@ -23,11 +23,11 @@ Scheme Equality for Transition_t.
 
 
 (** Base types for links *)
-Record Transition_source_t := { Transition_source_t_source : Transition_t ; Transition_source_t_target : State_t }.
+Record Transition_source_t := { Transition_source_t_lglue : Transition_t ; Transition_source_t_rglue : State_t }.
 Scheme Equality for Transition_source_t.
 
 
-Record Transition_target_t := { Transition_target_t_source : Transition_t ; Transition_target_t_target : State_t }.
+Record Transition_target_t := { Transition_target_t_lglue : Transition_t ; Transition_target_t_rglue : State_t }.
 Scheme Equality for Transition_target_t.
 
 
@@ -145,10 +145,10 @@ Definition M := Model MM.
 (** General functions (used in transformations) *)
 Definition getTransition_sourceOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
   option_map 
-    Transition_source_t_target 
+    Transition_source_t_rglue 
     (find_lift 
        (get_L_data Transition_source_K) 
-       (fun s => Transition_t_beq s.(Transition_source_t_source) t)
+       (fun s => Transition_t_beq s.(Transition_source_t_lglue) t)
        l
     ).
 
@@ -158,10 +158,10 @@ Definition getTransition_source (m : M) (t : Transition_t) : option (State_t) :=
 
 Definition getTransition_targetOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
   option_map 
-    Transition_target_t_target 
+    Transition_target_t_rglue 
     (find_lift 
        (get_L_data Transition_target_K) 
-       (fun s => Transition_t_beq s.(Transition_target_t_source) t)
+       (fun s => Transition_t_beq s.(Transition_target_t_lglue) t)
        l
     ).
 
@@ -304,7 +304,7 @@ Qed.
 
 Lemma getTransition_source_inv m t s : 
   getTransition_source m t = Some s ->
-  let lk := {|  Transition_source_t_source := t ;  Transition_source_t_target := s |} in
+  let lk := {|  Transition_source_t_lglue := t ;  Transition_source_t_rglue := s |} in
   List.In (Transition_sourceLink lk) m.(Model.modelLinks).
   (*    List.In (StateElement s) (Model.modelElements m). *)
 Proof.
@@ -323,7 +323,7 @@ Qed.
 
 Lemma getTransition_target_inv m t s : 
   getTransition_target m t = Some s -> 
-  let lk := {| Transition_target_t_target := s ; Transition_target_t_source := t |} in 
+  let lk := {| Transition_target_t_rglue := s ; Transition_target_t_lglue := t |} in 
     In (Transition_targetLink lk)  m.(Model.modelLinks).
     (*  List.In (StateElement s) (Model.modelElements m) *)
 Proof.

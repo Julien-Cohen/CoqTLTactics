@@ -99,7 +99,7 @@ def records_link_multiplicity(eReference):
 def records_link_scheme_equality_list(eClass, eReference):
     lst = []
     lst.append(f"Definition {eClass.name}_{eReference.name}_t_beq (a1 a2: {eClass.name}_{eReference.name}_t) : bool := ") 
-    lst.append(f"  {eClass.name}_t_beq a1.({eClass.name}_{eReference.name}_t_source) a2.({eClass.name}_{eReference.name}_t_source) && list_beq {eReference.eType.name}_t_beq a1.({eClass.name}_{eReference.name}_t_target) a2.({eClass.name}_{eReference.name}_t_target).")
+    lst.append(f"  {eClass.name}_t_beq a1.({eClass.name}_{eReference.name}_t_lglue) a2.({eClass.name}_{eReference.name}_t_lglue) && list_beq {eReference.eType.name}_t_beq a1.({eClass.name}_{eReference.name}_t_rglue) a2.({eClass.name}_{eReference.name}_t_rglue).")
     return join(lst)
 
 def records_link(eClasses):
@@ -108,7 +108,7 @@ def records_link(eClasses):
 
     for eClass in eClasses:
         for eReference in eClass.eReferences:
-            lst.append(f"Record {eClass.name}_{eReference.name}_t := {{ {eClass.name}_{eReference.name}_t_source : {eClass.name}_t ; {eClass.name}_{eReference.name}_t_target : {records_link_multiplicity(eReference)}_t }}.")
+            lst.append(f"Record {eClass.name}_{eReference.name}_t := {{ {eClass.name}_{eReference.name}_t_lglue : {eClass.name}_t ; {eClass.name}_{eReference.name}_t_rglue : {records_link_multiplicity(eReference)}_t }}.")
 
             # hack : scheme equality for list
             if eReference.upperBound == 1:
@@ -282,8 +282,8 @@ def general_function(eClasses, metamodel):
             lst.append(f"Fixpoint get{eClass.name}_{eReference.name}OnLinks ({arg(eClass.name[0])} : {eClass.name}_t) (l : list Link) : option ({records_link_multiplicity(eReference)}_t) :=")
             lst.append(f" match l with")
             lst.append(f"  | ({eClass.name}_{eReference.name}Link x) :: l1 =>")
-            lst.append(f"    if {eClass.name}_t_beq x.({eClass.name}_{eReference.name}_t_source) {arg(eClass.name[0])}")
-            lst.append(f"      then (Some x.({eClass.name}_{eReference.name}_t_target))")
+            lst.append(f"    if {eClass.name}_t_beq x.({eClass.name}_{eReference.name}_t_lglue) {arg(eClass.name[0])}")
+            lst.append(f"      then (Some x.({eClass.name}_{eReference.name}_t_rglue))")
             lst.append(f"      else get{eClass.name}_{eReference.name}OnLinks {arg(eClass.name[0])} l1")
             lst.append(f"  | _ :: l1 => get{eClass.name}_{eReference.name}OnLinks {arg(eClass.name[0])} l1")
             lst.append( "  | nil => None")
