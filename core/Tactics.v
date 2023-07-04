@@ -618,7 +618,7 @@ Ltac exploit_in_eval_link H :=
         unfold Parser.dropToList in H ;
         rewrite optionListToList_Some in H ;
         apply in_flat_map in H ; destruct H as (pl, (TMP, H)) ;
-        apply ListUtils.in_singleton in TMP ; (* works only for pattern links with one link *)
+        repeat ListUtils.unfold_In_cons TMP; 
         subst pl ;
         apply OptionListUtils.in_optionListToList in H ; 
         destruct H as (l & H & IN) ;
