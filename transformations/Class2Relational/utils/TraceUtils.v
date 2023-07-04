@@ -23,50 +23,9 @@ Import PoorTraceLink.
 
 (** * Utilities on traces built by the Class2Relational transformation. *)
 
-
-Inductive CoherentTraceLink : TraceLink -> Prop :=
-
- | ct_class :
-   forall (c:Class_t),
-     CoherentTraceLink 
-       (buildTraceLink 
-          ([ClassElement c], 0, "tab")
-          (TableElement
-             {|
-               Table_id := c.(Class_id); 
-               Table_name := c.(Class_name) 
-             |}))
-
- | ct_attribute :
-   forall (a:Attribute_t),
-     CoherentTraceLink
-       (buildTraceLink 
-          ([AttributeElement a], 0, "col")
-          (ColumnElement
-             {|
-               Column_id := a.(Attribute_id) ;
-               Column_name :=  a.(Attribute_name) 
-             |})).
-
-
-Definition wf t : Prop := 
-  List.Forall CoherentTraceLink t.
-
-
-(** Traces built by the Class2Relational transformation are well-formed. *)
-
-
-Lemma trace_wf :
-  forall cm, wf (RichTraceLink.drop (traceTrOnModel Class2Relational cm)).
-Proof.
-  intro cm. 
-  unfold wf.
-  apply Forall_forall.
-  intros l H.  
-
-  (* (1) *)
-  destruct (Tactics.destruct_in_trace_lem H) 
-    as (se & r & i & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV) ; subst l.
+Ltac exploit_in_trace H :=
+destruct (Tactics.destruct_in_trace_lem H) 
+    as (se & r & i & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV);
 
   (* 2 *)
   Tactics.progress_in_In_rules IN_RULE ;
@@ -87,106 +46,135 @@ Proof.
   (* not useful here *)
   Semantics.in_allTuples_auto.
 
-  { (* rule 1 *) 
-    constructor 1. 
-  }  
-  { (* rule 2 *)
-    constructor 2.
-  }  
+
+
+Definition convert_class c :=
+  {| Table_id := c.(Class_id); Table_name := c.(Class_name)  |}.
+
+
+Lemma trace_class m :
+  forall c t,
+  In (buildTraceLink 
+        ([ClassElement c], 0, "tab")
+        (TableElement t))
+    (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
+  t = convert_class c.
+Proof.  
+  intros c t H.
+
+  exploit_in_trace H.
+  PropUtils.inj EQ.
+  reflexivity.
+Qed.
+
+Definition convert_attribute c :=
+  {| Column_id := c.(Attribute_id); Column_name := c.(Attribute_name)  |}.
+
+
+Lemma trace_attribute m :
+  forall a c,
+  In (buildTraceLink 
+        ([AttributeElement a], 0, "col")
+        (ColumnElement c))
+    (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
+  c = convert_attribute a.
+Proof.  
+  intros c t H.
+
+  exploit_in_trace H.
+  PropUtils.inj EQ.
+  reflexivity.
+Qed.
+
+Lemma in_trace_inv m t :
+In t (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
+   (exists a, t = (buildTraceLink 
+        ([AttributeElement a], 0, "col")
+        (ColumnElement (convert_attribute a)))) \/ (exists c, t = buildTraceLink 
+        ([ClassElement c], 0, "tab")
+        (TableElement (convert_class c))).
+Proof.
+  intro H.
+  exploit_in_trace H.
+  { right. simpl in *.
+    eexists. 
+    f_equal.
+    reflexivity.
+  }
+  { left. simpl in *.
+    eexists.
+    f_equal.
+    reflexivity.
+  }
 Qed.
 
 
 
 
-
 (** Local lemma. *)
-Lemma in_find t : 
-  wf t ->
+Lemma in_find m : 
   forall c,
     In (buildTraceLink
           ([ClassElement c], 0, "tab")
-          (TableElement {| Table_id := c.(Class_id); Table_name := c.(Class_name)  |})) t ->
-    exists r1 , 
-      find (source_compare ([ClassElement c], 0, "tab")) t = 
+          (TableElement (convert_class c))) (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
+      find (source_compare ([ClassElement c], 0, "tab")) (RichTraceLink.drop (traceTrOnModel Class2Relational m)) = 
         Some 
-          (buildTraceLink r1 
-             (TableElement {| Table_id := c.(Class_id); Table_name := c.(Class_name) |})).
+          (buildTraceLink ([ClassElement c], 0, "tab") 
+             (TableElement (convert_class c))).
 Proof.
-  induction t ; intros WF c IN1 ; [ simpl in IN1 ; contradict IN1 | ].
-  simpl find.
-  apply in_inv in IN1. 
-  (* destruct or IN1 does not help here because in the "right" case we need to know that the "left" case is false. *) 
 
-  compare a (buildTraceLink ([ClassElement c], 0, "tab")
-          (TableElement
-             {| Table_id := c.(Class_id); Table_name := c.(Class_name) |})). 
-
-
-  { (* case where the class/table is the first element of the list : no induction *)
-    clear IN1 ; intro ; subst a.
-    rewrite source_compare_refl.
-    { solve [eauto]. }
-    { 
-      unfold TransformationConfiguration.SourceElement_eqb ; simpl.
-      { (* reflexivity *)
-        (* FIXME : add reflexivity as a constraint in Metamodels *)
-        clear.
-        destruct a.
-        apply lem_Class_t_beq_refl. 
-        apply lem_Attribute_t_beq_refl.
-      }           
-    }
-  }  
-  { (* case where the class/table is not the first element of the list. *)
-    intro D.
-    destruct_or IN1 ; [ contradict D ; assumption | ].
-
-    inversion_clear WF.
-    destruct (IHt H0 c) ; [  exact IN1 | ].
-
-    inversion_clear H.
-    { (* class/table *)
-      
-      unfold source_compare at 1 ; simpl.
-      unfold TransformationConfiguration.SourceElement_eqb ; simpl.
-
-      repeat rewrite Bool.andb_true_r.
-      destruct (Class_t_beq c0 c) eqn:BEQ.
-      {  apply lem_Class_t_beq_id in BEQ ; subst ; eauto.  }
-      {
-        rewrite H1.
-        eauto. 
-      }
-    }       
-    { (* attribute/column*)
-      simpl.
-      rewrite H1.
-      eauto.
-    }
+  intros c H.
+  apply ListUtils.in_find.
+  {
+    intros a b IN1 IN2 C1 C2.
+    destruct a.
+    apply source_compare_correct in C1.
+    simpl in C1.
+    subst.
+    2:{
+      simpl. apply ClassMetamodel.internal_Element_dec_bl.
+    }    
+    destruct b.
+    apply source_compare_correct in C2.
+    simpl in C2.
+    subst.
+    2:{
+      apply ClassMetamodel.internal_Element_dec_bl.
+    }    
+    f_equal.
+    destruct (in_trace_inv _ _ IN1) ; [ exfalso | ].
+    { destruct H0 ; discriminate. }
+    destruct (in_trace_inv _ _ IN2) ; [ exfalso | ].
+    { destruct H1 ; discriminate. }
+    destruct H0 as (? & E1) ; PropUtils.inj E1.
+    destruct H1 as (? & E2) ; PropUtils.inj E2.
+    reflexivity.
   }
-  { repeat decide equality. }
-  { repeat decide equality. }
+  {
+    unfold source_compare ; simpl.
+    unfold TransformationConfiguration.SourceElement_eqb.
+    simpl.    
+    rewrite internal_Class_t_dec_lb ; reflexivity.
+  }
+
+  { exact H. }
 
 Qed.            
         
 
       
-Lemma in_resolve t c : 
-  wf t ->
+Lemma in_resolve m c : 
   In (buildTraceLink
         ([ClassElement c], 0, "tab")
-        (TableElement
-           {| Table_id := c.(Class_id); Table_name := c.(Class_name) |})) t ->
-  Resolve.resolveIter t "tab" [ClassElement c] 0 = 
-    Some (TableElement {| Table_id := c.(Class_id); Table_name := c.(Class_name) |}).
+        (TableElement (convert_class c))) (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
+  Resolve.resolveIter (RichTraceLink.drop (traceTrOnModel Class2Relational m)) "tab" [ClassElement c] 0 = 
+    Some (TableElement (convert_class c)).
 Proof.
   unfold Resolve.resolveIter. 
-  intros C IN1.
-  specialize (in_find t C c IN1) ; intro T5 ; clear IN1.
-  destruct T5 as (t1 & IN1).
-  (* Set Printing All. *)
+  intros IN1.
+  specialize (in_find _ c IN1) ; intro T5 ; clear IN1.
   unfold TransformationConfiguration.SourceElementType ; simpl.
-  rewrite IN1.
+  rewrite T5.
   simpl produced.
   reflexivity.
 Qed.
@@ -198,12 +186,7 @@ Lemma in_trace c (cm : ClassModel) :
   In 
     (buildTraceLink 
        ([ClassElement c],0,"tab") 
-       (TableElement 
-          {| 
-            Table_id := c.(Class_id); 
-            Table_name := c.(Class_name) 
-          |}
-         )
+       (TableElement (convert_class c))
     ) 
     (RichTraceLink.drop (traceTrOnModel Class2Relational cm)).
 Proof.
@@ -233,17 +216,17 @@ Lemma in_maybeResolve_trace_2 c (cm : ClassModel) :
   In (ClassElement c) cm.(modelElements) -> 
   
   Resolve.maybeResolve (RichTraceLink.drop (traceTrOnModel Class2Relational cm)) "tab" (Some [ClassElement c])  =  
-    Some (TableElement {| Table_id := c.(Class_id); Table_name := c.(Class_name) |}) 
+    Some (TableElement (convert_class c)) 
   
   /\ In 
-       (TableElement {| Table_id := c.(Class_id); Table_name := c.(Class_name) |}) 
+       (TableElement (convert_class c)) 
        (execute Class2Relational cm).(modelElements).
 Proof.
   intro H.
   unfold Resolve.maybeResolve.
   unfold Resolve.resolve.
   apply in_trace in H.
-  rewrite in_resolve ; [ | solve [apply trace_wf] | exact H ].
+  rewrite in_resolve ; [ | exact H ].
   split ; [ reflexivity | ].
   eapply Tactics.in_trace_in_models_target in H ; eauto. 
 Qed.
