@@ -110,6 +110,8 @@ transformations/Moore2Mealy/MooreWF.v
 transformations/Moore2Mealy/MealySemantics.v
 transformations/Moore2Mealy/MealyWF.v
 transformations/Moore2Mealy/theorems/Elements.v
+transformations/Moore2Mealy/theorems/TraceUtils.v
+transformations/Moore2Mealy/theorems/Links.v
 transformations/Moore2Mealy/theorems/WFStable.v
 transformations/Moore2Mealy/theorems/InitStable.v
 #transformations/Moore2Mealy/theorems/SemanticsPreservation.v

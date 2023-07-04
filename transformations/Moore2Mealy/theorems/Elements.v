@@ -29,7 +29,7 @@ Proof.
 Qed.
 
 
-Definition convert_transition  (t : Moore.Transition_t)   :option Mealy.Transition_t :=
+Definition convert_transition  (t : Moore.Transition_t) : option Mealy.Transition_t :=
   match Moore.getTransition_target m t with
   | None => None
   | Some s => Some (Mealy.Build_Transition_t t.(Moore.Transition_id) t.(Moore.Transition_input) s.(Moore.State_output))
@@ -66,6 +66,18 @@ Proof.
     reflexivity.
   + discriminate.
 Qed.
+
+(* Just to try *)
+Definition convert_transition' t (IN : List.In (Moore.TransitionElement t) m.(Model.modelElements)) : Mealy.Transition_t .
+  destruct (Moore.getTransition_target m t) eqn:G.
+  + exact (Mealy.Build_Transition_t t.(Moore.Transition_id) t.(Moore.Transition_input) s.(Moore.State_output)).
+  + exfalso.
+    apply convert_transition_ok in IN.
+    unfold convert_transition in IN.
+    rewrite G in IN.
+    inversion IN.
+    discriminate H.
+Defined.
 
 Notation transform_element_fw := 
   (Tactics.transform_element_fw  (tc := Moore2Mealy.Moore2MealyTransformationConfiguration)).

@@ -177,10 +177,34 @@ Definition WF_target (m:M) : Prop :=
     SUCCESS ( getTransition_target m t ).
 
 (* FIXME : generate-me*)
-Definition WF_source (m:M) :Prop :=
+Definition WF_source (m:M) : Prop :=
   forall t, 
     List.In (TransitionElement t) m.(modelElements) ->
     SUCCESS ( getTransition_source m t ).
+
+(* FIXME : generate-me*)
+Definition WF_source_lglue (m:M) : Prop :=
+  forall lk,
+    List.In (Transition_sourceLink lk) m.(modelLinks) ->
+    List.In (TransitionElement lk.(Transition_source_t_lglue)) m.(modelElements).
+
+(* FIXME : generate-me*)
+Definition WF_source_rglue (m:M) : Prop :=
+  forall lk,
+    List.In (Transition_sourceLink lk) m.(modelLinks) ->
+    List.In (StateElement lk.(Transition_source_t_rglue)) m.(modelElements).
+
+(* FIXME : generate-me*)
+Definition WF_target_lglue (m:M) : Prop :=
+  forall lk,
+    List.In (Transition_targetLink lk) m.(modelLinks) ->
+    List.In (TransitionElement lk.(Transition_target_t_lglue)) m.(modelElements).
+
+(* FIXME : generate-me*)
+Definition WF_target_rglue (m:M) : Prop :=
+  forall lk,
+    List.In (Transition_targetLink lk) m.(modelLinks) ->
+    List.In (StateElement lk.(Transition_target_t_rglue)) m.(modelElements).
 
 (** Useful lemmas *)
 Lemma Moore_invert : 
@@ -342,15 +366,9 @@ Qed.
 
 (** For user *)
 Definition maybeBuildTransitionSource (tr_arg: Transition_t) (so_arg: option (State_t)) : option Transition_source_t :=
-  match tr_arg, so_arg with
-  | tr_arg_succ, Some so_arg_succ => Some (Build_Transition_source_t tr_arg_succ so_arg_succ)
-  | _, _ => None
-  end.
-
+  option_map (Build_Transition_source_t tr_arg) so_arg.
 
 Definition maybeBuildTransitionTarget (tr_arg: Transition_t) (ta_arg: option (State_t)) : option Transition_target_t :=
-  match tr_arg, ta_arg with
-  | tr_arg_succ, Some ta_arg_succ => Some (Build_Transition_target_t tr_arg_succ ta_arg_succ)
-  | _, _ => None
-  end.
+  option_map (Build_Transition_target_t tr_arg) ta_arg.
+ 
 

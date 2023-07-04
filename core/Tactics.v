@@ -674,6 +674,44 @@ Ltac exploit_link_in_result H :=
   end. 
 
 
+Ltac exploit_in_trace H :=
+  let se := fresh "se" in
+  let r := fresh "r" in
+  let i := fresh "i" in
+  let e := fresh "e" in
+  let te := fresh "te" in
+  let IN_SOURCE := fresh "IN_SOURCE" in
+  let IN_RULE := fresh "IN_RULE" in
+  let MATCH_GUARD := fresh "MATCH_GUARD" in
+  let IN_IT := fresh "IN_IT" in
+  let IN_OUTPATP := fresh "IN_OUTPAT" in
+  let EQ := fresh "EQ" in
+  let EV := fresh "EV" in
+
+ 
+  destruct (destruct_in_trace_lem H) 
+    as (se & r & i & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV);
+  
+  (* 2 *)
+  progress_in_In_rules IN_RULE ;
+  
+  (* _ *)
+  exploit_evalGuard MATCH_GUARD  ; 
+
+  (* _ *)
+  exploit_in_it IN_IT ;
+
+  (* 3 *)
+  progress_in_In_outpat IN_OUTPAT ;
+
+  (* 5 *) 
+  exploit_evaloutpat EV ; 
+
+  (* (7) *)
+  (* not useful here *)
+  Semantics.in_allTuples_auto.
+
+
 (** Tactics to progress in the goal (not in the hypothesis) *)
 
 Ltac destruct_in_trace_G :=

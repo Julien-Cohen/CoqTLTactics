@@ -49,12 +49,12 @@ Proof.
 Qed.
 
 Lemma in_optionListToList {A} : forall (a:A) b,
-    In a (optionListToList b) ->
+    In a (optionListToList b) <->
     exists l, (b = Some l /\ In a l).
 Proof.
-  intros a b H.
-  destruct b ; simpl in H ; [ | contradiction ]. 
-  eauto.
+  intros a b ; split ; intro H.
+  { destruct b ; simpl in H ; [ | contradiction ]. eauto. }
+  { destruct H as (l & E & H) ; subst b. simpl. exact H. }
 Qed.
 
 Ltac destruct_in_optionListToList H :=

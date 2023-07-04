@@ -23,68 +23,12 @@ Import PoorTraceLink.
 
 (** * Utilities on traces built by the Class2Relational transformation. *)
 
-Ltac exploit_in_trace H :=
-destruct (Tactics.destruct_in_trace_lem H) 
-    as (se & r & i & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV);
-
-  (* 2 *)
-  Tactics.progress_in_In_rules IN_RULE ;
-
-  (* _ *)
-  Tactics.exploit_evalGuard MATCH_GUARD  ; 
-
-  (* _ *)
-  Tactics.exploit_in_it IN_IT ;
-
-  (* 3 *)
-  Tactics.progress_in_In_outpat IN_OUTPAT ;
-
-  (* 5 *) 
-  Tactics.exploit_evaloutpat EV ; 
-
-  (* (7) *)
-  (* not useful here *)
-  Semantics.in_allTuples_auto.
-
-
 
 Definition convert_class c :=
   {| Table_id := c.(Class_id); Table_name := c.(Class_name)  |}.
 
-
-Lemma trace_class m :
-  forall c t,
-  In (buildTraceLink 
-        ([ClassElement c], 0, "tab")
-        (TableElement t))
-    (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
-  t = convert_class c.
-Proof.  
-  intros c t H.
-
-  exploit_in_trace H.
-  PropUtils.inj EQ.
-  reflexivity.
-Qed.
-
 Definition convert_attribute c :=
   {| Column_id := c.(Attribute_id); Column_name := c.(Attribute_name)  |}.
-
-
-Lemma trace_attribute m :
-  forall a c,
-  In (buildTraceLink 
-        ([AttributeElement a], 0, "col")
-        (ColumnElement c))
-    (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
-  c = convert_attribute a.
-Proof.  
-  intros c t H.
-
-  exploit_in_trace H.
-  PropUtils.inj EQ.
-  reflexivity.
-Qed.
 
 Lemma in_trace_inv m t :
 In t (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
@@ -95,7 +39,7 @@ In t (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
         (TableElement (convert_class c))).
 Proof.
   intro H.
-  exploit_in_trace H.
+  Tactics.exploit_in_trace H.
   { right. simpl in *.
     eexists. 
     f_equal.
@@ -111,7 +55,38 @@ Qed.
 
 
 
-(** Local lemma. *)
+Lemma discr m:
+  forall s : list ClassMetamodel.Element * nat * string,
+    discriminating_predicate
+      (fun x : TraceLink => source_compare s x = true)
+      (RichTraceLink.drop (traceTrOnModel Class2Relational m)).
+Proof.
+  intro s.
+  intros a b IN1 IN2 C1 C2.
+  destruct a.
+  apply source_compare_correct in C1.
+  simpl in C1.
+  subst.
+  2:{
+    simpl. apply ClassMetamodel.internal_Element_dec_bl.
+  }    
+  destruct b.
+  apply source_compare_correct in C2.
+  simpl in C2.
+  subst.
+  2:{
+    apply ClassMetamodel.internal_Element_dec_bl.
+  }    
+  f_equal.
+  
+  Tactics.exploit_in_trace IN1; 
+  Tactics.exploit_in_trace IN2 ;
+  PropUtils.inj EQ0 ;
+  PropUtils.inj EQ ; auto.
+  discriminate.
+  discriminate.
+Qed.
+
 Lemma in_find m : 
   forall c,
     In (buildTraceLink
@@ -125,31 +100,7 @@ Proof.
 
   intros c H.
   apply ListUtils.in_find.
-  {
-    intros a b IN1 IN2 C1 C2.
-    destruct a.
-    apply source_compare_correct in C1.
-    simpl in C1.
-    subst.
-    2:{
-      simpl. apply ClassMetamodel.internal_Element_dec_bl.
-    }    
-    destruct b.
-    apply source_compare_correct in C2.
-    simpl in C2.
-    subst.
-    2:{
-      apply ClassMetamodel.internal_Element_dec_bl.
-    }    
-    f_equal.
-    destruct (in_trace_inv _ _ IN1) ; [ exfalso | ].
-    { destruct H0 ; discriminate. }
-    destruct (in_trace_inv _ _ IN2) ; [ exfalso | ].
-    { destruct H1 ; discriminate. }
-    destruct H0 as (? & E1) ; PropUtils.inj E1.
-    destruct H1 as (? & E2) ; PropUtils.inj E2.
-    reflexivity.
-  }
+  { apply discr. }
   {
     unfold source_compare ; simpl.
     unfold TransformationConfiguration.SourceElement_eqb.
@@ -181,7 +132,7 @@ Qed.
 
 
 
-Lemma in_trace c (cm : ClassModel) : 
+Lemma class_in_trace c (cm : ClassModel) : 
   In (ClassElement c) cm.(modelElements) -> 
   In 
     (buildTraceLink 
@@ -225,7 +176,7 @@ Proof.
   intro H.
   unfold Resolve.maybeResolve.
   unfold Resolve.resolve.
-  apply in_trace in H.
+  apply class_in_trace in H.
   rewrite in_resolve ; [ | exact H ].
   split ; [ reflexivity | ].
   eapply Tactics.in_trace_in_models_target in H ; eauto. 
