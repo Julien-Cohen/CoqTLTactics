@@ -165,10 +165,10 @@ Lemma tr_applyUnitOnPiece_leaf :
 forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (te: TargetElementType) 
        (i:nat) (opu: OutputPatternUnit),
   evalOutputPatternUnit opu sm sp i = Some te ->
-  applyUnitOnPiece opu tr sm sp i = evalOutputPatternLink sm sp te i (convert2 (traceTrOnModel tr sm)) opu.
+  applyUnitOnPiece opu tr sm sp i = evalOutputPatternLink sm sp te i (drop (traceTrOnModel tr sm)) opu.
 Proof.
   intros.
-  destruct (evalOutputPatternLink sm sp te i (convert2 (traceTrOnModel tr sm)) opu) eqn:dst.
+  destruct (evalOutputPatternLink sm sp te i (drop (traceTrOnModel tr sm)) opu) eqn:dst.
   * unfold applyUnitOnPiece. crush.
   * unfold applyUnitOnPiece. crush.
 Qed.  
@@ -319,7 +319,7 @@ Program Instance CoqTLEngine :
     applyIterationOnPattern := applyIterationOnPiece;
     applyElementOnPattern := applyUnitOnPiece;
 
-    trace := (fun a b => convert2 (traceTrOnModel a b)) ;
+    trace := (fun a b => drop (traceTrOnModel a b)) ;
 
     resolveAll := (fun a b c d => resolveAllIter a c d) ;
     resolve := (fun a b c d => resolveIter a c d);

@@ -95,7 +95,7 @@ Qed.
 Definition convert (a:TraceLink) : PoorTraceLink.TraceLink :=
   PoorTraceLink.buildTraceLink a.(source) a.(produced).
 
-Definition convert2 := map convert.
+Definition drop := map convert.
 
 End TraceLink.
 

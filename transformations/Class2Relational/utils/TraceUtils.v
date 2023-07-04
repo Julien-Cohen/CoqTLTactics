@@ -57,7 +57,7 @@ Definition wf t : Prop :=
 
 
 Lemma trace_wf :
-  forall cm, wf (RichTraceLink.convert2 (traceTrOnModel Class2Relational cm)).
+  forall cm, wf (RichTraceLink.drop (traceTrOnModel Class2Relational cm)).
 Proof.
   intro cm. 
   unfold wf.
@@ -205,11 +205,11 @@ Lemma in_trace c (cm : ClassModel) :
           |}
          )
     ) 
-    (RichTraceLink.convert2 (traceTrOnModel Class2Relational cm)).
+    (RichTraceLink.drop (traceTrOnModel Class2Relational cm)).
 Proof.
   intro IN1.
 
-  unfold RichTraceLink.convert2.
+  unfold RichTraceLink.drop.
   apply in_map_iff.
 
   eexists.
@@ -232,7 +232,7 @@ Lemma in_maybeResolve_trace_2 c (cm : ClassModel) :
   
   In (ClassElement c) cm.(modelElements) -> 
   
-  Resolve.maybeResolve (RichTraceLink.convert2 (traceTrOnModel Class2Relational cm)) "tab" (Some [ClassElement c])  =  
+  Resolve.maybeResolve (RichTraceLink.drop (traceTrOnModel Class2Relational cm)) "tab" (Some [ClassElement c])  =  
     Some (TableElement {| Table_id := c.(Class_id); Table_name := c.(Class_name) |}) 
   
   /\ In 

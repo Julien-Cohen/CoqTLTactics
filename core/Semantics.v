@@ -60,7 +60,7 @@ Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) :  RichTraceLi
 
 Definition applyTrOnModel (sm : SourceModel) (tls:Trace): list TargetLinkType :=
   flat_map 
-    (fun lk => lk.(linkPattern) (convert2 tls) (getIteration lk) sm (getSourcePattern lk) lk.(produced)) 
+    (fun lk => lk.(linkPattern) (drop tls) (getIteration lk) sm (getSourcePattern lk) lk.(produced)) 
     tls. 
 
 
@@ -110,7 +110,7 @@ Definition applyUnitOnPiece {tc:TransformationConfiguration}
             (sm: SourceModel)
             (sp: InputPiece) (iter: nat) : list TargetLinkType :=
   match (evalOutputPatternUnit opu sm sp iter) with 
-  | Some l => evalOutputPatternLink sm sp l iter (convert2 (traceTrOnModel tr sm)) opu
+  | Some l => evalOutputPatternLink sm sp l iter (drop (traceTrOnModel tr sm)) opu
   | None => nil
   end.
 
@@ -282,7 +282,7 @@ Lemma in_applyUnitOnPiece {A B C D E} :
   In a (applyUnitOnPiece opu tr sm sp it) ->
   exists g, 
     evalOutputPatternUnit opu sm sp it = Some g
-    /\ In a (evalOutputPatternLink sm sp g it (convert2 (traceTrOnModel tr sm)) opu).
+    /\ In a (evalOutputPatternLink sm sp g it (drop (traceTrOnModel tr sm)) opu).
 Proof.  
   unfold applyUnitOnPiece.
   intros until it ; intro IN.

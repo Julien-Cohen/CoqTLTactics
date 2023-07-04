@@ -305,7 +305,7 @@ Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
   forall
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))} 
   {cm} {l},
-  In l (RichTraceLink.convert2 ((traceTrOnModel) t cm)) ->
+  In l (RichTraceLink.drop ((traceTrOnModel) t cm)) ->
   exists p r i outpat te,   
     In p (allTuples t cm)
     /\ In r (Syntax.rules t) 
@@ -319,7 +319,7 @@ Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
     /\ UserExpressions.evalOutputPatternUnit outpat cm p i = return te .
 Proof.
   intros.
-  unfold RichTraceLink.convert2 in H.
+  unfold RichTraceLink.drop in H.
   apply in_map_iff in H.
   destruct H as (lk0, (CONV, H)).
   destruct_trace H ; 
@@ -338,7 +338,7 @@ Qed.
 Corollary in_trace_in_models_source {MM1} {T1} {T2} {BEQ1} {BEQ2} :  
   forall (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2)))
  cm a b s i,
-    In (PoorTraceLink.buildTraceLink ([a],i,s) b ) (RichTraceLink.convert2 (traceTrOnModel t cm)) ->
+    In (PoorTraceLink.buildTraceLink ([a],i,s) b ) (RichTraceLink.drop (traceTrOnModel t cm)) ->
     In a cm.(modelElements) .
 Proof.
   intros t cm a b s i IN.
@@ -357,13 +357,13 @@ Lemma in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
   forall 
     (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2)))
     cm a b,
-     In (PoorTraceLink.buildTraceLink a b) (RichTraceLink.convert2 (traceTrOnModel t cm)) ->
+     In (PoorTraceLink.buildTraceLink a b) (RichTraceLink.drop (traceTrOnModel t cm)) ->
     In b (execute t cm).(modelElements).
 Proof.
   intros t cm a b IN.
   unfold execute. 
   unfold modelElements. 
-  unfold RichTraceLink.convert2 in IN.
+  unfold RichTraceLink.drop in IN.
   apply in_map_iff. 
   apply in_map_iff in IN. 
   destruct IN as (x & C & IN). 
@@ -447,7 +447,7 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
       /\ In n (seq 0 (UserExpressions.evalIterator r m sp))
       /\ In p (Syntax.r_outputPattern r) 
       /\ UserExpressions.evalOutputPatternUnit p m sp n = return te
-      /\ In l (UserExpressions.evalOutputPatternLink m sp te n (RichTraceLink.convert2(traceTrOnModel t m)) p).
+      /\ In l (UserExpressions.evalOutputPatternLink m sp te n (RichTraceLink.drop(traceTrOnModel t m)) p).
 
 Proof.
   intros.
@@ -730,7 +730,9 @@ Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
     UserExpressions.evalOutputPatternUnit opu cm sp i = Some produced_element ->
     
     
-    forall l, In l  (UserExpressions.evalOutputPatternLink cm sp produced_element i (RichTraceLink.convert2(traceTrOnModel t cm)) opu) -> In l (modelLinks (execute t cm)).
+    forall l,
+      In l  (UserExpressions.evalOutputPatternLink cm sp produced_element i (RichTraceLink.drop(traceTrOnModel t cm)) opu) ->
+      In l (modelLinks (execute t cm)).
 Proof.
   intros sp r i opu produced_element.
   intros IN_MOD A IN_R EVAL_GUARD  EVAL_IT IN_OPU  EVAL_OUT_EL EVAL_OUT_LINK. 
