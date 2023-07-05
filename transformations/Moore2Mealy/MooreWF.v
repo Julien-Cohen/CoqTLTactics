@@ -1,7 +1,7 @@
 
 Require Import Moore2Mealy.Moore Moore2Mealy.MooreSemantics.
 Import String.
-Import Id.
+Import Id Glue.
 
 Definition unique_ids (m:Moore.M) := 
   forall e1 e2,
@@ -53,8 +53,8 @@ Definition WF_sourceLink_left (m:Moore.M) : Prop :=
       forall (lk1 lk2 : Transition_source_t) (t : Transition_t),
         List.In (Transition_sourceLink lk1)  m.(Model.modelLinks) ->
         List.In (Transition_sourceLink lk2)  m.(Model.modelLinks) ->
-        lk1.(Transition_source_t_lglue) = t ->
-        lk2.(Transition_source_t_lglue) = t ->
+        lk1.(lglue) = t ->
+        lk2.(lglue) = t ->
         lk1 = lk2.
 
 (** Two different (target) links cannot deal with the same transition. *)
@@ -63,8 +63,8 @@ Definition WF_targetLink_left (m:Moore.M) : Prop :=
       forall (lk1 lk2 : Transition_target_t) (t : Transition_t),
         List.In (Transition_targetLink lk1)  m.(Model.modelLinks) ->
         List.In (Transition_targetLink lk2)  m.(Model.modelLinks) ->
-        lk1.(Transition_target_t_lglue) = t ->
-        lk2.(Transition_target_t_lglue) = t ->
+        lk1.(lglue) = t ->
+        lk2.(lglue) = t ->
         lk1 = lk2.
   
 
@@ -73,10 +73,7 @@ Lemma getTransition_source_some (m:Moore.M) :
   forall s,
     List.In (StateElement s) m.(Model.modelElements) ->
     forall t,
-      let lk := {|
-                 Transition_source_t_lglue := t ;
-                 Transition_source_t_rglue := s 
-               |} 
+      let lk := {| lglue := t ; rglue := s |} 
       in
       
       List.In (Transition_sourceLink lk) (Model.modelLinks m) ->
@@ -101,11 +98,7 @@ Proof.
     apply In_transition_sourceLink ; assumption.
     apply In_transition_sourceLink ; assumption.
   }    
-  { instantiate (1:=Transition_sourceLink
-            {|
-              Transition_source_t_lglue := t;
-              Transition_source_t_rglue := s
-            |}). 
+  { instantiate (1:=Transition_sourceLink {| lglue := t ; rglue := s |}). 
     reflexivity.
   }        
 
@@ -118,10 +111,7 @@ Lemma getTransition_target_some (m:Moore.M):
   forall s,
     List.In (StateElement s) m.(Model.modelElements) ->
     forall t,
-      let lk := {|
-                 Transition_target_t_lglue := t ;
-                 Transition_target_t_rglue := s 
-               |} 
+      let lk := {| lglue := t ; rglue := s |} 
       in
       
       List.In (Transition_targetLink lk) (Model.modelLinks m) ->
@@ -144,11 +134,7 @@ Proof.
     apply In_transition_targetLink ; assumption.
     apply In_transition_targetLink ; assumption.
   }    
-  { instantiate (1:=Transition_targetLink
-            {|
-              Transition_target_t_lglue := t;
-              Transition_target_t_rglue := s
-            |}). 
+  { instantiate (1 := Transition_targetLink {| lglue := t ; rglue := s |}). 
     reflexivity.
   }        
 

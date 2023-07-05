@@ -12,7 +12,7 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require        core.Tactics.
 
-Require Import Moore2Mealy.Id.
+Require Import Moore2Mealy.Id Glue.
 
 (** Base types for elements *)
 Record State_t := { State_id : NodeId }.
@@ -25,13 +25,8 @@ Scheme Equality for Transition_t.
 
 
 (** Base types for links *)
-Record Transition_source_t := { Transition_source_t_lglue : Transition_t ; Transition_source_t_rglue : State_t }.
-Scheme Equality for Transition_source_t.
-
-
-Record Transition_target_t := { Transition_target_t_lglue : Transition_t ; Transition_target_t_rglue : State_t }.
-Scheme Equality for Transition_target_t.
-
+Definition Transition_source_t := @Glue Transition_t State_t.
+Definition Transition_target_t := @Glue Transition_t State_t.
 
 
 (** Data types for element (to build models) *)
@@ -46,7 +41,17 @@ Inductive Link : Set :=
   | Transition_sourceLink : Transition_source_t -> Link
   | Transition_targetLink : Transition_target_t -> Link
 .
-Scheme Equality for Link.
+
+Definition Link_beq (a:Link) (b:Link) : bool.
+  destruct a eqn:? , b eqn:?.
+  + unfold Transition_source_t in *.
+    Set Printing Implicit.
+    apply (Glue.Glue_beq _ _ Transition_t_beq State_t_beq t t0).
+  + exact false.
+  + exact false.
+  + apply (Glue.Glue_beq _ _ Transition_t_beq State_t_beq t t0).
+Defined.
+
 
 (** Meta-types (or kinds, to be used in rules) *)
 Inductive ElementKind : Set :=
@@ -147,10 +152,10 @@ Definition M := Model MM.
 (** General functions (used in transformations) *)
 Definition getTransition_sourceOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
   option_map 
-    Transition_source_t_rglue 
+    rglue 
     (find_lift 
        (get_L_data Transition_source_K) 
-       (fun s => Transition_t_beq s.(Transition_source_t_lglue) t)
+       (fun s => Transition_t_beq s.(lglue) t)
        l
     ). 
 
@@ -161,10 +166,10 @@ Definition getTransition_source (m : M) (t : Transition_t) : option (State_t) :=
 
 Definition getTransition_targetOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
   option_map 
-    Transition_target_t_rglue 
+    rglue 
     (find_lift 
        (get_L_data Transition_target_K) 
-       (fun s => Transition_t_beq s.(Transition_target_t_lglue) t)
+       (fun s => Transition_t_beq s.(lglue) t)
        l
     ).
 
@@ -309,7 +314,7 @@ Qed.
 
 Lemma getTransition_source_inv m t s : 
   getTransition_source m t = Some s ->
-  let lk := {|  Transition_source_t_lglue := t ;  Transition_source_t_rglue := s |} in
+  let lk := {|  lglue := t ;  rglue := s |} in
   List.In (Transition_sourceLink lk) m.(Model.modelLinks).
   (*    List.In (StateElement s) (Model.modelElements m). *)
 Proof.
@@ -328,7 +333,7 @@ Qed.
 
 Lemma getTransition_target_inv m t s : 
   getTransition_target m t = Some s -> 
-  let lk := {| Transition_target_t_rglue := s ; Transition_target_t_lglue := t |} in 
+  let lk := {| rglue := s ; lglue := t |} in 
     In (Transition_targetLink lk)  m.(Model.modelLinks).
     (*  List.In (StateElement s) (Model.modelElements m) *)
 Proof.
@@ -346,10 +351,10 @@ Qed.
 
 
 Definition maybeBuildTransitionSource (tr_arg: Transition_t) (so_arg: option State_t) : option Transition_source_t :=
-  option_map (Build_Transition_source_t tr_arg) so_arg.
+  option_map (Build_Glue _ _ tr_arg) so_arg.
 
 
 Definition maybeBuildTransitionTarget (tr_arg: Transition_t) (ta_arg: option State_t) : option Transition_target_t :=
-  option_map (Build_Transition_target_t tr_arg) ta_arg.
+  option_map (Build_Glue _ _ tr_arg) ta_arg.
 
 

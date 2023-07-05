@@ -5,7 +5,7 @@ Require Import transformations.Moore2Mealy.Moore.
 Require Import core.Model.
 Require Import core.utils.Utils.
 
-Import Id.
+Import Id Glue.
 
 Definition initialState (m: M) : option State_t :=
     find_lift (get_E_data State_K) (fun s => NodeId_beq (Id "S0") s.(State_id)) m.(modelElements).
@@ -130,7 +130,7 @@ Qed.
 Definition WF_sourceLink_source_in (m:Moore.M) :=
       forall lk, 
         In (Transition_sourceLink lk) m.(modelLinks) ->
-        In (StateElement lk.(Transition_source_t_rglue)) m.(modelElements).
+        In (StateElement lk.(rglue)) m.(modelElements).
 
 Lemma search_in_left m :
   WF_sourceLink_source_in m ->
@@ -152,7 +152,7 @@ Qed.
 Definition WF_targetLink_target_in (m:Moore.M) :=
       forall lk, 
         In (Transition_targetLink lk) m.(modelLinks) ->
-        In (StateElement lk.(Transition_target_t_rglue)) m.(modelElements).
+        In (StateElement lk.(rglue)) m.(modelElements).
 
 Lemma search_in_right m :
   WF_targetLink_target_in m ->

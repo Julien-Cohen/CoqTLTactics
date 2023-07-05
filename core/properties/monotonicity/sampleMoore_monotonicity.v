@@ -10,6 +10,7 @@
  Require Import transformations.Moore2Mealy.Moore.
  Open Scope string_scope.
  
+Import Glue.
 
 (* Moore models as counterexample to prove monotonicity of CoqTL *)
 
@@ -34,10 +35,10 @@ Definition Moore_m2 : Model Moore.MM :=
                 nil
             )
             (
-                (Transition_sourceLink (Build_Transition_source_t (Build_Transition_t 0 "0") (Build_State_t  (Id.Id "S1") "0"))) ::
-		        (Transition_targetLink (Build_Transition_target_t (Build_Transition_t 0 "0") (Build_State_t  (Id.Id "S0") "1"))) ::
-                (Transition_sourceLink (Build_Transition_source_t (Build_Transition_t 1 "1") (Build_State_t  (Id.Id "S0") "1"))) ::
-		        (Transition_targetLink (Build_Transition_target_t (Build_Transition_t 1 "1") (Build_State_t  (Id.Id "S1") "0"))) ::
+                (Transition_sourceLink (Build_Glue _ _ (Build_Transition_t 0 "0") (Build_State_t  (Id.Id "S1") "0"))) ::
+		        (Transition_targetLink (Build_Glue _ _ (Build_Transition_t 0 "0") (Build_State_t  (Id.Id "S0") "1"))) ::
+                (Transition_sourceLink (Build_Glue _ _ (Build_Transition_t 1 "1") (Build_State_t  (Id.Id "S0") "1"))) ::
+		        (Transition_targetLink (Build_Glue _ _ (Build_Transition_t 1 "1") (Build_State_t  (Id.Id "S1") "0"))) ::
                 nil
             )
         ).

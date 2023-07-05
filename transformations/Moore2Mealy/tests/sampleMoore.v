@@ -4,7 +4,7 @@ Require Import String.
 Require Import transformations.Moore2Mealy.Moore.
 Open Scope string_scope.
 
-Import Id.
+Import Id Glue.
 
 (* S0("a") --"A"-> S1("b") --"B"-| 
                       /\         |
@@ -30,10 +30,10 @@ Definition InputModel : Model Moore.MM :=
 	nil
     )
     (
-      (Transition_sourceLink (Build_Transition_source_t t0 s0)) ::
-	(Transition_targetLink (Build_Transition_target_t t0 s1)) ::
-	(Transition_sourceLink (Build_Transition_source_t t1 s1)) ::
-	(Transition_targetLink (Build_Transition_target_t t1 s1)) ::
+      (Transition_sourceLink (Build_Glue _ _ t0 s0)) ::
+	(Transition_targetLink (Build_Glue _ _ t0 s1)) ::
+	(Transition_sourceLink (Build_Glue _ _ t1 s1)) ::
+	(Transition_targetLink (Build_Glue _ _ t1 s1)) ::
 	nil
     )
 .
