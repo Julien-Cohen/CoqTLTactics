@@ -36,9 +36,11 @@ Require Import transformations.Class2Relational.tests.PersonModel.
       Column id=1 name='parent' reference='Person'
 *)
 
+(* By removing beq on Links, we lose this.
 Compute 
   (Model_beq   
     (execute Class2Relational PersonModel) 
+
     (Build_Model  
        RelationalMetamodel.MM 
        (RelationalMetamodel.TableElement
@@ -52,5 +54,24 @@ Compute
           (Build_Column_reference_t
              (Build_Column_t 1 "parent")
              (Build_Table_t 0 "Person")) :: nil))).
+*)
 
-(* Question : should we use [RelationalMetamodel.TableElement (Build_Table_t 0 "Person")] or [RelationalMetamodel.lift_EKind Table_K (Build_Table_t 0 "Person")] here ? *)
+Fact test_ok :    
+    (execute Class2Relational PersonModel) 
+      =
+    (Build_Model  
+       RelationalMetamodel.MM 
+       (RelationalMetamodel.TableElement
+          (Build_Table_t 0 "Person")
+          :: RelationalMetamodel.ColumnElement
+          (Build_Column_t 1 "parent") :: nil)
+       (RelationalMetamodel.Table_columnsLink
+          (Build_Table_columns_t (Build_Table_t 0 "Person")
+             (Build_Column_t 1 "parent" :: nil))
+          :: RelationalMetamodel.Column_referenceLink
+          (Build_Column_reference_t
+             (Build_Column_t 1 "parent")
+             (Build_Table_t 0 "Person")) :: nil)).
+Proof.
+  reflexivity.
+Qed.

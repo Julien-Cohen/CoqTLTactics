@@ -15,38 +15,20 @@ Require        core.Tactics.
 (** Base types for elements *)
 Record Table_t := { Table_id : nat ; Table_name : string }.
 Scheme Equality for Table_t.
-Lemma lem_Table_t_beq_id: forall (e1 e2: Table_t), Table_t_beq e1 e2 = true -> e1 = e2.
-Proof. exact internal_Table_t_dec_bl. Qed.
-Lemma lem_Table_t_beq_refl: forall (e: Table_t), Table_t_beq e e = true.
-Proof. intro ; apply internal_Table_t_dec_lb ; auto. Qed.
 
 
 Record Column_t := { Column_id : nat ; Column_name : string }.
 Scheme Equality for Column_t.
-Lemma lem_Column_t_beq_id: forall (e1 e2: Column_t), Column_t_beq e1 e2 = true -> e1 = e2.
-Proof. Tactics.beq_eq_tac. Qed.
-Lemma lem_Column_t_beq_refl : forall (e: Column_t), Column_t_beq e e = true.
-Proof. intro ; apply internal_Column_t_dec_lb ; auto. Qed. 
 
-Global Hint Resolve lem_Column_t_beq_id : beq_eq_database.
+(* DEPRECATED *)
+(* Global Hint Resolve lem_Column_t_beq_id : beq_eq_database. *)
 (* (needed for the two lemmas below) *)
 
 
 (** Base types for links *)
 Record Table_columns_t := { Table_columns_t_lglue : Table_t ; Table_columns_t_rglue : list Column_t }.
-Definition Table_columns_t_beq (a1 a2: Table_columns_t) : bool := 
-  Table_t_beq a1.(Table_columns_t_lglue) a2.(Table_columns_t_lglue) && list_beq Column_t_beq a1.(Table_columns_t_rglue) a2.(Table_columns_t_rglue).
-Lemma lem_Table_columns_t_beq_id : forall (e1 e2 : Table_columns_t), Table_columns_t_beq e1 e2 = true -> e1 = e2.
-Proof. Tactics.beq_eq_tac. Qed.
-Lemma lem_Table_columns_t_beq_refl : forall (e : Table_columns_t), Table_columns_t_beq e e = true.
-Proof. destruct e. unfold Table_columns_t_beq. rewrite lem_Table_t_beq_refl. rewrite list_beq_refl. reflexivity. exact lem_Column_t_beq_refl. Qed. 
-
 
 Record Column_reference_t := { Column_reference_t_lglue : Column_t ; Column_reference_t_rglue : Table_t }.
-Scheme Equality for Column_reference_t.
-Lemma lem_Column_reference_t_beq_id : forall (e1 e2 : Column_reference_t), Column_reference_t_beq e1 e2 = true -> e1 = e2.
-Proof. Tactics.beq_eq_tac. Qed.
-
 
 
 (** Data types for element (to build models) *)
@@ -63,12 +45,6 @@ Inductive Link : Set :=
 .
 (*Scheme Equality for Link. ==Does not work== *)
 
-Definition Link_beq (c1 : Link) (c2 : Link) : bool :=
-  match c1, c2 with
-  | Table_columnsLink o1, Table_columnsLink o2 => Table_columns_t_beq o1 o2
-  | Column_referenceLink o1, Column_referenceLink o2 => Column_reference_t_beq o1 o2
-  | _, _ => false
-  end.
 
 (** Meta-types (or kinds, to be used in rules) *)
 Inductive ElementKind : Set :=
@@ -134,7 +110,6 @@ Definition MM : Metamodel :=
   ElementType := Element ;
   LinkType := Link ;
   elements_eqdec := Element_beq ;
-  links_eqdec := Link_beq
 |}.
 
 

@@ -274,8 +274,6 @@ Inductive moviesMetamodel_Link : Set :=
  | Build_moviesMetamodel_Link : 
     forall (more_arg:moviesMetamodel_Reference), (moviesMetamodel_getTypeByReference more_arg) -> moviesMetamodel_Link.
 
-(* FIXME *)
-Definition beq_moviesMetamodel_Link (l1 : moviesMetamodel_Link) (l2 : moviesMetamodel_Link) : bool := true.
 
 (* Reflective functions *)
 Lemma moviesMetamodel_eqEClass_dec : 
@@ -324,7 +322,6 @@ Definition moviesMetamodel_Metamodel_Instance :
     ElementType := moviesMetamodel_Object;
     LinkType := moviesMetamodel_Link;
     elements_eqdec := beq_moviesMetamodel_Object ;
-    links_eqdec := beq_moviesMetamodel_Link
   |}.
 
 

@@ -301,9 +301,9 @@ Ltac destruct_in_optionToList_auto :=
 
 
 
-Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
+Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ} :
   forall
-    {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))} 
+    {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
   {cm} {l},
   In l (RichTraceLink.drop ((traceTrOnModel) t cm)) ->
   exists p r i outpat te,   
@@ -335,8 +335,8 @@ Proof.
   eauto 12.
 Qed.
 
-Corollary in_trace_in_models_source {MM1} {T1} {T2} {BEQ1} {BEQ2} :  
-  forall (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2)))
+Corollary in_trace_in_models_source {MM1} {T1} {T2} {BEQ} :  
+  forall (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
  cm a b s i,
     In (PoorTraceLink.buildTraceLink ([a],i,s) b ) (RichTraceLink.drop (traceTrOnModel t cm)) ->
     In a cm.(modelElements) .
@@ -353,9 +353,9 @@ Proof.
   exact IN_SOURCE.
 Qed.
 
-Lemma in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ1} {BEQ2} :
+Lemma in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
   forall 
-    (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2)))
+    (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
     cm a b,
      In (PoorTraceLink.buildTraceLink a b) (RichTraceLink.drop (traceTrOnModel t cm)) ->
     In b (execute t cm).(modelElements).
@@ -374,9 +374,9 @@ Proof.
 Qed.
 
 
-Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
+Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
-    {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))} 
+    {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
     {cm} {a},
     
   In a
@@ -404,9 +404,9 @@ Qed.
 
 
 (** For the user *) 
-Lemma in_modelElements_execute_left {MM1} {T1} {T2} {BEQ1} {BEQ2} :
+Lemma in_modelElements_execute_left {MM1} {T1} {T2} {BEQ} :
   forall 
-    {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))} 
+    {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
     {cm} {a},
     
   forall r sp n0 opu,
@@ -434,9 +434,9 @@ Proof.
     assumption.
 Qed.
 
-Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ1} {BEQ2} :
+Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
-  {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ1 BEQ2))}
+  {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))}
      {l}
      {m},
     In l (modelLinks (execute t m)) ->

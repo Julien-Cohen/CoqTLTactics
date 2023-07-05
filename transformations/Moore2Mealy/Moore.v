@@ -43,15 +43,6 @@ Inductive Link : Set :=
   | Transition_targetLink : Transition_target_t -> Link
 .
 
-Definition Link_beq (a:Link) (b:Link) : bool.
-  destruct a eqn:? , b eqn:?.
-  + unfold Transition_source_t in *.
-    Set Printing Implicit.
-    apply (Glue.Glue_beq _ _ Transition_t_beq State_t_beq t t0).
-  + exact false.
-  + exact false.
-  + apply (Glue.Glue_beq _ _ Transition_t_beq State_t_beq t t0).
-Defined.
 
 (** Meta-types (or kinds, to be used in rules) *)
 Inductive ElementKind : Set :=
@@ -117,7 +108,6 @@ Definition MM : Metamodel :=
   ElementType := Element ;
   LinkType := Link ;
   elements_eqdec := Element_beq ;
-  links_eqdec := Link_beq
 |}.
 
 

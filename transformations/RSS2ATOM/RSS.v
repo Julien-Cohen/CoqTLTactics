@@ -581,8 +581,6 @@ Inductive RSSMetamodel_Link : Set :=
  | Build_RSSMetamodel_Link : 
     forall (rsre_arg:RSSMetamodel_Reference), (RSSMetamodel_getTypeByReference rsre_arg) -> RSSMetamodel_Link.
 
-(* FIXME *)
-Definition beq_RSSMetamodel_Link (l1 : RSSMetamodel_Link) (l2 : RSSMetamodel_Link) : bool := true.
 
 (* Reflective functions *)
 Lemma RSSMetamodel_eqEClass_dec : 
@@ -631,7 +629,6 @@ Definition RSSMetamodel_Metamodel_Instance :
     ElementType := RSSMetamodel_Object;
     LinkType := RSSMetamodel_Link;
     elements_eqdec := beq_RSSMetamodel_Object ;
-    links_eqdec := beq_RSSMetamodel_Link
   |}.
 
 

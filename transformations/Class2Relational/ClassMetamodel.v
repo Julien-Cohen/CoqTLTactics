@@ -15,41 +15,19 @@ Require        core.Tactics.
 (** Base types for elements *)
 Record Class_t := { Class_id : nat ; Class_name : string }.
 Scheme Equality for Class_t.
-Lemma lem_Class_t_beq_id : forall (e1 e2 : Class_t), Class_t_beq e1 e2 = true -> e1 = e2.
-Proof. exact internal_Class_t_dec_bl. Qed. 
-Lemma lem_Class_t_beq_refl : forall (e : Class_t), Class_t_beq e e = true.
-Proof. intro ; apply internal_Class_t_dec_lb ; auto. Qed. 
-
 
 Record Attribute_t := { Attribute_id : nat ; Attribute_derived : bool ; Attribute_name : string }.
 Scheme Equality for Attribute_t.
-Lemma lem_Attribute_t_beq_id : forall (e1 e2 : Attribute_t), Attribute_t_beq e1 e2 = true -> e1 = e2.
-Proof. exact internal_Attribute_t_dec_bl. Qed. 
-Lemma lem_Attribute_t_beq_refl : forall (e : Attribute_t), Attribute_t_beq e e = true.
-Proof. intro ; apply internal_Attribute_t_dec_lb ; auto. Qed. 
 
-Global Hint Resolve lem_Attribute_t_beq_id : beq_eq_database.
+(* DEPRECATED *)
+(*Global Hint Resolve lem_Attribute_t_beq_id : beq_eq_database.*)
 (* this is necessary for the success of the [beq_eq_tac] tactics in the lemma below *)
 
 
 (** Base types for links *)
 Record Class_attributes_t := { Class_attributes_t_lglue : Class_t ; Class_attributes_t_rglue : list Attribute_t }.
-(*Scheme Equality for Class_attributes_t. ==Does not work 8.15 8.17 == *)
-Definition Class_attributes_t_beq (a1 a2: Class_attributes_t) : bool := 
-  Class_t_beq a1.(Class_attributes_t_lglue) a2.(Class_attributes_t_lglue) && list_beq Attribute_t_beq a1.(Class_attributes_t_rglue) a2.(Class_attributes_t_rglue).
-Lemma lem_Class_attributes_t_beq_id : forall (e1 e2 : Class_attributes_t), Class_attributes_t_beq e1 e2 = true -> e1 = e2.
-Proof. Tactics.beq_eq_tac. Qed.
-Lemma lem_Class_attributes_t_beq_refl : forall (e : Class_attributes_t), Class_attributes_t_beq e e = true.
-Proof. destruct e. unfold Class_attributes_t_beq. rewrite lem_Class_t_beq_refl. rewrite list_beq_refl. reflexivity. exact lem_Attribute_t_beq_refl. Qed. 
-
 
 Record Attribute_type_t := { Attribute_type_t_lglue : Attribute_t ; Attribute_type_t_rglue : Class_t }.
-Scheme Equality for Attribute_type_t.
-Lemma lem_Attribute_type_t_beq_id : forall (e1 e2 : Attribute_type_t), Attribute_type_t_beq e1 e2 = true -> e1 = e2.
-Proof. exact internal_Attribute_type_t_dec_bl. Qed.
-Lemma lem_Attribute_type_t_beq_refl : forall (e : Attribute_type_t), Attribute_type_t_beq e e = true.
-Proof. intro ; apply internal_Attribute_type_t_dec_lb ; auto. Qed. 
-
 
 
 (** Data types for element (to build models) *)
@@ -64,14 +42,7 @@ Inductive Link : Set :=
   | Class_attributesLink : Class_attributes_t -> Link
   | Attribute_typeLink : Attribute_type_t -> Link
 .
-(*Scheme Equality for Link. ==Does not work== *)
 
-Definition Link_beq (c1 : Link) (c2 : Link) : bool :=
-  match c1, c2 with
-  | Class_attributesLink o1, Class_attributesLink o2 => Class_attributes_t_beq o1 o2
-  | Attribute_typeLink o1, Attribute_typeLink o2 => Attribute_type_t_beq o1 o2
-  | _, _ => false
-  end.
 
 (** Meta-types (or kinds, to be used in rules) *)
 Inductive ElementKind : Set :=
@@ -137,7 +108,6 @@ Definition MM : Metamodel :=
   ElementType := Element ;
   LinkType := Link ;
   elements_eqdec := Element_beq ;
-  links_eqdec := Link_beq
 |}.
 
 

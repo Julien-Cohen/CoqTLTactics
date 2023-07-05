@@ -34,12 +34,6 @@ Definition beq_Class (c1 : Class_t) (c2 : Class_t) : bool :=
 Definition beq_Attribute (a1 : Attribute_t) (a2 : Attribute_t) : bool :=
   beq_nat (attr_id a1) (attr_id a2) && eqb (derived a1) (derived a2) && beq_string (attr_name a1) (attr_name a2).
 
-Definition beq_AttributeType (c1 : AttributeType_t) (c2 : AttributeType_t) : bool :=
-  beq_Attribute (source_attribute c1) (source_attribute c2) && beq_Class (a_type c1) (a_type c2).
-
-Definition beq_ClassAttributes (c1 : ClassAttributes_t) (c2 : ClassAttributes_t) : bool :=
-  beq_Class (source_class c1) (source_class c2) && list_beq beq_Attribute (attrs c1) (attrs c2).
-
 
 Lemma lem_beq_Class_id:
  forall (a1 a2: Class_t),
@@ -75,24 +69,6 @@ Proof.
 Qed. 
 
 
-Lemma lem_beq_AttributeType_id:
- forall a1 a2,
-   beq_AttributeType a1 a2 = true -> a1 = a2.
-Proof.
-  Tactics.beq_eq_tac.
-Qed.
-
-Global Hint Resolve lem_beq_Attribute_id : beq_eq_database.
-(* this is necessary for the success of the [beq_eq_tac] tactics in the lemma below *)
-
-Lemma lem_beq_ClassAttributes_id:
- forall a1 a2,
-   beq_ClassAttributes a1 a2 = true -> a1 = a2.
-Proof.
-  Tactics.beq_eq_tac.
-Qed.
-
-
 (** Data types (to build models) *)
 
 Inductive Element : Set :=
@@ -110,13 +86,6 @@ Definition beq_Element (c1 : Element) (c2 : Element) : bool :=
 Inductive Link : Set :=
    | ClassAttributeLink : ClassAttributes_t -> Link
    | AttributeTypeLink : AttributeType_t -> Link.
-
-Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
-  match c1, c2 with
-  | ClassAttributeLink o1, ClassAttributeLink o2 => beq_ClassAttributes o1 o2
-  | AttributeTypeLink o1, AttributeTypeLink o2 => beq_AttributeType o1 o2
-  | _, _ => false
-  end.
 
 
 (** Meta-types (or kinds, to be used in rules) *)
@@ -187,7 +156,6 @@ Definition ClassMM : Metamodel :=
   ElementType := Element ;
   LinkType := Link ;
   elements_eqdec := beq_Element ;
-  links_eqdec := beq_Link
 |}.
 
 

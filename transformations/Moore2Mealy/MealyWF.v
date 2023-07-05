@@ -61,7 +61,7 @@ Qed.
 (** Two different (source) links cannot deal with the same transition. *)
 (** A transition starts at only one state. *)
 Definition WF_sourceLink_left (m:Mealy.M) : Prop :=
-      forall (lk1 lk2 : Transition_source_t) (t : Transition_t),
+      forall (lk1 lk2 : @Glue Transition_t State_t) (t : Transition_t),
         List.In (Transition_sourceLink lk1)  m.(Model.modelLinks) ->
         List.In (Transition_sourceLink lk2)  m.(Model.modelLinks) ->
         lk1.(lglue) = t ->
@@ -71,7 +71,7 @@ Definition WF_sourceLink_left (m:Mealy.M) : Prop :=
 (** Two different (target) links cannot deal with the same transition. *)
 (** A transition aims at only one state. *)
 Definition WF_targetLink_left (m:Mealy.M) : Prop :=
-      forall (lk1 lk2 : Transition_target_t) (t : Transition_t),
+      forall (lk1 lk2 : @Glue Transition_t State_t) (t : Transition_t),
         List.In (Transition_targetLink lk1)  m.(Model.modelLinks) ->
         List.In (Transition_targetLink lk2)  m.(Model.modelLinks) ->
         lk1.(lglue) = t ->

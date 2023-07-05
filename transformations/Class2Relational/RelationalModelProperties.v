@@ -43,8 +43,7 @@ Proof.
   destruct_or IN.
   {
     subst a.
-    rewrite lem_Column_t_beq_refl.
-    eauto.
+    rewrite internal_Column_t_dec_lb ; eauto.
   }
   {
     apply (IHl v) in IN ; auto ; clear IHl ; [].
@@ -88,7 +87,7 @@ Proof.
     destruct(Column_t_beq Column_reference_t_lglue c) eqn:E.
     {
       PropUtils.inj IN.
-      apply lem_Column_t_beq_id in E ; subst Column_reference_t_lglue.
+      apply internal_Column_t_dec_bl in E ; subst Column_reference_t_lglue.
       left ; reflexivity.
     }
     {

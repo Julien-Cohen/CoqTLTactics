@@ -23,7 +23,7 @@ Proof.
     Tactics.destruct_if_hyp.
     { (* true *)
       PropUtils.inj G.
-      apply lem_Attribute_t_beq_id in E.
+      apply internal_Attribute_t_dec_bl in E.
       destruct a ; subst ; simpl in *.
       left ; reflexivity.
     }
@@ -64,8 +64,7 @@ Proof.
     destruct a.
     destruct_or H.
     - PropUtils.inj H. simpl.
-      rewrite lem_Attribute_t_beq_refl.
-      solve [eauto].
+      rewrite internal_Attribute_t_dec_lb ; solve [eauto].
       
     - apply IHmodelLinks in H.
     

@@ -42,11 +42,6 @@ Definition beq_Table (t1 : Table_t) (t2: Table_t) : bool :=
 Definition beq_Column (c1 : Column_t) (c2 : Column_t) : bool :=
   beq_nat (column_id c1) (column_id c2) && beq_string (column_name c1) (column_name c2).
 
-Definition beq_TableColumns (c1 : TableColumns_t) (c2 : TableColumns_t) : bool :=
-  beq_Table (tab c1) (tab c2) && list_beq beq_Column (cols c1) (cols c2).
-
-Definition beq_ColumnReference (c1 : ColumnReference_t) (c2 : ColumnReference_t) : bool :=
-  beq_Column (cr c1) (cr c2) && beq_Table (ct c1) (ct c2).
 
 
 Lemma lem_beq_Table_id:
@@ -94,23 +89,6 @@ Proof.
   Tactics.beq_eq_tac.
 Qed.
 
-Global Hint Resolve lem_beq_Column_id : beq_eq_database.
-(* (needed for the two lemmas below) *)
-
-Lemma lem_beq_TableColumns_id:
- forall a1 a2,
-   beq_TableColumns a1 a2 = true -> a1 = a2.
-Proof. 
-  Tactics.beq_eq_tac.
-Qed.
-
-Lemma lem_beq_ColumnReference_id:
- forall a1 a2,
-   beq_ColumnReference a1 a2 = true -> a1 = a2.
-Proof. 
-  Tactics.beq_eq_tac.
-Qed.
-
 
 (* Generic types (data types) *)
 
@@ -129,13 +107,6 @@ Definition beq_Element (c1 : Element) (c2 : Element) : bool :=
 Inductive Link : Set :=
   | TableColumnLink : TableColumns_t -> Link
   | ColumnReferenceLink : ColumnReference_t -> Link.
-
-  Definition beq_Link (c1 : Link) (c2 : Link) : bool :=
-    match c1, c2 with
-    | TableColumnLink o1, TableColumnLink o2 => beq_TableColumns o1 o2
-    | ColumnReferenceLink o1, ColumnReferenceLink o2 => beq_ColumnReference o1 o2
-    | _, _ => false
-    end.
 
 (* Meta-types (kinds) *)
 
@@ -229,7 +200,6 @@ Definition RelationalMM : Metamodel :=
     ElementType := Element;
     LinkType := Link;
     elements_eqdec := beq_Element ;
-    links_eqdec := beq_Link
   |}.
 
 

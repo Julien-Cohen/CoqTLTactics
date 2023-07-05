@@ -38,7 +38,6 @@ Scheme Equality for Element.
 Inductive Link : Set :=
   . (* Empty type *)
 
-Scheme Equality for Link.
 
 (** Meta-types (or kinds, to be used in rules) *)
 Inductive ElementKind : Set :=
@@ -93,7 +92,6 @@ Definition MM : Metamodel :=
   ElementType := Element ;
   LinkType := Link ;
   elements_eqdec := Element_beq ;
-  links_eqdec := Link_beq
 |}.
 
 

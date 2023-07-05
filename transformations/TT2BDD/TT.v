@@ -74,7 +74,6 @@ Definition TTM : Metamodel :=
     ElementType := TTElem ;
     LinkType := TTRef ;
     elements_eqdec := TTEq ;
-    links_eqdec := fun _ _ => true
   |}.
 
 

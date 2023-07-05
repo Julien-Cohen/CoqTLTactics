@@ -14,26 +14,19 @@ Record Model (MM:Metamodel) :=
     modelLinks : list MM.(LinkType);
   }.
 
-Definition Model_beq {MM: Metamodel} (m1 m2: Model MM) :=
-  andb (list_beq MM.(elements_eqdec) m1.(modelElements) m2.(modelElements))
-  (list_beq MM.(links_eqdec) m1.(modelLinks) m2.(modelLinks)).
-
 Definition Model_wellFormed {MM: Metamodel} (m: Model MM): Prop :=
   m.(modelElements) = nil -> m.(modelLinks) = nil.
 
-Local Notation count := ListUtils.count_occ_b.
 
-Definition Model_incl {MM : Metamodel} (m1 m2: Model MM) := 
-  forall e,
-   count MM.(elements_eqdec) m1.(modelElements) e <= count MM.(elements_eqdec) m2.(modelElements) e /\
-   forall l,
-   count MM.(links_eqdec) m1.(modelLinks) l <= count MM.(links_eqdec) m2.(modelLinks) l.
+Definition Model_incl {MM : Metamodel} (m1 m2: Model MM) : Prop :=
+  (forall e,
+    List.In e m1.(modelElements) ->  List.In e m2.(modelElements))
+  /\
+   (forall l,
+       List.In l m1.(modelLinks) -> List.In l m2.(modelLinks) ).
    
-Definition Model_equiv {MM : Metamodel} (m1 m2: Model MM)  := 
-  forall e,
-  count MM.(elements_eqdec) m1.(modelElements) e = count MM.(elements_eqdec) m2.(modelElements) e /\
-  forall l,
-  count MM.(links_eqdec) m1.(modelLinks) l = count MM.(links_eqdec) m2.(modelLinks) l. 
+Definition Model_equiv {MM : Metamodel} (m1 m2: Model MM) : Prop := 
+  Model_incl m1 m2 /\ Model_incl m2 m1.
 
 Definition Model_app {MM: Metamodel} (m1 m2: Model MM) := 
   {| 

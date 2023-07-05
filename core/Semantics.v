@@ -276,8 +276,8 @@ Qed.
 
 
 (** FIXME : move-me to Certification ? *)
-Lemma in_applyUnitOnPiece {A B C D E} :
-  forall (tr:Transformation (tc:=Build_TransformationConfiguration A (Metamodel.Build_Metamodel B C D E))) 
+Lemma in_applyUnitOnPiece {A B C D} :
+  forall (tr:Transformation (tc:=Build_TransformationConfiguration A (Metamodel.Build_Metamodel B C D))) 
          a opu sm sp it,
   In a (applyUnitOnPiece opu tr sm sp it) ->
   exists g, 
