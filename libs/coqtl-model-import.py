@@ -81,10 +81,6 @@ def records_elem(eClasses):
         records_elem_attrs = " ; ".join(map(records_elem_attr, eClass.eAttributes))
         lst.append(f"Record {eClass.name}_t := {{ {records_elem_attrs} }}.")
         lst.append(f"Scheme Equality for {eClass.name}_t.")
-        lst.append(f"Lemma lem_{eClass.name}_t_beq_id : forall (e1 e2 : {eClass.name}_t), {eClass.name}_t_beq e1 e2 = true -> e1 = e2.")
-        lst.append("Proof. Admitted. ")
-        lst.append(f"Lemma lem_{eClass.name}_t_beq_refl : forall (e : {eClass.name}_t), {eClass.name}_t_beq e e = true.")
-        lst.append("Proof. Admitted. ")
         lst.append(br())
     lst.append(br())
 
@@ -96,11 +92,6 @@ def records_link_multiplicity(eReference):
     else:
         return f"list {eReference.eType.name}"
 
-def records_link_scheme_equality_list(eClass, eReference):
-    lst = []
-    lst.append(f"Definition {eClass.name}_{eReference.name}_t_beq (a1 a2: {eClass.name}_{eReference.name}_t) : bool := ") 
-    lst.append(f"  {eClass.name}_t_beq a1.({eClass.name}_{eReference.name}_t_lglue) a2.({eClass.name}_{eReference.name}_t_lglue) && list_beq {eReference.eType.name}_t_beq a1.({eClass.name}_{eReference.name}_t_rglue) a2.({eClass.name}_{eReference.name}_t_rglue).")
-    return join(lst)
 
 def records_link(eClasses):
     lst = []  
@@ -110,16 +101,7 @@ def records_link(eClasses):
         for eReference in eClass.eReferences:
             lst.append(f"Record {eClass.name}_{eReference.name}_t := {{ {eClass.name}_{eReference.name}_t_lglue : {eClass.name}_t ; {eClass.name}_{eReference.name}_t_rglue : {records_link_multiplicity(eReference)}_t }}.")
 
-            # hack : scheme equality for list
-            if eReference.upperBound == 1:
-                lst.append(f"Scheme Equality for {eClass.name}_{eReference.name}_t.")
-            else:
-                lst.append(records_link_scheme_equality_list(eClass, eReference))
 
-            lst.append(f"Lemma lem_{eClass.name}_{eReference.name}_t_beq_id : forall (e1 e2 : {eClass.name}_{eReference.name}_t), {eClass.name}_{eReference.name}_t_beq e1 e2 = true -> e1 = e2.")
-            lst.append("Proof. Admitted. ")
-            lst.append(f"Lemma lem_{eClass.name}_{eReference.name}_t_beq_refl : forall (e : {eClass.name}_{eReference.name}_t), {eClass.name}_{eReference.name}_t_beq e e = true.")
-            lst.append("Proof. Admitted. ")
             lst.append(br())
 
     lst.append(br())
@@ -146,7 +128,6 @@ def top_link(eClasses):
         for eReference in eClass.eReferences:
             lst.append(f"  | {eClass.name}_{eReference.name}Link : {eClass.name}_{eReference.name}_t -> Link")
     lst.append(".")
-    lst.append("Scheme Equality for Link.")   
     lst.append(br())
 
     return join(lst)
@@ -236,7 +217,6 @@ def type_instance(metamodel):
     lst.append("  ElementType := Element ;")
     lst.append("  LinkType := Link ;")
     lst.append("  elements_eqdec := Element_beq ;")
-    lst.append("  links_eqdec := Link_beq")
     lst.append("|}.")
     lst.append(br())
 
@@ -290,7 +270,7 @@ def general_function(eClasses, metamodel):
             lst.append(" end.")
             lst.append(br())
 
-            lst.append(f"Definition get{eClass.name}_{eReference.name} ({arg(eClass.name[0])} : {eClass.name}_t) (m : M) : option ({records_link_multiplicity(eReference)}_t) :=")
+            lst.append(f"Definition get{eClass.name}_{eReference.name} (m : M) ({arg(eClass.name[0])} : {eClass.name}_t) : option ({records_link_multiplicity(eReference)}_t) :=")
             lst.append(f"  get{eClass.name}_{eReference.name}OnLinks {arg(eClass.name[0])} m.(modelLinks).")
             lst.append(br())
 
