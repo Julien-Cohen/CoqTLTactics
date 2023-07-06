@@ -92,9 +92,9 @@ Proof.
       unfold matchingRules ; simpl.
       
       unfold ConcreteExpressions.makeGuard ; simpl.
-      rewrite H3 ; simpl.
-      rewrite beq_Class_refl. 
-      subst R ; apply in_eq.
+      rewrite H3. unfold is_option_eq. 
+      rewrite internal_Class_t_dec_lb ; auto. 
+      subst R. apply in_eq.
     }
 
     {

@@ -16,57 +16,16 @@ Require        core.Tactics.
 (** Base types for elements *)
 
 Record Class_t := { class_id : nat ; class_name : string }.
+Scheme Equality for Class_t.
 
 Record Attribute_t := { attr_id : nat ; derived : bool ; attr_name : string }.
+Scheme Equality for Attribute_t.
 
 (** Base types for links *)
 
 Record ClassAttributes_t := { source_class : Class_t ; attrs : list Attribute_t }.
 
 Record AttributeType_t := { source_attribute : Attribute_t ; a_type : Class_t }.
-
-
-(* Equality *)
-
-Definition beq_Class (c1 : Class_t) (c2 : Class_t) : bool :=
-  beq_nat (class_id c1) (class_id c2) && beq_string (class_name c1) (class_name c2).
-
-Definition beq_Attribute (a1 : Attribute_t) (a2 : Attribute_t) : bool :=
-  beq_nat (attr_id a1) (attr_id a2) && eqb (derived a1) (derived a2) && beq_string (attr_name a1) (attr_name a2).
-
-
-Lemma lem_beq_Class_id:
- forall (a1 a2: Class_t),
-   beq_Class a1 a2 = true -> a1 = a2.
-Proof.
-  Tactics.beq_eq_tac.
-Qed.
-
-Lemma beq_Class_refl : 
-  forall t, beq_Class t t = true.
-Proof.
-  destruct t. unfold beq_Class. simpl.
-  rewrite Nat.eqb_refl.
-  rewrite lem_beq_string_id.
-  reflexivity.
-Qed. 
-
-Lemma lem_beq_Attribute_id:
- forall (a1 a2: Attribute_t),
-   beq_Attribute a1 a2 = true -> a1 = a2.
-Proof.
-  Tactics.beq_eq_tac.
-Qed.
-
-Lemma beq_Attribute_refl : 
-  forall t, beq_Attribute t t = true.
-Proof.
-  destruct t. unfold beq_Attribute. simpl.
-  rewrite Nat.eqb_refl.
-  rewrite lem_beq_string_id.
-  rewrite eqb_reflx.
-  reflexivity.
-Qed. 
 
 
 
@@ -76,12 +35,8 @@ Inductive Element : Set :=
   ClassElement : Class_t -> Element
 | AttributeElement : Attribute_t -> Element.
 
-Definition beq_Element (c1 : Element) (c2 : Element) : bool :=
-  match c1, c2 with
-  | ClassElement o1, ClassElement o2 => beq_Class o1 o2
-  | AttributeElement o1, AttributeElement o2 => beq_Attribute o1 o2
-  | _, _ => false
-  end.
+Scheme Equality for Element.
+
 
 
 Inductive Link : Set :=
@@ -156,7 +111,7 @@ Definition ClassMM : Metamodel :=
 {|
   ElementType := Element ;
   LinkType := Link ;
-  elements_eqdec := beq_Element ;
+  elements_eqdec := Element_beq ;
 |}.
 
 
@@ -207,7 +162,7 @@ Definition getName (c : Element) : string :=
 Fixpoint getClassAttributesOnLinks (c : Class_t) (l : list Link) : option (list Attribute_t) :=
   match l with
   | (ClassAttributeLink c1) :: l1 => 
-      if beq_Class c1.(source_class) c 
+      if Class_t_beq c1.(source_class) c 
       then Some c1.(attrs) 
       else getClassAttributesOnLinks c l1
   | _ :: l1 => getClassAttributesOnLinks c l1
@@ -228,7 +183,7 @@ Definition getClassAttributesElements (c : Class_t) (m : ClassModel) : option (l
 Fixpoint getAttributeTypeOnLinks (a : Attribute_t) (l : list Link) : option Class_t :=
   match l with
   | (AttributeTypeLink a1) :: l1 => 
-      if beq_Attribute a1.(source_attribute) a 
+      if Attribute_t_beq a1.(source_attribute) a 
       then Some a1.(a_type) 
       else getAttributeTypeOnLinks a l1
   | _ :: l1 => getAttributeTypeOnLinks a l1

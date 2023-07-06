@@ -15,8 +15,10 @@ Require        core.Tactics.
 (* Base types *)
 
 Record Table_t := { table_id : nat ; table_name : string }.
+Scheme Equality for Table_t.
 
 Record Column_t := { column_id : nat ; column_name : string } .
+Scheme Equality for Column_t.
 
 Record TableColumns_t := { tab : Table_t ; cols : list Column_t }.
 
@@ -34,60 +36,6 @@ Definition maybeBuildTableColumns (t: Table_t) (c: option (list Column_t)) : opt
   | _ => None
   end.  
 
-(* Equality *)
-  
-Definition beq_Table (t1 : Table_t) (t2: Table_t) : bool :=
-  beq_nat (table_id t1) (table_id t2) && beq_string (table_name t1) (table_name t2).
-
-Definition beq_Column (c1 : Column_t) (c2 : Column_t) : bool :=
-  beq_nat (column_id c1) (column_id c2) && beq_string (column_name c1) (column_name c2).
-
-
-Lemma lem_beq_Table_id:
- forall (a1 a2: Table_t),
-   beq_Table a1 a2 = true -> a1 = a2.
-Proof.
-  Tactics.beq_eq_tac.
-Qed.
-
-Lemma lem_beq_Table_refl:
- forall (a: Table_t),
-   beq_Table a a = true.
-Proof.
-intros.
-destruct a.
-unfold beq_Table.
-simpl.
-assert (true = PeanoNat.Nat.eqb table_id0 table_id0). { apply beq_nat_refl. }
-rewrite <- H.
-assert (beq_string table_name0 table_name0 = true). { apply lem_beq_string_id. }
-rewrite H0.
-simpl.
-auto.
-Qed.
-
-Lemma lem_beq_Column_refl : 
- forall (c: Column_t),
-   beq_Column c c = true.
-Proof.
-intros.
-destruct c.
-unfold beq_Column.
-simpl.
-assert (beq_nat column_id0 column_id0 = true). {symmetry. apply beq_nat_refl. }
-assert (beq_string column_name0 column_name0 = true). {apply lem_beq_string_id. }
-rewrite H,H0.
-simpl.
-auto.
-Qed.
-
-Lemma lem_beq_Column_id:
- forall (a1 a2: Column_t),
-   beq_Column a1 a2 = true -> a1 = a2.
-Proof.
-  Tactics.beq_eq_tac.
-Qed.
-
 
 (* Generic types (data types) *)
 
@@ -95,13 +43,8 @@ Inductive Element : Set :=
   | TableElement : Table_t -> Element
   | ColumnElement : Column_t -> Element.
 
+Scheme Equality for Element.
 
-Definition beq_Element (c1 : Element) (c2 : Element) : bool :=
-  match c1, c2 with
-  | TableElement o1, TableElement o2 => beq_Table o1 o2
-  | ColumnElement o1, ColumnElement o2 => beq_Column o1 o2
-  | _, _ => false
-  end.
 
 Inductive Link : Set :=
   | TableColumnLink : TableColumns_t -> Link
@@ -198,7 +141,7 @@ Definition RelationalMM : Metamodel :=
   {|
     ElementType := Element;
     LinkType := Link;
-    elements_eqdec := beq_Element ;
+    elements_eqdec := Element_beq ;
   |}.
 
 
@@ -249,7 +192,7 @@ Definition getName (r : Element) : string :=
 
 Fixpoint getTableColumnsOnLinks (t : Table_t) (l : list Link) : option (list Column_t) :=
   match l with
-  | (TableColumnLink (Build_TableColumns_t tab c)) :: l1 => if beq_Table tab t then Some c else getTableColumnsOnLinks t l1
+  | (TableColumnLink (Build_TableColumns_t tab c)) :: l1 => if Table_t_beq tab t then Some c else getTableColumnsOnLinks t l1
   | _ :: l1 => getTableColumnsOnLinks t l1
   | nil => None
   end.
@@ -259,7 +202,7 @@ getTableColumnsOnLinks t m.(modelLinks).
 
 Fixpoint getColumnReferenceOnLinks (c : Column_t) (l : list Link) : option Table_t :=
   match l with
-  | (ColumnReferenceLink (Build_ColumnReference_t col t)) :: l1 => if beq_Column col c then Some t else getColumnReferenceOnLinks c l1
+  | (ColumnReferenceLink (Build_ColumnReference_t col t)) :: l1 => if Column_t_beq col c then Some t else getColumnReferenceOnLinks c l1
   | _ :: l1 => getColumnReferenceOnLinks c l1
   | nil => None
   end.

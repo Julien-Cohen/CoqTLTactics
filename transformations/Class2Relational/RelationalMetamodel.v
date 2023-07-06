@@ -14,15 +14,13 @@ Require        core.Tactics.
 
 (** Base types for elements *)
 Record Table_t := { Table_id : nat ; Table_name : string }.
+
 Scheme Equality for Table_t.
 
 
 Record Column_t := { Column_id : nat ; Column_name : string }.
-Scheme Equality for Column_t.
 
-(* DEPRECATED *)
-(* Global Hint Resolve lem_Column_t_beq_id : beq_eq_database. *)
-(* (needed for the two lemmas below) *)
+Scheme Equality for Column_t.
 
 
 (** Base types for links *)

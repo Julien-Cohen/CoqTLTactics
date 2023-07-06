@@ -100,7 +100,7 @@ Definition Class2Relational_tactic_test' :=
     from [Attribute_K ; Class_K]
     where (fun m a cl => 
             andb (negb (derived a)) 
-            (is_option_eq (getAttributeType a m) cl beq_Class))
+            (is_option_eq (getAttributeType a m) cl Class_t_beq))
     to [ ELEM "col" ::: Column_K 
         << fun _ _ a cl => Build_Column_t a.(attr_id) a.(attr_name) >>
         <<< LINK ColumnReference_K //

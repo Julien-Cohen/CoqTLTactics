@@ -92,11 +92,11 @@ Proof.
   { simpl in H. 
     destruct (getAttributeType a m).
     { simpl in H. 
-      destruct (beq_Class cl c0) eqn: ca.
+      destruct (Class_t_beq cl c0) eqn: ca.
       { simpl in H. remove_or_false H.
         PropUtils.inj H. split.
         reflexivity. split. reflexivity.
-        apply lem_beq_Class_id in ca.
+        apply internal_Class_t_dec_bl in ca.
         rewrite ca. reflexivity. }
       { simpl in H. inversion H. } 
     }

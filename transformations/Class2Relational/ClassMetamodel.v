@@ -14,14 +14,12 @@ Require        core.Tactics.
 
 (** Base types for elements *)
 Record Class_t := { Class_id : nat ; Class_name : string }.
+
 Scheme Equality for Class_t.
 
 Record Attribute_t := { Attribute_id : nat ; Attribute_derived : bool ; Attribute_name : string }.
-Scheme Equality for Attribute_t.
 
-(* DEPRECATED *)
-(*Global Hint Resolve lem_Attribute_t_beq_id : beq_eq_database.*)
-(* this is necessary for the success of the [beq_eq_tac] tactics in the lemma below *)
+Scheme Equality for Attribute_t.
 
 
 (** Base types for links *)

@@ -43,66 +43,6 @@ Ltac dep_inversion H :=
 Ltac duplicate H1 H2 := remember H1 as H2 eqn:TMP ; clear TMP.
 
 
-(** * Tactics to deal with boolean equality on generated types. *)
-
-(** (When we have generated a boolean equality function [eqb] on a type [T], [beq_eq_tac] proves that [forall (a:T) (b:T), eqb a b = true => a = b]. *)
-
-(** DEPRECATED with the use of Scheme Equality *)
-Scheme Equality for nat.
-Require String.
-Scheme Equality for String.string.
-Ltac basetype_eqb_eq_tac :=
-  match goal with 
-  | [ H : Nat.eqb             _ _ = true |- _ ] => apply EqNat.beq_nat_true in H ; subst 
-  | [ H : nat_beq             _ _ = true |- _ ] => apply internal_nat_dec_bl in H ; subst
-  | [ H : Bool.eqb            _ _ = true |- _ ] => apply Bool.eqb_prop      in H ; subst 
-  | [ H : beq_string          _ _ = true |- _ ] => apply lem_beq_string_eq2 in H ; subst
-  | [ H : string_beq _ _ = true |- _ ] => apply internal_string_dec_bl in H ; subst
-end.
-
-
-Ltac composedtype_eqb_eq_tac :=
-  match goal  with [ H : ?f ?a ?b = true |- _ ]  => unfold f in H  ; (* unfold the boolean equality function *)
-  destruct a , b ; simpl in H end ;  
-  destruct_conjunctions
-.
-
-Notation beq_is_eq f := (forall a b, f a b = true -> a = b).
-
-Lemma lem_list_beq_eq {T} : 
-  forall (f:T->T->bool),
-    beq_is_eq f ->
-    beq_is_eq (core.utils.ListUtils.list_beq f).
-Proof.
-  intros f C.
-  induction a ; intro b ; destruct b ; simpl ; first [ discriminate | reflexivity | idtac ] ; [].
-  intro E ; apply Bool.andb_true_iff in E ; destruct E.  
-  f_equal ; [ apply C | apply IHa ] ; auto.
-Qed.
-
-
-Create HintDb beq_eq_database.
-(* This HintDb is used by the [auto with] tactics below to uses lemmas on intermediate types that will be generated (and registered in the DB) *)
-
-Ltac list_eqb_eq_tac :=
-  match goal with
-  | [ H : core.utils.ListUtils.list_beq _ _ _ = true |- _] => apply lem_list_beq_eq in H ; [ subst | solve[auto with beq_eq_database]]
-  end.
-
-
-Ltac beq_eq_tac :=
-  let a := fresh "a" in
-  let b := fresh "b" in
-  let E := fresh "E" in
-  intro a ; intro b ; intro E ;
-  repeat first [ 
-      basetype_eqb_eq_tac 
-    | composedtype_eqb_eq_tac  
-    | list_eqb_eq_tac
-    ] ; 
-  reflexivity 
-.
-
 
 
 
