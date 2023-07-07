@@ -6,7 +6,6 @@ Require Import core.Syntax.
 Require Import Bool.
 Require Import Arith.
 Require Import TransformationConfiguration.
-Scheme Equality for list.
 
 (** Transformation rules are defined by the user. They are made of expressions (patterns/guards, number of iterations, output elements, output links) which are here encoded by Gallina/Coq functions (higher-order abstract syntax, see the module [Syntax]). 
 

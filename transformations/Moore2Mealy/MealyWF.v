@@ -61,21 +61,19 @@ Qed.
 (** Two different (source) links cannot deal with the same transition. *)
 (** A transition starts at only one state. *)
 Definition WF_sourceLink_left (m:Mealy.M) : Prop :=
-      forall (lk1 lk2 : @Glue Transition_t State_t) (t : Transition_t),
+      forall lk1 lk2,
         List.In (Transition_sourceLink lk1)  m.(Model.modelLinks) ->
         List.In (Transition_sourceLink lk2)  m.(Model.modelLinks) ->
-        lk1.(l_glue) = t ->
-        lk2.(l_glue) = t ->
+        lk1.(l_glue) = lk2.(l_glue) ->
         lk1 = lk2.
 
 (** Two different (target) links cannot deal with the same transition. *)
 (** A transition aims at only one state. *)
 Definition WF_targetLink_left (m:Mealy.M) : Prop :=
-      forall (lk1 lk2 : @Glue Transition_t State_t) (t : Transition_t),
+      forall lk1 lk2,
         List.In (Transition_targetLink lk1)  m.(Model.modelLinks) ->
         List.In (Transition_targetLink lk2)  m.(Model.modelLinks) ->
-        lk1.(l_glue) = t ->
-        lk2.(l_glue) = t ->
+        lk1.(l_glue) = lk2.(l_glue) ->
         lk1 = lk2.
   
 
@@ -103,6 +101,7 @@ Proof.
     intro ; intros.
     apply internal_Transition_t_dec_bl in H3.
     apply internal_Transition_t_dec_bl in H4.
+    subst.
     eapply WF ; eauto.
     apply In_transition_sourceLink ; assumption.
     apply In_transition_sourceLink ; assumption.
@@ -140,6 +139,7 @@ Proof.
     intro ; intros.
     apply internal_Transition_t_dec_bl in H3.
     apply internal_Transition_t_dec_bl in H4.
+    subst.
     eapply WF ; eauto.
     apply In_transition_targetLink ; assumption.
     apply In_transition_targetLink ; assumption.

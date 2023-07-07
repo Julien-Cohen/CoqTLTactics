@@ -32,7 +32,6 @@ Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.TransformationConfiguration.
 
-Scheme Equality for list.
 
 Set Implicit Arguments.
 
@@ -225,7 +224,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
       resolve tls sm name sp iter = return x ->
        (exists (tl : TraceLink),
          In tl tls /\
-         Is_true (list_beq SourceElementType SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
+         Is_true (list_beq SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
          ((TraceLink_getIteration tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
          (TraceLink_getTargetElement tl) = x);

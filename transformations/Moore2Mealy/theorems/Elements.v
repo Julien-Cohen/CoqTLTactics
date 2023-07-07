@@ -13,19 +13,19 @@ Variable (m:Moore.M).
 Hypothesis WF_U : MooreWF.unique_ids m.
 Hypothesis WF_T : Moore.WF_target m.
 
-Definition convert (s:Moore.State_t) : Mealy.State_t :=
+Definition convert_state (s:Moore.State_t) : Mealy.State_t :=
   {| Mealy.State_id := s.(Moore.State_id) |}.
 
 Lemma convert_injective : 
   forall s1 s2,
     List.In (Moore.StateElement s1) m.(Model.modelElements) ->
     List.In (Moore.StateElement s2) m.(Model.modelElements) ->
-    convert s1 = convert s2 ->
+    convert_state s1 = convert_state s2 ->
     s1 = s2.
 Proof.
   intros s1 s2 H1 H2 H3.
   apply WF_U ; auto.
-  destruct s1, s2 ; unfold convert in H3 ; congruence.
+  destruct s1, s2 ; unfold convert_state in H3 ; congruence.
 Qed.
 
 
@@ -67,6 +67,24 @@ Proof.
   + discriminate.
 Qed.
 
+Lemma convert_transition_inv :
+  forall t t',
+  convert_transition t = Some t' ->
+  exists s, 
+    Moore.getTransition_target m t = Some s
+    /\  t'= {|
+              Mealy.Transition_id := Moore.Transition_id t;
+              Mealy.Transition_input := Moore.Transition_input t;
+              Mealy.Transition_output := Moore.State_output s
+            |}.
+Proof.
+  unfold convert_transition.
+  intros  t t' H.
+  PropUtils.destruct_match H ; [ PropUtils.inj H | discriminate H ].
+  eauto.
+Qed.
+
+
 (* Just to try *)
 Definition convert_transition' t (IN : List.In (Moore.TransitionElement t) m.(Model.modelElements)) : Mealy.Transition_t .
   destruct (Moore.getTransition_target m t) eqn:G.
@@ -85,7 +103,7 @@ Notation transform_element_fw :=
 Lemma state_element_fw : 
   forall (s:Moore.State_t),
     List.In (Moore.StateElement s) (Model.modelElements m) ->
-    List.In (Mealy.StateElement (convert s))  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
+    List.In (Mealy.StateElement (convert_state s))  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
 Proof.
   intros s IN.
   eapply transform_element_fw ; eauto. 
@@ -96,7 +114,7 @@ Lemma state_element_bw :
   forall (s:Mealy.State_t),
     List.In (Mealy.StateElement s) (Model.modelElements (Semantics.execute  Moore2Mealy.Moore2Mealy m)) ->
     exists s0,
-      List.In (Moore.StateElement s0) (Model.modelElements m) /\ s = convert s0.
+      List.In (Moore.StateElement s0) (Model.modelElements m) /\ s = convert_state s0.
 Proof.
   intros s H.
   core.Tactics.exploit_element_in_result H.

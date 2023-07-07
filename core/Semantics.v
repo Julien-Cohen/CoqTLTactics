@@ -7,7 +7,6 @@ Require Import Bool.
 Require Import Arith.
 Require Import TransformationConfiguration.
 Require Import UserExpressions.
-Scheme Equality for list.
 
 Require Import RichTraceLink.
 

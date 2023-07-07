@@ -24,11 +24,6 @@ Record Transition_t := { Transition_id : nat ; Transition_input : string }.
 Scheme Equality for Transition_t.
 
 
-(** Base types for links *)
-Definition Transition_source_t := @Glue Transition_t State_t.
-
-Definition Transition_target_t := @Glue Transition_t State_t.
-
 
 (** Data types for element (to build models) *)
 Inductive Element : Set :=
@@ -39,8 +34,8 @@ Scheme Equality for Element.
 
 (** Data types for link (to build models) *)
 Inductive Link : Set :=
-  | Transition_sourceLink : Transition_source_t -> Link
-  | Transition_targetLink : Transition_target_t -> Link
+  | Transition_sourceLink : @Glue Transition_t State_t -> Link
+  | Transition_targetLink : @Glue Transition_t State_t -> Link
 .
 
 
@@ -83,8 +78,8 @@ Definition get_E_data (k : ElementKind) (c : Element) : option (getTypeByEKind k
 
 Definition getTypeByLKind (k : LinkKind) : Set :=
   match k with
-  | Transition_source_K => Transition_source_t
-  | Transition_target_K => Transition_target_t
+  | Transition_source_K => @Glue Transition_t State_t
+  | Transition_target_K => @Glue Transition_t State_t
   end.
 
 
@@ -230,16 +225,10 @@ Proof. destruct x ; destruct y ; compute ; congruence. Qed.
 
 (** Manual addition *)
 Definition Transition_getSourceObject (t : Transition_t) (m : M) : option (Element) :=
-match getTransition_source m t with
-  | Some st_arg => Some (StateElement st_arg) 
-  | None => None
-  end. (* option_map *)
+  option_map StateElement (getTransition_source m t).
 
 Definition Transition_getTargetObject (tr_arg : Transition_t) (m : M) : option (Element) :=
-  match getTransition_target m tr_arg with
-  | Some st_arg => Some (StateElement st_arg) 
-  | None => None
-  end. (* option_map *)
+  option_map StateElement (getTransition_target m tr_arg).
 
 
 Lemma In_state : forall (m:Moore.M) e,
@@ -363,10 +352,10 @@ Qed.
 
 
 (** For user *)
-Definition maybeBuildTransitionSource (tr_arg: Transition_t) (so_arg: option (State_t)) : option Transition_source_t :=
+Definition maybeBuildTransitionSource (tr_arg: Transition_t) (so_arg: option (State_t)) : option (@Glue Transition_t State_t) :=
   option_map (@Build_Glue _ _ tr_arg) so_arg.
 
-Definition maybeBuildTransitionTarget (tr_arg: Transition_t) (ta_arg: option (State_t)) : option Transition_target_t :=
+Definition maybeBuildTransitionTarget (tr_arg: Transition_t) (ta_arg: option (State_t)) : option (@Glue Transition_t State_t) :=
   option_map (@Build_Glue _ _ tr_arg) ta_arg.
  
 

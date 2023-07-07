@@ -628,9 +628,10 @@ Ltac exploit_in_trace H :=
   let EQ := fresh "EQ" in
   let EV := fresh "EV" in
 
- 
-  destruct (destruct_in_trace_lem H) 
-    as (se & r & i & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV);
+  match type of H with 
+   | In _ (RichTraceLink.drop ((traceTrOnModel) _ _)) => 
+  	destruct (destruct_in_trace_lem H) 
+    	as (se & r & i & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV);
   
   (* 2 *)
   progress_in_In_rules IN_RULE ;
@@ -648,8 +649,9 @@ Ltac exploit_in_trace H :=
   exploit_evaloutpat EV ; 
 
   (* (7) *)
-  (* not useful here *)
-  Semantics.in_allTuples_auto.
+  Semantics.in_allTuples_auto
+
+end.
 
 
 (** Tactics to progress in the goal (not in the hypothesis) *)

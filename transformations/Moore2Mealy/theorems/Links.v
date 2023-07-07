@@ -29,41 +29,33 @@ Hypothesis WF_T_R : Moore.WF_target_rglue m.
 Hypothesis WF_TLL : MooreWF.WF_targetLink_left m.
 Hypothesis WF_SLL : MooreWF.WF_sourceLink_left m.
 
-(* fixme : move-me *)
-Lemma convert_transition_inv m0 :
-  forall t t',
-  Elements.convert_transition m0 t = Some t' ->
-  exists s, Moore.getTransition_target m0 t = Some s /\  t'= {|
-              Mealy.Transition_id := Moore.Transition_id t;
-              Mealy.Transition_input := Moore.Transition_input t;
-              Mealy.Transition_output := Moore.State_output s
-            |}.
-
+(* tactic (tentative) *)
+Lemma In_1 {A} :
+      forall (e:A) s,
+      (exists r, s = e :: r) -> In e s.
 Proof.
-  unfold Elements.convert_transition.
-  intros  t t' H.
-  PropUtils.destruct_match H ; [ PropUtils.inj H | discriminate H ].
-  eauto.
+  intros e s (r&E) ; subst s. 
+  apply in_eq.
 Qed.
 
+(* tactic (tentative) *)
+Lemma In_2 {A} :
+      forall (e:A) s,
+      (exists a r, s = a :: e :: r) -> In e s.
+Proof.
+  intros e s (a&r&E) ; subst s. 
+  apply in_cons. apply in_eq.
+Qed.
 
 
 Lemma source_link_fw :
   forall t s1,
-    In (Moore.Transition_sourceLink {| lglue := t ; rglue := s1 |}) m.(modelLinks) ->
-    exists s2, 
-      Moore.getTransition_target m t = Some s2 /\
-        
+    In (Moore.Transition_sourceLink {| l_glue := t ; r_glue := s1 |}) m.(modelLinks) ->
+    exists t', 
+      Elements.convert_transition m t = Some t' /\
         In  (Mealy.Transition_sourceLink 
-    {|
-      lglue :=
-        {|
-          Mealy.Transition_id := Moore.Transition_id t;
-          Mealy.Transition_input := Moore.Transition_input t;
-          Mealy.Transition_output := Moore.State_output s2
-        |};
-      rglue := Elements.convert s1
-    |}) (Semantics.execute Moore2Mealy m).(modelLinks).
+               {| l_glue := t' ; r_glue := Elements.convert_state s1 |})
+           (Semantics.execute Moore2Mealy m).(modelLinks).
 Proof.
   intros t s1 H.
 
@@ -78,67 +70,70 @@ Proof.
     assumption.
   }
   destruct (Elements.convert_transition_ok _ WF_T _ H1) as (t' & T).
-  destruct (convert_transition_inv _ _ _ T) as ( s2 & ?& ?).
+  destruct (Elements.convert_transition_inv _ _ _ T) as ( s2 & G & ?).
 
-  exists s2 ; split ; [assumption | ].
+  exists t' ; split ; [assumption | ].
 
-  specialize (TraceUtils.state_in_trace m s1 H0) ; intro INTRACE.
-
-
+  specialize (TraceUtils.state_in_trace m s1 H0) ; intro IN_TRACE.
 
 
   eapply Tactics.in_links_fw with (tc:=Moore2MealyTransformationConfiguration).
   3:{
-    (* only the second rule builds links. *)
-    simpl. right. left. (* second rule *)
-    reflexivity. (* fixme : make a tactic for that *)
+    (* Only the second rule builds links. *)
+    apply In_2. (* second rule *)
+    eexists ; eexists. reflexivity.
   }
   { 
-    (* the source pattern is the considered transition *)
+    (* The source pattern is the considered transition *)
     apply ListUtils.incl_singleton.
     exact H1.
   }
   { (* arity *)
-    compute ; auto. }
+    compute. auto. }
   { (* eval guard *) reflexivity. }
   { (* eval iterator *) compute. eauto. }
   { (* output pattern *)
-    (* this rule has one output pattern *)
-    simpl. left. reflexivity. (* fixme : make a tactic for that. *)
+    (* This rule has one output pattern. *)    
+    apply In_1.
+    eexists ; reflexivity.
   }
   { (* eval output pattern *)
     reflexivity.
   }
 
 
+
   { (* eval output pattern link *)
     (* the output patern in this rule has two link patterns. *)
     (* Transition sources are managed by the first link pattern. *)
 
-    unfold ConcreteSyntax.e_OutKind.
-    unfold ConcreteSyntax.e_outpat.
-    unfold Parser.parseOutputPatternUnit.    
-    unfold UserExpressions.evalOutputPatternLink.
-    unfold Syntax.opu_link.
-    unfold ConcreteSyntax.e_OutKind.
-    unfold ConcreteSyntax.e_outlink.
-    unfold Parser.dropToList.
-    unfold Parser.parseOutputPatternLink.
-    unfold Parser.parseOutputPatternLinks.
-    apply OptionListUtils.in_optionListToList.
-    eexists ; split ; [ reflexivity| ].
+    unfold UserExpressions.evalOutputPatternLink, 
+      Parser.parseOutputPatternUnit, 
+      Syntax.opu_link,
+      ConcreteSyntax.r_InKinds,
+      ConcreteSyntax.e_OutKind,
+      ConcreteSyntax.e_outlink, 
+      ConcreteSyntax.e_outpat.
+    
+
+    unfold Parser.dropToList,
+      Parser.parseOutputPatternLinks, 
+      Parser.parseOutputPatternLink.
+    unfold  OptionListUtils.optionListToList.
+
+    simpl ModelingMetamodel.constructor.
+    rewrite G.
+    simpl valueOption.
+
+    rewrite <- H2.
+
     apply in_flat_map.
     eexists ; split.
-    { (* first link pattern *) unfold In. left. reflexivity. }
+    { (* first link pattern *) apply in_eq. }
     {
-      rewrite H2. 
-      unfold Parser.parseOutputPatternLink.
-      unfold ConcreteSyntax.o_OutRefKind.
-      unfold ConcreteSyntax.o_outpat.
-      unfold ConcreteExpressions.makeLink.
-      unfold ConcreteExpressions.wrapLink.
-      unfold ConcreteExpressions.wrap.
-      unfold ModelingMetamodel.toEData.
+      unfold ConcreteSyntax.o_OutRefKind, ConcreteSyntax.o_outpat.
+
+      unfold ConcreteExpressions.makeLink, ConcreteExpressions.wrapLink, ConcreteExpressions.wrap,  ModelingMetamodel.toEData.
       simpl.
       unfold Moore.Transition_getSourceObject .
 
@@ -153,46 +148,22 @@ Proof.
       rewrite H0.
       simpl.
       left.
-      reflexivity.
+      subst ; reflexivity.
     }
   }
   Unshelve. (* why ? *)
   exact 0.
 Qed.
 
-Lemma source_link_fw_2 :
-  forall t s1,
-    In (Moore.Transition_sourceLink {| lglue := t ; rglue := s1 |}) m.(modelLinks) ->
-    exists t', 
-      Elements.convert_transition m t = Some t' /\
-        In  (Mealy.Transition_sourceLink 
-               {| lglue := t' ; rglue := Elements.convert s1 |})
-           (Semantics.execute Moore2Mealy m).(modelLinks).
-Proof.
-  intros t s1 H ; apply source_link_fw in H.
-  destruct H.
-  destruct H.
-  unfold Elements.convert_transition.
-  rewrite H.
-  eexists ; split ; auto.
-Qed.
 
 Lemma target_link_fw :
   forall t s1,
-    In (Moore.Transition_targetLink {| lglue := t ; rglue := s1 |}) m.(modelLinks) ->
-    exists s2, 
-      Moore.getTransition_target m t = Some s2 /\
-        
-        In  (Mealy.Transition_targetLink 
-    {|
-      lglue :=
-        {|
-          Mealy.Transition_id := Moore.Transition_id t;
-          Mealy.Transition_input := Moore.Transition_input t;
-          Mealy.Transition_output := Moore.State_output s2
-        |};
-      rglue := Elements.convert s1
-    |}) (Semantics.execute Moore2Mealy m).(modelLinks).
+    In (Moore.Transition_targetLink {| l_glue := t ; r_glue := s1 |}) m.(modelLinks) ->
+    exists t', 
+      Elements.convert_transition m t = Some t' /\
+        In  
+          (Mealy.Transition_targetLink {| l_glue := t' ; r_glue := Elements.convert_state s1 |}) 
+          (Semantics.execute Moore2Mealy m).(modelLinks).
 Proof.
   intros t s1 H.
 
@@ -207,20 +178,18 @@ Proof.
     assumption.
   }
   destruct (Elements.convert_transition_ok _ WF_T _ H1) as (t' & T).
-  destruct (convert_transition_inv _ _ _ T) as ( s2 & ?& ?).
+  destruct (Elements.convert_transition_inv _ _ _ T) as ( s2 & ?& ?).
 
-  exists s2 ; split ; [assumption | ].
+  exists t' ; split ; [assumption | ].
 
   specialize (TraceUtils.state_in_trace m s1 H0) ; intro INTRACE.
-
-
 
 
   eapply Tactics.in_links_fw with (tc:=Moore2MealyTransformationConfiguration).
   3:{
     (* only the second rule builds links. *)
-    simpl. right. left. (* second rule *)
-    reflexivity. (* fixme : make a tactic for that *)
+    apply In_2. (* second rule *)
+    eexists ; eexists ; reflexivity. 
   }
   { 
     (* the source pattern is the considered transition *)
@@ -233,7 +202,7 @@ Proof.
   { (* eval iterator *) compute. eauto. }
   { (* output pattern *)
     (* this rule has one output pattern *)
-    simpl. left. reflexivity. (* fixme : make a tactic for that. *)
+    apply In_1. eexists ; reflexivity. 
   }
   { (* eval output pattern *)
     reflexivity.
@@ -242,7 +211,7 @@ Proof.
 
   { (* eval output pattern link *)
     (* the output patern in this rule has two link patterns. *)
-    (* Transition sources are managed by the first link pattern. *)
+    (* Transition targets are managed by the second link pattern. *)
 
     unfold ConcreteSyntax.e_OutKind.
     unfold ConcreteSyntax.e_outpat.
@@ -258,7 +227,7 @@ Proof.
     eexists ; split ; [ reflexivity| ].
     apply in_flat_map.
     eexists ; split.
-    { (* second link pattern *) unfold In. right. left. reflexivity. }
+    { (* second link pattern *) apply In_2; eauto. }
     {
       rewrite H2. 
       unfold Parser.parseOutputPatternLink.
@@ -281,7 +250,7 @@ Proof.
       rewrite H0.
       simpl.
       left.
-      reflexivity.
+      subst ; reflexivity.
       exact H.
     }
   }
@@ -289,21 +258,177 @@ Proof.
   exact 0.
 Qed.
 
-Lemma target_link_fw_2 :
-  forall t s1,
-    In (Moore.Transition_targetLink {| lglue := t ; rglue := s1 |}) m.(modelLinks) ->
-    exists t', 
-      Elements.convert_transition m t = Some t' /\
-        In  
-          (Mealy.Transition_targetLink {| lglue := t' ; rglue := Elements.convert s1 |}) 
-          (Semantics.execute Moore2Mealy m).(modelLinks).
+Lemma source_link_bw :
+  forall t' s',
+    In  
+      (Mealy.Transition_sourceLink {| l_glue := t' ; r_glue := s' |}) 
+      (Semantics.execute Moore2Mealy m).(modelLinks) ->
+    
+    exists s, 
+      Elements.convert_state s = s' 
+      /\
+        
+        In 
+          (Moore.Transition_sourceLink 
+             {|
+               l_glue :=
+                 Moore.Build_Transition_t t'.(Mealy.Transition_id) t'.(Mealy.Transition_input);
+               r_glue := s
+             |})
+          m.(modelLinks).
 Proof.
-  intros t s1 H ; apply target_link_fw in H.
-  destruct H.
-  destruct H.
-  unfold Elements.convert_transition.
-  rewrite H.
-  eexists ; split ; auto.
+  intros t' s' IN.
+  Tactics.exploit_link_in_result IN.
+  { 
+    PropUtils.inj IN0.
+    PropUtils.inj EQ.
+    simpl in IN_L.
+
+
+    assert (S : SUCCESS (Moore.getTransition_target m t)).
+    { apply WF_T. assumption. }
+    destruct S as ( s2&GT).
+
+    rewrite GT in IN_L. clear GT.
+    simpl valueOption in IN_L.
+
+    assert (S: SUCCESS (Moore.getTransition_source m t)).
+    { apply WF_S. assumption. }
+    destruct S as ( s1 & GS ).
+
+    exists s1.
+    unfold Moore.Transition_getSourceObject in IN_L.
+    rewrite GS in IN_L.
+    simpl in IN_L.
+
+
+    unfold  Mealy.maybeBuildTransitionSource in IN_L.
+    OptionUtils.monadInv IN_L ; simpl.
+    unfold ModelingSemantics.maybeResolve in IN_L.
+    unfold ModelingSemantics.denoteOutput in IN_L.
+    PropUtils.destruct_match IN_L ; [ | discriminate IN_L].
+    destruct t0 ; [ PropUtils.inj IN_L | discriminate IN_L].
+
+    rename Heqo into R.
+
+    unfold Resolve.maybeResolve in R.
+    unfold Resolve.resolve in R.
+    destruct (Certification.tr_resolveIter_leaf _ _ _ _ _ R) as (tk&?&? &?&?&?).
+    clear R.
+
+    apply Bool.Is_true_eq_true in H0.
+
+    clear H1 H2. 
+
+    apply ListUtils.list_beq_correct in H0 ; [ | exact Moore.internal_Element_dec_bl].
+
+    destruct tk ; simpl in * ; subst.
+
+    unfold ListUtils.singleton in H0.
+
+    destruct source. destruct p. 
+
+    unfold PoorTraceLink.getSourcePattern in H0 ;  simpl in H0.
+    subst.
+
+    apply Moore.getTransition_source_inv in GS. 
+
+    destruct t as (id & i) ; simpl in *.
+    split ; auto.
+    
+
+    Tactics.exploit_in_trace H.
+    PropUtils.inj EQ.
+    destruct t0 ; reflexivity.
+  }
+  
+  { discriminate IN0. (* not the correct pattern. *)  }
+Qed.
+
+Lemma target_link_bw :
+  forall t' s',
+    In  
+      (Mealy.Transition_targetLink {| l_glue := t' ; r_glue := s' |}) 
+      (Semantics.execute Moore2Mealy m).(modelLinks) ->
+    
+    exists s, 
+      Elements.convert_state s = s' 
+      /\
+        
+        In 
+          (Moore.Transition_targetLink 
+             {|
+               l_glue :=
+                 Moore.Build_Transition_t t'.(Mealy.Transition_id) t'.(Mealy.Transition_input);
+               r_glue := s
+             |})
+          m.(modelLinks).
+Proof.
+  intros t' s' IN.
+  Tactics.exploit_link_in_result IN.
+  { discriminate IN0. }
+  { 
+    PropUtils.inj IN0.
+    PropUtils.inj EQ.
+    simpl in IN_L.
+
+
+    assert (S : SUCCESS (Moore.getTransition_target m t)).
+    { apply WF_T. assumption. }
+    destruct S as ( s2&GT).
+
+    rewrite GT in IN_L. 
+    simpl valueOption in IN_L.
+
+    assert (S: SUCCESS (Moore.getTransition_source m t)).
+    { apply WF_S. assumption. }
+    destruct S as ( s1 & GS ).
+
+    exists s2.
+    unfold Moore.Transition_getTargetObject in IN_L.
+    rewrite GT in IN_L.
+    simpl in IN_L.
+
+
+    unfold  Mealy.maybeBuildTransitionTarget in IN_L.
+    OptionUtils.monadInv IN_L ; simpl.
+    unfold ModelingSemantics.maybeResolve in IN_L.
+    unfold ModelingSemantics.denoteOutput in IN_L.
+    PropUtils.destruct_match IN_L ; [ | discriminate IN_L].
+    destruct t0 ; [ PropUtils.inj IN_L | discriminate IN_L].
+
+    rename Heqo into R.
+
+    unfold Resolve.maybeResolve in R.
+    unfold Resolve.resolve in R.
+    destruct (Certification.tr_resolveIter_leaf _ _ _ _ _ R) as (tk&?&? &?&?&?).
+    clear R.
+
+    apply Bool.Is_true_eq_true in H0.
+
+    clear H1 H2. 
+
+    apply ListUtils.list_beq_correct in H0 ; [ | exact Moore.internal_Element_dec_bl].
+
+    destruct tk ; simpl in * ; subst.
+
+    unfold ListUtils.singleton in H0.
+
+    destruct source. destruct p. 
+
+    unfold PoorTraceLink.getSourcePattern in H0 ;  simpl in H0.
+    subst.
+
+    apply Moore.getTransition_target_inv in GT. 
+
+    destruct t as (id & i) ; simpl in *.
+    split ; auto.
+    
+    Tactics.exploit_in_trace H.
+    PropUtils.inj EQ.
+    destruct t0 ; simpl. reflexivity. 
+  }
+  
 Qed.
 
 End Foo.
