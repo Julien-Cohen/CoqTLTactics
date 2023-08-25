@@ -8,24 +8,24 @@ Require Moore2Mealy.theorems.Links.
 
 Import String.
 
-Lemma unique_ids_preserved_fw : forall m,
-    MooreWF.unique_ids m -> 
-    MealyWF.unique_ids (Semantics.execute Moore2Mealy.Moore2Mealy m).
+Lemma state_id_uniqueness_preserved_fw : forall m,
+    MooreWF.state_id_uniqueness m -> 
+    MealyWF.state_id_uniqueness (Semantics.execute Moore2Mealy.Moore2Mealy m).
 Proof.
-  intros ; apply MealyWF.always_unique_ids.
+  intros ; apply MealyWF.always_state_id_uniqueness.
 Qed.
 
 Import Model Semantics.
 
-Lemma WF_sourceLink_left_stable :
+Lemma WF_transition_source_uniqueness_stable :
   forall m,
-    Moore.WF_target m ->
-    Moore.WF_source m -> 
-    MooreWF.WF_sourceLink_left m -> 
-    MealyWF.WF_sourceLink_left (Semantics.execute Moore2Mealy.Moore2Mealy m).
+    Moore.WF_transition_target_exists m ->
+    Moore.WF_transition_source_exists m -> 
+    MooreWF.WF_transition_source_uniqueness m -> 
+    MealyWF.WF_transition_source_uniqueness (Semantics.execute Moore2Mealy.Moore2Mealy m).
 Proof.
   intros m WF1 WF2 WF4.
-  unfold MealyWF.WF_sourceLink_left.
+  unfold MealyWF.WF_transition_source_uniqueness.
   intros. 
 
   destruct lk1 as (t' & s').
@@ -40,3 +40,6 @@ Proof.
   PropUtils.inj WF4.
   reflexivity.
 Qed.
+
+#[global]
+Hint Resolve WF_transition_source_uniqueness_stable : fw.

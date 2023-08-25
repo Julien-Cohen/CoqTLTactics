@@ -25,7 +25,7 @@ Lemma star_step_commut_fw :
     MooreSemantics.executeFromState m s i = Some r ->
     MealySemantics.executeFromState
       (Semantics.execute Moore2Mealy.Moore2Mealy m)
-      (Elements.convert s) i = Some r.
+      (Elements.convert_state s) i = Some r.
 Proof.
   induction i ; simpl ; intros s r STEP ; [ congruence | ].
   rename s into s1.
@@ -53,7 +53,7 @@ Lemma star_step_commut_bw :
       s' i = Some r -> 
     ( i= nil /\ r = nil ) \/
     exists s, 
-      s'= Elements.convert s /\ List.In (Moore.StateElement s) m.(Model.modelElements) /\ MooreSemantics.executeFromState m s i = Some r.
+      s'= Elements.convert_state s /\ List.In (Moore.StateElement s) m.(Model.modelElements) /\ MooreSemantics.executeFromState m s i = Some r.
 Proof.
   induction i ; intros s r STEP.
   { 
@@ -81,7 +81,7 @@ Proof.
     
     assert (s1_alt = s1).
     { 
-      eapply Elements.convert_injective ; eauto.
+      eapply Elements.convert_state_injective ; eauto.
       { eapply MooreSemantics.search_in_left ; eauto. }
       { congruence. }
     }
@@ -100,7 +100,7 @@ Proof.
     destruct H5 as (s2_alt & ? & ? & ?).
     assert (s2_alt = s2).
     {
-      eapply Elements.convert_injective ; eauto.
+      eapply Elements.convert_state_injective ; eauto.
       eapply MooreSemantics.search_in_right ; eauto.
       congruence.
     }
@@ -147,7 +147,7 @@ Proof.
         destruct Heqo0.
         destruct H ; discriminate. 
         destruct H as (? & ? & ? & ?).
-        eapply Elements.convert_injective in H ; eauto.
+        eapply Elements.convert_state_injective in H ; eauto.
         subst x.
         congruence.
     }

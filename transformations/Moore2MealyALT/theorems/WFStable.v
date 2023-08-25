@@ -54,7 +54,7 @@ Proof.
   PropUtils.destruct_match H0 ; [ PropUtils.inj H0 | discriminate H0].
   destruct (WF_2 _ H) as (s0 & G).
   clear Heqo.
-  exists (Elements.convert s0).
+  exists (Elements.convert_state s0).
 
   apply Moore.getTransition_source_inv in G.
   destruct G.
@@ -62,7 +62,7 @@ Proof.
   { apply MealyWF.always_unique_ids. }
   { apply Elements.state_element_fw. assumption. }
   { unfold Mealy.Transition_source.
-    unfold Elements.convert.
+    unfold Elements.convert_state.
     auto.
   }
 Qed.
@@ -83,7 +83,7 @@ Proof.
   PropUtils.destruct_match H0 ; [ PropUtils.inj H0 | discriminate H0].
   destruct (WF_1 _ H) as (s0 & G).
   clear Heqo.
-  exists (Elements.convert s0).
+  exists (Elements.convert_state s0).
 
   apply Moore.getTransition_target_inv in G.
   destruct G.
@@ -92,7 +92,7 @@ Proof.
   { apply Elements.state_element_fw. assumption. }
   { 
     unfold Mealy.Transition_dest.
-    unfold Elements.convert.
+    unfold Elements.convert_state.
     auto.
   }
 Qed.

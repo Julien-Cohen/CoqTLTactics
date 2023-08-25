@@ -23,17 +23,17 @@ Definition InputModel : Model Moore.MM :=
   let s1 := Build_State_t id1 "b" in
   Build_Model Moore.MM
     (
-      (TransitionElement t0) :: 
-	(StateElement s0) :: 
-	(StateElement s1) :: 
-	(TransitionElement t1) :: 
+      (Transition t0) :: 
+	(State s0) :: 
+	(State s1) :: 
+	(Transition t1) :: 
 	nil
     )
     (
-      (Transition_sourceLink (Build_Glue _ _ t0 s0)) ::
-	(Transition_targetLink (Build_Glue _ _ t0 s1)) ::
-	(Transition_sourceLink (Build_Glue _ _ t1 s1)) ::
-	(Transition_targetLink (Build_Glue _ _ t1 s1)) ::
+      (TransitionSource (Build_Glue _ _ t0 s0)) ::
+	(TransitionTarget (Build_Glue _ _ t0 s1)) ::
+	(TransitionSource (Build_Glue _ _ t1 s1)) ::
+	(TransitionTarget (Build_Glue _ _ t1 s1)) ::
 	nil
     )
 .

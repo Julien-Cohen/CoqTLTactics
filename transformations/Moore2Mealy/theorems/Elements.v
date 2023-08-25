@@ -6,20 +6,22 @@ Require Moore2Mealy.MealyWF.
 
 Import OptionUtils.
 
-Section Foo.
+Section Params.
 
 Variable (m:Moore.M).
 
-Hypothesis WF_U : MooreWF.unique_ids m.
-Hypothesis WF_T : Moore.WF_target m.
+Hypothesis WF_U : MooreWF.state_id_uniqueness m.
+Hypothesis WF_T : Moore.WF_transition_target_exists m.
 
 Definition convert_state (s:Moore.State_t) : Mealy.State_t :=
   {| Mealy.State_id := s.(Moore.State_id) |}.
 
-Lemma convert_injective : 
+(** [convert_state] is not injective, but if we consider states of a model with uniqueness of identifiers, it becomes injective. *)
+
+Lemma convert_state_injective : 
   forall s1 s2,
-    List.In (Moore.StateElement s1) m.(Model.modelElements) ->
-    List.In (Moore.StateElement s2) m.(Model.modelElements) ->
+    List.In (Moore.State s1) m.(Model.modelElements) ->
+    List.In (Moore.State s2) m.(Model.modelElements) ->
     convert_state s1 = convert_state s2 ->
     s1 = s2.
 Proof.
@@ -50,8 +52,8 @@ Proof.
 Qed.
 
 
-Lemma convert_transition_ok : forall t,
-    List.In (Moore.TransitionElement t) m.(Model.modelElements) -> 
+Lemma convert_transition_suff : forall t,
+    List.In (Moore.Transition t) m.(Model.modelElements) -> 
     SUCCESS (convert_transition t).
 Proof.
   intros t H.
@@ -67,7 +69,7 @@ Proof.
   + discriminate.
 Qed.
 
-Lemma convert_transition_inv :
+Lemma convert_transition_nec :
   forall t t',
   convert_transition t = Some t' ->
   exists s, 
@@ -86,11 +88,11 @@ Qed.
 
 
 (* Just to try *)
-Definition convert_transition' t (IN : List.In (Moore.TransitionElement t) m.(Model.modelElements)) : Mealy.Transition_t .
+Definition convert_transition' t (IN : List.In (Moore.Transition t) m.(Model.modelElements)) : Mealy.Transition_t .
   destruct (Moore.getTransition_target m t) eqn:G.
   + exact (Mealy.Build_Transition_t t.(Moore.Transition_id) t.(Moore.Transition_input) s.(Moore.State_output)).
   + exfalso.
-    apply convert_transition_ok in IN.
+    apply convert_transition_suff in IN.
     unfold convert_transition in IN.
     rewrite G in IN.
     inversion IN.
@@ -102,8 +104,8 @@ Notation transform_element_fw :=
 
 Lemma state_element_fw : 
   forall (s:Moore.State_t),
-    List.In (Moore.StateElement s) (Model.modelElements m) ->
-    List.In (Mealy.StateElement (convert_state s))  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
+    List.In (Moore.State s) (Model.modelElements m) ->
+    List.In (Mealy.State (convert_state s))  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
 Proof.
   intros s IN.
   eapply transform_element_fw ; eauto. 
@@ -112,9 +114,9 @@ Qed.
 
 Lemma state_element_bw :
   forall (s:Mealy.State_t),
-    List.In (Mealy.StateElement s) (Model.modelElements (Semantics.execute  Moore2Mealy.Moore2Mealy m)) ->
+    List.In (Mealy.State s) (Model.modelElements (Semantics.execute  Moore2Mealy.Moore2Mealy m)) ->
     exists s0,
-      List.In (Moore.StateElement s0) (Model.modelElements m) /\ s = convert_state s0.
+      List.In (Moore.State s0) (Model.modelElements m) /\ s = convert_state s0.
 Proof.
   intros s H.
   core.Tactics.exploit_element_in_result H.
@@ -122,4 +124,4 @@ Proof.
   split ; auto.
 Qed.
 
-End Foo.
+End Params.

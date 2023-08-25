@@ -49,7 +49,7 @@ Proof.
   split.
   - unfold SourceModel_elem_incl.
     simpl.
-    remember (Moore.StateElement
+    remember (Moore.State
                 (Moore.Build_State_t (Id.Id "S0") "1")) as elem.
     unfold incl.
     intros.

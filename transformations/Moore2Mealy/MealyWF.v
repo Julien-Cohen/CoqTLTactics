@@ -3,17 +3,18 @@ Require Import Moore2Mealy.Mealy Moore2Mealy.MealySemantics.
 Import String.
 Import Id Glue.
 
-Definition unique_ids (m:M) := 
+Definition state_id_uniqueness (m:M) := 
   forall e1 e2,
-  List.In (StateElement e1) m.(Model.modelElements) ->
-  List.In (StateElement e2) m.(Model.modelElements) ->
+  List.In (State e1) m.(Model.modelElements) ->
+  List.In (State e2) m.(Model.modelElements) ->
   e1.(State_id) = e2.(State_id) ->
   e1 = e2.
 
 (** Two states with the same id are equals because a state only contains an id. *)
-Lemma always_unique_ids :
-  forall m, unique_ids m.
-  unfold unique_ids.
+Lemma always_state_id_uniqueness :
+  forall m, state_id_uniqueness m.
+Proof.
+  unfold state_id_uniqueness.
   intros m e1 e2 H1 H2 E.
   destruct e1, e2.
   simpl in E.
@@ -22,7 +23,7 @@ Qed.
 
 
 Lemma discr  (m : M) : 
-  unique_ids m ->
+  state_id_uniqueness m ->
   forall (i : NodeId),
     ListUtils.discriminating_predicate
       (fun x : State_t => NodeId_beq i (State_id x) = true)
@@ -41,8 +42,8 @@ Qed.
 
 Lemma in_find : 
   forall m n e,
-    unique_ids m ->
-    List.In (StateElement e) m.(Model.modelElements) ->
+    state_id_uniqueness m ->
+    List.In (State e) m.(Model.modelElements) ->
     e.(State_id) = n ->
     OptionListUtils.find_lift 
       (get_E_data State_K)
@@ -58,34 +59,34 @@ Proof.
 Qed.
 
 
-(** Two different (source) links cannot deal with the same transition. *)
+
 (** A transition starts at only one state. *)
-Definition WF_sourceLink_left (m:Mealy.M) : Prop :=
+Definition WF_transition_source_uniqueness (m:Mealy.M) : Prop :=
       forall lk1 lk2,
-        List.In (Transition_sourceLink lk1)  m.(Model.modelLinks) ->
-        List.In (Transition_sourceLink lk2)  m.(Model.modelLinks) ->
+        List.In (TransitionSource lk1)  m.(Model.modelLinks) ->
+        List.In (TransitionSource lk2)  m.(Model.modelLinks) ->
         lk1.(l_glue) = lk2.(l_glue) ->
         lk1 = lk2.
 
 (** Two different (target) links cannot deal with the same transition. *)
 (** A transition aims at only one state. *)
-Definition WF_targetLink_left (m:Mealy.M) : Prop :=
+Definition WF_transition_dest_uniqueness (m:Mealy.M) : Prop :=
       forall lk1 lk2,
-        List.In (Transition_targetLink lk1)  m.(Model.modelLinks) ->
-        List.In (Transition_targetLink lk2)  m.(Model.modelLinks) ->
+        List.In (TransitionTarget lk1)  m.(Model.modelLinks) ->
+        List.In (TransitionTarget lk2)  m.(Model.modelLinks) ->
         lk1.(l_glue) = lk2.(l_glue) ->
         lk1 = lk2.
   
 
 Lemma getTransition_source_some (m:Mealy.M):
-  WF_sourceLink_left m ->
+  WF_transition_source_uniqueness m ->
   forall s,
-    List.In (StateElement s) m.(Model.modelElements) ->
+    List.In (State s) m.(Model.modelElements) ->
     forall t,
       let lk := {| l_glue := t ; r_glue := s |} 
       in
       
-      List.In (Transition_sourceLink lk) (Model.modelLinks m) ->
+      List.In (TransitionSource lk) (Model.modelLinks m) ->
 
       getTransition_source m t = Some s. 
 Proof.
@@ -107,7 +108,7 @@ Proof.
     apply In_transition_sourceLink ; assumption.
   }    
   { 
-    instantiate (1:=Transition_sourceLink {| l_glue := t; r_glue := s |}). 
+    instantiate (1:=TransitionSource {| l_glue := t; r_glue := s |}). 
     reflexivity.
   }        
 
@@ -116,14 +117,14 @@ Proof.
 Qed.
 
 Lemma getTransition_target_some (m:Mealy.M):
-  WF_targetLink_left m ->
+  WF_transition_dest_uniqueness m ->
   forall s,
-    List.In (StateElement s) m.(Model.modelElements) ->
+    List.In (State s) m.(Model.modelElements) ->
     forall t,
       let lk := {| l_glue := t ; r_glue := s |} 
       in
       
-      List.In (Transition_targetLink lk) (Model.modelLinks m) ->
+      List.In (TransitionTarget lk) (Model.modelLinks m) ->
 
       getTransition_target m t = Some s. 
 Proof.
@@ -144,7 +145,7 @@ Proof.
     apply In_transition_targetLink ; assumption.
     apply In_transition_targetLink ; assumption.
   }    
-  { instantiate (1:=Transition_targetLink {| l_glue := t; r_glue := s |}). 
+  { instantiate (1:=TransitionTarget {| l_glue := t; r_glue := s |}). 
     reflexivity.
   }        
 

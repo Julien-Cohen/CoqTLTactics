@@ -19,7 +19,7 @@ Lemma getTransition_source_commut_fw t :
   forall s t',
       Moore.getTransition_source m t = Some s ->
       Elements.convert_transition m t = Some t' ->
-      Mealy.getTransition_source (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some (Elements.convert s).
+      Mealy.getTransition_source (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some (Elements.convert_state s).
 Proof.
   intros.
   destruct (Moore.getTransition_source_inv _ _ _ H).
@@ -28,9 +28,9 @@ Proof.
   { apply MealyWF.always_unique_ids. }
   { apply Elements.state_element_fw. assumption. }
   { 
-    destruct (Elements.convert_transition_inv _ _ _ H0) as (?&?&?) ;
+    destruct (Elements.convert_transition_nec _ _ _ H0) as (?&?&?) ;
       subst.
-    unfold Elements.convert.
+    unfold Elements.convert_state.
     simpl.
     auto.
   }
@@ -38,21 +38,21 @@ Qed.
 
 Lemma getTransition_source_commut_bw t :
   forall s t',
-      Mealy.getTransition_source (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some (Elements.convert s) ->
+      Mealy.getTransition_source (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some (Elements.convert_state s) ->
       Elements.convert_transition m t = Some t' ->
       exists s', s'.(Moore.State_id) = s.(Moore.State_id) /\ 
-      Moore.getTransition_source m t = Some s'. (* weak result because convert is not injective *)
+      Moore.getTransition_source m t = Some s'. (* weak result because convert_state is not injective *)
 Proof.
   intros.
   destruct (Mealy.getTransition_source_inv _ _ _ H).
   destruct (Elements.state_element_bw _ _ H1) as (?&?&?).
-  unfold Elements.convert in H4.
+  unfold Elements.convert_state in H4.
   PropUtils.inj H4.
 
   unfold Moore.getTransition_source.
   rewrite OptionListUtils.find_lift_filter_lift.
 
-  destruct (Elements.convert_transition_inv _ _  _ H0) as  (s0 & Heqo & E) ; subst t'.
+  destruct (Elements.convert_transition_nec _ _  _ H0) as  (s0 & Heqo & E) ; subst t'.
 
   simpl in H2.
   
@@ -85,16 +85,16 @@ Corollary getTransition_source_commut_bw_alt t :
   forall s' t',
       Mealy.getTransition_source (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some s' ->
       Elements.convert_transition m t = Some t' ->
-      exists s, s' = Elements.convert s /\ 
-                  Moore.getTransition_source m t = Some s. (* weak result because convert is not injective *)
+      exists s, s' = Elements.convert_state s /\ 
+                  Moore.getTransition_source m t = Some s. (* weak result because convert_state is not injective *)
 Proof.
   intros.
-  replace s' with (Elements.convert (Moore.Build_State_t s'.(Mealy.State_id) ""%string)) in H.
+  replace s' with (Elements.convert_state (Moore.Build_State_t s'.(Mealy.State_id) ""%string)) in H.
   { 
     eapply getTransition_source_commut_bw in H ; eauto.
     destruct H as (?&?&?).
     eexists ; split ; eauto.
-    unfold Elements.convert.
+    unfold Elements.convert_state.
     destruct x ; destruct s' ; simpl in * ; congruence.
   }
   { destruct s' ; reflexivity. }
@@ -113,7 +113,7 @@ Lemma getTransition_target_commut_fw t :
         Mealy.Transition_dest := Moore.Transition_dest t
       |} in 
       Elements.convert_transition m t = Some t' /\ 
-      Mealy.getTransition_target (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some (Elements.convert s).
+      Mealy.getTransition_target (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some (Elements.convert_state s).
 Proof.
   intros.
   unfold Elements.convert_transition.
@@ -124,7 +124,7 @@ Proof.
   apply MealyWF.getTransition_target_some.
   { apply MealyWF.always_unique_ids. }
   { apply Elements.state_element_fw. assumption. }
-  { unfold Elements.convert ; simpl. auto. }
+  { unfold Elements.convert_state ; simpl. auto. }
 Qed.
 
 
@@ -134,7 +134,7 @@ Lemma getTransition_target_commut_bw :
       Mealy.getTransition_target (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some s' ->
       exists t,
       Elements.convert_transition m t = Some t' /\
-      exists s, s' = Elements.convert s /\ 
+      exists s, s' = Elements.convert_state s /\ 
       Moore.getTransition_target m t = Some s. 
 Proof.
   intros.
@@ -145,12 +145,12 @@ Proof.
   exists t.
   split ; auto.
   apply eq_sym in H6.
-  destruct (Elements.convert_transition_inv _ _ _ H6) as (s2&?&?) ; subst t'.
+  destruct (Elements.convert_transition_nec _ _ _ H6) as (s2&?&?) ; subst t'.
   exists s2.
   split ; auto.
   simpl in H2.
   destruct s', s2.
-  unfold Elements.convert.
+  unfold Elements.convert_state.
   f_equal. simpl.
   destruct (Moore.getTransition_target_inv _ _ _ H7). simpl in H9.
   clear H7.

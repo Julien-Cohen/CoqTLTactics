@@ -6,7 +6,7 @@ Section Foo.
 
 Variable (m:Moore.M).
   
-Hypothesis WF_U : MooreWF.unique_ids m.
+Hypothesis WF_U : MooreWF.state_id_uniqueness m.
 
 Lemma initial_state_preserved_fw2 : 
       forall s,
@@ -22,7 +22,7 @@ Proof.
   destruct s.
   unfold Moore.State_id in E.
   subst.
-  apply MealyWF.in_find ; [ apply MealyWF.always_unique_ids | | reflexivity ].
+  apply MealyWF.in_find ; [ apply MealyWF.always_state_id_uniqueness | | reflexivity ].
   apply Elements.state_element_fw.  exact IN.
 Qed.
 

@@ -72,7 +72,7 @@ Definition execute (m: M) (input: list string) : option (list string) :=
 
 Lemma State_out_transitions_inv m s t :
   List.In t (State_outTransitions m s) ->
-  List.In (TransitionElement t) (Model.modelElements m)
+  List.In (Transition t) (Model.modelElements m)
   /\ getTransition_source m t = Some s.
 Proof.
   intro H.
@@ -86,14 +86,14 @@ Proof.
 Qed.
 
 Lemma in_State_outTransitions (m:Moore.M) s t :
-  List.In (TransitionElement t) (Model.modelElements m) ->
+  List.In (Transition t) (Model.modelElements m) ->
   getTransition_source m t = Some s ->
   List.In t (State_outTransitions m s).
 Proof.
   intros.
   unfold State_outTransitions.
   apply OptionListUtils.filter_lift_in.
-  exists (TransitionElement t).
+  exists (Transition t).
   split ; [ assumption | ].
   split ; [ reflexivity | ].
   rewrite H0.
@@ -129,14 +129,14 @@ Qed.
 (* fixme : move-me *)
 Definition WF_sourceLink_source_in (m:Moore.M) :=
       forall lk, 
-        In (Transition_sourceLink lk) m.(modelLinks) ->
-        In (StateElement lk.(r_glue)) m.(modelElements).
+        In (TransitionSource lk) m.(modelLinks) ->
+        In (State lk.(r_glue)) m.(modelElements).
 
 Lemma search_in_left m :
   WF_sourceLink_source_in m ->
   forall s1 a s2,
   search m s1 a = Some s2 ->
-  List.In (StateElement s1) m.(Model.modelElements).
+  List.In (State s1) m.(Model.modelElements).
 Proof.
   intro WF.
   intros.
@@ -151,14 +151,14 @@ Qed.
 (* fixme : move-me *)
 Definition WF_targetLink_target_in (m:Moore.M) :=
       forall lk, 
-        In (Transition_targetLink lk) m.(modelLinks) ->
-        In (StateElement lk.(r_glue)) m.(modelElements).
+        In (TransitionTarget lk) m.(modelLinks) ->
+        In (State lk.(r_glue)) m.(modelElements).
 
 Lemma search_in_right m :
   WF_targetLink_target_in m ->
   forall s1 a s2,
   search m s1 a = Some s2 ->
-  List.In (StateElement s2) m.(Model.modelElements).
+  List.In (State s2) m.(Model.modelElements).
 Proof.
   intro WF.
   intros.

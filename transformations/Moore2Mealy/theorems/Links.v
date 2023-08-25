@@ -19,15 +19,15 @@ Section Foo.
 
 Variable (m:Moore.M).
 
-Hypothesis WF_U : MooreWF.unique_ids m.
-Hypothesis WF_T : Moore.WF_target m.
-Hypothesis WF_S : Moore.WF_source m.
-Hypothesis WF_S_L : Moore.WF_source_lglue m.
-Hypothesis WF_S_R : Moore.WF_source_rglue m.
-Hypothesis WF_T_L : Moore.WF_target_lglue m.
-Hypothesis WF_T_R : Moore.WF_target_rglue m.
-Hypothesis WF_TLL : MooreWF.WF_targetLink_left m.
-Hypothesis WF_SLL : MooreWF.WF_sourceLink_left m.
+Hypothesis WF_U : MooreWF.state_id_uniqueness m.
+Hypothesis WF_T : Moore.WF_transition_target_exists m.
+Hypothesis WF_S : Moore.WF_transition_source_exists m.
+Hypothesis WF_S_L : Moore.WF_transition_source_glue_l_exists m.
+Hypothesis WF_S_R : Moore.WF_transition_source_glue_r_exists m.
+Hypothesis WF_T_L : Moore.WF_transition_target_glue_l_exists m.
+Hypothesis WF_T_R : Moore.WF_transition_target_glue_r_exists m.
+Hypothesis WF_TLL : MooreWF.WF_transition_dest_uniqueness m.
+Hypothesis WF_SLL : MooreWF.WF_transition_source_uniqueness m.
 
 (* tactic (tentative) *)
 Lemma In_1 {A} :
@@ -50,27 +50,27 @@ Qed.
 
 Lemma source_link_fw :
   forall t s1,
-    In (Moore.Transition_sourceLink {| l_glue := t ; r_glue := s1 |}) m.(modelLinks) ->
+    In (Moore.TransitionSource {| l_glue := t ; r_glue := s1 |}) m.(modelLinks) ->
     exists t', 
       Elements.convert_transition m t = Some t' /\
-        In  (Mealy.Transition_sourceLink 
+        In  (Mealy.TransitionSource 
                {| l_glue := t' ; r_glue := Elements.convert_state s1 |})
            (Semantics.execute Moore2Mealy m).(modelLinks).
 Proof.
   intros t s1 H.
 
-  assert (In (Moore.StateElement s1) m.(modelElements)).
+  assert (In (Moore.State s1) m.(modelElements)).
   {
     apply  WF_S_R in H. 
     assumption.
   }
-  assert (In (Moore.TransitionElement t) m.(modelElements)).
+  assert (In (Moore.Transition t) m.(modelElements)).
   {
     apply  WF_S_L in H. 
     assumption.
   }
-  destruct (Elements.convert_transition_ok _ WF_T _ H1) as (t' & T).
-  destruct (Elements.convert_transition_inv _ _ _ T) as ( s2 & G & ?).
+  destruct (Elements.convert_transition_suff _ WF_T _ H1) as (t' & T).
+  destruct (Elements.convert_transition_nec _ _ _ T) as ( s2 & G & ?).
 
   exists t' ; split ; [assumption | ].
 
@@ -158,27 +158,27 @@ Qed.
 
 Lemma target_link_fw :
   forall t s1,
-    In (Moore.Transition_targetLink {| l_glue := t ; r_glue := s1 |}) m.(modelLinks) ->
+    In (Moore.TransitionTarget {| l_glue := t ; r_glue := s1 |}) m.(modelLinks) ->
     exists t', 
       Elements.convert_transition m t = Some t' /\
         In  
-          (Mealy.Transition_targetLink {| l_glue := t' ; r_glue := Elements.convert_state s1 |}) 
+          (Mealy.TransitionTarget {| l_glue := t' ; r_glue := Elements.convert_state s1 |}) 
           (Semantics.execute Moore2Mealy m).(modelLinks).
 Proof.
   intros t s1 H.
 
-  assert (In (Moore.StateElement s1) m.(modelElements)).
+  assert (In (Moore.State s1) m.(modelElements)).
   {
     apply  WF_T_R in H. 
     assumption.
   }
-  assert (In (Moore.TransitionElement t) m.(modelElements)).
+  assert (In (Moore.Transition t) m.(modelElements)).
   {
     apply  WF_T_L in H. 
     assumption.
   }
-  destruct (Elements.convert_transition_ok _ WF_T _ H1) as (t' & T).
-  destruct (Elements.convert_transition_inv _ _ _ T) as ( s2 & ?& ?).
+  destruct (Elements.convert_transition_suff _ WF_T _ H1) as (t' & T).
+  destruct (Elements.convert_transition_nec _ _ _ T) as ( s2 & ?& ?).
 
   exists t' ; split ; [assumption | ].
 
@@ -261,7 +261,7 @@ Qed.
 Lemma source_link_bw :
   forall t' s',
     In  
-      (Mealy.Transition_sourceLink {| l_glue := t' ; r_glue := s' |}) 
+      (Mealy.TransitionSource {| l_glue := t' ; r_glue := s' |}) 
       (Semantics.execute Moore2Mealy m).(modelLinks) ->
     
     exists s, 
@@ -269,7 +269,7 @@ Lemma source_link_bw :
       /\
         
         In 
-          (Moore.Transition_sourceLink 
+          (Moore.TransitionSource 
              {|
                l_glue :=
                  Moore.Build_Transition_t t'.(Mealy.Transition_id) t'.(Mealy.Transition_input);
@@ -348,7 +348,7 @@ Qed.
 Lemma target_link_bw :
   forall t' s',
     In  
-      (Mealy.Transition_targetLink {| l_glue := t' ; r_glue := s' |}) 
+      (Mealy.TransitionTarget {| l_glue := t' ; r_glue := s' |}) 
       (Semantics.execute Moore2Mealy m).(modelLinks) ->
     
     exists s, 
@@ -356,7 +356,7 @@ Lemma target_link_bw :
       /\
         
         In 
-          (Moore.Transition_targetLink 
+          (Moore.TransitionTarget 
              {|
                l_glue :=
                  Moore.Build_Transition_t t'.(Mealy.Transition_id) t'.(Mealy.Transition_input);

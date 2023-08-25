@@ -27,15 +27,15 @@ Scheme Equality for Transition_t.
 
 (** Data types for element (to build models) *)
 Inductive Element : Set :=
-  | StateElement : State_t -> Element
-  | TransitionElement : Transition_t -> Element
+  | State : State_t -> Element
+  | Transition : Transition_t -> Element
 .
 Scheme Equality for Element.
 
 (** Data types for link (to build models) *)
 Inductive Link : Set :=
-  | Transition_sourceLink : @Glue Transition_t State_t -> Link
-  | Transition_targetLink : @Glue Transition_t State_t -> Link
+  | TransitionSource : @Glue Transition_t State_t -> Link
+  | TransitionTarget : @Glue Transition_t State_t -> Link
 .
 
 
@@ -63,15 +63,15 @@ Definition getTypeByEKind (k : ElementKind) : Set :=
 
 Definition lift_EKind k : (getTypeByEKind k) -> Element := 
   match k with
-  | State_K => StateElement
-  | Transition_K => TransitionElement
+  | State_K => State
+  | Transition_K => Transition
   end.
 
 
 Definition get_E_data (k : ElementKind) (c : Element) : option (getTypeByEKind k) :=
   match (k,c) as e return (option (getTypeByEKind (fst e))) with
-  | (State_K, StateElement v)  => Some v
-  | (Transition_K, TransitionElement v)  => Some v
+  | (State_K, State v)  => Some v
+  | (Transition_K, Transition v)  => Some v
   | (_ , _) => None
   end.
 
@@ -85,15 +85,15 @@ Definition getTypeByLKind (k : LinkKind) : Set :=
 
 Definition lift_LKind k : (getTypeByLKind k) -> Link :=
   match k with
-  | Transition_source_K => Transition_sourceLink
-  | Transition_target_K => Transition_targetLink
+  | Transition_source_K => TransitionSource
+  | Transition_target_K => TransitionTarget
   end.
 
 
 Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
   match (t,c) as e return (option (getTypeByLKind (fst e))) with
-  | (Transition_source_K, Transition_sourceLink v)  => Some v
-  | (Transition_target_K, Transition_targetLink v)  => Some v
+  | (Transition_source_K, TransitionSource v)  => Some v
+  | (Transition_target_K, TransitionTarget v)  => Some v
   | (_ , _) => None
   end.
 
@@ -162,41 +162,74 @@ Definition getTransition_targetOnLinks (t : Transition_t) (l : list Link) : opti
 Definition getTransition_target (m : M) (t : Transition_t) : option (State_t) :=
   getTransition_targetOnLinks t m.(modelLinks).
 
-(* FIXME : generate-me*)
-Definition WF_target (m:M) : Prop :=
+
+(** *** Well formed models : high-level properties *)
+
+(** Transitions have valid source and destination states. *) 
+
+Definition WF_transition_target_exists (m:M) : Prop :=
   forall t, 
-    List.In (TransitionElement t) m.(modelElements) ->
+    List.In (Transition t) m.(modelElements) ->
     SUCCESS ( getTransition_target m t ).
 
-(* FIXME : generate-me*)
-Definition WF_source (m:M) : Prop :=
+Definition WF_transition_source_exists (m:M) : Prop :=
   forall t, 
-    List.In (TransitionElement t) m.(modelElements) ->
+    List.In (Transition t) m.(modelElements) ->
     SUCCESS ( getTransition_source m t ).
 
-(* FIXME : generate-me*)
-Definition WF_source_lglue (m:M) : Prop :=
-  forall lk,
-    List.In (Transition_sourceLink lk) m.(modelLinks) ->
-    List.In (TransitionElement lk.(l_glue)) m.(modelElements).
 
-(* FIXME : generate-me*)
-Definition WF_source_rglue (m:M) : Prop :=
-  forall lk,
-    List.In (Transition_sourceLink lk) m.(modelLinks) ->
-    List.In (StateElement lk.(r_glue)) m.(modelElements).
+(** *** Well formed models : low-level properties *)
 
-(* FIXME : generate-me*)
-Definition WF_target_lglue (m:M) : Prop :=
-  forall lk,
-    List.In (Transition_targetLink lk) m.(modelLinks) ->
-    List.In (TransitionElement lk.(l_glue)) m.(modelElements).
+(** Links glue only valid states with valid transitions *)
 
-(* FIXME : generate-me*)
-Definition WF_target_rglue (m:M) : Prop :=
+Definition WF_transition_source_glue_l_exists (m:M) : Prop :=
   forall lk,
-    List.In (Transition_targetLink lk) m.(modelLinks) ->
-    List.In (StateElement lk.(r_glue)) m.(modelElements).
+    List.In (TransitionSource lk) m.(modelLinks) ->
+    List.In (Transition lk.(l_glue)) m.(modelElements).
+
+(* lorsque les sources de transitions existent, 
+   les glues pour ces transitions existent. *)
+Lemma tmp : 
+  forall m, 
+    WF_transition_source_exists m ->
+    forall t, 
+      List.In (Transition t) m.(modelElements) -> 
+      exists g, 
+        List.In (TransitionSource g) m.(modelLinks) /\ g.(l_glue) = t.
+Proof.
+  unfold WF_transition_source_exists.
+  intros m H1 t H2.
+  specialize (H1 t H2).
+  destruct H1 as (s & H1).
+  unfold getTransition_source in H1.
+  unfold  getTransition_sourceOnLinks in H1.
+  monadInv H1.
+  simpl in g.
+  apply find_lift_some in H1.
+  destruct H1 as (A&H3&H4&H5).
+  apply internal_Transition_t_dec_bl in H5.
+  destruct A  ; unfold get_L_data in H3 ; [ inj H3| discriminate H3 ].
+  eauto.
+Qed.    
+
+
+Definition WF_transition_source_glue_r_exists (m:M) : Prop :=
+  forall lk,
+    List.In (TransitionSource lk) m.(modelLinks) ->
+    List.In (State lk.(r_glue)) m.(modelElements).
+
+
+Definition WF_transition_target_glue_l_exists (m:M) : Prop :=
+  forall lk,
+    List.In (TransitionTarget lk) m.(modelLinks) ->
+    List.In (Transition lk.(l_glue)) m.(modelElements).
+
+
+Definition WF_transition_target_glue_r_exists (m:M) : Prop :=
+  forall lk,
+    List.In (TransitionTarget lk) m.(modelLinks) ->
+    List.In (State lk.(r_glue)) m.(modelElements).
+
 
 (** Useful lemmas *)
 Lemma Moore_invert : 
@@ -212,27 +245,27 @@ Lemma Element_dec :
 Proof. destruct a ; auto. Qed. 
 
 
-Lemma StateElement_cast :
+Lemma State_cast :
   forall x y,
-    unbox State_K x = return y -> StateElement y = x.
+    unbox State_K x = return y -> State y = x.
 Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
 
 
-Lemma TransitionElement_cast :
+Lemma Transition_cast :
   forall x y,
-    unbox Transition_K x = return y -> TransitionElement y = x.
+    unbox Transition_K x = return y -> Transition y = x.
 Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
 
 (** Manual addition *)
 Definition Transition_getSourceObject (t : Transition_t) (m : M) : option (Element) :=
-  option_map StateElement (getTransition_source m t).
+  option_map State (getTransition_source m t).
 
 Definition Transition_getTargetObject (tr_arg : Transition_t) (m : M) : option (Element) :=
-  option_map StateElement (getTransition_target m tr_arg).
+  option_map State (getTransition_target m tr_arg).
 
 
 Lemma In_state : forall (m:Moore.M) e,
-         List.In (StateElement e) (Model.modelElements m) <-> List.In e
+         List.In (State e) (Model.modelElements m) <-> List.In e
     (OptionListUtils.lift_list (get_E_data State_K)
        (Model.modelElements m)).
 Proof.
@@ -240,7 +273,7 @@ Proof.
   split ; intro H.
   {
     apply OptionListUtils.In_lift.
-    exists (StateElement e). auto.
+    exists (State e). auto.
   }  
   {
     apply OptionListUtils.In_lift in H.
@@ -252,7 +285,7 @@ Qed.
 
 
 Lemma In_transition : forall (m:Moore.M) e,
-         List.In (TransitionElement e) (Model.modelElements m) <-> List.In e
+         List.In (Transition e) (Model.modelElements m) <-> List.In e
     (OptionListUtils.lift_list (get_E_data Transition_K)
        (Model.modelElements m)).
 Proof.
@@ -260,7 +293,7 @@ Proof.
   split ; intro H.
   {
     apply OptionListUtils.In_lift.
-    exists (TransitionElement e). auto.
+    exists (Transition e). auto.
   }  
   {
     apply OptionListUtils.In_lift in H.
@@ -273,7 +306,7 @@ Qed.
 
 Lemma In_transition_sourceLink : 
   forall (m:Moore.M) e,
-         List.In (Transition_sourceLink e) (Model.modelLinks m) <-> List.In e
+         List.In (TransitionSource e) (Model.modelLinks m) <-> List.In e
     (OptionListUtils.lift_list (get_L_data Transition_source_K)
        (Model.modelLinks m)).
 Proof.
@@ -281,7 +314,7 @@ Proof.
   split ; intro H.
   {
     apply OptionListUtils.In_lift.
-    exists (Transition_sourceLink e). auto.
+    exists (TransitionSource e). auto.
   }  
   {
     apply OptionListUtils.In_lift in H.
@@ -293,7 +326,7 @@ Qed.
 
 Lemma In_transition_targetLink : 
   forall (m:Moore.M) e,
-         List.In (Transition_targetLink e) (Model.modelLinks m) <-> List.In e
+         List.In (TransitionTarget e) (Model.modelLinks m) <-> List.In e
     (OptionListUtils.lift_list (get_L_data Transition_target_K)
        (Model.modelLinks m)).
 Proof.
@@ -301,7 +334,7 @@ Proof.
   split ; intro H.
   {
     apply OptionListUtils.In_lift.
-    exists (Transition_targetLink e). auto.
+    exists (TransitionTarget e). auto.
   }  
   {
     apply OptionListUtils.In_lift in H.
@@ -316,8 +349,7 @@ Lemma getTransition_source_inv m t s :
   getTransition_source m t = Some s ->
   let lk := {| l_glue := t ; r_glue := s |} 
   in
-  List.In (Transition_sourceLink lk) m.(Model.modelLinks).
-  (*    List.In (StateElement s) (Model.modelElements m). *)
+  List.In (TransitionSource lk) m.(Model.modelLinks).
 Proof.
   unfold getTransition_source.
   generalize (modelLinks m).
@@ -336,7 +368,7 @@ Lemma getTransition_target_inv m t s :
   getTransition_target m t = Some s -> 
   let lk := {| r_glue := s ; l_glue := t |} 
   in 
-    In (Transition_targetLink lk)  m.(Model.modelLinks).
+    In (TransitionTarget lk)  m.(Model.modelLinks).
 Proof.
   unfold getTransition_target.
   generalize (modelLinks m).

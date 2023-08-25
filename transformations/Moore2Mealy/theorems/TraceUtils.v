@@ -9,8 +9,8 @@ Import Moore2Mealy.
 Lemma in_trace_inv (m:Moore.M) t :
 In t (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
    (exists a , t = (buildTraceLink 
-        ([Moore.TransitionElement a], 0, "t"%string)
-        (Mealy.TransitionElement {| (* fixme : use Elements.convert_transition *)
+        ([Moore.Transition a], 0, "t"%string)
+        (Mealy.Transition {| (* fixme : use Elements.convert_transition *)
                 Mealy.Transition_id := Moore.Transition_id a;
                 Mealy.Transition_input := Moore.Transition_input a;
                 Mealy.Transition_output :=
@@ -19,8 +19,8 @@ In t (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
                        (Moore.getTransition_target m a)) ""%string
               |})))
    \/ (exists s , t = buildTraceLink
-        ([Moore.StateElement s], 0, "s"%string)
-        (Mealy.StateElement (Elements.convert_state s))).
+        ([Moore.State s], 0, "s"%string)
+        (Mealy.State (Elements.convert_state s))).
 Proof.
   intro H.
   Tactics.exploit_in_trace H.
@@ -37,10 +37,10 @@ Qed.
 
 
 Lemma state_in_trace (m:Moore.M) (s:Moore.State_t) : 
-  In (Moore.StateElement s) m.(modelElements) ->
+  In (Moore.State s) m.(modelElements) ->
   In (PoorTraceLink.buildTraceLink 
-        ((Moore.StateElement s) :: nil, 0, "s"%string) 
-        (Mealy.StateElement (Elements.convert_state s))
+        ((Moore.State s) :: nil, 0, "s"%string) 
+        (Mealy.State (Elements.convert_state s))
     )
     (RichTraceLink.drop (Semantics.traceTrOnModel Moore2Mealy m)).
 Proof.
@@ -51,7 +51,7 @@ Proof.
   split.
   2:{
     Tactics.destruct_in_trace_G.
-    exists (Moore.StateElement s :: nil).
+    exists (Moore.State s :: nil).
     split.
     { apply @Tactics.allModelElements_allTuples ; auto.  } 
     { compute. left. reflexivity. }
@@ -98,13 +98,13 @@ Qed.
 Lemma in_find m : 
   forall c,
     In (buildTraceLink
-          ([Moore.StateElement c], 0, "s"%string)
-          (Mealy.StateElement (Elements.convert_state c))) (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
+          ([Moore.State c], 0, "s"%string)
+          (Mealy.State (Elements.convert_state c))) (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
 
-      find (source_compare ([Moore.StateElement c], 0, "s"%string)) (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) = 
+      find (source_compare ([Moore.State c], 0, "s"%string)) (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) = 
         Some 
-          (buildTraceLink ([Moore.StateElement c], 0, "s"%string) 
-             (Mealy.StateElement (Elements.convert_state c))).
+          (buildTraceLink ([Moore.State c], 0, "s"%string) 
+             (Mealy.State (Elements.convert_state c))).
 Proof.
 
   intros c H.
@@ -124,10 +124,10 @@ Qed.
       
 Lemma in_resolve m s : 
   In (buildTraceLink 
-        ([Moore.StateElement s], 0, "s"%string)
-        (Mealy.StateElement (Elements.convert_state s))) (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
-  Resolve.resolveIter (RichTraceLink.drop (traceTrOnModel  Moore2Mealy m)) "s" [Moore.StateElement s] 0 = 
-    Some (Mealy.StateElement (Elements.convert_state s)).
+        ([Moore.State s], 0, "s"%string)
+        (Mealy.State (Elements.convert_state s))) (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
+  Resolve.resolveIter (RichTraceLink.drop (traceTrOnModel  Moore2Mealy m)) "s" [Moore.State s] 0 = 
+    Some (Mealy.State (Elements.convert_state s)).
 Proof.
   unfold Resolve.resolveIter. 
   intros IN1.
@@ -140,10 +140,10 @@ Qed.
 
 Lemma in_maybeResolve_trace_2 s (m : Moore.M) :
   
-  In (Moore.StateElement s) m.(modelElements) -> 
+  In (Moore.State s) m.(modelElements) -> 
   
-  Resolve.maybeResolve (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) "s" (Some [Moore.StateElement s])  =  
-    Some (Mealy.StateElement (Elements.convert_state s)) 
+  Resolve.maybeResolve (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) "s" (Some [Moore.State s])  =  
+    Some (Mealy.State (Elements.convert_state s)) 
   .
 Proof.
   intro H.

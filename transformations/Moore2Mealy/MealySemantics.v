@@ -74,7 +74,7 @@ Definition execute (m: M) (input: list string) : option (list string) :=
 
 Lemma State_out_transitions_inv m s t :
   List.In t (State_outTransitions m s) ->
-  List.In (TransitionElement t) (Model.modelElements m)
+  List.In (Transition t) (Model.modelElements m)
   /\ getTransition_source m t = Some s.
 Proof.
   intro H.
@@ -90,14 +90,14 @@ Qed.
 
 
 Lemma in_State_outTransitions (m:Mealy.M) s t :
-  List.In (TransitionElement t) (Model.modelElements m) ->
+  List.In (Transition t) (Model.modelElements m) ->
   getTransition_source m t = Some s ->
   List.In t (State_outTransitions m s).
 Proof.
   intros.
   unfold State_outTransitions.
   apply OptionListUtils.filter_lift_in.
-  exists (TransitionElement t).
+  exists (Transition t).
   split ; [ assumption | ].
   split ; [ reflexivity | ].
   rewrite H0.
@@ -133,15 +133,15 @@ Qed.
 (* fixme : move-me *)
 Definition WF_sourceLink_source_in (m:Mealy.M) :=
       forall lk, 
-        In (Transition_sourceLink lk) m.(modelLinks) ->
-        In (StateElement lk.(r_glue)) m.(modelElements).
+        In (TransitionSource lk) m.(modelLinks) ->
+        In (State lk.(r_glue)) m.(modelElements).
 
 Lemma execute_in m :
   WF_sourceLink_source_in m ->
   forall i s r,
     i <> nil ->
     executeFromState m s i = Some r ->
-    List.In (StateElement s) m.(Model.modelElements).
+    List.In (State s) m.(Model.modelElements).
 Proof.    
   intro WF.
   intros.

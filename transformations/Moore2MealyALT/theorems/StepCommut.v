@@ -26,7 +26,7 @@ Lemma in_outTransitions_commut_fw t s t' :
   Elements.convert_transition m t = Some t' ->
   List.In t' (MealySemantics.State_outTransitions
                 (Semantics.execute Moore2Mealy.Moore2Mealy m)
-                (Elements.convert s)).
+                (Elements.convert_state s)).
 Proof.
   intros.
   destruct (MooreSemantics.State_out_transitions_inv  _ _ _ H).
@@ -34,7 +34,7 @@ Proof.
   destruct H1 as (?&?&?).
   rewrite H0 in H1. PropUtils.inj H1. (* unif *) (* pourquoi ? *)
 
-  destruct (Elements.convert_transition_inv _ _ _ H0) as (?&?&?).
+  destruct (Elements.convert_transition_nec _ _ _ H0) as (?&?&?).
   subst.
   
   apply MealySemantics.in_State_outTransitions.
@@ -47,7 +47,7 @@ Lemma in_outTransitions_commut_bw t s' t' :
   List.In t' 
     (MealySemantics.State_outTransitions (Semantics.execute Moore2Mealy.Moore2Mealy m) s') ->
   Elements.convert_transition m t = Some t' ->
-  exists s, Elements.convert s = s'
+  exists s, Elements.convert_state s = s'
             /\ List.In t (MooreSemantics.State_outTransitions m s).
 Proof.
   intros.
@@ -81,7 +81,7 @@ Lemma in_outTransitions_commut_bw_2 s' t' :
   exists t,  
     Elements.convert_transition m t = Some t'
     /\ exists s,
-      Elements.convert s = s' 
+      Elements.convert_state s = s' 
       /\ List.In t (MooreSemantics.State_outTransitions m s).
 Proof.
   intros.
@@ -117,7 +117,7 @@ Qed.
 Lemma State_acceptTransition_commut_fw :
   forall s i t,
     MooreSemantics.State_acceptTransition m s i = Some t ->
-    MealySemantics.State_acceptTransition (Semantics.execute Moore2Mealy.Moore2Mealy m) (Elements.convert s) i = Elements.convert_transition m t.
+    MealySemantics.State_acceptTransition (Semantics.execute Moore2Mealy.Moore2Mealy m) (Elements.convert_state s) i = Elements.convert_transition m t.
 Proof.
   intros s i t A.
 
@@ -140,7 +140,7 @@ Lemma State_acceptTransition_commut_bw :
     MealySemantics.State_acceptTransition (Semantics.execute Moore2Mealy.Moore2Mealy m) s' i = Some t' ->
     
     exists s, 
-      Elements.convert s = s' 
+      Elements.convert_state s = s' 
       /\ exists t,
         Elements.convert_transition m t = Some t' 
         /\ MooreSemantics.State_acceptTransition m s i = Some t.
@@ -157,7 +157,7 @@ Proof.
   apply ListUtils.in_find ; eauto.
   { apply MooreWF.truc. assumption. }
   { apply String.eqb_eq.
-    destruct (Elements.convert_transition_inv _ _ _ H0) as (?& _ &?).
+    destruct (Elements.convert_transition_nec _ _ _ H0) as (?& _ &?).
     subst.
     reflexivity.
   }
@@ -169,8 +169,8 @@ Lemma search_commut_fw :
   forall s1 i s2,
     MooreSemantics.search m s1 i = Some s2 ->
     exists s1' s2',
-      s1'= Elements.convert s1 
-      /\ s2'= Elements.convert s2 
+      s1'= Elements.convert_state s1 
+      /\ s2'= Elements.convert_state s2 
       /\ exists t',
         MealySemantics.search (Semantics.execute Moore2Mealy.Moore2Mealy m) s1' i = Some (t',s2') 
         /\ Mealy.Transition_output t' = Moore.State_output s2.
@@ -180,17 +180,17 @@ Proof.
   destruct (MooreSemantics.search_inv _ _ _ _ H) as (?&?&?).
 
   unfold MealySemantics.search.
-  unfold Elements.convert.
+  unfold Elements.convert_state.
   eexists ; eexists ; split ; eauto. split ; eauto.
   apply State_acceptTransition_commut_fw in H0 ; auto.
-  unfold Elements.convert in H0.
+  unfold Elements.convert_state in H0.
   rewrite H0.
   destruct (GettersCommut.getTransition_target_commut_fw _ _ _ H1).
 
   rewrite H2.
 
   rewrite H3.
-  unfold Elements.convert.
+  unfold Elements.convert_state.
   eauto.
 Qed.
 
@@ -198,9 +198,9 @@ Lemma search_commut_bw :
   forall s1' i s2' t',
  MealySemantics.search (Semantics.execute Moore2Mealy.Moore2Mealy m) s1' i = Some (t',s2') ->
     exists s1,
-      s1'= Elements.convert s1 
+      s1'= Elements.convert_state s1 
       /\ exists s2, 
-        s2'= Elements.convert s2 
+        s2'= Elements.convert_state s2 
         /\ MooreSemantics.search m s1 i = Some s2 
         /\ Mealy.Transition_output t' = Moore.State_output s2.        
 Proof.    
@@ -224,7 +224,7 @@ Proof.
   2:{ eapply Elements.convert_transition_injective ; eauto. }
   clear H8. (* duplicate *)
   rewrite H10.
-  destruct (Elements.convert_transition_inv _ _ _ H3) as (?&?&?) ; subst t'.
+  destruct (Elements.convert_transition_nec _ _ _ H3) as (?&?&?) ; subst t'.
   simpl.
   rewrite H11 in H8. (* unif *)
   PropUtils.inj H8.

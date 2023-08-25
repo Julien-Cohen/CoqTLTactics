@@ -18,7 +18,7 @@ Import Glue.
  Definition Moore_m1 : Model Moore.MM :=
      (Build_Model Moore.MM
         (
-            (StateElement (Build_State_t  (Id.Id "S0") "1")) :: nil
+            (State (Build_State_t  (Id.Id "S0") "1")) :: nil
         )
         (
             nil
@@ -28,17 +28,17 @@ Import Glue.
 Definition Moore_m2 : Model Moore.MM :=
         (Build_Model Moore.MM
             (
-                (TransitionElement (Build_Transition_t 0 "0")) :: 
-                (TransitionElement (Build_Transition_t 1 "1")) ::
-                (StateElement (Build_State_t  (Id.Id "S0") "1")) :: 
-                (StateElement (Build_State_t  (Id.Id "S1") "0")) ::  
+                (Transition (Build_Transition_t 0 "0")) :: 
+                (Transition (Build_Transition_t 1 "1")) ::
+                (State (Build_State_t  (Id.Id "S0") "1")) :: 
+                (State (Build_State_t  (Id.Id "S1") "0")) ::  
                 nil
             )
             (
-                (Transition_sourceLink (Build_Glue _ _ (Build_Transition_t 0 "0") (Build_State_t  (Id.Id "S1") "0"))) ::
-		        (Transition_targetLink (Build_Glue _ _ (Build_Transition_t 0 "0") (Build_State_t  (Id.Id "S0") "1"))) ::
-                (Transition_sourceLink (Build_Glue _ _ (Build_Transition_t 1 "1") (Build_State_t  (Id.Id "S0") "1"))) ::
-		        (Transition_targetLink (Build_Glue _ _ (Build_Transition_t 1 "1") (Build_State_t  (Id.Id "S1") "0"))) ::
+                (TransitionSource (Build_Glue _ _ (Build_Transition_t 0 "0") (Build_State_t  (Id.Id "S1") "0"))) ::
+		        (TransitionTarget (Build_Glue _ _ (Build_Transition_t 0 "0") (Build_State_t  (Id.Id "S0") "1"))) ::
+                (TransitionSource (Build_Glue _ _ (Build_Transition_t 1 "1") (Build_State_t  (Id.Id "S0") "1"))) ::
+		        (TransitionTarget (Build_Glue _ _ (Build_Transition_t 1 "1") (Build_State_t  (Id.Id "S1") "0"))) ::
                 nil
             )
         ).
