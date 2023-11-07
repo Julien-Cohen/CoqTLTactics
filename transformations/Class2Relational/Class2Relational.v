@@ -56,12 +56,12 @@ Definition R1 : ConcreteRule :=
 
     to [ ELEM "tab" ::: Table_K  
         << fun _ _ c => Build_Table_t c.(Class_id) c.(Class_name) >>
-        <<< LINK Table_columns_K //
-               fun tra _ m c t =>
+        LINK ::: Table_columns_K
+        << fun tra _ m c t =>
                   maybeBuildTableColumns t
                     (maybeResolveAll tra "col" Column_K 
                        (maybeSingletons (getClass_attributesElements c m)))
-                    >>> ].
+                    >> ].
 
 Definition R2 : ConcreteRule :=
   rule "Attribute2Column"
@@ -69,12 +69,13 @@ Definition R2 : ConcreteRule :=
     where (fun _ a => negb a.(Attribute_derived))
     to [ ELEM "col" ::: Column_K 
         << fun _ _ a => Build_Column_t a.(Attribute_id) a.(Attribute_name) >>
-        <<< LINK Column_reference_K //
+       LINK ::: Column_reference_K
+       <<
                fun tra _ m a c =>
                   maybeBuildColumnReference c
                     (maybeResolve tra "tab" Table_K 
                        (maybeSingleton (getAttribute_typeElement a m)))
-        >>> ].
+        >> ].
 
 Definition Class2Relational' :=
   transformation  [ R1 ; R2 ].

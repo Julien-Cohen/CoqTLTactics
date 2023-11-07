@@ -69,15 +69,16 @@ Definition Class2Relational_tactic_test' :=
     from [Class_K]
     where (fun m c => (beq_string c.(class_name) "Person"))
     to [ ELEM "tab" ::: Table_K  
-        << fun _ _ c => Build_Table_t c.(class_id) c.(class_name) >>
-        <<< LINK TableColumns_K //
-               fun tls _ m c t =>
+          << fun _ _ c => Build_Table_t c.(class_id) c.(class_name) >>
+    
+         LINK ::: TableColumns_K
+          << fun tls _ m c t =>
                   maybeBuildTableColumns t
                     (maybeResolveAll tls "col" Column_K 
                       (maybeTuples
                         (getClassAttributesElements c m) 
                         [(ClassElement c)]))
-        >>>
+         >>
       ]
     ;
     rule "Class2Table2"
@@ -85,15 +86,15 @@ Definition Class2Relational_tactic_test' :=
     where (fun m c => 
       negb (beq_string c.(class_name) "Person"))
     to [ ELEM "tab" ::: Table_K  
-        << fun _ _ c => Build_Table_t c.(class_id) c.(class_name) >>
-        <<< LINK TableColumns_K //
-               fun tls _ m c t =>
+          << fun _ _ c => Build_Table_t c.(class_id) c.(class_name) >>
+
+         LINK ::: TableColumns_K 
+          << fun tls _ m c t =>
                   maybeBuildTableColumns t
                     (maybeResolveAll tls "col" Column_K 
                       (maybeTuples
                         (getClassAttributesElements c m) 
-                        [(ClassElement c)]))
-        >>>
+                        [(ClassElement c)])) >>
       ]
     ;
     rule "Attribute2Column"
@@ -102,13 +103,14 @@ Definition Class2Relational_tactic_test' :=
             andb (negb (derived a)) 
             (is_option_eq (getAttributeType a m) cl Class_t_beq))
     to [ ELEM "col" ::: Column_K 
-        << fun _ _ a cl => Build_Column_t a.(attr_id) a.(attr_name) >>
-        <<< LINK ColumnReference_K //
-               fun tls _ m a cl c =>
+          << fun _ _ a cl => Build_Column_t a.(attr_id) a.(attr_name) >>
+
+         LINK ::: ColumnReference_K 
+          << fun tls _ m a cl c =>
                   maybeBuildColumnReference c
                     (maybeResolve tls "tab" Table_K 
-                       (maybeSingleton (Some (ClassElement cl))))
-        >>> ]
+                       (maybeSingleton (Some (ClassElement cl)))) >>
+    ]
   ].
 
 Definition Class2Relational_tactic_test := parse Class2Relational_tactic_test'.

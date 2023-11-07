@@ -46,37 +46,19 @@ Definition Moore2Mealy' :=
                           t.(Moore.Transition_id)
                           t.(Moore.Transition_input)
                           (value (option_map Moore.State_output (Moore.getTransition_target m t))) >> 
-
-          <<<
-         (*    LINK  
-              Mealy.Transition_source_K //
-              (fun tls _ m moore_tr mealy_tr =>
-                 match Moore.getTransition_source m moore_tr with
-                 | Some s =>
-                     match Resolve.resolve tls "s" 
-                             ( (Moore.StateElement s) :: nil)
-                     with 
-                     | Some (StateElement s') =>
-                            Some (Glue.Build_Glue _ _ mealy_tr s')   
-                     | _ => None 
-                     end
-                       
-                 | None => None
-                 end) ; *)
-
-        LINK  
-              Mealy.Transition_source_K //
-              (fun tls _ m moore_tr mealy_tr =>
+          
+        LINK ::: Mealy.Transition_source_K 
+          << fun tls _ m moore_tr mealy_tr =>
                 maybeBuildTransitionSource mealy_tr
                   (maybeResolve tls "s" Mealy.State_K 
-                    (maybeSingleton (Moore.Transition_getSourceObject moore_tr m)))) ;
-            LINK 
-              Mealy.Transition_target_K //
-              (fun tls _ m moore_tr mealy_tr =>
-                maybeBuildTransitionTarget mealy_tr
-                  (maybeResolve tls "s" Mealy.State_K 
-                    (maybeSingleton (Moore.Transition_getTargetObject moore_tr m)))) 
-          >>>
+                    (maybeSingleton (Moore.Transition_getSourceObject moore_tr m))) >> ;
+            
+        LINK ::: Mealy.Transition_target_K 
+          << fun tls _ m moore_tr mealy_tr =>
+                     maybeBuildTransitionTarget mealy_tr
+                       (maybeResolve tls "s" Mealy.State_K 
+                          (maybeSingleton (Moore.Transition_getTargetObject moore_tr m))) 
+          >>
       ]
 ].
 

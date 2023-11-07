@@ -114,37 +114,37 @@ Notation "'rule' rulename 'from' types 'to' outputpattern " :=
 
 
 (* Rule : 0 iterator, 1 guard, 0 link *)
-Notation "'rule' rulename 'from' types 'where' guard 'to' [ 'ELEM' n ::: t << op >>  ]" :=
-  (Build_ConcreteRule rulename types (Some guard) None [ elem types t n op nil ])
+Notation "'rule' rulename 'from' types 'where' guard 'to' [ 'ELEM' k ::: t << op >>  ]" :=
+  (Build_ConcreteRule rulename types (Some guard) None [ elem types t k op nil ])
     (right associativity, at level 60):coqtl.
 
 
 (* Rule : 0 iterator, 1 guard, 1 link *)
-Notation "'rule' rulename 'from' types 'where' guard 'to' [ 'ELEM' n ::: t << op >> <<< 'LINK' c // d >>> ]" :=
-  (Build_ConcreteRule rulename types (Some guard) None [ elem types t n op [link types t c d] ])
+Notation "'rule' rulename 'from' types 'where' guard 'to' [ 'ELEM' k ::: t << op >> 'LINK' ::: k1 << oplink >> ]" :=
+  (Build_ConcreteRule rulename types (Some guard) None [ elem types t k op [link types t k1 oplink] ])
     (right associativity, at level 60):coqtl.
 
 (* Rule : 0 iterator, 1 guard, 2 links *)
-Notation "'rule' rulename 'from' types 'where' guard 'to' [ 'ELEM' n ::: t << op >> <<< 'LINK' c // d ; 'LINK' e // f >>> ]" :=
-  (Build_ConcreteRule rulename types (Some guard) None [ elem types t n op [link types t c d ; link types t e f] ])
+Notation "'rule' rulename 'from' types 'where' guard 'to' [ 'ELEM' k ::: t << op >> 'LINK' ::: k1 << oplink1 >> ; 'LINK' ::: k2 << oplink2 >> ]" :=
+  (Build_ConcreteRule rulename types (Some guard) None [ elem types t k op [link types t k1 oplink1 ; link types t k2 oplink2] ])
     (right associativity, at level 60):coqtl.
 
 
 (* Rule : 0 iterator, 0 guard, 0 link *)
-Notation "'rule' rulename 'from' types 'to' [ 'ELEM' n ::: t << op >> ]" :=
-  (Build_ConcreteRule rulename types None None [ elem types t n op nil ])
+Notation "'rule' rulename 'from' types 'to' [ 'ELEM' k ::: t << op >> ]" :=
+  (Build_ConcreteRule rulename types None None [ elem types t k op nil ])
     (right associativity, at level 60):coqtl.
 
 
 (* Rule : 0 iterator, 0 guard, 1 link *)
-Notation "'rule' rulename 'from' types 'to' [ 'ELEM' n ::: t << op >> <<< 'LINK' c // d >>> ]" :=
-  (Build_ConcreteRule rulename types None None [ elem types t n op [link types t c d] ])
+Notation "'rule' rulename 'from' types 'to' [ 'ELEM' k ::: t << op >> 'LINK' ::: k1 << oplink >> ]" :=
+  (Build_ConcreteRule rulename types None None [ elem types t k op [link types t k1 oplink] ])
     (right associativity, at level 60):coqtl.
 
 
 (* Rule : 0 iterator, 0 guard, 2 links *)
-Notation "'rule' rulename 'from' types 'to' [ 'ELEM' n ::: t << op >> <<< 'LINK' c // d ; 'LINK' e // f >>> ]" :=
-  (Build_ConcreteRule rulename types None None [ elem types t n op [link types t c d ; link types t e f] ])
+Notation "'rule' rulename 'from' types 'to' [ 'ELEM' k ::: t << op >> 'LINK' ::: k1 << oplink1 >> ; 'LINK' ::: k2 << oplink2 >> ]" :=
+  (Build_ConcreteRule rulename types None None [ elem types t k op [link types t k1 oplink1 ; link types t k2 oplink2] ])
     (right associativity, at level 60):coqtl.
 
 (* We need the separators above.
