@@ -62,7 +62,7 @@ Definition WF_transition_source_uniqueness (m:Moore.M) : Prop :=
       forall lk1 lk2,
         List.In (TransitionSource lk1)  m.(Model.modelLinks) ->
         List.In (TransitionSource lk2)  m.(Model.modelLinks) ->
-        lk1.(l_glue) = lk2.(l_glue) ->
+        lk1.(left_glue) = lk2.(left_glue) ->
         lk1 = lk2.
 
 (** A transition is glued to only one target state. *)
@@ -71,7 +71,7 @@ Definition WF_transition_dest_uniqueness (m:Moore.M) : Prop :=
       forall lk1 lk2,
         List.In (TransitionTarget lk1)  m.(Model.modelLinks) ->
         List.In (TransitionTarget lk2)  m.(Model.modelLinks) ->
-        lk1.(l_glue) = lk2.(l_glue) ->
+        lk1.(left_glue) = lk2.(left_glue) ->
         lk1 = lk2.
   
 
@@ -80,7 +80,7 @@ Lemma getTransition_source_some (m:Moore.M) :
   forall s,
     List.In (State s) m.(Model.modelElements) ->
     forall t,
-      let lk := {| l_glue := t ; r_glue := s |} 
+      let lk := {| left_glue := t ; right_glue := s |} 
       in
       
       List.In (TransitionSource lk) (Model.modelLinks m) ->
@@ -106,7 +106,7 @@ Proof.
     apply In_transition_sourceLink ; assumption.
     apply In_transition_sourceLink ; assumption.
   }    
-  { instantiate (1:=TransitionSource {| l_glue := t ; r_glue := s |}). 
+  { instantiate (1:=TransitionSource {| left_glue := t ; right_glue := s |}). 
     reflexivity.
   }        
 
@@ -119,7 +119,7 @@ Lemma getTransition_target_some (m:Moore.M):
   forall s,
     List.In (State s) m.(Model.modelElements) ->
     forall t,
-      let lk := {| l_glue := t ; r_glue := s |} 
+      let lk := {| left_glue := t ; right_glue := s |} 
       in
       
       List.In (TransitionTarget lk) (Model.modelLinks m) ->
@@ -143,7 +143,7 @@ Proof.
     apply In_transition_targetLink ; assumption.
     apply In_transition_targetLink ; assumption.
   }    
-  { instantiate (1 := TransitionTarget {| l_glue := t ; r_glue := s |}). 
+  { instantiate (1 := TransitionTarget {| left_glue := t ; right_glue := s |}). 
     reflexivity.
   }        
 

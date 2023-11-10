@@ -1,7 +1,7 @@
 (** Generic type for Links *)
 
-Record Glue A B := { l_glue : A ; r_glue : B}.
+Record Glue A B := { left_glue : A ; right_glue : B}.
 Scheme Equality for Glue. (* Never used ? *)
 
-Arguments l_glue {A} {B}.
-Arguments r_glue {A} {B}.
+Arguments left_glue {A} {B}.
+Arguments right_glue {A} {B}.

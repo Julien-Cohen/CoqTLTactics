@@ -137,10 +137,10 @@ Definition M := Model MM.
 (** General functions (used in transformations) *)
 Definition getTransition_sourceOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
   option_map 
-    r_glue 
+    right_glue 
     (find_lift 
        (get_L_data Transition_source_K) 
-       (fun s => Transition_t_beq s.(l_glue) t)
+       (fun s => Transition_t_beq s.(left_glue) t)
        l
     ).
 
@@ -150,10 +150,10 @@ Definition getTransition_source (m : M) (t : Transition_t) : option (State_t) :=
 
 Definition getTransition_targetOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
   option_map 
-    r_glue 
+    right_glue 
     (find_lift 
        (get_L_data Transition_target_K) 
-       (fun s => Transition_t_beq s.(l_glue) t)
+       (fun s => Transition_t_beq s.(left_glue) t)
        l
     ).
 
@@ -185,7 +185,7 @@ Definition WF_transition_source_exists (m:M) : Prop :=
 Definition WF_transition_source_glue_l_exists (m:M) : Prop :=
   forall lk,
     List.In (TransitionSource lk) m.(modelLinks) ->
-    List.In (Transition lk.(l_glue)) m.(modelElements).
+    List.In (Transition lk.(left_glue)) m.(modelElements).
 
 (* lorsque les sources de transitions existent, 
    les glues pour ces transitions existent. *)
@@ -195,7 +195,7 @@ Lemma tmp :
     forall t, 
       List.In (Transition t) m.(modelElements) -> 
       exists g, 
-        List.In (TransitionSource g) m.(modelLinks) /\ g.(l_glue) = t.
+        List.In (TransitionSource g) m.(modelLinks) /\ g.(left_glue) = t.
 Proof.
   unfold WF_transition_source_exists.
   intros m H1 t H2.
@@ -216,19 +216,19 @@ Qed.
 Definition WF_transition_source_glue_r_exists (m:M) : Prop :=
   forall lk,
     List.In (TransitionSource lk) m.(modelLinks) ->
-    List.In (State lk.(r_glue)) m.(modelElements).
+    List.In (State lk.(right_glue)) m.(modelElements).
 
 
 Definition WF_transition_target_glue_l_exists (m:M) : Prop :=
   forall lk,
     List.In (TransitionTarget lk) m.(modelLinks) ->
-    List.In (Transition lk.(l_glue)) m.(modelElements).
+    List.In (Transition lk.(left_glue)) m.(modelElements).
 
 
 Definition WF_transition_target_glue_r_exists (m:M) : Prop :=
   forall lk,
     List.In (TransitionTarget lk) m.(modelLinks) ->
-    List.In (State lk.(r_glue)) m.(modelElements).
+    List.In (State lk.(right_glue)) m.(modelElements).
 
 
 (** Useful lemmas *)
@@ -347,7 +347,7 @@ Qed.
 
 Lemma getTransition_source_inv m t s : 
   getTransition_source m t = Some s ->
-  let lk := {| l_glue := t ; r_glue := s |} 
+  let lk := {| left_glue := t ; right_glue := s |} 
   in
   List.In (TransitionSource lk) m.(Model.modelLinks).
 Proof.
@@ -366,7 +366,7 @@ Qed.
 
 Lemma getTransition_target_inv m t s : 
   getTransition_target m t = Some s -> 
-  let lk := {| r_glue := s ; l_glue := t |} 
+  let lk := {| right_glue := s ; left_glue := t |} 
   in 
     In (TransitionTarget lk)  m.(Model.modelLinks).
 Proof.

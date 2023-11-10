@@ -130,7 +130,7 @@ Qed.
 Definition WF_sourceLink_source_in (m:Moore.M) :=
       forall lk, 
         In (TransitionSource lk) m.(modelLinks) ->
-        In (State lk.(r_glue)) m.(modelElements).
+        In (State lk.(right_glue)) m.(modelElements).
 
 Lemma search_in_left m :
   WF_sourceLink_source_in m ->
@@ -152,7 +152,7 @@ Qed.
 Definition WF_targetLink_target_in (m:Moore.M) :=
       forall lk, 
         In (TransitionTarget lk) m.(modelLinks) ->
-        In (State lk.(r_glue)) m.(modelElements).
+        In (State lk.(right_glue)) m.(modelElements).
 
 Lemma search_in_right m :
   WF_targetLink_target_in m ->
