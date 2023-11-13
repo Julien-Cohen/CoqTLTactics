@@ -55,7 +55,12 @@ Definition R1 : ConcreteRule :=
     from [Class_K]
 
     to [ ELEM "tab" ::: Table_K  
-        << fun _ _ c => Build_Table_t c.(Class_id) c.(Class_name) >>
+        << fun _ _ c => 
+          {| 
+            Table_id := c.(Class_id) ; 
+            Table_name := c.(Class_name) 
+          |}
+            >>
         LINK ::: Table_columns_K
         << fun tra _ m c t =>
                   maybeBuildTableColumns t
@@ -68,7 +73,11 @@ Definition R2 : ConcreteRule :=
     from [Attribute_K]
     where (fun _ a => negb a.(Attribute_derived))
     to [ ELEM "col" ::: Column_K 
-        << fun _ _ a => Build_Column_t a.(Attribute_id) a.(Attribute_name) >>
+        << fun _ _ a =>
+          {|
+            Column_id := a.(Attribute_id) ;
+            Column_name := a.(Attribute_name)
+          |} >>
        LINK ::: Column_reference_K
        <<
                fun tra _ m a c =>
