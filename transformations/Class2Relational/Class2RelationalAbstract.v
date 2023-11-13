@@ -15,6 +15,8 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
 
+Import Glue.
+
 (* module Class2Relational; 
    create OUT : RelationalMetamodel from IN : ClassMetamodel;
 
@@ -62,7 +64,7 @@ Definition Class2Relational :=
               attrs <- getClass_attributes c m;
               cols <- resolveAll tls "col" Column_K 
                 (singletons (map (ClassMetamodel.lift_EKind Attribute_K) attrs));
-              return Build_Table_columns_t t cols)))
+              return {| left_glue := t ; right_glue := cols|})))
         ];
       buildRule "Attribute2Column"
         (makeGuard [Attribute_K] (fun m a => negb (Attribute_derived a)))
@@ -74,6 +76,6 @@ Definition Class2Relational :=
               (fun tls i m a c =>
                 cl <- getAttribute_type a m;
                 tb <- resolve tls "tab" Table_K [ClassMetamodel.lift_EKind Class_K cl];
-                return Build_Column_reference_t c tb)))
+                return Build_Glue _ _ c tb)))
         ]
     ].

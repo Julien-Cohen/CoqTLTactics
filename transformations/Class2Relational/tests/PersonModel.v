@@ -5,6 +5,8 @@ Require Import core.Model.
 
 Require Import transformations.Class2Relational.ClassMetamodel.
 
+Import Glue.
+
 (* 
     Class id=0 name='Person'
       Attribute id=1 derived=false name='parent' type='Person'
@@ -20,9 +22,20 @@ Definition PersonModel : Model ClassMetamodel.MM :=
         :: nil)
 
      (* links *)
-     (     (Class_attributesLink (Build_Class_attributes_t (Build_Class_t 0 "Person") ((Build_Attribute_t 1 false "parent")::nil))) 
-        :: (Attribute_typeLink (Build_Attribute_type_t (Build_Attribute_t 1 false "parent") (Build_Class_t 0 "Person"))) 
-        :: (Class_attributesLink (Build_Class_attributes_t (Build_Class_t 0 "Person") ((Build_Attribute_t 2 true "sibling")::nil))) 
-        :: (Attribute_typeLink (Build_Attribute_type_t (Build_Attribute_t 2 true "sibling") (Build_Class_t 0 "Person"))) 
+     (     (Class_attributesLink {| 
+                left_glue := Build_Class_t 0 "Person" ;
+                right_glue := (Build_Attribute_t 1 false "parent")::nil
+              |} )
+        :: (Attribute_typeLink {| 
+                                  left_glue := Build_Attribute_t 1 false "parent" ;
+                                  right_glue := Build_Class_t 0 "Person" |}
+        ) 
+        :: (Class_attributesLink {| 
+                left_glue := (Build_Class_t 0 "Person") ;
+                right_glue := ((Build_Attribute_t 2 true "sibling")::nil) 
+              |} ) 
+        :: (Attribute_typeLink {| 
+                left_glue := Build_Attribute_t 2 true "sibling" ;
+                right_glue := Build_Class_t 0 "Person" |}) 
         :: nil)
   ).

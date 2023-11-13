@@ -11,6 +11,8 @@ Require Import transformations.Class2Relational.RelationalMetamodel.
 Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.tests.PersonModel.
 
+Import Glue.
+
 (* Require Import Class2RelationalVerif. *)
 
 (* Expected Output :
@@ -66,10 +68,10 @@ Fact test_ok :
           :: RelationalMetamodel.ColumnElement
           (Build_Column_t 1 "parent") :: nil)
        (RelationalMetamodel.Table_columnsLink
-          (Build_Table_columns_t (Build_Table_t 0 "Person")
+          (Build_Glue _ _ (Build_Table_t 0 "Person")
              (Build_Column_t 1 "parent" :: nil))
           :: RelationalMetamodel.Column_referenceLink
-          (Build_Column_reference_t
+          (Build_Glue _ _
              (Build_Column_t 1 "parent")
              (Build_Table_t 0 "Person")) :: nil)).
 Proof.

@@ -12,6 +12,8 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require        core.Tactics.
 
+Require Import Glue.
+
 (** Base types for elements *)
 Record Class_t := { Class_id : nat ; Class_name : string }.
 
@@ -23,9 +25,9 @@ Scheme Equality for Attribute_t.
 
 
 (** Base types for links *)
-Record Class_attributes_t := { Class_attributes_t_lglue : Class_t ; Class_attributes_t_rglue : list Attribute_t }.
+Notation Class_attributes_t := (Glue Class_t (list Attribute_t)).
 
-Record Attribute_type_t := { Attribute_type_t_lglue : Attribute_t ; Attribute_type_t_rglue : Class_t }.
+Notation Attribute_type_t := (Glue Attribute_t Class_t).
 
 
 (** Data types for element (to build models) *)
@@ -37,7 +39,7 @@ Scheme Equality for Element.
 
 (** Data types for link (to build models) *)
 Inductive Link : Set :=
-  | Class_attributesLink : Class_attributes_t -> Link
+  | Class_attributesLink :  Class_attributes_t -> Link
   | Attribute_typeLink : Attribute_type_t -> Link
 .
 
@@ -141,8 +143,8 @@ Definition ClassModel := Model MM.
 Fixpoint getClass_attributesOnLinks (c : Class_t) (l : list Link) : option (list Attribute_t) :=
  match l with
   | (Class_attributesLink x) :: l1 =>
-    if Class_t_beq x.(Class_attributes_t_lglue) c
-      then (Some x.(Class_attributes_t_rglue))
+    if Class_t_beq x.(left_glue) c
+      then (Some x.(right_glue))
       else getClass_attributesOnLinks c l1
   | _ :: l1 => getClass_attributesOnLinks c l1
   | nil => None
@@ -156,8 +158,8 @@ Definition getClass_attributes (c : Class_t) (m : ClassModel) : option (list Att
 Fixpoint getAttribute_typeOnLinks (a : Attribute_t) (l : list Link) : option (Class_t) :=
  match l with
   | (Attribute_typeLink x) :: l1 =>
-    if Attribute_t_beq x.(Attribute_type_t_lglue) a
-      then (Some x.(Attribute_type_t_rglue))
+    if Attribute_t_beq x.(left_glue) a
+      then (Some x.(right_glue))
       else getAttribute_typeOnLinks a l1
   | _ :: l1 => getAttribute_typeOnLinks a l1
   | nil => None

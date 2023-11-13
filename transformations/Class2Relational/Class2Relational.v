@@ -14,6 +14,9 @@ Require Import Class2Relational.RelationalMetamodel.
 
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
+
+Import Glue.
+
 (* module Class2Relational; 
    create OUT : RelationalMetamodel from IN : ClassMetamodel;
 
@@ -96,9 +99,8 @@ Definition R1 : ConcreteRule :=
          << fun thisModule _ m c t =>
            try c_attributes := getClass_attributesElements c m
            in
-           option_map
-            (Build_Table_columns_t t)
-            (resolveAll thisModule "col" Column_K (singletons c_attributes))
+           try res := resolveAll thisModule "col" Column_K (singletons c_attributes)
+           in return {| left_glue := t ; right_glue := res |}
             >> ].
 
 (*rule Class2Table {
@@ -128,10 +130,10 @@ Definition R2 : ConcreteRule :=
        LINK ::: Column_reference_K
        <<  fun thisModule _ m a c =>
          try a_type := getAttribute_typeElement a m 
-         in
-         option_map 
-           (Build_Column_reference_t c)
-           (resolve thisModule "tab" Table_K (singleton a_type))
+          in
+          try res := resolve thisModule "tab" Table_K (singleton a_type)
+           in return {| left_glue := c ; right_glue := res |}
+                  
            >> 
     ].
 

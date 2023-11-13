@@ -11,6 +11,7 @@ From transformations.Class2Relational
 From transformations.Class2Relational 
   Require C2RTactics.
 
+Import Glue.
 
 (** *** Utilities on "getters" *)
 
@@ -24,10 +25,9 @@ Remark getColumnsReferenceOnLinks_app :
 Proof.
   induction a ; simpl ; intros b c.
   + reflexivity.
-  + destruct a.
-  - auto.
-  - destruct c0.
-    destruct (Column_t_beq Column_reference_t_lglue c).
+  + destruct a ; [ solve [auto] | ].
+    destruct g.
+    destruct (Column_t_beq left_glue c).
     * reflexivity.
     * auto.
 Qed.
@@ -35,7 +35,7 @@ Qed.
 (* Used *)
 Lemma in_getColumnReferenceOnLinks_right :
   forall (l: list Link) v (x:Table_t),
-    In (Column_referenceLink {| Column_reference_t_lglue := v ;  Column_reference_t_rglue := x |}) l -> 
+    In (Column_referenceLink {| left_glue := v ; right_glue := x |}) l -> 
       exists r' : Table_t,
         getColumn_referenceOnLinks v l = return r'.
 Proof.
@@ -50,15 +50,17 @@ Proof.
     destruct IN as [r G].
     rewrite G.
     destruct a ; eauto ; [].
-    destruct c.
-    destruct ( Column_t_beq Column_reference_t_lglue v) ; eauto.
+    destruct g.
+    destruct ( Column_t_beq left_glue v) ; eauto.
   }
 Qed.
 
 (* Used *)
 Corollary in_getColumnReferenceOnLinks_right_2 :
   forall (l: list Link) v, 
-      (exists (x:Table_t), In (Column_referenceLink {| Column_reference_t_lglue := v ;  Column_reference_t_rglue := x |}) l) -> 
+      (exists (x:Table_t), In (Column_referenceLink {| 
+                                   left_glue := v ; 
+                                   right_glue := x |}) l) -> 
       exists r' : Table_t,
         getColumn_referenceOnLinks v l = return r'.
 Proof.
@@ -72,7 +74,7 @@ Qed.
 Lemma in_getColumnReferenceOnLinks_left :
   forall (l: list Link) col t, 
     getColumn_referenceOnLinks col l = return t -> 
-    In (Column_referenceLink {| Column_reference_t_lglue := col ;  Column_reference_t_rglue := t |}) l  
+    In (Column_referenceLink {| left_glue := col ;  right_glue := t |}) l  
       .
 Proof.
   induction l ; simpl ; intros c r IN ; [ discriminate IN | ].
@@ -83,11 +85,11 @@ Proof.
     right ; exact IN.
   }    
   { (* columns *)
-    destruct c0.
-    destruct(Column_t_beq Column_reference_t_lglue c) eqn:E.
+    destruct g.
+    destruct(Column_t_beq left_glue c) eqn:E.
     {
       PropUtils.inj IN.
-      apply internal_Column_t_dec_bl in E ; subst Column_reference_t_lglue.
+      apply internal_Column_t_dec_bl in E ; subst left_glue.
       left ; reflexivity.
     }
     {
@@ -103,6 +105,6 @@ Qed.
 (* Used *)
 Definition wf_all_table_references_exist (rm:RelationalModel) :=
   forall col r, 
-    In (Column_referenceLink {| Column_reference_t_lglue := col ;  Column_reference_t_rglue := r |}) rm.(modelLinks) ->
+    In (Column_referenceLink {| left_glue := col ;  right_glue := r |}) rm.(modelLinks) ->
     In (TableElement r) rm.(modelElements).
 

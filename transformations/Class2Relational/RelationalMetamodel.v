@@ -12,6 +12,8 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require        core.Tactics.
 
+Require Import Glue.
+
 (** Base types for elements *)
 Record Table_t := { Table_id : nat ; Table_name : string }.
 
@@ -24,9 +26,9 @@ Scheme Equality for Column_t.
 
 
 (** Base types for links *)
-Record Table_columns_t := { Table_columns_t_lglue : Table_t ; Table_columns_t_rglue : list Column_t }.
+Notation Table_columns_t := (Glue Table_t (list Column_t)).
 
-Record Column_reference_t := { Column_reference_t_lglue : Column_t ; Column_reference_t_rglue : Table_t }.
+Notation Column_reference_t := (Glue Column_t Table_t).
 
 
 (** Data types for element (to build models) *)
@@ -143,8 +145,8 @@ Definition RelationalModel := Model MM.
 Fixpoint getTable_columnsOnLinks (t : Table_t) (l : list Link) : option (list Column_t) :=
  match l with
   | (Table_columnsLink x) :: l1 =>
-    if Table_t_beq x.(Table_columns_t_lglue) t
-      then (Some x.(Table_columns_t_rglue))
+    if Table_t_beq x.(left_glue) t
+      then (Some x.(right_glue))
       else getTable_columnsOnLinks t l1
   | _ :: l1 => getTable_columnsOnLinks t l1
   | nil => None
@@ -157,7 +159,7 @@ Definition getTable_columns (t : Table_t) (m : RelationalModel) : option (list C
 
 Fixpoint getColumn_referenceOnLinks (c : Column_t) (l : list Link) : option (Table_t) :=
  match l with
-  | (Column_referenceLink (Build_Column_reference_t col t)) :: l1 => 
+  | (Column_referenceLink (Build_Glue _ _ col t)) :: l1 => 
     if Column_t_beq col c 
       then Some t 
       else getColumn_referenceOnLinks c l1
@@ -202,13 +204,13 @@ Proof. destruct x ; destruct y ; compute ; congruence. Qed.
 
 Ltac inv_maybeBuildColumnReference H := 
     match type of H with 
-    | option_map (Build_Column_reference_t _) _ = Some _ =>
+    | option_map (Build_Glue _) _ = Some _ =>
         OptionUtils.monadInv H
     end.
 
 
 Definition maybeBuildTableColumns (t: Table_t) (c: option (list Column_t)) : option Table_columns_t :=
-  option_map (Build_Table_columns_t t) c.
+  option_map (Build_Glue _ _ t) c.
 
 Ltac inv_maybeBuildTableColumns H := 
     match type of H with 
