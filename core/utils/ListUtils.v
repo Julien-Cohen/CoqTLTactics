@@ -84,14 +84,13 @@ Inductive subseq {A: Type} : list A -> list A -> Prop :=
   | s_true : forall x xs ys, subseq xs ys -> subseq (x::xs) (x::ys)
   | s_false : forall y xs ys, subseq xs ys -> subseq xs (y::ys).
 
-Definition listToListList {A : Type} (l : list A) : list (list A) :=
-  map (fun e:A => e::nil) l.
+
+Definition singleton {A: Type} (a: A) : list A := a::nil.
 
 Definition hasLength {A : Type} (l : list A) (n: nat): bool :=
   beq_nat (Datatypes.length l) n.
 
 
-Definition singleton {A: Type} (a: A) : list A := a::nil.
 
 Definition maybeSingleton {A: Type} (a : option A) : option (list A) :=
   option_map singleton a.
@@ -106,8 +105,8 @@ Ltac inv_maybeSingleton H :=
    end.
  
 
-Definition singletons {A: Type} (l : list A) : list (list A) :=
-  listToListList l.
+Definition singletons {A: Type} : list A -> list (list A) :=
+  map singleton.
 
 Definition maybeSingletons {A: Type} (l : option (list A)) : option (list (list A)) :=
   option_map singletons l.

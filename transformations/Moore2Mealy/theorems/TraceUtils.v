@@ -8,19 +8,23 @@ Import Moore2Mealy.
 
 Lemma in_trace_inv (m:Moore.M) t :
 In t (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
-   (exists a , t = (buildTraceLink 
-        ([Moore.Transition a], 0, "t"%string)
-        (Mealy.Transition {| (* fixme : use Elements.convert_transition *)
-                Mealy.Transition_id := Moore.Transition_id a;
-                Mealy.Transition_input := Moore.Transition_input a;
-                Mealy.Transition_output :=
-                  OptionUtils.valueOption
-                    (option_map Moore.State_output
-                       (Moore.getTransition_target m a)) ""%string
-              |})))
-   \/ (exists s , t = buildTraceLink
-        ([Moore.State s], 0, "s"%string)
-        (Mealy.State (Elements.convert_state s))).
+   (exists a , 
+       t = buildTraceLink 
+             ([Moore.Transition a], 0, "t"%string)
+             (Mealy.Transition {| (* fixme : use Elements.convert_transition *)
+                  Mealy.Transition_id := Moore.Transition_id a;
+                  Mealy.Transition_input := Moore.Transition_input a;
+                  Mealy.Transition_output :=
+                    OptionUtils.valueOption
+                      (option_map Moore.State_output
+                         (Moore.getTransition_target m a))
+                      ""%string
+                |}))
+   \/ (exists s , 
+          t = 
+            buildTraceLink
+              ([Moore.State s], 0, "s"%string)
+              (Mealy.State (Elements.convert_state s))).
 Proof.
   intro H.
   Tactics.exploit_in_trace H.
@@ -95,11 +99,13 @@ Proof.
   discriminate.
 Qed.
 
+
 Lemma in_find m : 
   forall c,
     In (buildTraceLink
           ([Moore.State c], 0, "s"%string)
-          (Mealy.State (Elements.convert_state c))) (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
+          (Mealy.State (Elements.convert_state c))) 
+      (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
 
       find (source_compare ([Moore.State c], 0, "s"%string)) (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) = 
         Some 
@@ -137,6 +143,8 @@ Proof.
   simpl produced.
   reflexivity.
 Qed.
+
+
 
 Lemma in_maybeResolve_trace_2 s (m : Moore.M) :
   

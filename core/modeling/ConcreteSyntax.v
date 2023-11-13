@@ -47,7 +47,7 @@ Global Arguments o_outpat {_ _}.
 Record ConcreteOutputPatternElement (InKinds: list SourceEKind) : Type :=
   elem
     {
-      e_OutKind:TargetEKind ;
+      e_OutKind: TargetEKind ;
       e_name : string ;
       e_outpat : nat -> SourceModel -> (outputPatternElementTypes InKinds e_OutKind) ;
       e_outlink : list (ConcreteOutputPatternLink InKinds e_OutKind)
