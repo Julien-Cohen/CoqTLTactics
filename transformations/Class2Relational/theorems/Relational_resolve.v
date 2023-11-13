@@ -50,9 +50,17 @@ Ltac toEDataT H :=
    end.
 
  
+Ltac tmp H := 
+  repeat monadInv H ;
+  unfold ModelingSemantics.resolve in H  ;
+  ModelingSemantics.inv_denoteOutput H ; 
+  toEDataT H ;
+  C2RTactics.unfold_toEData H ;
+  PropUtils.inj H .
+
 Ltac progress_in_maybeBuildColumnReference H := 
   match type of H with 
-  | maybeBuildColumnReference _ _ = Some _ =>
+  | option_map (Build_Column_reference_t _) _ = Some _  =>
      inv_maybeBuildColumnReference H ; 
      unfold ModelingSemantics.maybeResolve in H  ;
      ModelingSemantics.inv_denoteOutput H ; 
@@ -84,15 +92,16 @@ Proof.
 
   C2RTactics.negb_inv MATCH_GUARD.
   destruct t ; simpl in MATCH_GUARD ; subst Attribute_derived.
-  
-  progress_in_maybeBuildColumnReference IN_L.
+
+  tmp IN_L.
+  (*progress_in_maybeBuildColumnReference IN_L.*)
   
   unfold get_E_data in EQ ; inj EQ.
-  core.Resolve.progress_maybeResolve EQ0. 
+  core.Resolve.inv_resolve EQ1. 
+  apply List.find_some in EQ1 ; destruct EQ1.
+  (*ListUtils.inv_maybeSingleton EQ.*)
   
-  ListUtils.inv_maybeSingleton EQ.
-  
-  inv_getAttribute_typeElement EQ.
+  inv_getAttribute_typeElement EQ0.
 
   destruct t ; simpl in H ; subst.   
 
@@ -119,13 +128,15 @@ Proof.
   intros cm rm  WF2 E PRE.  intros col IN_COL. 
   subst rm.
 
-  Tactics.exploit_element_in_result IN_COL ; []; 
+
+  Tactics.exploit_element_in_result IN_COL (* or apply Elements.transform_attribute_bw (moins puissant car on perd l'info sur la garde) *) ; []; 
   clear IN_COL.
   
   specialize (PRE _ IN_ELTS).
   destruct PRE as (c & G1).
 
   C2RTactics.negb_inv MATCH_GUARD.
+  
   destruct t0. simpl (ClassMetamodel.Attribute_id _)  in * ; simpl (ClassMetamodel.Attribute_name _) in * ; simpl ClassMetamodel.Attribute_derived in *. (* derived a = false *)
   subst Attribute_derived. 
 
@@ -157,9 +168,9 @@ Proof.
 
     apply ClassModelProperties.getAttributeType_classex_right in G1 ; [ | exact WF2].
 
-    apply TraceUtils.in_maybeResolve_trace_2 in G1. 
+    apply TraceUtils.in_Resolve_trace_2 in G1. 
     destruct G1 as (G11 & G12).
-    unfold ModelingSemantics.maybeResolve.
+    unfold ModelingSemantics.resolve.
     rewrite G11.
     simpl.
     auto.

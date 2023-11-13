@@ -199,13 +199,10 @@ Lemma ColumnElement_cast :
 Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
 
 (** Manual addition *)
-Definition maybeBuildColumnReference (c: Column_t) (t: option Table_t) : option Column_reference_t :=
-  option_map (Build_Column_reference_t c) t.
 
- Ltac inv_maybeBuildColumnReference H := 
+Ltac inv_maybeBuildColumnReference H := 
     match type of H with 
-    | maybeBuildColumnReference _ _ = Some _ =>
-        unfold maybeBuildColumnReference in H ; 
+    | option_map (Build_Column_reference_t _) _ = Some _ =>
         OptionUtils.monadInv H
     end.
 

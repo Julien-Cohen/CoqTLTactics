@@ -196,10 +196,7 @@ Proof. destruct x ; destruct y ; compute ; congruence. Qed.
 
 (** Manual addition *)
 Definition getClass_attributesElements (c : Class_t) (m : ClassModel) : option (list Element) :=
-  match getClass_attributes c m with
-  | Some l => Some (map AttributeElement l)
-  | None => None
-  end.
+  option_map (map AttributeElement) (getClass_attributes c m).
 
 Definition getAttribute_typeElement (a : Attribute_t) (m : ClassModel) : option Element :=
   option_map ClassElement (getAttribute_type a m).

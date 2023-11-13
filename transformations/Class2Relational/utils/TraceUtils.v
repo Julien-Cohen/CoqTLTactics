@@ -25,16 +25,19 @@ Import PoorTraceLink.
 
 
 Definition convert_class c :=
-  {| Table_id := c.(Class_id); Table_name := c.(Class_name)  |}.
+  {| Table_id := c.(Class_id) ; Table_name := c.(Class_name) |}.
 
 Definition convert_attribute c :=
-  {| Column_id := c.(Attribute_id); Column_name := c.(Attribute_name)  |}.
+  {| Column_id := c.(Attribute_id) ; Column_name := c.(Attribute_name) |}.
 
 Lemma in_trace_inv m t :
-In t (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
-   (exists a, t = (buildTraceLink 
+  In t (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
+  
+  (exists a, t = (buildTraceLink 
         ([AttributeElement a], 0, "col")
-        (ColumnElement (convert_attribute a)))) \/ (exists c, t = buildTraceLink 
+        (ColumnElement (convert_attribute a))))
+   \/ 
+   (exists c, t = buildTraceLink 
         ([ClassElement c], 0, "tab")
         (TableElement (convert_class c))).
 Proof.
@@ -53,6 +56,35 @@ Proof.
 Qed.
 
 
+
+Lemma class_in_trace c (cm : ClassModel) : 
+  In (ClassElement c) cm.(modelElements) -> 
+  In 
+    (buildTraceLink 
+       ([ClassElement c],0,"tab") 
+       (TableElement (convert_class c))
+    ) 
+    (RichTraceLink.drop (traceTrOnModel Class2Relational cm)).
+Proof.
+  intro IN1.
+
+  unfold RichTraceLink.drop.
+  apply in_map_iff.
+
+  eexists.
+  split.
+
+  
+  2:{
+    Tactics.destruct_in_trace_G.
+    
+    exists ([ClassElement c]).
+    split.
+    { apply C2RTactics.allModelElements_allTuples ; auto. } 
+    { compute. left. reflexivity. }
+  }
+  { reflexivity. }
+Qed.
 
 
 Lemma discr m:
@@ -117,7 +149,8 @@ Qed.
 Lemma in_resolve m c : 
   In (buildTraceLink
         ([ClassElement c], 0, "tab")
-        (TableElement (convert_class c))) (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
+        (TableElement (convert_class c))) 
+    (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
   Resolve.resolveIter (RichTraceLink.drop (traceTrOnModel Class2Relational m)) "tab" [ClassElement c] 0 = 
     Some (TableElement (convert_class c)).
 Proof.
@@ -132,37 +165,28 @@ Qed.
 
 
 
-Lemma class_in_trace c (cm : ClassModel) : 
-  In (ClassElement c) cm.(modelElements) -> 
-  In 
-    (buildTraceLink 
-       ([ClassElement c],0,"tab") 
-       (TableElement (convert_class c))
-    ) 
-    (RichTraceLink.drop (traceTrOnModel Class2Relational cm)).
-Proof.
-  intro IN1.
-
-  unfold RichTraceLink.drop.
-  apply in_map_iff.
-
-  eexists.
-  split.
-
+Lemma in_Resolve_trace_2 c (cm : ClassModel) :
   
-  2:{
-    Tactics.destruct_in_trace_G.
-    
-    exists ([ClassElement c]).
-    split.
-    { apply C2RTactics.allModelElements_allTuples ; auto. } 
-    { compute. left. reflexivity. }
-  }
-  { reflexivity. }
+  In (ClassElement c) cm.(modelElements) -> 
+  
+  Resolve.resolve (RichTraceLink.drop (traceTrOnModel Class2Relational cm)) "tab" [ClassElement c]  =  
+    Some (TableElement (convert_class c)) 
+  
+  /\ In 
+       (TableElement (convert_class c)) 
+       (execute Class2Relational cm).(modelElements).
+Proof.
+  intro H.
+  unfold Resolve.resolve.
+  apply class_in_trace in H.
+  rewrite in_resolve ; [ | exact H ].
+  split ; [ reflexivity | ].
+  eapply Tactics.in_trace_in_models_target in H ; eauto. 
 Qed.
 
 
-Lemma in_maybeResolve_trace_2 c (cm : ClassModel) :
+(* FIXME : remove-me *)
+Corollary in_maybeResolve_trace_2 c (cm : ClassModel) :
   
   In (ClassElement c) cm.(modelElements) -> 
   
@@ -173,12 +197,8 @@ Lemma in_maybeResolve_trace_2 c (cm : ClassModel) :
        (TableElement (convert_class c)) 
        (execute Class2Relational cm).(modelElements).
 Proof.
-  intro H.
   unfold Resolve.maybeResolve.
-  unfold Resolve.resolve.
-  apply class_in_trace in H.
-  rewrite in_resolve ; [ | exact H ].
-  split ; [ reflexivity | ].
-  eapply Tactics.in_trace_in_models_target in H ; eauto. 
+  apply in_Resolve_trace_2. 
 Qed.
+
 
