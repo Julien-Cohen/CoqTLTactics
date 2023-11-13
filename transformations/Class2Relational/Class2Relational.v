@@ -59,6 +59,8 @@ Notation "'try' x := e1 'in' e2" :=
     (right associativity, x name, at level 60).
 
 
+Notation "'glue' a 'with' b" := (Some {| left_glue := a ; right_glue := b |}) (right associativity, at level 60). 
+
 (* Rule : 0 iterator, 0 guard, 1 link *)
 (*
 Notation "'rule' rulename 'from' ( x ::: type ) 'to' [ 'ELEM' k ::: t << op >> 'LINK' ::: k1 << oplink >> ]" :=
@@ -100,7 +102,7 @@ Definition R1 : ConcreteRule :=
            try c_attributes := getClass_attributesElements c m
            in
            try res := resolveAll thisModule "col" Column_K (singletons c_attributes)
-           in return {| left_glue := t ; right_glue := res |}
+           in glue t with res 
             >> ].
 
 (*rule Class2Table {
@@ -132,7 +134,7 @@ Definition R2 : ConcreteRule :=
          try a_type := getAttribute_typeElement a m 
           in
           try res := resolve thisModule "tab" Table_K (singleton a_type)
-           in return {| left_glue := c ; right_glue := res |}
+           in glue c with res 
                   
            >> 
     ].
