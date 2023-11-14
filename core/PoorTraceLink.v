@@ -54,7 +54,7 @@ Definition source_compare (s:InputPiece * nat * string) (t:TraceLink) : bool :=
 
 
 Lemma source_compare_refl : 
-  (forall a,  SourceElement_eqb a a = true) ->
+  (forall e,  SourceElement_eqb e e = true) ->
   forall a b, 
     source_compare a {| source := a ; produced := b |} = true.
 Proof.

@@ -21,14 +21,12 @@ Local Notation TargetLKind := tmmm.(LKind).
 
 
 
-Definition outputPatternLink
-(skinds : list SourceEKind) (tkind: TargetEKind)  (tref: TargetLKind):=
-denoteSignature skinds ((denoteEDatatype tkind) -> option (denoteLDatatype tref)).
+Definition outputPatternLink (skinds : list SourceEKind) (tkind: TargetEKind)  (tref: TargetLKind):=
+  denoteSignature skinds ((denoteEDatatype tkind) -> option (denoteLDatatype tref)).
 
 
 
-Definition outputPatternElementTypes
-(skinds : list SourceEKind) (tkind: TargetEKind) :=
+Definition outputPatternElementTypes (skinds : list SourceEKind) (tkind: TargetEKind) :=
   denoteSignature skinds (denoteEDatatype tkind).
 
 
