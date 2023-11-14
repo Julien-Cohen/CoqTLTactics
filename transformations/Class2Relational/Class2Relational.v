@@ -52,37 +52,7 @@ Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2R
 
 Open Scope coqtl.
 
-Notation "'try' x := e1 'in' e2" :=
-  (match e1 with
-   | None => None
-   | Some x => e2 end)
-    (right associativity, x name, at level 60).
 
-
-Notation "'glue' a 'with' b" := (Some {| left_glue := a ; right_glue := b |}) (right associativity, at level 60). 
-
-(* Rule : 0 iterator, 0 guard, 1 link *)
-(*
-Notation "'rule' rulename 'from' ( x ::: type ) 'to' [ 'ELEM' k ::: t << op >> 'LINK' ::: k1 << oplink >> ]" :=
-
-  (Build_ConcreteRule rulename [type] None None [ elem [type] t k op [link [type] t k1 oplink] ])
-    (right associativity, at level 60):coqtl.
-*)
-(*Definition R1 : Class_t -> ConcreteRule := 
-  rule "Class2Table"
-    from ( self ::: Class_K )
-
-    to [ ELEM "tab" ::: Table_K  
-        << fun _ _ c => Build_Table_t c.(Class_id) c.(Class_name) >>
-        LINK ::: Table_columns_K
-        << fun tra _ m c t =>
-                  maybeBuildTableColumns t
-                    (maybeResolveAll tra "col" Column_K 
-                       (maybeSingletons (getClass_attributesElements c m)))
-                    >> ].
-*)
-
-(*Notation "'ITEXPR' source '->' 'collect' ( iterators | body ) 'END'" :=(source).*)
 
 
 Definition R1 : ConcreteRule := 

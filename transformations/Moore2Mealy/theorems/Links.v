@@ -142,13 +142,13 @@ Proof.
       simpl.
 
 
-      eapply TraceUtils.in_maybeResolve_trace_2 in H0.
-      unfold ModelingSemantics.maybeResolve.
+      eapply TraceUtils.in_Resolve_trace_2 in H0.
+      unfold ModelingSemantics.resolve. 
       unfold ListUtils.singleton.
       rewrite H0.
       simpl.
       left.
-      subst ; reflexivity.
+      reflexivity.
     }
   }
   Unshelve. (* why ? *)
@@ -244,8 +244,8 @@ Proof.
       rewrite S.
       simpl.
 
-      eapply TraceUtils.in_maybeResolve_trace_2 in H0.
-      unfold ModelingSemantics.maybeResolve.
+      eapply TraceUtils.in_Resolve_trace_2 in H0.
+      unfold ModelingSemantics.resolve.
       unfold ListUtils.singleton.
       rewrite H0.
       simpl.
@@ -302,9 +302,8 @@ Proof.
     simpl in IN_L.
 
 
-    unfold  Mealy.maybeBuildTransitionSource in IN_L.
     OptionUtils.monadInv IN_L ; simpl.
-    unfold ModelingSemantics.maybeResolve in IN_L.
+    unfold ModelingSemantics.resolve in IN_L.
     unfold ModelingSemantics.denoteOutput in IN_L.
     PropUtils.destruct_match IN_L ; [ | discriminate IN_L].
     destruct t0 ; [ PropUtils.inj IN_L | discriminate IN_L].
@@ -390,9 +389,9 @@ Proof.
     simpl in IN_L.
 
 
-    unfold  Mealy.maybeBuildTransitionTarget in IN_L.
+
     OptionUtils.monadInv IN_L ; simpl.
-    unfold ModelingSemantics.maybeResolve in IN_L.
+    unfold ModelingSemantics.resolve in IN_L.
     unfold ModelingSemantics.denoteOutput in IN_L.
     PropUtils.destruct_match IN_L ; [ | discriminate IN_L].
     destruct t0 ; [ PropUtils.inj IN_L | discriminate IN_L].

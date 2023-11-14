@@ -17,6 +17,8 @@ Require Import transformations.Moore2Mealy.Mealy.
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
 
+Import Glue.
+
 #[export]
 Instance Moore2MealyTransformationConfiguration : TransformationConfiguration := 
   Build_TransformationConfiguration Moore.MM Mealy.MM.
@@ -54,15 +56,18 @@ Definition Moore2Mealy' :=
           
         LINK ::: Mealy.Transition_source_K 
           << fun tls _ m moore_tr mealy_tr =>
-                maybeBuildTransitionSource mealy_tr
-                  (maybeResolve tls "s" Mealy.State_K 
-                    (maybeSingleton (Moore.Transition_getSourceObject moore_tr m))) >> ;
+            try t_source := Moore.Transition_getSourceObject moore_tr m
+             in
+             try res := resolve tls "s" Mealy.State_K (singleton t_source) 
+                in glue mealy_tr with res >> ;
             
         LINK ::: Mealy.Transition_target_K 
           << fun tls _ m moore_tr mealy_tr =>
-                     maybeBuildTransitionTarget mealy_tr
-                       (maybeResolve tls "s" Mealy.State_K 
-                          (maybeSingleton (Moore.Transition_getTargetObject moore_tr m))) 
+            try t_target := Moore.Transition_getTargetObject moore_tr m
+             in
+             try res := resolve tls "s" Mealy.State_K (singleton t_target)
+              in 
+              glue mealy_tr with res 
           >>
       ]
 ].

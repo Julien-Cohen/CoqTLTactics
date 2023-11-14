@@ -185,20 +185,3 @@ Proof.
 Qed.
 
 
-(* FIXME : remove-me *)
-Corollary in_maybeResolve_trace_2 c (cm : ClassModel) :
-  
-  In (ClassElement c) cm.(modelElements) -> 
-  
-  Resolve.maybeResolve (RichTraceLink.drop (traceTrOnModel Class2Relational cm)) "tab" (Some [ClassElement c])  =  
-    Some (TableElement (convert_class c)) 
-  
-  /\ In 
-       (TableElement (convert_class c)) 
-       (execute Class2Relational cm).(modelElements).
-Proof.
-  unfold Resolve.maybeResolve.
-  apply in_Resolve_trace_2. 
-Qed.
-
-

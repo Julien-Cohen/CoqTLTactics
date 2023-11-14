@@ -341,12 +341,12 @@ Proof.
   destruct g ; auto.
 Qed.
 
-
+(*
 Definition maybeBuildTransitionSource (tr_arg: Transition_t) (so_arg: option State_t) : option (@Glue Transition_t State_t) :=
   option_map (Build_Glue _ _ tr_arg) so_arg.
 
 
 Definition maybeBuildTransitionTarget (tr_arg: Transition_t) (ta_arg: option State_t) : option (@Glue Transition_t State_t) :=
   option_map (Build_Glue _ _ tr_arg) ta_arg.
-
+*)
 

@@ -7,6 +7,11 @@ Notation "x <- e1 ; e2" :=
    | Some x => e2 end)
     (right associativity, at level 60).
 
+Notation "'try' x := e1 'in' e2" :=
+  (match e1 with
+   | None => None
+   | Some x => e2 end)
+    (right associativity, x name, at level 60).
 
 Notation "'return' x" := ( Some x ) (no associativity, at level 60).
 

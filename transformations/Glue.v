@@ -5,3 +5,6 @@ Scheme Equality for Glue. (* Never used ? *)
 
 Arguments left_glue {A} {B}.
 Arguments right_glue {A} {B}.
+
+
+Notation "'glue' a 'with' b" := (Some {| left_glue := a ; right_glue := b |}) (right associativity, at level 60). 

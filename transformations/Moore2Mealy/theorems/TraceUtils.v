@@ -146,19 +146,19 @@ Qed.
 
 
 
-Lemma in_maybeResolve_trace_2 s (m : Moore.M) :
+
+
+Lemma in_Resolve_trace_2 s (m : Moore.M) :
   
   In (Moore.State s) m.(modelElements) -> 
   
-  Resolve.maybeResolve (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) "s" (Some [Moore.State s])  =  
+  Resolve.resolve (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) "s" [Moore.State s]  =  
     Some (Mealy.State (Elements.convert_state s)) 
   .
 Proof.
   intro H.
-  unfold Resolve.maybeResolve.
   unfold Resolve.resolve.
   apply state_in_trace in H.
   rewrite in_resolve ; auto.
 Qed.
-
 
