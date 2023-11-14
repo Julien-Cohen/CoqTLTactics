@@ -64,7 +64,7 @@ Definition Class2Relational :=
               attrs <- getClass_attributes c m;
               cols <- resolveAll tls "col" Column_K 
                 (singletons (map (ClassMetamodel.lift_EKind Attribute_K) attrs));
-              return {| left_glue := t ; right_glue := cols|})))
+              do_glue t with cols)))
         ];
       buildRule "Attribute2Column"
         (makeGuard [Attribute_K] (fun m a => negb (Attribute_derived a)))
@@ -76,6 +76,6 @@ Definition Class2Relational :=
               (fun tls i m a c =>
                 cl <- getAttribute_type a m;
                 tb <- resolve tls "tab" Table_K [ClassMetamodel.lift_EKind Class_K cl];
-                return Build_Glue _ _ c tb)))
+                do_glue c with tb)))
         ]
     ].

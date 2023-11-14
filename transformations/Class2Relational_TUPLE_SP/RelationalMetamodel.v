@@ -10,7 +10,7 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require        core.Tactics.
 
-
+Require Import Glue.
 
 (* Base types *)
 
@@ -23,21 +23,10 @@ Record Column_t := { column_id : nat ; column_name : string } .
 Scheme Equality for Column_t.
 
 
-Record TableColumns_t := { tab : Table_t ; cols : list Column_t }.
+Notation TableColumns_t := (Glue Table_t (list Column_t)) .
 
-Record ColumnReference_t := { cr : Column_t ; ct : Table_t }.
+Notation ColumnReference_t := (Glue Column_t Table_t).
 
-Definition maybeBuildColumnReference (c: Column_t) (t: option Table_t) : option ColumnReference_t :=
-  match t with
-  | Some t' => Some (Build_ColumnReference_t c t')
-  | _ => None
-  end.  
-
-Definition maybeBuildTableColumns (t: Table_t) (c: option (list Column_t)) : option TableColumns_t :=
-  match c with
-  | Some c' => Some (Build_TableColumns_t t c')
-  | _ => None
-  end.  
 
 
 
@@ -110,8 +99,8 @@ Definition ReferenceRoleTypes (c:LinkKind): Set :=
 
 Definition Build_ReferenceLink (t : LinkKind) : (ReferenceRoleTypes t) -> Link :=
   match t with
-  | TableColumns_K => (fun (p: Table_t * list Column_t) => (TableColumnLink (Build_TableColumns_t (fst p) (snd p))))
-  | ColumnReference_K => (fun (p: Column_t * Table_t) => (ColumnReferenceLink (Build_ColumnReference_t (fst p) (snd p))))
+  | TableColumns_K => (fun '(t,c) => (TableColumnLink (glue t with  c)))
+  | ColumnReference_K => (fun '(c,t) => (ColumnReferenceLink ( glue c with t )))
   end.
 
 Definition get_E_data (t : ElementKind) (c : Element) : option (getTypeByEKind t). 
@@ -133,10 +122,10 @@ Qed.
 
 Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t).
   destruct t ; destruct c ; simpl .
-  exact (Some t).
+  exact (Some g).
   exact None.
   exact None.
-  exact (Some c). 
+  exact (Some g). 
 Defined.
 
 (** Typeclass instances *)
@@ -196,7 +185,7 @@ Definition getName (r : Element) : string :=
 
 Fixpoint getTableColumnsOnLinks (t : Table_t) (l : list Link) : option (list Column_t) :=
   match l with
-  | (TableColumnLink (Build_TableColumns_t tab c)) :: l1 => if Table_t_beq tab t then Some c else getTableColumnsOnLinks t l1
+  | (TableColumnLink (glue tab with c)) :: l1 => if Table_t_beq tab t then Some c else getTableColumnsOnLinks t l1
   | _ :: l1 => getTableColumnsOnLinks t l1
   | nil => None
   end.
@@ -206,7 +195,7 @@ getTableColumnsOnLinks t m.(modelLinks).
 
 Fixpoint getColumnReferenceOnLinks (c : Column_t) (l : list Link) : option Table_t :=
   match l with
-  | (ColumnReferenceLink (Build_ColumnReference_t col t)) :: l1 => if Column_t_beq col c then Some t else getColumnReferenceOnLinks c l1
+  | (ColumnReferenceLink (glue col with t)) :: l1 => if Column_t_beq col c then Some t else getColumnReferenceOnLinks c l1
   | _ :: l1 => getColumnReferenceOnLinks c l1
   | nil => None
   end.

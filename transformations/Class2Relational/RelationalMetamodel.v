@@ -159,7 +159,7 @@ Definition getTable_columns (t : Table_t) (m : RelationalModel) : option (list C
 
 Fixpoint getColumn_referenceOnLinks (c : Column_t) (l : list Link) : option (Table_t) :=
  match l with
-  | (Column_referenceLink (Build_Glue _ _ col t)) :: l1 => 
+  | (Column_referenceLink (glue col with t)) :: l1 => 
     if Column_t_beq col c 
       then Some t 
       else getColumn_referenceOnLinks c l1

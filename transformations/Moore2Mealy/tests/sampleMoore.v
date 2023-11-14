@@ -30,10 +30,10 @@ Definition InputModel : Model Moore.MM :=
 	nil
     )
     (
-      (TransitionSource (Build_Glue _ _ t0 s0)) ::
-	(TransitionTarget (Build_Glue _ _ t0 s1)) ::
-	(TransitionSource (Build_Glue _ _ t1 s1)) ::
-	(TransitionTarget (Build_Glue _ _ t1 s1)) ::
+      (TransitionSource (glue t0 with s0)) ::
+	(TransitionTarget (glue t0 with s1)) ::
+	(TransitionSource (glue t1 with s1)) ::
+	(TransitionTarget (glue t1 with s1)) ::
 	nil
     )
 .

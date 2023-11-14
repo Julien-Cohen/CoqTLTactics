@@ -112,7 +112,7 @@ Definition maybeSingletons {A: Type} (l : option (list A)) : option (list (list 
   option_map singletons l.
 
 Definition tupleWith {A : Type} (l : list A) (e: list A) : list (list A) :=
-  map (fun a:A => app (a::nil) e) l.
+  map (fun a:A => a:: e) l.
 
 Definition maybeTuples {A: Type} (l : option (list A)) (e: list A) :=
   option_map (fun a => tupleWith a e) l.

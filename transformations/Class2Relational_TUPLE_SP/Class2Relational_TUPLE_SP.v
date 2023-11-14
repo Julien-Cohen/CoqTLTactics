@@ -13,6 +13,8 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
 Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
 
+Import Glue.
+
 (** This transformation contains rule arity > 1 *)
 
 (* module Class2Relational; 
@@ -67,11 +69,12 @@ Definition Class2Relational_TUPLE_SP' :=
         
         LINK ::: TableColumns_K 
          << fun tls _ m c t =>
-                  maybeBuildTableColumns t
-                    (maybeResolveAll tls "col" Column_K 
-                      (maybeTuples
-                        (getClassAttributesElements c m) 
-                        [(ClassElement c)]))
+           try c_attr := getClassAttributesElements c m
+           in
+           try res := resolveAll tls "col" Column_K 
+                      ((tupleWith c_attr [(ClassElement c)]))
+           in 
+                  return glue t with res
          >>
       ]
     ;
@@ -89,9 +92,9 @@ Definition Class2Relational_TUPLE_SP' :=
         
         LINK ::: ColumnReference_K 
          << fun tls _ m a cl c =>
-                  maybeBuildColumnReference c
-                    (maybeResolve tls "tab" Table_K 
-                       (maybeSingleton (Some (ClassElement cl))))
+           try res := resolve tls "tab" Table_K (singleton (ClassElement cl))
+           in 
+             do_glue c with res
          >> ]
   ].
 

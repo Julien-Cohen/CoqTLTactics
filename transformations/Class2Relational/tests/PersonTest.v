@@ -65,15 +65,17 @@ Fact test_ok :
        RelationalMetamodel.MM 
        (RelationalMetamodel.TableElement
           (Build_Table_t 0 "Person")
+          
           :: RelationalMetamodel.ColumnElement
           (Build_Column_t 1 "parent") :: nil)
+       
        (RelationalMetamodel.Table_columnsLink
-          (Build_Glue _ _ (Build_Table_t 0 "Person")
-             (Build_Column_t 1 "parent" :: nil))
+          (glue (Build_Table_t 0 "Person")
+             with (Build_Column_t 1 "parent" :: nil))
+          
           :: RelationalMetamodel.Column_referenceLink
-          (Build_Glue _ _
-             (Build_Column_t 1 "parent")
-             (Build_Table_t 0 "Person")) :: nil)).
+          (glue (Build_Column_t 1 "parent")
+             with (Build_Table_t 0 "Person")) :: nil)).
 Proof.
   reflexivity.
 Qed.

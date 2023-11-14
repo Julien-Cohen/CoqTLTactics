@@ -72,7 +72,7 @@ Definition R1 : ConcreteRule :=
            try c_attributes := getClass_attributesElements c m
            in
            try res := resolveAll thisModule "col" Column_K (singletons c_attributes)
-           in glue t with res 
+           in do_glue t with res 
             >> ].
 
 (*rule Class2Table {
@@ -104,7 +104,7 @@ Definition R2 : ConcreteRule :=
          try a_type := getAttribute_typeElement a m 
           in
           try res := resolve thisModule "tab" Table_K (singleton a_type)
-           in glue c with res 
+           in do_glue c with res 
                   
            >> 
     ].

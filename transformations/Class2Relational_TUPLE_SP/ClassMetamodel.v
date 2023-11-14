@@ -13,6 +13,8 @@ Require Import core.Model.
 Require Import core.utils.CpdtTactics.
 Require        core.Tactics.
 
+Require Import Glue.
+
 (** Base types for elements *)
 
 Record Class_t := { class_id : nat ; class_name : string }.
@@ -25,9 +27,9 @@ Scheme Equality for Attribute_t.
 
 (** Base types for links *)
 
-Record ClassAttributes_t := { source_class : Class_t ; attrs : list Attribute_t }.
+Notation ClassAttributes_t := (Glue Class_t (list Attribute_t)).
 
-Record AttributeType_t := { source_attribute : Attribute_t ; a_type : Class_t }.
+Notation AttributeType_t := (Glue Attribute_t Class_t).
 
 
 
@@ -164,8 +166,8 @@ Definition getName (c : Element) : string :=
 Fixpoint getClassAttributesOnLinks (c : Class_t) (l : list Link) : option (list Attribute_t) :=
   match l with
   | (ClassAttributeLink c1) :: l1 => 
-      if Class_t_beq c1.(source_class) c 
-      then Some c1.(attrs) 
+      if Class_t_beq c1.(left_glue) c 
+      then Some c1.(right_glue) 
       else getClassAttributesOnLinks c l1
   | _ :: l1 => getClassAttributesOnLinks c l1
   | nil => None
@@ -185,8 +187,8 @@ Definition getClassAttributesElements (c : Class_t) (m : ClassModel) : option (l
 Fixpoint getAttributeTypeOnLinks (a : Attribute_t) (l : list Link) : option Class_t :=
   match l with
   | (AttributeTypeLink a1) :: l1 => 
-      if Attribute_t_beq a1.(source_attribute) a 
-      then Some a1.(a_type) 
+      if Attribute_t_beq a1.(left_glue) a 
+      then Some a1.(right_glue) 
       else getAttributeTypeOnLinks a l1
   | _ :: l1 => getAttributeTypeOnLinks a l1
   | nil => None
