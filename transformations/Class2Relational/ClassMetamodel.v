@@ -25,9 +25,9 @@ Scheme Equality for Attribute_t.
 
 
 (** Base types for links *)
-Notation Class_attributes_t := (Glue Class_t (list Attribute_t)).
+Notation Class_attributes_glue := (Glue Class_t (list Attribute_t)).
 
-Notation Attribute_type_t := (Glue Attribute_t Class_t).
+Notation Attribute_type_glue := (Glue Attribute_t Class_t).
 
 
 (** Data types for element (to build models) *)
@@ -39,8 +39,8 @@ Scheme Equality for Element.
 
 (** Data types for link (to build models) *)
 Inductive Link : Set :=
-  | Class_attributesLink :  Class_attributes_t -> Link
-  | Attribute_typeLink : Attribute_type_t -> Link
+  | Class_attributesLink :  Class_attributes_glue -> Link
+  | Attribute_typeLink : Attribute_type_glue -> Link
 .
 
 
@@ -83,8 +83,8 @@ Definition get_E_data (k : ElementKind) (c : Element) : option (getTypeByEKind k
 
 Definition getTypeByLKind (k : LinkKind) : Set :=
   match k with
-  | Class_attributes_K => Class_attributes_t
-  | Attribute_type_K => Attribute_type_t
+  | Class_attributes_K => Class_attributes_glue
+  | Attribute_type_K => Attribute_type_glue
   end.
 
 

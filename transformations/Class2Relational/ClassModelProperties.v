@@ -140,7 +140,7 @@ Definition wf_classmodel_unique_attribute_types (cm:ClassModel) :=
 (* Not Used *)
 (* A generic version could be added to Model.v, well-formedness of links *)
 Definition wf_classmodel_unique_attribute_link (cm:ClassModel) :=
-  forall (a1 a2: Class_attributes_t),
+  forall (a1 a2: Class_attributes_glue),
   In (Class_attributesLink a1) cm.(modelLinks) ->
   In (Class_attributesLink a2) cm.(modelLinks) ->
   a1 <> a2 ->

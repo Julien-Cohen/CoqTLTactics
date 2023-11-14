@@ -35,8 +35,8 @@ Scheme Equality for Element.
 
 (** Data types for link (to build models) *)
 Inductive Link : Set :=
-  | TransitionSource : @Glue Transition_t State_t -> Link
-  | TransitionTarget : @Glue Transition_t State_t -> Link
+  | TransitionSource : Glue Transition_t State_t -> Link
+  | TransitionTarget : Glue Transition_t State_t -> Link
 .
 
 

@@ -26,9 +26,9 @@ Scheme Equality for Column_t.
 
 
 (** Base types for links *)
-Notation Table_columns_t := (Glue Table_t (list Column_t)).
+Notation Table_columns_glue := (Glue Table_t (list Column_t)).
 
-Notation Column_reference_t := (Glue Column_t Table_t).
+Notation Column_reference_glue := (Glue Column_t Table_t).
 
 
 (** Data types for element (to build models) *)
@@ -40,8 +40,8 @@ Scheme Equality for Element.
 
 (** Data types for link (to build models) *)
 Inductive Link : Set :=
-  | Table_columnsLink : Table_columns_t -> Link
-  | Column_referenceLink : Column_reference_t -> Link
+  | Table_columnsLink : Table_columns_glue -> Link
+  | Column_referenceLink : Column_reference_glue -> Link
 .
 (*Scheme Equality for Link. ==Does not work== *)
 
@@ -85,8 +85,8 @@ Definition get_E_data (k : ElementKind) (c : Element) : option (getTypeByEKind k
 
 Definition getTypeByLKind (k : LinkKind) : Set :=
   match k with
-  | Table_columns_K => Table_columns_t
-  | Column_reference_K => Column_reference_t
+  | Table_columns_K => Table_columns_glue
+  | Column_reference_K => Column_reference_glue
   end.
 
 
@@ -209,7 +209,7 @@ Ltac inv_maybeBuildColumnReference H :=
     end.
 
 
-Definition maybeBuildTableColumns (t: Table_t) (c: option (list Column_t)) : option Table_columns_t :=
+Definition maybeBuildTableColumns (t: Table_t) (c: option (list Column_t)) : option Table_columns_glue :=
   option_map (Build_Glue _ _ t) c.
 
 Ltac inv_maybeBuildTableColumns H := 
