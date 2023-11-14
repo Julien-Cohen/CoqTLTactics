@@ -53,6 +53,17 @@ Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2R
 Open Scope coqtl.
 
 
+Definition convert_class c :=
+  {| 
+    Table_id := c.(Class_id) ; 
+    Table_name := c.(Class_name) 
+  |}.
+
+Definition convert_attribute c :=
+  {| 
+    Column_id := c.(Attribute_id) ;
+    Column_name := c.(Attribute_name)
+  |}.
 
 
 Definition R1 : ConcreteRule := 
@@ -60,12 +71,7 @@ Definition R1 : ConcreteRule :=
     from [ (* c *) Class_K]
 
     to [ ELEM "tab" (* t *) ::: Table_K  
-        << fun _ _ c => 
-          {| 
-            Table_id := c.(Class_id) ; 
-            Table_name := c.(Class_name) 
-          |}
-            >>
+        << fun _ _ c => convert_class c >>
         
         LINK ::: Table_columns_K
          << fun thisModule _ m c t =>
@@ -92,11 +98,7 @@ Definition R2 : ConcreteRule :=
     where (fun _ a => negb a.(Attribute_derived))
     to [ 
       ELEM "col" (* c *) ::: Column_K 
-        << fun _ _ a =>
-          {|
-            Column_id := a.(Attribute_id) ;
-            Column_name := a.(Attribute_name)
-          |} >>
+        << fun _ _ a => convert_attribute a >>
              
        LINK ::: Column_reference_K
        <<  fun thisModule _ m a c =>

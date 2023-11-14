@@ -11,7 +11,7 @@ Hypothesis WF_U : MooreWF.state_id_uniqueness m.
 Lemma initial_state_preserved_fw2 : 
       forall s,
         MooreSemantics.initialState m = Some s ->
-        MealySemantics.initialState (Semantics.execute Moore2Mealy.Moore2Mealy m) = Some (Elements.convert_state s).
+        MealySemantics.initialState (Semantics.execute Moore2Mealy.Moore2Mealy m) = Some (Moore2Mealy.convert_state s).
 Proof.
   intros s INIT.
   unfold MooreSemantics.initialState in INIT.
@@ -46,13 +46,13 @@ Proof.
   unfold Moore.get_E_data in INIT.
   destruct INIT ; [ discriminate | ].
   destruct H0 as (? & ? & ?). PropUtils.inj H0.
-  destruct x0 ; unfold Elements.convert_state, Mealy.State_id.
+  destruct x0 ; unfold Moore2Mealy.convert_state, Mealy.State_id.
   unfold Moore.State_id in *.
   exact H1.
 Qed.
 
 Lemma initial_state_preserved : 
-  MealySemantics.initialState (Semantics.execute Moore2Mealy.Moore2Mealy m) = option_map Elements.convert_state (MooreSemantics.initialState m).
+  MealySemantics.initialState (Semantics.execute Moore2Mealy.Moore2Mealy m) = option_map Moore2Mealy.convert_state (MooreSemantics.initialState m).
 Proof.
   destruct (MooreSemantics.initialState m) eqn:I ; unfold option_map.
   apply initial_state_preserved_fw2 ; assumption.

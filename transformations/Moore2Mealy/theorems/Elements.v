@@ -13,8 +13,8 @@ Variable (m:Moore.M).
 Hypothesis WF_U : MooreWF.state_id_uniqueness m.
 Hypothesis WF_T : Moore.WF_transition_target_exists m.
 
-Definition convert_state (s:Moore.State_t) : Mealy.State_t :=
-  {| Mealy.State_id := s.(Moore.State_id) |}.
+Notation convert_state := Moore2Mealy.convert_state.
+Notation convert_transition := Moore2Mealy.convert_transition.
 
 (** [convert_state] is not injective, but if we consider states of a model with uniqueness of identifiers, it becomes injective. *)
 
@@ -31,17 +31,12 @@ Proof.
 Qed.
 
 
-Definition convert_transition  (t : Moore.Transition_t) : option Mealy.Transition_t :=
-  match Moore.getTransition_target m t with
-  | None => None
-  | Some s => Some (Mealy.Build_Transition_t t.(Moore.Transition_id) t.(Moore.Transition_input) s.(Moore.State_output))
-  end.
 
 
 Lemma convert_transition_injective : 
   forall t1 t2 a, 
-    convert_transition t1 = Some a -> (* would be false with None *)
-    convert_transition t2 = Some a ->
+    convert_transition m t1 = Some a -> (* would be false with None *)
+    convert_transition m t2 = Some a ->
     t1 = t2.
 Proof.
   unfold convert_transition ; intros.
@@ -54,7 +49,7 @@ Qed.
 
 Lemma convert_transition_suff : forall t,
     List.In (Moore.Transition t) m.(Model.modelElements) -> 
-    SUCCESS (convert_transition t).
+    SUCCESS (convert_transition m t).
 Proof.
   intros t H.
   apply WF_T in H.
@@ -71,7 +66,7 @@ Qed.
 
 Lemma convert_transition_nec :
   forall t t',
-  convert_transition t = Some t' ->
+  convert_transition m t = Some t' ->
   exists s, 
     Moore.getTransition_target m t = Some s
     /\  t'= {|

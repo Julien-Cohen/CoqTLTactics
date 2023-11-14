@@ -6,37 +6,33 @@ Import PoorTraceLink.
 
 Import Moore2Mealy.
 
+(** Utilities on traces built by the Moore2Mealy transformation.
+    In particular, all the results on [resolve], which appears in the code of the M2M transformation, rely on traces. *)
+
+(** There are exactly two kinds of correspondences in traces (one for each rule) : *)
 Lemma in_trace_inv (m:Moore.M) t :
 In t (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
    (exists a , 
        t = buildTraceLink 
              ([Moore.Transition a], 0, "t"%string)
-             (Mealy.Transition {| (* fixme : use Elements.convert_transition *)
-                  Mealy.Transition_id := Moore.Transition_id a;
-                  Mealy.Transition_input := Moore.Transition_input a;
-                  Mealy.Transition_output :=
-                    OptionUtils.valueOption
-                      (option_map Moore.State_output
-                         (Moore.getTransition_target m a))
-                      ""%string
-                |}))
+             (Mealy.Transition (OptionUtils.valueOption (convert_transition m a) (dummy a))))
    \/ (exists s , 
           t = 
             buildTraceLink
               ([Moore.State s], 0, "s"%string)
-              (Mealy.State (Elements.convert_state s))).
+              (Mealy.State (Moore2Mealy.convert_state s))).
 Proof.
   intro H.
   Tactics.exploit_in_trace H ; [ right | left ] ;
   eexists ; reflexivity. 
 Qed.
 
-
+(** We can statically know what each State will yield in the trace: *)
 Lemma state_in_trace (m:Moore.M) (s:Moore.State_t) : 
   In (Moore.State s) m.(modelElements) ->
   In (PoorTraceLink.buildTraceLink 
         ((Moore.State s) :: nil, 0, "s"%string) 
-        (Mealy.State (Elements.convert_state s))
+        (Mealy.State (Moore2Mealy.convert_state s))
     )
     (RichTraceLink.drop (Semantics.traceTrOnModel Moore2Mealy m)).
 Proof.
@@ -54,6 +50,12 @@ Proof.
   }
   {  reflexivity. }
 Qed.
+
+
+(** Discrminating predicate to switch between [List.In] and [List.find]. 
+
+We need to deal with List.find because it is used in the definition of Resolve.
+*)
 
 Import NotationUtils.
 Import Semantics.
@@ -96,13 +98,13 @@ Lemma in_find m :
   forall c,
     In (buildTraceLink
           ([Moore.State c], 0, "s"%string)
-          (Mealy.State (Elements.convert_state c))) 
+          (Mealy.State (Moore2Mealy.convert_state c))) 
       (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
 
       find (source_compare ([Moore.State c], 0, "s"%string)) (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) = 
         Some 
           (buildTraceLink ([Moore.State c], 0, "s"%string) 
-             (Mealy.State (Elements.convert_state c))).
+             (Mealy.State (Moore2Mealy.convert_state c))).
 Proof.
 
   intros c H.
@@ -119,13 +121,15 @@ Proof.
 
 Qed.            
 
-      
+
+(* Resolve is a lookup in the trace. Resolve is called from the user defined transformation. *)
+
 Lemma in_resolve m s : 
   In (buildTraceLink 
         ([Moore.State s], 0, "s"%string)
-        (Mealy.State (Elements.convert_state s))) (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
+        (Mealy.State (Moore2Mealy.convert_state s))) (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
   Resolve.resolveIter (RichTraceLink.drop (traceTrOnModel  Moore2Mealy m)) "s" [Moore.State s] 0 = 
-    Some (Mealy.State (Elements.convert_state s)).
+    Some (Mealy.State (Moore2Mealy.convert_state s)).
 Proof.
   unfold Resolve.resolveIter. 
   intros IN1.
@@ -145,7 +149,7 @@ Lemma in_Resolve_trace_2 s (m : Moore.M) :
   In (Moore.State s) m.(modelElements) -> 
   
   Resolve.resolve (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) "s" [Moore.State s]  =  
-    Some (Mealy.State (Elements.convert_state s)) 
+    Some (Mealy.State (Moore2Mealy.convert_state s)) 
   .
 Proof.
   intro H.

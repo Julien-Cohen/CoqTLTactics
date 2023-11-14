@@ -50,53 +50,52 @@ Qed.
 
 Lemma source_link_fw :
   forall t s1,
-    In (Moore.TransitionSource {| left_glue := t ; right_glue := s1 |}) m.(modelLinks) ->
+    In (Moore.TransitionSource (glue t with s1)) m.(modelLinks) ->
     exists t', 
-      Elements.convert_transition m t = Some t' /\
+      Moore2Mealy.convert_transition m t = Some t' /\
         In  (Mealy.TransitionSource 
-               {| left_glue := t' ; right_glue := Elements.convert_state s1 |})
+               (glue t' with Moore2Mealy.convert_state s1 ))
            (Semantics.execute Moore2Mealy m).(modelLinks).
 Proof.
   intros t s1 H.
 
-  assert (In (Moore.State s1) m.(modelElements)).
-  {
-    apply  WF_S_R in H. 
-    assumption.
-  }
-  assert (In (Moore.Transition t) m.(modelElements)).
-  {
-    apply  WF_S_L in H. 
-    assumption.
-  }
-  destruct (Elements.convert_transition_suff _ WF_T _ H1) as (t' & T).
-  destruct (Elements.convert_transition_nec _ _ _ T) as ( s2 & G & ?).
+  assert (IN_S : In (Moore.State s1) m.(modelElements)).
+  { apply WF_S_R in H ; assumption. }
 
-  exists t' ; split ; [assumption | ].
+  assert (IN_T : In (Moore.Transition t) m.(modelElements)).
+  { apply  WF_S_L in H ; assumption. }
 
-  specialize (TraceUtils.state_in_trace m s1 H0) ; intro IN_TRACE.
+  destruct (Elements.convert_transition_suff _ WF_T _ IN_T) as (t' & T).
+ 
+  exists t' ; split ; [ assumption | ].
 
+  specialize (TraceUtils.state_in_trace m s1 IN_S) ;
+    intro IN_TRACE.
 
   eapply Tactics.in_links_fw with (tc:=Moore2MealyTransformationConfiguration).
-  3:{
-    (* Only the second rule builds links. *)
+  
+  { (* The source pattern is the considered transition *)
+    apply ListUtils.incl_singleton. exact IN_T.
+  }
+
+  { (* arity *)
+    compute. auto. }
+
+  { (* Only the second rule builds links. *)
     apply In_2. (* second rule *)
     eexists ; eexists. reflexivity.
   }
-  { 
-    (* The source pattern is the considered transition *)
-    apply ListUtils.incl_singleton.
-    exact H1.
-  }
-  { (* arity *)
-    compute. auto. }
+
   { (* eval guard *) reflexivity. }
+
   { (* eval iterator *) compute. eauto. }
+
   { (* output pattern *)
     (* This rule has one output pattern. *)    
     apply In_1.
     eexists ; reflexivity.
   }
+
   { (* eval output pattern *)
     reflexivity.
   }
@@ -122,10 +121,9 @@ Proof.
     unfold  OptionListUtils.optionListToList.
 
     simpl ModelingMetamodel.constructor.
-    rewrite G.
+    rewrite T.
     simpl valueOption.
 
-    rewrite <- H2.
 
     apply in_flat_map.
     eexists ; split.
@@ -137,15 +135,15 @@ Proof.
       simpl.
       unfold Moore.Transition_getSourceObject .
 
-      specialize (MooreWF.getTransition_source_some m  WF_SLL s1 H0 t H) ; intro S.
+      specialize (MooreWF.getTransition_source_some m  WF_SLL s1 IN_S t H) ; intro S.
       rewrite S.
       simpl.
 
 
-      eapply TraceUtils.in_Resolve_trace_2 in H0.
+      eapply TraceUtils.in_Resolve_trace_2 in IN_S.
       unfold ModelingSemantics.resolve. 
       unfold ListUtils.singleton.
-      rewrite H0.
+      rewrite IN_S.
       simpl.
       left.
       reflexivity.
@@ -158,31 +156,31 @@ Qed.
 
 Lemma target_link_fw :
   forall t s1,
-    In (Moore.TransitionTarget {| left_glue := t ; right_glue := s1 |}) m.(modelLinks) ->
+    In (Moore.TransitionTarget (glue t with s1)) m.(modelLinks) ->
     exists t', 
-      Elements.convert_transition m t = Some t' /\
+      Moore2Mealy.convert_transition m t = Some t' /\
         In  
-          (Mealy.TransitionTarget {| left_glue := t' ; right_glue := Elements.convert_state s1 |}) 
+          (Mealy.TransitionTarget (glue t' with Moore2Mealy.convert_state s1)) 
           (Semantics.execute Moore2Mealy m).(modelLinks).
 Proof.
   intros t s1 H.
 
-  assert (In (Moore.State s1) m.(modelElements)).
+  assert (IN_S: In (Moore.State s1) m.(modelElements)).
   {
     apply  WF_T_R in H. 
     assumption.
   }
-  assert (In (Moore.Transition t) m.(modelElements)).
+  assert (IN_T : In (Moore.Transition t) m.(modelElements)).
   {
     apply  WF_T_L in H. 
     assumption.
   }
-  destruct (Elements.convert_transition_suff _ WF_T _ H1) as (t' & T).
+  destruct (Elements.convert_transition_suff _ WF_T _ IN_T) as (t' & T).
   destruct (Elements.convert_transition_nec _ _ _ T) as ( s2 & ?& ?).
 
   exists t' ; split ; [assumption | ].
 
-  specialize (TraceUtils.state_in_trace m s1 H0) ; intro INTRACE.
+  specialize (TraceUtils.state_in_trace m s1 IN_S) ; intro INTRACE.
 
 
   eapply Tactics.in_links_fw with (tc:=Moore2MealyTransformationConfiguration).
@@ -194,7 +192,7 @@ Proof.
   { 
     (* the source pattern is the considered transition *)
     apply ListUtils.incl_singleton.
-    exact H1.
+    exact IN_T.
   }
   { (* arity *)
     compute ; auto. }
@@ -229,7 +227,6 @@ Proof.
     eexists ; split.
     { (* second link pattern *) apply In_2; eauto. }
     {
-      rewrite H2. 
       unfold Parser.parseOutputPatternLink.
       unfold ConcreteSyntax.o_OutRefKind.
       unfold ConcreteSyntax.o_outpat.
@@ -240,16 +237,17 @@ Proof.
       simpl.
       unfold Moore.Transition_getTargetObject .
 
-      specialize (MooreWF.getTransition_target_some m  WF_TLL s1 H0 t ) ; intro S.
+      specialize (MooreWF.getTransition_target_some m  WF_TLL s1 IN_S t ) ; intro S.
       rewrite S.
       simpl.
 
-      eapply TraceUtils.in_Resolve_trace_2 in H0.
+      eapply TraceUtils.in_Resolve_trace_2 in IN_S.
       unfold ModelingSemantics.resolve.
       unfold ListUtils.singleton.
-      rewrite H0.
+      rewrite IN_S.
       simpl.
       left.
+      rewrite T.
       subst ; reflexivity.
       exact H.
     }
@@ -261,20 +259,19 @@ Qed.
 Lemma source_link_bw :
   forall t' s',
     In  
-      (Mealy.TransitionSource {| left_glue := t' ; right_glue := s' |}) 
+      (Mealy.TransitionSource (glue t' with s')) 
       (Semantics.execute Moore2Mealy m).(modelLinks) ->
     
     exists s, 
-      Elements.convert_state s = s' 
+      Moore2Mealy.convert_state s = s' 
       /\
         
         In 
           (Moore.TransitionSource 
-             {|
-               left_glue :=
-                 Moore.Build_Transition_t t'.(Mealy.Transition_id) t'.(Mealy.Transition_input);
-               right_glue := s
-             |})
+             (glue 
+                 Moore.Build_Transition_t t'.(Mealy.Transition_id) t'.(Mealy.Transition_input)
+               with s)
+          )
           m.(modelLinks).
 Proof.
   intros t' s' IN.
@@ -288,6 +285,8 @@ Proof.
     assert (S : SUCCESS (Moore.getTransition_target m t)).
     { apply WF_T. assumption. }
     destruct S as ( s2&GT).
+
+    unfold convert_transition in IN_L.
 
     rewrite GT in IN_L. clear GT.
     simpl valueOption in IN_L.
@@ -347,20 +346,19 @@ Qed.
 Lemma target_link_bw :
   forall t' s',
     In  
-      (Mealy.TransitionTarget {| left_glue := t' ; right_glue := s' |}) 
+      (Mealy.TransitionTarget (glue t' with s')) 
       (Semantics.execute Moore2Mealy m).(modelLinks) ->
     
     exists s, 
-      Elements.convert_state s = s' 
+      Moore2Mealy.convert_state s = s' 
       /\
         
         In 
           (Moore.TransitionTarget 
-             {|
-               left_glue :=
-                 Moore.Build_Transition_t t'.(Mealy.Transition_id) t'.(Mealy.Transition_input);
-               right_glue := s
-             |})
+             (glue 
+                 Moore.Build_Transition_t t'.(Mealy.Transition_id) t'.(Mealy.Transition_input) 
+               with s)
+          )
           m.(modelLinks).
 Proof.
   intros t' s' IN.
@@ -376,6 +374,7 @@ Proof.
     { apply WF_T. assumption. }
     destruct S as ( s2&GT).
 
+    unfold convert_transition in IN_L.
     rewrite GT in IN_L. 
     simpl valueOption in IN_L.
 

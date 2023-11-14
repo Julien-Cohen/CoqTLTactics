@@ -715,27 +715,23 @@ Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
       In l (modelLinks (execute t cm)).
 Proof.
   intros sp r i opu produced_element.
-  intros IN_MOD A IN_R EVAL_GUARD  EVAL_IT IN_OPU  EVAL_OUT_EL EVAL_OUT_LINK. 
+  intros IN_MOD A IN_R EVAL_GUARD  EVAL_IT IN_OPU  EVAL_OUT_EL lk. 
   intro INLV.
 
   apply Certification.tr_execute_in_links.
 
   exists sp.  
   split.
-  {
-    apply Certification.allTuples_incl_length.
-    exact IN_MOD.
-    exact A.
-  }
+  
+  { apply Certification.allTuples_incl_length ; [ exact IN_MOD | exact A]. }
+  
   {
     apply Certification.tr_applyOnPiece_in.
     exists r.
     split.
     {
       apply Certification.tr_matchingRules_in.
-      split.
-      { exact IN_R. }
-      { exact EVAL_GUARD. }
+      split ; [ exact IN_R | exact EVAL_GUARD].
     }
     {
       apply Certification.tr_applyRuleOnPiece_in.

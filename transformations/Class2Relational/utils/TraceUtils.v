@@ -21,16 +21,14 @@ From transformations.Class2Relational
 
 Import PoorTraceLink.
 
-(** * Utilities on traces built by the Class2Relational transformation. *)
+(** Utilities on traces built by the Class2Relational transformation.
+    In particular, all the results on [resolve], which appears in the code of the C2R transformation, rely on traces. *)
 
 
-Definition convert_class c :=
-  {| Table_id := c.(Class_id) ; Table_name := c.(Class_name) |}.
-
-Definition convert_attribute c :=
-  {| Column_id := c.(Attribute_id) ; Column_name := c.(Attribute_name) |}.
 
 
+
+(** There are exactly two kinds of correspondences in traces (one for each rule): *)
 Lemma in_trace_inv m t :
   In t (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
   
@@ -48,7 +46,7 @@ Proof.
 Qed.
 
 
-
+(** We can statically know what each Class will yield in the trace: *)
 Lemma class_in_trace c (cm : ClassModel) : 
   In (ClassElement c) cm.(modelElements) -> 
   In 
@@ -78,6 +76,11 @@ Proof.
   { reflexivity. }
 Qed.
 
+
+(** Discrminating predicate to switch between [List.In] and [List.find]. 
+
+We need to deal with List.find because it is used in the definition of Resolve.
+*)
 
 Lemma discr m:
   forall s : list ClassMetamodel.Element * nat * string,
@@ -135,8 +138,9 @@ Proof.
   { exact H. }
 
 Qed.            
-        
-
+    
+    
+(* Resolve is a lookup in the trace. Resolve is called from the user defined transformation. *)
       
 Lemma in_resolve m c : 
   In (buildTraceLink
