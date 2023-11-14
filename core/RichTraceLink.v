@@ -28,7 +28,7 @@ Record TraceLink : Type :=
       linkPattern : PoorTraceLink.Trace -> nat -> SourceModel -> InputPiece -> TargetElementType -> list TargetLinkType
     }.
 
-Definition getSourcePattern (tl: TraceLink):=
+Definition getSourcePiece (tl: TraceLink):=
   match tl.(source) with 
     (sp, i, n)  => sp
   end.
@@ -49,7 +49,7 @@ Open Scope bool_scope.
 Definition source_compare (s:InputPiece * nat * string) (t:TraceLink) : bool :=
   match s with 
     (e,i,n) =>
-      list_beq tc.(SourceElement_eqb) (getSourcePattern t) e
+      list_beq tc.(SourceElement_eqb) (getSourcePiece t) e
       && Nat.eqb (getIteration t) i
       && String.eqb (getName t) n
   end.
@@ -64,7 +64,7 @@ Proof.
   intros R a b c.
   destruct a as ((l & i) & n). 
   simpl.
-  unfold getSourcePattern, getIteration, getName ; simpl.
+  unfold getSourcePiece, getIteration, getName ; simpl.
   rewrite list_beq_refl ; [ | exact R].
   rewrite NPeano.Nat.eqb_refl.
   rewrite String.eqb_refl. 

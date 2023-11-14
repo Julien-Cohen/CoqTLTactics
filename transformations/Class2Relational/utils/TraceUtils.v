@@ -30,6 +30,7 @@ Definition convert_class c :=
 Definition convert_attribute c :=
   {| Column_id := c.(Attribute_id) ; Column_name := c.(Attribute_name) |}.
 
+
 Lemma in_trace_inv m t :
   In t (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
   
@@ -42,17 +43,8 @@ Lemma in_trace_inv m t :
         (TableElement (convert_class c))).
 Proof.
   intro H.
-  Tactics.exploit_in_trace H.
-  { right. simpl in *.
-    eexists. 
-    f_equal.
-    reflexivity.
-  }
-  { left. simpl in *.
-    eexists.
-    f_equal.
-    reflexivity.
-  }
+  Tactics.exploit_in_trace H ; [ right | left ] ;
+  eexists ; reflexivity. 
 Qed.
 
 

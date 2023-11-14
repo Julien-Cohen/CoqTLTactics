@@ -27,16 +27,8 @@ In t (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
               (Mealy.State (Elements.convert_state s))).
 Proof.
   intro H.
-  Tactics.exploit_in_trace H.
-  { right. simpl in *.
-    eexists. 
-    f_equal.
-    reflexivity.
-  }
-  { left. simpl in *.
-    exists t.
-    reflexivity.
-  }
+  Tactics.exploit_in_trace H ; [ right | left ] ;
+  eexists ; reflexivity. 
 Qed.
 
 

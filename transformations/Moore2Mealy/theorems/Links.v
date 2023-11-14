@@ -327,7 +327,7 @@ Proof.
 
     destruct source. destruct p. 
 
-    unfold PoorTraceLink.getSourcePattern in H0 ;  simpl in H0.
+    unfold PoorTraceLink.getSourcePiece in H0 ;  simpl in H0.
     subst.
 
     apply Moore.getTransition_source_inv in GS. 
@@ -415,7 +415,7 @@ Proof.
 
     destruct source. destruct p. 
 
-    unfold PoorTraceLink.getSourcePattern in H0 ;  simpl in H0.
+    unfold PoorTraceLink.getSourcePiece in H0 ;  simpl in H0.
     subst.
 
     apply Moore.getTransition_target_inv in GT. 

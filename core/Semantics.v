@@ -59,7 +59,7 @@ Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) :  RichTraceLi
 
 Definition applyTrOnModel (sm : SourceModel) (tls:Trace): list TargetLinkType :=
   flat_map 
-    (fun lk => lk.(linkPattern) (drop tls) (getIteration lk) sm (getSourcePattern lk) lk.(produced)) 
+    (fun lk => lk.(linkPattern) (drop tls) (getIteration lk) sm (getSourcePiece lk) lk.(produced)) 
     tls. 
 
 
@@ -135,11 +135,11 @@ Lemma exploit_in_traceTrOnModel {tc:TransformationConfiguration} tr sm :
   forall tlk,
     In tlk (traceTrOnModel tr sm) <-> 
     exists r  opu, 
-    In (getSourcePattern tlk) (allTuples tr sm) 
-    /\ In r (matchingRules tr sm (getSourcePattern tlk))
-    /\ In (getIteration tlk) (seq 0 (evalIterator r sm (getSourcePattern tlk) )) 
+    In (getSourcePiece tlk) (allTuples tr sm) 
+    /\ In r (matchingRules tr sm (getSourcePiece tlk))
+    /\ In (getIteration tlk) (seq 0 (evalIterator r sm (getSourcePiece tlk) )) 
     /\ In opu (r_outputPattern r) 
-    /\ opu.(opu_element)  (getIteration tlk) sm (getSourcePattern tlk)  = return tlk.(produced)
+    /\ opu.(opu_element)  (getIteration tlk) sm (getSourcePiece tlk)  = return tlk.(produced)
     /\ tlk.(linkPattern) = opu.(opu_link)
     /\ getName tlk = opu.(opu_name).
 Proof.
@@ -157,7 +157,7 @@ Proof.
   apply in_optionToList in IN5.
   unfold traceElementOnPiece in IN5.
   monadInv IN5.
-  unfold getSourcePattern. simpl.
+  unfold getSourcePiece. simpl.
   unfold evalOutputPatternUnit in IN5.
   eauto 11.
 }
@@ -166,7 +166,7 @@ Proof.
   destruct H as (r, (opu, (H1, (H2, (H3, (H4, (H5, (H6, H7)))))))). 
   
   unfold applyTrOnModel.  apply in_flat_map.
-  exists (getSourcePattern tlk).
+  exists (getSourcePiece tlk).
   split ; [ assumption|  ].
   unfold applyTrOnPiece.  apply in_flat_map.
   exists r.
@@ -204,7 +204,7 @@ Proof.
    destruct IN1 as  (r, (opu, (E1, (E2, (E3, (E4, (E5, (E6, E7)))))))).
 
   unfold applyTrOnModel.  apply in_flat_map.
-  exists (getSourcePattern trl).
+  exists (getSourcePiece trl).
   split ; [ assumption|  ].
   unfold applyTrOnPiece.  apply in_flat_map.
   exists r.
@@ -220,7 +220,7 @@ Proof.
   rewrite E5.
   unfold evalOutputPatternLink.
   destruct trl ; simpl in *.
-  unfold getSourcePattern in *.
+  unfold getSourcePiece in *.
   unfold getIteration in *.
   unfold getName in *.
   simpl in *.
@@ -253,14 +253,14 @@ Proof.
   exists ({| source := (ip, i, opu_name) ; produced := t ; linkPattern := opu_link |} ). 
   simpl.
   unfold getIteration ; simpl.
-  unfold getSourcePattern ; simpl.
+  unfold getSourcePiece ; simpl.
   split ; [ | assumption ].
   
   apply exploit_in_traceTrOnModel.
 
   exists r.
   eexists.
-  unfold linkPattern, getName, getSourcePattern, getIteration, source, produced.
+  unfold linkPattern, getName, getSourcePiece, getIteration, source, produced.
   repeat (split ; eauto ).
 Qed.
 

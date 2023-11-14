@@ -25,7 +25,7 @@ Record TraceLink : Type :=
       produced : TargetElementType 
     }.
 
-Definition getSourcePattern (tl: TraceLink):=
+Definition getSourcePiece (tl: TraceLink):=
   match tl.(source) with 
     (sp, i, n)  => sp
   end.
@@ -46,7 +46,7 @@ Open Scope bool_scope.
 Definition source_compare (s:InputPiece * nat * string) (t:TraceLink) : bool :=
   match s with 
     (e,i,n) =>
-      list_beq tc.(SourceElement_eqb) (getSourcePattern t) e
+      list_beq tc.(SourceElement_eqb) (getSourcePiece t) e
       && Nat.eqb (getIteration t) i
       && String.eqb (getName t) n
   end.
@@ -61,18 +61,18 @@ Proof.
   intros R a b.
   destruct a as ((l & i) & n). 
   simpl.
-  unfold getSourcePattern, getIteration, getName ; simpl.
+  unfold getSourcePiece, getIteration, getName ; simpl.
   rewrite list_beq_refl ; [ | exact R].
   rewrite NPeano.Nat.eqb_refl.
   rewrite String.eqb_refl. 
   reflexivity.
 Qed.
 
-(* Not Used *)
+
 (* The requirement is too strong for the general case *)
 Lemma source_compare_correct :
-  (forall a b : Metamodel.ElementType SourceMetamodel,
-  Metamodel.elements_eqdec SourceMetamodel a b = true -> a = b) ->
+  (forall e1 e2 : Metamodel.ElementType SourceMetamodel,
+      Metamodel.elements_eqdec SourceMetamodel e1 e2 = true -> e1 = e2) ->
   forall a b,
     source_compare a b = true -> b.(source) = a.
 Proof.

@@ -23,7 +23,7 @@ Instance CoqTLSyntax :
 
       Rule_getOutputPatternElements := r_outputPattern;
 
-      TraceLink_getSourcePattern := PoorTraceLink.getSourcePattern;
+      TraceLink_getSourcePattern := PoorTraceLink.getSourcePiece;
       TraceLink_getIteration := PoorTraceLink.getIteration;
       TraceLink_getName := PoorTraceLink.getName;
       TraceLink_getTargetElement := produced ;    
