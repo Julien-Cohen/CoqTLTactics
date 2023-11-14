@@ -69,12 +69,9 @@ Definition Class2Relational_TUPLE_SP' :=
         
         LINK ::: TableColumns_K 
          << fun tls _ m c t =>
-           try c_attr := getClassAttributesElements c m
-           in
-           try res := resolveAll tls "col" Column_K 
-                      ((tupleWith c_attr [(ClassElement c)]))
-           in 
-                  return glue t with res
+           c_attr <- getClassAttributesElements c m ;
+           res <- resolveAll tls "col" Column_K (tupleWith c_attr [ClassElement c]) ;
+           do_glue t with res
          >>
       ]
     ;
@@ -92,9 +89,8 @@ Definition Class2Relational_TUPLE_SP' :=
         
         LINK ::: ColumnReference_K 
          << fun tls _ m a cl c =>
-           try res := resolve tls "tab" Table_K (singleton (ClassElement cl))
-           in 
-             do_glue c with res
+           res <- resolve tls "tab" Table_K (singleton (ClassElement cl)) ;
+         do_glue c with res
          >> ]
   ].
 

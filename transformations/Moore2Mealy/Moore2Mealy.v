@@ -56,19 +56,15 @@ Definition Moore2Mealy' :=
           
         LINK ::: Mealy.Transition_source_K 
           << fun tls _ m moore_tr mealy_tr =>
-            try t_source := Moore.Transition_getSourceObject moore_tr m
-             in
-             try res := resolve tls "s" Mealy.State_K (singleton t_source) 
-                in 
-                 do_glue mealy_tr with res >> ;
+             t_source <- Moore.Transition_getSourceObject moore_tr m ;
+             res <- resolve tls "s" Mealy.State_K (singleton t_source) ;
+             do_glue mealy_tr with res >> ;
             
         LINK ::: Mealy.Transition_target_K 
           << fun tls _ m moore_tr mealy_tr =>
-            try t_target := Moore.Transition_getTargetObject moore_tr m
-             in
-             try res := resolve tls "s" Mealy.State_K (singleton t_target)
-              in 
-               do_glue mealy_tr with res 
+            t_target <- Moore.Transition_getTargetObject moore_tr m ;
+            res <- resolve tls "s" Mealy.State_K (singleton t_target) ;
+            do_glue mealy_tr with res 
           >>
       ]
 ].
