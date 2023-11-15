@@ -141,12 +141,13 @@ Definition drop_option_to_bool a :=
 Definition wrapElement 
   (skinds : list SourceEKind) 
   (tk : TargetEKind) 
-  (imp : denoteSignature skinds (denoteEDatatype tk))
-  (selements : list SourceElementType)  
+  (imp : denoteSignature skinds (option (denoteEDatatype tk)))
+  (sElements : list SourceElementType)  
   : option TargetElementType 
   := 
-     v <- wrap skinds imp selements ;
-     return elements.(constructor) tk v.
+     v <- wrap skinds imp sElements ;
+     v' <- v ; (* because imp return an option too *)
+     return elements.(constructor) tk v'.
 
 
 Definition wrapLink
@@ -193,7 +194,7 @@ Definition ElementFunction : Type :=
 Definition makeElement 
   (l : list SourceEKind) 
   (k : TargetEKind)
-  (imp : nat -> SourceModel -> denoteSignature l (denoteEDatatype k)) 
+  (imp : nat -> SourceModel -> denoteSignature l (option (denoteEDatatype k))) 
   : ElementFunction :=
    fun it sm => wrapElement l k (imp it sm).
 
@@ -240,16 +241,15 @@ Ltac dummy_inv H :=
 
  Ltac wrap_inv H :=
    match type of H with
-   | ConcreteExpressions.wrap (cons _ _) _ (cons _ _) = Some (*?V*) _ =>
+   | ConcreteExpressions.wrap (cons _ _) _ (cons _ _) = Some  _ =>
        let e := fresh "e" in
        let sp := fresh "sp" in 
        let t:= fresh "t" in 
        let T_e := fresh "T_e" in
        apply ConcreteExpressions.wrap_inv_cons_cons in H ;
        destruct H as (t & T_e & H) ; 
-       exploit_toEData T_e (*;
-       try subst V*)
-   | ConcreteExpressions.wrap (cons _ _) _ ?SP = Some (*?V*) _ =>
+       exploit_toEData T_e 
+   | ConcreteExpressions.wrap (cons _ _) _ ?SP = Some  _ =>
        let e := fresh "e" in
        let sp := fresh "sp" in 
        let t:= fresh "t" in 
@@ -257,8 +257,7 @@ Ltac dummy_inv H :=
        apply ConcreteExpressions.wrap_inv_cons in H ;
        destruct H as (e & sp & t & E & T_e & H) ; 
        exploit_toEData T_e ;
-       try subst SP  (*;
-       try subst V*)
+       try subst SP  
    | ConcreteExpressions.wrap nil _ nil = Some ?V =>
        apply ConcreteExpressions.wrap_inv_nil_nil in H ;
        try first [subst V | inj H | dummy_inv H ]
@@ -274,10 +273,15 @@ Ltac inv_makeElement H :=
   match type of H with
   | makeElement _ _ _ _ _ _ = Some _ =>
       unfold makeElement in H ;
-      unfold wrapElement in H ; 
-      OptionUtils.monadInv H ;
+      unfold wrapElement in H ;  
+      OptionUtils.monadInv H (* wrap has succeeded *) ;
+      OptionUtils.monadInv H (* the user function succeeded also *) ;
       try discriminate ;
-      repeat wrap_inv H
+      inj H ;
+      match goal with 
+        [ W : ConcreteExpressions.wrap _ _ _  = Some _ |- _] =>
+          repeat ConcreteExpressions.wrap_inv W 
+      end
   end.
 
 Ltac inv_makeGuard H :=

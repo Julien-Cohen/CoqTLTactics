@@ -66,7 +66,7 @@ Definition Member_getFamilyName (m: Member) (f: FamiliesModel): string :=
       [
         ELEM "t" ::: MaleClass 
           << fun i m member => 
-            BuildMale (BuildPerson 
+            return BuildMale (BuildPerson 
               ((Member_getFirstName member) ++ " " ++
                 (Member_getFamilyName member m))) >>
           
@@ -79,7 +79,7 @@ Definition Member_getFamilyName (m: Member) (f: FamiliesModel): string :=
       [
         ELEM "t" ::: FemaleClass 
           << fun i m member => 
-            BuildFemale (BuildPerson 
+            return BuildFemale (BuildPerson 
               ((Member_getFirstName member) ++ " " ++
                 (Member_getFamilyName member m))) >>
           

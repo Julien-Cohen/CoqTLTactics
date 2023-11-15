@@ -26,8 +26,6 @@ Definition outputPatternLink (skinds : list SourceEKind) (tkind: TargetEKind)  (
 
 
 
-Definition outputPatternElementTypes (skinds : list SourceEKind) (tkind: TargetEKind) :=
-  denoteSignature skinds (denoteEDatatype tkind).
 
 
 
@@ -47,7 +45,7 @@ Record ConcreteOutputPatternUnit (InKinds: list SourceEKind) : Type :=
     {
       e_OutKind: TargetEKind ;
       e_name : string ;
-      e_outpat : nat -> SourceModel -> (outputPatternElementTypes InKinds e_OutKind) ;
+      e_outpat : nat -> SourceModel -> denoteSignature InKinds (option (denoteEDatatype e_OutKind)) ;
       e_outlink : list (ConcreteOutputPatternLink InKinds e_OutKind)
     }.
 

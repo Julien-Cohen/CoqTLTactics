@@ -41,7 +41,7 @@ Definition Moore2Mealy' :=
                           (lift_list (Moore.get_E_data Moore.Transition_K) m.(Model.modelElements)))))) (* fixme *)
       to [
         elem [Moore.State_K] Mealy.State_K "s"
-          (fun _ _ s => Build_State_t s.(Moore.State_id)) nil
+          (fun _ _ s => return Build_State_t s.(Moore.State_id)) nil
       ]
 ].
 

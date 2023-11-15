@@ -62,6 +62,7 @@ Definition Class2Relational_TUPLE_SP' :=
 
     to [ ELEM "tab" ::: Table_K  
           << fun _ _ c => 
+            return 
             {| 
               table_id := c.(class_id); 
               table_name := c.(class_name)
@@ -82,6 +83,7 @@ Definition Class2Relational_TUPLE_SP' :=
             (is_option_eq (getAttributeType a m) cl Class_t_beq))
     to [ ELEM "col" ::: Column_K 
          << fun _ _ a cl => 
+           return 
            {| 
              column_id := a.(attr_id) ;
              column_name := a.(attr_name) 

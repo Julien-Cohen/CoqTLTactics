@@ -97,6 +97,11 @@ Proof.
   }
 
   { (* eval output pattern *)
+    simpl. 
+    unfold ConcreteExpressions.makeElement.
+    unfold ConcreteExpressions.wrapElement.
+    simpl.
+    rewrite T.
     reflexivity.
   }
 
@@ -121,9 +126,6 @@ Proof.
     unfold  OptionListUtils.optionListToList.
 
     simpl ModelingMetamodel.constructor.
-    rewrite T.
-    simpl valueOption.
-
 
     apply in_flat_map.
     eexists ; split.
@@ -203,6 +205,11 @@ Proof.
     apply In_1. eexists ; reflexivity. 
   }
   { (* eval output pattern *)
+    simpl.
+    unfold ConcreteExpressions.makeElement.
+    unfold ConcreteExpressions.wrapElement.
+    simpl.
+    rewrite T.
     reflexivity.
   }
 
@@ -247,7 +254,6 @@ Proof.
       rewrite IN_S.
       simpl.
       left.
-      rewrite T.
       subst ; reflexivity.
       exact H.
     }
@@ -278,38 +284,36 @@ Proof.
   Tactics.exploit_link_in_result IN.
   { 
     PropUtils.inj IN0.
-    PropUtils.inj EQ.
     simpl in IN_L.
 
 
-    assert (S : SUCCESS (Moore.getTransition_target m t)).
-    { apply WF_T. assumption. }
-    destruct S as ( s2&GT).
 
-    unfold convert_transition in IN_L.
+    monadInv IN_L.
+    monadInv IN_L.
 
-    rewrite GT in IN_L. clear GT.
-    simpl valueOption in IN_L.
+    compute in EQ0.
+    PropUtils.inj EQ0.
+
 
     assert (S: SUCCESS (Moore.getTransition_source m t)).
     { apply WF_S. assumption. }
     destruct S as ( s1 & GS ).
 
     exists s1.
-    unfold Moore.Transition_getSourceObject in IN_L.
-    rewrite GS in IN_L.
-    simpl in IN_L.
+    unfold Moore.Transition_getSourceObject in EQ1.
+    rewrite GS in EQ1.
+    simpl in EQ1.
+    PropUtils.inj EQ1.
 
-
-    OptionUtils.monadInv IN_L ; simpl.
     unfold ModelingSemantics.resolve in IN_L.
     unfold ModelingSemantics.denoteOutput in IN_L.
-    PropUtils.destruct_match IN_L ; [ | discriminate IN_L].
+    monadInv IN_L.
+    compute in IN_L.
+    
     destruct t0 ; [ PropUtils.inj IN_L | discriminate IN_L].
 
-    rename Heqo into R.
+    rename EQ0 into R.
 
-    unfold Resolve.maybeResolve in R.
     unfold Resolve.resolve in R.
     destruct (Certification.tr_resolveIter_leaf _ _ _ _ _ R) as (tk&?&? &?&?&?).
     clear R.
@@ -331,13 +335,18 @@ Proof.
 
     apply Moore.getTransition_source_inv in GS. 
 
+    compute in t.
+
+    unfold convert_transition in EQ.
+    monadInv EQ.
     destruct t as (id & i) ; simpl in *.
-    split ; auto.
-    
 
     Tactics.exploit_in_trace H.
-    PropUtils.inj EQ.
-    destruct t0 ; reflexivity.
+    PropUtils.inj EQ0.
+    
+    split ; [ reflexivity | ].
+    exact GS.
+
   }
   
   { discriminate IN0. (* not the correct pattern. *)  }
@@ -366,36 +375,32 @@ Proof.
   { discriminate IN0. }
   { 
     PropUtils.inj IN0.
-    PropUtils.inj EQ.
     simpl in IN_L.
+    monadInv IN_L.
+    monadInv IN_L.
+    compute in EQ0. PropUtils.inj EQ0.
+    
+    compute in t.
 
-
-    assert (S : SUCCESS (Moore.getTransition_target m t)).
-    { apply WF_T. assumption. }
-    destruct S as ( s2&GT).
-
-    unfold convert_transition in IN_L.
-    rewrite GT in IN_L. 
-    simpl valueOption in IN_L.
+    unfold convert_transition in EQ. monadInv EQ.
+    simpl.
 
     assert (S: SUCCESS (Moore.getTransition_source m t)).
     { apply WF_S. assumption. }
     destruct S as ( s1 & GS ).
 
-    exists s2.
-    unfold Moore.Transition_getTargetObject in IN_L.
-    rewrite GT in IN_L.
-    simpl in IN_L.
-
-
-
-    OptionUtils.monadInv IN_L ; simpl.
+    exists s.
+    unfold Moore.Transition_getTargetObject in EQ1.
+    rewrite EQ in EQ1.
+    simpl in EQ1. PropUtils.inj EQ1.
+    
     unfold ModelingSemantics.resolve in IN_L.
     unfold ModelingSemantics.denoteOutput in IN_L.
-    PropUtils.destruct_match IN_L ; [ | discriminate IN_L].
+    monadInv IN_L. compute in IN_L. 
+    
     destruct t0 ; [ PropUtils.inj IN_L | discriminate IN_L].
 
-    rename Heqo into R.
+    rename EQ0 into R.
 
     unfold Resolve.maybeResolve in R.
     unfold Resolve.resolve in R.
@@ -417,14 +422,14 @@ Proof.
     unfold PoorTraceLink.getSourcePiece in H0 ;  simpl in H0.
     subst.
 
-    apply Moore.getTransition_target_inv in GT. 
+    apply Moore.getTransition_target_inv in EQ.
 
+    Tactics.exploit_in_trace H ; [].
+
+    simpl in * ; PropUtils.inj EQ0.
+    split ; [ reflexivity | ].
     destruct t as (id & i) ; simpl in *.
-    split ; auto.
-    
-    Tactics.exploit_in_trace H.
-    PropUtils.inj EQ.
-    destruct t0 ; simpl. reflexivity. 
+    exact EQ.
   }
   
 Qed.

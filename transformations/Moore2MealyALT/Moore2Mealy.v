@@ -35,6 +35,7 @@ Definition Moore2Mealy' :=
       to [
         ELEM "s" ::: Mealy.State_K  
           << fun _ _ s => 
+	    return 
             {|
               State_id := s.(Moore.State_id) 
             |} >>
@@ -46,7 +47,7 @@ Definition Moore2Mealy' :=
       to [
         ELEM "t" ::: Mealy.Transition_K
           << fun _ m t => 
-            {|
+            return {|
               Transition_source := t.(Moore.Transition_source) ;
               Transition_input := t.(Moore.Transition_input) ;
               Transition_output := value (option_map Moore.State_output (Moore.getTransition_target m t));

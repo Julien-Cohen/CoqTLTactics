@@ -58,7 +58,7 @@ Definition Class2Relational :=
         (makeIterator [Class_K] (fun m c => 1))
         [buildOutputPatternUnit "tab"
           (makeElement [Class_K] Table_K
-            (fun i m c => Build_Table_t (Class_id c) (Class_name c)))
+            (fun i m c => return Build_Table_t (Class_id c) (Class_name c)))
             (Parser.dropToList(makeLink [Class_K] Table_K Table_columns_K
             (fun tls i m c t =>
               attrs <- getClass_attributes c m;
@@ -71,7 +71,7 @@ Definition Class2Relational :=
         (makeIterator [Attribute_K] (fun m a => 1))
         [buildOutputPatternUnit "col"
           (makeElement [Attribute_K] Column_K
-            (fun i m a => Build_Column_t (Attribute_id a) (Attribute_name a)))
+            (fun i m a => return Build_Column_t (Attribute_id a) (Attribute_name a)))
             (Parser.dropToList(makeLink [Attribute_K] Column_K Column_reference_K
               (fun tls i m a c =>
                 cl <- getAttribute_type a m;

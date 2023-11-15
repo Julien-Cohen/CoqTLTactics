@@ -38,13 +38,6 @@ Definition convert_transition m (t : Moore.Transition_t) : option Mealy.Transiti
   | Some s => Some (Mealy.Build_Transition_t t.(Moore.Transition_id) t.(Moore.Transition_input) s.(Moore.State_output))
   end.
 
-Definition dummy t := 
-  {|
-    Transition_id := t.(Moore.Transition_id) ;
-    Transition_input := t.(Moore.Transition_input) ;
-    Transition_output := "" 
-  |}.
-
 Definition Moore2Mealy' :=
     transformation
     [
@@ -52,16 +45,14 @@ Definition Moore2Mealy' :=
       from [Moore.State_K]
       to [
         ELEM "s" ::: Mealy.State_K  
-          << fun _ _ s => convert_state s >>
+          << fun _ _ s => return convert_state s >>
       ];
 
       rule "transition"
       from [Moore.Transition_K]
       to [
         ELEM "t" ::: Mealy.Transition_K
-          << fun _ m t =>
-            valueOption (convert_transition m t) (dummy t) (* Ici on pourrait prouver que si le modèle en entrée est bien formé, alors la requête getTransition_target va réussir. Mais difficile de convaincre le système de type de coq de cela. On est donc obligé de gérer le cas problématique. Idealement, on renverrait une option, mais ici on renvoit n'importe quoi, ce qui n'est pas grave car ce cas est impossible. Même si on ajoutait la pré-condition dans la garde, il serait pénible de convaincre le système de types de coq que la fonction est totale. *)
-          >> 
+          << fun _ m t => convert_transition m t >> 
           
         LINK ::: Mealy.Transition_source_K 
           << fun tls _ m moore_tr mealy_tr =>

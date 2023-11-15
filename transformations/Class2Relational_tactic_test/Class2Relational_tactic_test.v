@@ -69,7 +69,7 @@ Definition Class2Relational_tactic_test' :=
     from [Class_K]
     where (fun m c => (beq_string c.(class_name) "Person"))
     to [ ELEM "tab" ::: Table_K  
-          << fun _ _ c => Build_Table_t c.(class_id) c.(class_name) >>
+          << fun _ _ c => return Build_Table_t c.(class_id) c.(class_name) >>
     
          LINK ::: TableColumns_K
           << fun tls _ m c t =>
@@ -86,7 +86,7 @@ Definition Class2Relational_tactic_test' :=
     where (fun m c => 
       negb (beq_string c.(class_name) "Person"))
     to [ ELEM "tab" ::: Table_K  
-          << fun _ _ c => Build_Table_t c.(class_id) c.(class_name) >>
+          << fun _ _ c => return Build_Table_t c.(class_id) c.(class_name) >>
 
          LINK ::: TableColumns_K 
           << fun tls _ m c t =>
@@ -103,7 +103,7 @@ Definition Class2Relational_tactic_test' :=
             andb (negb (derived a)) 
             (is_option_eq (getAttributeType a m) cl Class_t_beq))
     to [ ELEM "col" ::: Column_K 
-          << fun _ _ a cl => Build_Column_t a.(attr_id) a.(attr_name) >>
+          << fun _ _ a cl => return Build_Column_t a.(attr_id) a.(attr_name) >>
 
          LINK ::: ColumnReference_K 
           << fun tls _ m a cl c =>

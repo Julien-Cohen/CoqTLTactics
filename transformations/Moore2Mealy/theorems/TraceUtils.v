@@ -12,10 +12,11 @@ Import Moore2Mealy.
 (** There are exactly two kinds of correspondences in traces (one for each rule) : *)
 Lemma in_trace_inv (m:Moore.M) t :
 In t (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
-   (exists a , 
+   (exists a b, 
+       convert_transition m a = Some b /\
        t = buildTraceLink 
              ([Moore.Transition a], 0, "t"%string)
-             (Mealy.Transition (OptionUtils.valueOption (convert_transition m a) (dummy a))))
+             (Mealy.Transition b))
    \/ (exists s , 
           t = 
             buildTraceLink
@@ -23,8 +24,9 @@ In t (RichTraceLink.drop (traceTrOnModel Moore2Mealy m)) ->
               (Mealy.State (Moore2Mealy.convert_state s))).
 Proof.
   intro H.
-  Tactics.exploit_in_trace H ; [ right | left ] ;
-  eexists ; reflexivity. 
+  Tactics.exploit_in_trace H ; [ right | left ]. 
+  { eexists ; reflexivity. } 
+  { eexists ; eexists. simpl. split. eassumption. reflexivity. }
 Qed.
 
 (** We can statically know what each State will yield in the trace: *)
@@ -86,11 +88,14 @@ Proof.
   f_equal.
   
   Tactics.exploit_in_trace IN1; 
-  Tactics.exploit_in_trace IN2 ;
-  PropUtils.inj EQ0 ;
-  PropUtils.inj EQ ; auto.
+  Tactics.exploit_in_trace IN2 ; 
+  try PropUtils.inj EQ0 ;  
+  try PropUtils.inj EQ ; 
+  try PropUtils.inj EQ1 ; auto.
   discriminate.
   discriminate.
+
+  rewrite EQ0 in EQ2 ; PropUtils.inj EQ2 (* unif *) ; reflexivity.
 Qed.
 
 

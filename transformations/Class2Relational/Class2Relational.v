@@ -71,7 +71,7 @@ Definition R1 : ConcreteRule :=
     from [ (* c *) Class_K]
 
     to [ ELEM "tab" (* t *) ::: Table_K  
-        << fun _ _ c => convert_class c >>
+        << fun _ _ c => return convert_class c >>
         
         LINK ::: Table_columns_K
          << fun thisModule _ m c t =>
@@ -98,7 +98,7 @@ Definition R2 : ConcreteRule :=
     where (fun _ a => negb a.(Attribute_derived))
     to [ 
       ELEM "col" (* c *) ::: Column_K 
-        << fun _ _ a => convert_attribute a >>
+        << fun _ _ a => return convert_attribute a >>
              
        LINK ::: Column_reference_K
        <<  fun thisModule _ m a c =>
