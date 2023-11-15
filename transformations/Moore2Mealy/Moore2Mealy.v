@@ -53,8 +53,7 @@ Definition Moore2Mealy' :=
       to [
         ELEM "s" ::: Mealy.State_K  
           << fun _ _ s => convert_state s >>
-          
-        ];
+      ];
 
       rule "transition"
       from [Moore.Transition_K]
@@ -62,20 +61,20 @@ Definition Moore2Mealy' :=
         ELEM "t" ::: Mealy.Transition_K
           << fun _ m t =>
             valueOption (convert_transition m t) (dummy t) (* Ici on pourrait prouver que si le modèle en entrée est bien formé, alors la requête getTransition_target va réussir. Mais difficile de convaincre le système de type de coq de cela. On est donc obligé de gérer le cas problématique. Idealement, on renverrait une option, mais ici on renvoit n'importe quoi, ce qui n'est pas grave car ce cas est impossible. Même si on ajoutait la pré-condition dans la garde, il serait pénible de convaincre le système de types de coq que la fonction est totale. *)
-                          
- >> 
+          >> 
           
         LINK ::: Mealy.Transition_source_K 
           << fun tls _ m moore_tr mealy_tr =>
              t_source <- Moore.Transition_getSourceObject moore_tr m ;
              res <- resolve tls "s" Mealy.State_K (singleton t_source) ;
-             do_glue mealy_tr with res >> ;
-            
+             do_glue mealy_tr with res 
+          >> ;
+
         LINK ::: Mealy.Transition_target_K 
           << fun tls _ m moore_tr mealy_tr =>
-            t_target <- Moore.Transition_getTargetObject moore_tr m ;
-            res <- resolve tls "s" Mealy.State_K (singleton t_target) ;
-            do_glue mealy_tr with res 
+             t_target <- Moore.Transition_getTargetObject moore_tr m ;
+             res <- resolve tls "s" Mealy.State_K (singleton t_target) ;
+             do_glue mealy_tr with res 
           >>
       ]
 ].
