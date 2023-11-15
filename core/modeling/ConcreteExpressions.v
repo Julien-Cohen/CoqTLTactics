@@ -25,11 +25,11 @@ Fixpoint denoteSignature (l : list SourceEKind) (r : Type) : Type :=
   | k :: l' => denoteEDatatype k -> denoteSignature l' r
   end.
 
-(** generate function with the convenient type. *) 
+(** Generate a constant function with the convenient type. *) 
 Fixpoint dummy {T} (l:list SourceEKind) (n:T) : denoteSignature l T :=
   match l with
   | nil => n
-  | k::r => fun e => dummy r n
+  | k::r => (fun _ => dummy r n)
   end.
 
 
@@ -54,18 +54,21 @@ Fixpoint wrap
       | Some d => 
           fun f  => wrap rk (f d) re
       
-      | None => mismatch
+      | None => mismatch (* the element [e] has a wrong type with respect to k *)
       end
 
-  | (_::_, nil) => mismatch
+  | (_::_, nil) => mismatch (* not enough parameters received *)
 
   
-  | (nil, _::_) => mismatch
+  | (nil, _::_) => mismatch (* too much parameters received *)
 
           
   end imp.
+
 (** Example : wrap [k1;k2;k3] f [C1 e1 ; C2 e2 ; C3 e3] = Some (f e1 e2 e3) (if all the types match) *)
+
 (** Example : wrap [k1;k2;k3] f [C1 e1 ; C2 e2 ] = None *)
+
 (** Example : wrap [k1;k2;k3] f [C1 e1; C2 e2 ;C4 e2] = None (k3 and C4 do not match) *)
 
 
@@ -139,11 +142,12 @@ Definition wrapElement
   (skinds : list SourceEKind) 
   (tk : TargetEKind) 
   (imp : denoteSignature skinds (denoteEDatatype tk))
-  (selements : list SourceElementType)  :
-  option TargetElementType := 
-
-    v <- wrap skinds imp selements ;
+  (selements : list SourceElementType)  
+  : option TargetElementType 
+  := 
+     v <- wrap skinds imp selements ;
      return elements.(constructor) tk v.
+
 
 Definition wrapLink
   (skinds : list SourceEKind)
@@ -189,7 +193,7 @@ Definition ElementFunction : Type :=
 Definition makeElement 
   (l : list SourceEKind) 
   (k : TargetEKind)
-  (imp : nat -> SourceModel -> denoteSignature l (option (denoteEDatatype k))) 
+  (imp : nat -> SourceModel -> denoteSignature l (denoteEDatatype k)) 
   : ElementFunction :=
    fun it sm => wrapElement l k (imp it sm).
 
