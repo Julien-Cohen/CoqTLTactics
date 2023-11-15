@@ -104,7 +104,7 @@ Lemma state_element_fw :
 Proof.
   intros s IN.
   eapply transform_element_fw ; eauto. 
-  compute ; auto.
+  compute ; auto. (* Since CoqTL is computational, forward reasoning can rely on evaluation.*)
 Qed.
 
 Lemma state_element_bw :

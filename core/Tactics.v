@@ -674,8 +674,8 @@ Proof.
   intros IN1 IN2.
   simpl.
   unfold traceTrOnModel.
-  rewrite map_flat_map.
-  apply List.in_flat_map.
+  rewrite map_flat_map. (* a trace can have several target elements *)
+  apply List.in_flat_map. (* this is doing the job *)
   eauto.
 Qed.
 
@@ -687,8 +687,8 @@ Lemma transform_element_fw {tc} cm e te (t:Syntax.Transformation (tc:=tc)) :
   In te (modelElements (execute t cm)).
 Proof.
   intros A IN1 IN2.
-  eapply Tactics.allModelElements_allTuples in IN1 ; [ | exact A].
-  eapply transform_elements_fw ; eauto.
+  eapply Tactics.allModelElements_allTuples in IN1 ; [ | exact A]. (* from element to singleton *)
+  eapply transform_elements_fw ; eassumption.
 Qed.
 
 
