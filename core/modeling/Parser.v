@@ -32,11 +32,12 @@ Definition dropToList :
   -> (Trace -> nat -> SourceModel -> InputPiece -> TargetElementType -> list TargetLinkType ) 
   := fun f => (fun a b c d e => optionListToList (f a b c d e)).
   
-Definition parseOutputPatternUnit (inkinds: list SourceEKind) (co: ConcreteOutputPatternElement inkinds) : OutputPatternUnit :=
-  buildOutputPatternUnit
-    co.(e_name)
-    (makeElement inkinds co.(e_OutKind) co.(e_outpat))
-    (dropToList (parseOutputPatternLinks inkinds co.(e_OutKind) co.(e_outlink))).
+Definition parseOutputPatternUnit (inkinds: list SourceEKind) (co: ConcreteOutputPatternUnit inkinds) : OutputPatternUnit :=
+  {|
+    opu_name :=  co.(e_name) ;
+    opu_element :=  makeElement inkinds co.(e_OutKind) co.(e_outpat) ;
+    opu_link := dropToList (parseOutputPatternLinks inkinds co.(e_OutKind) co.(e_outlink))
+  |}.
 
 Definition parseRule(cr: ConcreteRule) : Rule :=
   buildRule

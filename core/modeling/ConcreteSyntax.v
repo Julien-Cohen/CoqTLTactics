@@ -42,7 +42,7 @@ Global Arguments o_OutRefKind {_ _}.
 Global Arguments o_outpat {_ _}.
 
 
-Record ConcreteOutputPatternElement (InKinds: list SourceEKind) : Type :=
+Record ConcreteOutputPatternUnit (InKinds: list SourceEKind) : Type :=
   elem
     {
       e_OutKind: TargetEKind ;
@@ -63,7 +63,7 @@ Record ConcreteRule  :=
       r_InKinds: list SourceEKind ;
       r_guard  : option (SourceModel -> (denoteSignature r_InKinds bool)) ;
       r_iter   : option (SourceModel -> (denoteSignature r_InKinds nat))  ;
-      r_outpat : list (ConcreteOutputPatternElement r_InKinds)
+      r_outpat : list (ConcreteOutputPatternUnit r_InKinds)
     }.
 
 Inductive ConcreteTransformation : Type :=
@@ -74,8 +74,8 @@ Inductive ConcreteTransformation : Type :=
 (** ** Accessors **)
 
 
-Definition ConcreteRule_findConcreteOutputPatternElement (r: ConcreteRule) (name: string) : option (ConcreteOutputPatternElement (r_InKinds r)) :=
-  find (fun(o:ConcreteOutputPatternElement r.(r_InKinds) ) => beq_string name o.(e_name))
+Definition ConcreteRule_findConcreteOutputPatternUnit (r: ConcreteRule) (name: string) : option (ConcreteOutputPatternUnit (r_InKinds r)) :=
+  find (fun(o:ConcreteOutputPatternUnit r.(r_InKinds) ) => beq_string name o.(e_name))
         r.(r_outpat).
 
 Definition ConcreteTransformation_getConcreteRules (x : ConcreteTransformation) : list ConcreteRule :=

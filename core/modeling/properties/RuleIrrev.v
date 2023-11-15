@@ -27,7 +27,7 @@ Definition output_relevent (r: ConcreteRule) (tp: TargetModelClass) : Prop.
 Proof.
 destruct (ConcreteRule_getConcreteOutputPattern r) eqn: op.
 - exact False.
-- specialize (map (ConcreteOutputPatternElement_getOutType) (c::l)).
+- specialize (map (ConcreteOutputPatternUnit_getOutType) (c::l)).
   intro.
   exact (In tp X).
 Qed.

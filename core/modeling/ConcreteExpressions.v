@@ -143,7 +143,7 @@ Definition wrapElement
   option TargetElementType := 
 
     v <- wrap skinds imp selements ;
-    return (elements.(constructor) tk v).
+     return elements.(constructor) tk v.
 
 Definition wrapLink
   (skinds : list SourceEKind)
@@ -186,10 +186,12 @@ Definition makeIterator (l : list SourceEKind)
 Definition ElementFunction : Type :=
   nat -> SourceModel -> (list SourceElementType) -> option TargetElementType.
 
-Definition makeElement (l : list SourceEKind) (k : TargetEKind)
-  (imp : nat -> SourceModel -> denoteSignature l (denoteEDatatype k)) :
-  ElementFunction :=
-  fun it sm => wrapElement l k (imp it sm).
+Definition makeElement 
+  (l : list SourceEKind) 
+  (k : TargetEKind)
+  (imp : nat -> SourceModel -> denoteSignature l (option (denoteEDatatype k))) 
+  : ElementFunction :=
+   fun it sm => wrapElement l k (imp it sm).
 
 Definition LinkFunction : Type :=
   Trace
