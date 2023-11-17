@@ -130,6 +130,12 @@ Fixpoint zipWith {A : Type} {B : Type} {C : Type} (f: A -> B -> C) (la: list A) 
   | _, nil => nil
   end.
 
+Ltac auto_in_flat_map :=
+    match goal with 
+      [H: In _ (flat_map _ _) |- _ ] =>
+        apply in_flat_map in H ; destruct H as (? & (? & ?))
+    end.
+
 Theorem in_flat_map_nil:
   forall {A B : Type} (f : A -> list B) (l : list A),
     (flat_map f l) = nil <-> (forall a: A, In a l -> f a = nil).

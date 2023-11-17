@@ -41,142 +41,15 @@ Qed.
 
 (** * Destructors *)
 
-Ltac destruct_in_modelElements_execute H :=
-  match type of H with 
-    In _ ( (execute ?T _).(modelElements))  =>
-      let H2 := fresh "IN_E" in
-      let e := fresh "sp" in
-      rewrite (core.Certification.tr_execute_in_elements T) in H ;
-      destruct H as [e [H2 H]]
-  end.
 
-Ltac destruct_in_modelLinks_execute H NEWNAME := 
-  match type of H with
-    In _ (modelLinks (execute ?T _)) =>
-      let e := fresh "sp" in
-      rewrite (core.Certification.tr_execute_in_links T) in H;
-      destruct H as [e [NEWNAME H]]                                           
-  end.     
-
-
-Ltac destruct_instantiateOnPiece H IN_MATCH_NEWNAME :=
-  match type of H with 
-    In _ (elements_proj (traceTrOnPiece ?T _ _)) =>
-      let e := fresh "r" in
-      rewrite (core.Certification.tr_instantiateOnPiece_in T) in H ;
-      destruct H as [e [IN_MATCH_NEWNAME H]]
-  end.
-
-
-
-Ltac destruct_in_matchingRules H NEWNAME :=
+(* used 3 times in this file *)
+Local Ltac destruct_in_matchingRules H NEWNAME :=
   match type of H with 
     | In _ (matchingRules ?T _ _)  =>
       rewrite (core.Certification.tr_matchingRules_in T) in H ;
       destruct H as [H NEWNAME]
   end.
 
-
-Ltac destruct_instantiateRuleOnPiece H IN_IT_NEWNAME:=
-  match type of H with 
-    In _ (elements_proj (traceRuleOnPiece _ _ _)) =>
-      let e := fresh "n" in
-      rewrite (core.Certification.tr_instantiateRuleOnPiece_in) in H ;
-      destruct H as [e [IN_IT_NEWNAME H]]
-  end.
-
-
-Ltac destruct_instantiateIterationOnPiece H NEWNAME :=
-  match type of H with 
-    In _ (elements_proj (traceIterationOnPiece _ _ _ _)) =>
-      let e := fresh "opu" in
-      apply core.Certification.tr_instantiateIterationOnPiece_in in H ;
-      destruct H as [e [NEWNAME H]]
-  end.
-
-
-Ltac destruct_apply_pattern H IN_MATCH_NEWNAME :=
-  match type of H with 
-    In _ (applyTrOnPiece _ _ _) => 
-      let R := fresh "r" in
-      apply core.Certification.tr_applyOnPiece_in in H ; 
-      destruct H as (R & (IN_MATCH_NEWNAME & H))
-end.
-
-
-Ltac destruct_applyRuleOnPiece H NEW1 NEW2 :=
-  match type of H with
-    | In _ (applyRuleOnPiece _ _ _ _) =>
-      let N := fresh "n" in 
-
-      apply core.Certification.tr_applyRuleOnPiece_in in H ;
-      destruct H as (N & (NEW1 & NEW2))
-  end.
-
-
-Ltac destruct_applyIterationOnPiece H NEWNAME :=
-  match type of H with
-    | In _ (applyIterationOnPiece _ _ _ _ _ )  =>
-      let p := fresh "p" in
-      apply core.Certification.tr_applyIterationOnPiece_in in H ;
-      destruct H as (p & (NEWNAME & H))
-  end.
-
-
-
-(** On traces. *)
-Ltac destruct_trace H :=
-  match type of H with 
-  | In _ (compute_trace _ _ )  => 
-      let p:= fresh "p" in
-      let IN := fresh "IN" in
-      unfold compute_trace in H ;
-      apply in_flat_map in H ; 
-      destruct H as (p & (IN & H))
-  | _ => fail "Failure in destruct_trace."
-  end.
-
-Ltac destruct_traceOnPiece H :=
-  match type of H with 
-    | In _ (traceTrOnPiece _ _ _) => 
-        let p:= fresh "r" in
-        let IN := fresh "IN" in
-        unfold traceTrOnPiece in H ;
-        apply in_flat_map in H ; 
-        destruct H as (p & (IN & H))
-  | _ => fail "Failure in destruct_traceOnPiece."
-  end.
-
-
-Ltac destruct_traceRuleOnPiece H :=
-  let p:= fresh "i" in
-  let IN := fresh "IN" in
-  match type of H  with 
-    | In _ (traceRuleOnPiece _ _ _) => 
-      unfold traceRuleOnPiece in H ;
-      apply in_flat_map in H ; 
-      destruct H as (p & (IN & H))
-  | _ => fail "Failure in destruct_traceRuleOnPiece."
-  end.
-
-Ltac destruct_traceIterationOnPiece H :=
-  match type of H with 
-    | In _ (traceIterationOnPiece _ _ _ _) => 
-        let p:= fresh "e" in
-        let IN := fresh "IN" in
-        unfold traceIterationOnPiece in H ;
-        apply in_flat_map in H ; 
-        destruct H as (p & (IN & H))
-  | _ => fail "Failure in destruct_traceIterationOnPiece."
-  end.
-
-
-
-Ltac destruct_in_optionToList H :=
-  let TMP := fresh "TMP" in
-  match type of H with 
-    | In _ (optionToList _) => apply in_optionToList in H
-  end.
 
 
 
@@ -202,17 +75,20 @@ Proof.
   unfold RichTraceLink.drop in H.
   apply in_map_iff in H.
   destruct H as (lk0, (CONV, H)).
-  destruct_trace H ; 
-  destruct_traceOnPiece H ; 
-  destruct_traceRuleOnPiece H ; 
-  destruct_traceIterationOnPiece H ; 
-  destruct_in_optionToList H.
-  Tactics.destruct_in_matchingRules IN0 M.
-  unfold traceElementOnPiece in H.
- 
-  OptionUtils.monadInv H.
+  
+  unfold compute_trace,
+    traceTrOnPiece,
+    traceRuleOnPiece,
+    traceIterationOnPiece,
+    traceElementOnPiece in H.
+  
+  repeat auto_in_flat_map.
+  apply in_optionToList in H3.
+  OptionUtils.monadInv H3.
+  Tactics.destruct_in_matchingRules H0 M.
+  
   unfold RichTraceLink.convert ; simpl.
-  eauto 12.
+  repeat eexists ; try eassumption.
 Qed.
 
 
@@ -274,16 +150,23 @@ Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ} :
     /\ UserExpressions.evalOutputPatternUnit opu cm sp n0 = Some a.
 Proof.
   intros. 
-  destruct_in_modelElements_execute H.  
-  destruct_instantiateOnPiece H NEW1. 
-  destruct_instantiateRuleOnPiece H NEW2. 
-  destruct_instantiateIterationOnPiece H NEW3. 
-  unfold traceElementOnPiece in H.
-  OptionUtils.monadInv H.
-  OptionUtils.monadInv H.
-  simpl RichTraceLink.produced.
+
+  apply core.Certification.tr_execute_in_elements in H ;
+    destruct H as (sp & IN_E & H).
+
+  apply core.Certification.tr_instantiateOnPiece_in in H ; 
+    destruct H as (r & NEW1 & H).
+
+  apply core.Certification.tr_instantiateRuleOnPiece_in in H ;
+    destruct H as (n & NEW2 & H).  
+ 
+  apply core.Certification.tr_instantiateIterationOnPiece_in in H ; 
+    destruct H as (opu & NEW3 & H). 
+
+  rewrite Certification.tr_instantiateElementOnPiece_leaf in H.
+
   destruct_in_matchingRules NEW1 NEW4. 
-  eauto 10.
+  repeat eexists ; eassumption.
 Qed.
 
 
@@ -337,9 +220,46 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
 
 Proof.
   intros.
+  
+  Local Ltac destruct_in_modelLinks_execute H NEWNAME := 
+    match type of H with
+      In _ (modelLinks (execute ?T _)) =>
+        let e := fresh "sp" in
+        rewrite (core.Certification.tr_execute_in_links T) in H;
+        destruct H as [e [NEWNAME H]]                                             end.     
+  
+  
   destruct_in_modelLinks_execute H IN_E. 
+  
+  Local  Ltac destruct_apply_pattern H IN_MATCH_NEWNAME :=
+    match type of H with 
+      In _ (applyTrOnPiece _ _ _) => 
+        let R := fresh "r" in
+        apply core.Certification.tr_applyOnPiece_in in H ; 
+        destruct H as (R & (IN_MATCH_NEWNAME & H))
+    end.
+
   destruct_apply_pattern H IN_RULE.  
+  
+  Local Ltac destruct_applyRuleOnPiece H NEW1 NEW2 :=
+    match type of H with
+    | In _ (applyRuleOnPiece _ _ _ _) =>
+        let N := fresh "n" in 
+        
+        apply core.Certification.tr_applyRuleOnPiece_in in H ;
+        destruct H as (N & (NEW1 & NEW2))
+    end.
+
   destruct_applyRuleOnPiece H IN_IT IN_APP_PAT. 
+  
+  Local Ltac destruct_applyIterationOnPiece H NEWNAME :=
+    match type of H with
+    | In _ (applyIterationOnPiece _ _ _ _ _ )  =>
+        let p := fresh "p" in
+        apply core.Certification.tr_applyIterationOnPiece_in in H ;
+        destruct H as (p & (NEWNAME & H))
+    end.
+  
   destruct_applyIterationOnPiece IN_APP_PAT H_IN_OUTPAT.   
   destruct_in_matchingRules IN_RULE H_MATCH_RULE.
   unfold applyUnitOnPiece in IN_APP_PAT.

@@ -99,24 +99,12 @@ forall (r : Rule) (sm : SourceModel) (sp: InputPiece) (te : TargetElementType) (
 Proof.
   unfold traceIterationOnPiece.
   intros r sm sp te i.
-  rewrite map_flat_map.
-  split ; intros.
-  * apply in_flat_map in H.
-    destruct H as (x, (H, H0)).
-    exists x.
-    unfold optionToList in H0.
-    split. 
-    - exact H.
-    - destruct (traceElementOnPiece x sm sp i).
-      ** crush.
-      ** contradiction.
-  * apply in_flat_map.
-    destruct H as (x, (H, H0)).
-    exists x.
-    split.
-    - exact H.
-    - monadInv H0.
-      crush.
+  rewrite map_flat_map. 
+  rewrite in_flat_map.
+  split ;
+    intros (x & H1 & H2) ;
+    exists x ;
+    destruct (traceElementOnPiece x sm sp i) ; crush.
 Qed.
 
 Lemma  tr_instantiateElementOnPiece_leaf:
@@ -203,13 +191,13 @@ Lemma allTuples_not_incl_length:
   forall (sp : InputPiece) (tr: Transformation) (sm: SourceModel), 
   length sp > tr.(arity) -> not (In sp (allTuples tr sm)).
 Proof.
-intros sp tr sm c.
-apply Gt.gt_not_le in c.
-revert c.
-apply contraposition.
-unfold allTuples.
-specialize (tuple_length sp sm.(modelElements) tr.(arity)).
-crush.
+  intros sp tr sm c.
+  apply Gt.gt_not_le in c.
+  revert c.
+  apply contraposition.
+  unfold allTuples.
+  specialize (tuple_length sp sm.(modelElements) tr.(arity)).
+  crush.
 Qed.
 
 (** * Resolve *)
@@ -232,35 +220,18 @@ Theorem tr_resolveAllIter_in:
         In sp sps /\
         resolveIter tls name sp iter = Some te).
 Proof.
-  intros.
-      intros.
-  split.
-  - intros.
-    destruct H. destruct H.
-    unfold resolveAllIter in H.
-    inversion H.
-    rewrite <- H2 in H0.
-    apply in_flat_map in H0.
-    destruct H0. destruct H0.
-    exists x0. split; auto.
-    destruct (resolveIter tls name x0 iter).
-    -- unfold optionToList in H1. crush.
+  unfold resolveAllIter.
+  intros. 
+  split ; intros (? & ? & ?). 
+  - inj H.
+    apply in_flat_map in H0 ; destruct H0 as (? & ? & ?).
+    exists x. split; [ assumption | ].
+    destruct (resolveIter tls name x iter) ; [ | exfalso].
     -- crush.
-  - intros.
-    destruct H. destruct H.
-    remember (resolveAllIter tls name sps iter) as tes1.
-    destruct tes1 eqn: resolveAll.
-    -- exists l.
-        split. auto.
-        unfold resolveAllIter in Heqtes1.
-        inversion Heqtes1.
-        apply in_flat_map.
-        exists x. split. auto.
-        destruct (resolveIter tls name x iter).
-        --- crush.
-        --- crush.
-    -- unfold resolveAllIter in Heqtes1.
-        crush.
+    -- contradiction. 
+  - eexists ; split ; [ reflexivity | ].
+    apply in_flat_map ; exists x ; split ; [assumption | ].
+    rewrite H0. simpl ; auto.
 Qed.
 
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
@@ -275,21 +246,19 @@ Theorem tr_resolveIter_leaf:
         ((PoorTraceLink.getName tl) = name)%string /\
         tl.(PoorTraceLink.produced) = x).
 Proof.
-intros.
-unfold resolveIter in H.
-match type of H with context[find ?F tls] => destruct (find F tls) eqn: find_ca end.
-- exists t.
-  apply List.find_some in find_ca.
-  destruct find_ca.
-  symmetry in H1.
-  apply andb_true_eq in H1.
-  destruct H1.
-  apply andb_true_eq in H1.
-  destruct H1.
-  crush.
-  -- apply beq_nat_true. crush.
-  -- apply String.eqb_eq. crush.
-- inversion H.
+  intros.
+  unfold resolveIter in H.
+  monadInv H.
+  apply List.find_some in H.
+  destruct H.
+  exists t. 
+  unfold PoorTraceLink.source_compare in H0.
+  repeat (apply andb_prop in H0 ; destruct H0).
+  repeat split.
+  * assumption.
+  * apply Is_true_eq_left. assumption.
+  * apply beq_nat_true. assumption.      
+  * apply String.eqb_eq. assumption.
 Qed.
 
 
@@ -351,37 +320,29 @@ Next Obligation.
 Qed.
 
 (* matched sp must produce matched rule's output element 
-  genearlization of lemma such as: Attribute_name_preservation
+  generalization of lemma such as: Attribute_name_preservation
 *)
 
+(* not used *)
 Lemma tr_match_injective :
   forall (sm : SourceModel)(sp : InputPiece)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIterator r sm sp)) /\ 
       (exists opu, In opu r.(r_outputPattern) /\  (evalOutputPatternUnit opu sm sp iter) <> None ) ->
     (exists (te: TargetElementType),  In te (elements_proj (traceRuleOnPiece r sm sp)) ).
 Proof.
-  intros.
-  destruct H as [Hiter Hopu].
-  destruct Hopu as [opu HopuIn].
-  destruct HopuIn as [HopuInr HopuEval].
+  intros until iter.
+  intros (H_iter & opu & HopuInr & HopuEval). 
   apply option_res_dec in HopuEval.
   destruct HopuEval as [te Hte].
   exists te.
-  unfold traceRuleOnPiece.
-  rewrite map_flat_map.
-  apply in_flat_map.
+  apply tr_instantiateRuleOnPiece_in. 
   exists iter.
-  split.
-  - exact Hiter.
-  - unfold traceIterationOnPiece.
-    rewrite map_flat_map.
-    apply in_flat_map.
-    exists opu. 
-    split. 
-    -- exact HopuInr.
-    -- unfold traceElementOnPiece.
-       rewrite Hte. 
-       crush.
+  split ; [ assumption | ].
+  apply tr_instantiateIterationOnPiece_in.
+  exists opu.
+  split ; [ assumption | ].
+  rewrite tr_instantiateElementOnPiece_leaf.
+  assumption.
 Qed.
 
 
