@@ -95,7 +95,7 @@ Proof.
   discriminate.
   discriminate.
 
-  rewrite EQ0 in EQ2 ; PropUtils.inj EQ2 (* unif *) ; reflexivity.
+  PropUtils.unif EQ0 EQ2 ; reflexivity.
 Qed.
 
 

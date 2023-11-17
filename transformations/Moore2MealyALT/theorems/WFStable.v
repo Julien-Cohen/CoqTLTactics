@@ -25,7 +25,7 @@ Proof.
   PropUtils.destruct_match_H H2 ; [ PropUtils.inj H2 | discriminate H2 ] ; simpl in *.
   specialize (WF_2 H3 H4).
   subst.
-  rewrite Heqo in Heqo0 ; PropUtils.inj Heqo0. (* auto_unif *)
+  PropUtils.unif Heqo Heqo0. (* auto_unif *)
   reflexivity.
 Qed.
 

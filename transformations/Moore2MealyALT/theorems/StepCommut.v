@@ -32,7 +32,7 @@ Proof.
   destruct (MooreSemantics.State_out_transitions_inv  _ _ _ H).
   apply Elements.transition_element_fw in H1 ; auto.
   destruct H1 as (?&?&?).
-  rewrite H0 in H1. PropUtils.inj H1. (* unif *) (* pourquoi ? *)
+  PropUtils.unif H0 H1. (* pourquoi ? *)
 
   destruct (Elements.convert_transition_nec _ _ _ H0) as (?&?&?).
   subst.
@@ -226,8 +226,7 @@ Proof.
   rewrite H10.
   destruct (Elements.convert_transition_nec _ _ _ H3) as (?&?&?) ; subst t'.
   simpl.
-  rewrite H11 in H8. (* unif *)
-  PropUtils.inj H8.
+  PropUtils.unif H11 H8.
   eauto.
 Qed.
 
