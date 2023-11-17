@@ -28,31 +28,16 @@ Import PoorTraceLink.
 
 
 
-(** There are exactly two kinds of correspondences in traces (one for each rule): *)
-Lemma in_trace_inv m t :
-  In t (RichTraceLink.drop (compute_trace Class2Relational m)) ->
-  
-  (exists a, t = (buildTraceLink 
-        ([AttributeElement a], 0, "col")
-        (ColumnElement (convert_attribute a))))
-   \/ 
-   (exists c, t = buildTraceLink 
-        ([ClassElement c], 0, "tab")
-        (TableElement (convert_class c))).
-Proof.
-  intro H.
-  Tactics.exploit_in_trace H ; [ right | left ] ;
-  eexists ; reflexivity. 
-Qed.
-
-
-(** We can statically know what each Class will yield in the trace: *)
+(* FW *)
+(** We can statically know what each Class will yield in the poor trace: *)
 Lemma class_in_trace c (cm : ClassModel) : 
   In (ClassElement c) cm.(modelElements) -> 
   In 
-    (buildTraceLink 
-       ([ClassElement c],0,"tab") 
-       (TableElement (convert_class c))
+    (
+       {| 
+         source := ([ClassElement c],0,"tab")  ;
+         produced := TableElement (convert_class c)
+       |}
     ) 
     (RichTraceLink.drop (compute_trace Class2Relational cm)).
 Proof.
@@ -116,13 +101,19 @@ Qed.
 
 Lemma in_find m : 
   forall c,
-    In (buildTraceLink
-          ([ClassElement c], 0, "tab")
-          (TableElement (convert_class c))) (RichTraceLink.drop (compute_trace Class2Relational m)) ->
-      find (source_compare ([ClassElement c], 0, "tab")) (RichTraceLink.drop (compute_trace Class2Relational m)) = 
+    In {|
+         source :=  ([ClassElement c], 0, "tab") ;
+         produced := TableElement (convert_class c)
+      |}
+      (RichTraceLink.drop (compute_trace Class2Relational m)) ->
+      find 
+        (source_compare ([ClassElement c], 0, "tab"))
+        (RichTraceLink.drop (compute_trace Class2Relational m)) = 
         Some 
-          (buildTraceLink ([ClassElement c], 0, "tab") 
-             (TableElement (convert_class c))).
+          {|
+            source := ([ClassElement c], 0, "tab") ;
+            produced := TableElement (convert_class c)
+          |}.
 Proof.
 
   intros c H.
@@ -142,10 +133,11 @@ Qed.
     
 (* Resolve is a lookup in the trace. Resolve is called from the user defined transformation. *)
       
-Lemma in_resolve m c : 
-  In (buildTraceLink
-        ([ClassElement c], 0, "tab")
-        (TableElement (convert_class c))) 
+Local Lemma in_trace_resolve m c : 
+  In {|
+      source := ([ClassElement c], 0, "tab") ;
+      produced := TableElement (convert_class c)
+    |} 
     (RichTraceLink.drop (compute_trace Class2Relational m)) ->
   Resolve.resolveIter (RichTraceLink.drop (compute_trace Class2Relational m)) "tab" [ClassElement c] 0 = 
     Some (TableElement (convert_class c)).
@@ -161,7 +153,7 @@ Qed.
 
 
 
-Lemma in_Resolve_trace_2 c (cm : ClassModel) :
+Lemma in_model_resolve c (cm : ClassModel) :
   
   In (ClassElement c) cm.(modelElements) -> 
   
@@ -175,7 +167,7 @@ Proof.
   intro H.
   unfold Resolve.resolve.
   apply class_in_trace in H.
-  rewrite in_resolve ; [ | exact H ].
+  rewrite in_trace_resolve ; [ | exact H ].
   split ; [ reflexivity | ].
   eapply Tactics.in_trace_in_models_target in H ; eauto. 
 Qed.

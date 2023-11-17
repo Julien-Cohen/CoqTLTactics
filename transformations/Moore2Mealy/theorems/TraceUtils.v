@@ -9,33 +9,15 @@ Import Moore2Mealy.
 (** Utilities on traces built by the Moore2Mealy transformation.
     In particular, all the results on [resolve], which appears in the code of the M2M transformation, rely on traces. *)
 
-(** There are exactly two kinds of correspondences in traces (one for each rule) : *)
-Lemma in_trace_inv (m:Moore.M) t :
-In t (RichTraceLink.drop (compute_trace Moore2Mealy m)) ->
-   (exists a b, 
-       convert_transition m a = Some b /\
-       t = buildTraceLink 
-             ([Moore.Transition a], 0, "t"%string)
-             (Mealy.Transition b))
-   \/ (exists s , 
-          t = 
-            buildTraceLink
-              ([Moore.State s], 0, "s"%string)
-              (Mealy.State (Moore2Mealy.convert_state s))).
-Proof.
-  intro H.
-  Tactics.exploit_in_trace H ; [ right | left ]. 
-  { eexists ; reflexivity. } 
-  { eexists ; eexists. simpl. split. eassumption. reflexivity. }
-Qed.
+
 
 (** We can statically know what each State will yield in the trace: *)
 Lemma state_in_trace (m:Moore.M) (s:Moore.State_t) : 
   In (Moore.State s) m.(modelElements) ->
-  In (PoorTraceLink.buildTraceLink 
-        ((Moore.State s) :: nil, 0, "s"%string) 
-        (Mealy.State (Moore2Mealy.convert_state s))
-    )
+  In {| 
+       source := ((Moore.State s) :: nil, 0, "s"%string)  ;
+       produced := (Mealy.State (Moore2Mealy.convert_state s))
+    |}
     (RichTraceLink.drop (Semantics.compute_trace Moore2Mealy m)).
 Proof.
   intro IN.
@@ -101,15 +83,18 @@ Qed.
 
 Lemma in_find m : 
   forall c,
-    In (buildTraceLink
-          ([Moore.State c], 0, "s"%string)
-          (Mealy.State (Moore2Mealy.convert_state c))) 
+    In {|
+         source := ([Moore.State c], 0, "s"%string) ;
+         produced := Mealy.State (Moore2Mealy.convert_state c)
+      |} 
       (RichTraceLink.drop (compute_trace Moore2Mealy m)) ->
 
       find (source_compare ([Moore.State c], 0, "s"%string)) (RichTraceLink.drop (compute_trace Moore2Mealy m)) = 
         Some 
-          (buildTraceLink ([Moore.State c], 0, "s"%string) 
-             (Mealy.State (Moore2Mealy.convert_state c))).
+          {|
+            source := ([Moore.State c], 0, "s"%string) ;
+            produced := Mealy.State (Moore2Mealy.convert_state c)
+          |}.
 Proof.
 
   intros c H.
@@ -129,10 +114,12 @@ Qed.
 
 (* Resolve is a lookup in the trace. Resolve is called from the user defined transformation. *)
 
-Lemma in_resolve m s : 
-  In (buildTraceLink 
-        ([Moore.State s], 0, "s"%string)
-        (Mealy.State (Moore2Mealy.convert_state s))) (RichTraceLink.drop (compute_trace Moore2Mealy m)) ->
+Local Lemma in_trace_resolve m s : 
+  In {| 
+       source := ([Moore.State s], 0, "s"%string) ;
+       produced := Mealy.State (Moore2Mealy.convert_state s)
+    |} 
+    (RichTraceLink.drop (compute_trace Moore2Mealy m)) ->
   Resolve.resolveIter (RichTraceLink.drop (compute_trace  Moore2Mealy m)) "s" [Moore.State s] 0 = 
     Some (Mealy.State (Moore2Mealy.convert_state s)).
 Proof.
@@ -149,7 +136,7 @@ Qed.
 
 
 
-Lemma in_Resolve_trace_2 s (m : Moore.M) :
+Lemma in_model_resolve s (m : Moore.M) :
   
   In (Moore.State s) m.(modelElements) -> 
   
@@ -160,6 +147,6 @@ Proof.
   intro H.
   unfold Resolve.resolve.
   apply state_in_trace in H.
-  rewrite in_resolve ; auto.
+  rewrite in_trace_resolve ; auto.
 Qed.
 

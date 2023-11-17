@@ -169,7 +169,7 @@ Proof.
 
     apply ClassModelProperties.getAttributeType_classex_right in G1 ; [ | exact WF2].
 
-    apply TraceUtils.in_Resolve_trace_2 in G1. 
+    apply TraceUtils.in_model_resolve in G1. 
     destruct G1 as (G11 & G12).
     unfold ModelingSemantics.resolve.
     rewrite G11.

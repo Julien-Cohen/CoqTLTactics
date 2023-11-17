@@ -142,7 +142,7 @@ Proof.
       simpl.
 
 
-      eapply TraceUtils.in_Resolve_trace_2 in IN_S.
+      eapply TraceUtils.in_model_resolve in IN_S.
       unfold ModelingSemantics.resolve. 
       unfold ListUtils.singleton.
       rewrite IN_S.
@@ -248,7 +248,7 @@ Proof.
       rewrite S.
       simpl.
 
-      eapply TraceUtils.in_Resolve_trace_2 in IN_S.
+      eapply TraceUtils.in_model_resolve in IN_S.
       unfold ModelingSemantics.resolve.
       unfold ListUtils.singleton.
       rewrite IN_S.
