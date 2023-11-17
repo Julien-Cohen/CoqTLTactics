@@ -44,8 +44,8 @@ Lemma convert_transition_injective :
     t1 = t2.
 Proof.
   unfold convert_transition ; intros.
-  PropUtils.destruct_match H ; [ PropUtils.inj H | discriminate H].
-  PropUtils.destruct_match H0 ; [ PropUtils.inj H0 | discriminate H0].
+  PropUtils.destruct_match_H H ; [ PropUtils.inj H | discriminate H].
+  PropUtils.destruct_match_H H0 ; [ PropUtils.inj H0 | discriminate H0].
   
   destruct t1, t2 ; simpl in * ; congruence.
 Qed.
@@ -97,7 +97,7 @@ Lemma convert_transition_nec t t':
   |}.
 Proof.    
   unfold convert_transition ; intro.
-  PropUtils.destruct_match H ; [ PropUtils.inj H | discriminate H].
+  PropUtils.destruct_match_H H ; [ PropUtils.inj H | discriminate H].
   eauto.
 Qed.
 

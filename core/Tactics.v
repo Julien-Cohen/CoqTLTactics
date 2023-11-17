@@ -13,36 +13,7 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 Require Certification.
 
-Import Metamodel.
-
-(** * General purpose tactics *)
-
-Ltac destruct_match :=
-  match goal with 
-     [ |- context[match ?P with | _ => _ end]] => destruct P 
-  end. 
-
-Ltac destruct_if_hyp :=
-  let E := fresh "E" in
- match goal with
-        [ H : context[if ?B then _ else _] |- _ ] => destruct B eqn:E 
- end.
-
-Ltac destruct_if_goal :=
-  let E := fresh "E" in
- match goal with
-        [ |- context[if ?B then _ else _] ] => destruct B eqn:E 
- end.
-
-(* To replace the [inversion] tactics on equalities on a dependant type constructor. *)
-Ltac dep_inversion H := 
-  let H':= fresh H in
-  inversion H as [H'] ; apply Eqdep.EqdepTheory.inj_pair2 in H'.
-
-  
-Ltac duplicate H1 H2 := remember H1 as H2 eqn:TMP ; clear TMP.
-
-
+Import Metamodel Model.
 
 
 
@@ -51,7 +22,6 @@ Ltac duplicate H1 H2 := remember H1 as H2 eqn:TMP ; clear TMP.
     into H: In (e) (modelElements cm)
 *)
 
-Import Model.
 
 Lemma allModelElements_allTuples {tc:TransformationConfiguration} e t cm: 
   In e cm.(modelElements) ->
@@ -240,7 +210,7 @@ Ltac destruct_in_optionToList_auto :=
   end.
 
 
-
+(* BW *)
 Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ} :
   forall
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
@@ -275,6 +245,8 @@ Proof.
   eauto 12.
 Qed.
 
+
+(* BW *)
 Corollary in_trace_in_models_source {MM1} {T1} {T2} {BEQ} :  
   forall (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
  cm a b s i,
@@ -293,6 +265,8 @@ Proof.
   exact IN_SOURCE.
 Qed.
 
+
+(* FW *)
 Lemma in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
   forall 
     (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
@@ -313,7 +287,7 @@ Proof.
   congruence.
 Qed.
 
-
+(* BW *)
 Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
@@ -343,7 +317,7 @@ Proof.
 Qed.
 
 
-(** For the user *) 
+(** For the user *) (* FW *)
 Lemma in_modelElements_execute_left {MM1} {T1} {T2} {BEQ} :
   forall 
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
@@ -374,6 +348,8 @@ Proof.
     assumption.
 Qed.
 
+
+(* BW *)
 Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
   {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))}
@@ -397,7 +373,8 @@ Proof.
   destruct_applyIterationOnPiece IN_APP_PAT H_IN_OUTPAT.   
   destruct_in_matchingRules IN_RULE H_MATCH_RULE.
   unfold applyUnitOnPiece in IN_APP_PAT.
-  PropUtils.destruct_match IN_APP_PAT ; [ | ListUtils.unfold_In_cons IN_APP_PAT ].
+  PropUtils.destruct_match_H IN_APP_PAT ;
+   [ | ListUtils.unfold_In_cons IN_APP_PAT ].
   eauto 15.
 Qed.
 

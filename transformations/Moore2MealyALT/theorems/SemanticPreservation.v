@@ -29,9 +29,9 @@ Lemma star_step_commut_fw :
 Proof.
   induction i ; simpl ; intros s r STEP ; [ congruence | ].
   rename s into s1.
-  PropUtils.destruct_match STEP ; [ | discriminate ].
+  PropUtils.destruct_match_H STEP ; [ | discriminate ].
   rename s into s2.
-  PropUtils.destruct_match STEP ; [ | discriminate ].
+  PropUtils.destruct_match_H STEP ; [ | discriminate ].
   PropUtils.inj STEP.
   apply StepCommut.search_commut_fw in Heqo ; auto. 
   destruct Heqo as (s1' & s2' & ? & ? & t' & ? & ?).
@@ -69,10 +69,10 @@ Proof.
     { apply MealySemantics.execute_in in STEP ; auto. discriminate. }
     
     simpl in STEP. simpl.
-    PropUtils.destruct_match STEP ; [ | discriminate ].
+    PropUtils.destruct_match_H STEP ; [ | discriminate ].
     destruct p.
     rename s into s2'.
-    PropUtils.destruct_match STEP ; [ | discriminate ].
+    PropUtils.destruct_match_H STEP ; [ | discriminate ].
     PropUtils.inj STEP.
     apply StepCommut.search_commut_bw in Heqo ; auto.
     destruct Heqo as (s1 & ? & s2 & ? & ? & ?).

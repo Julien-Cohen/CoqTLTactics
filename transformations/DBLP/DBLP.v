@@ -1194,7 +1194,7 @@ Lemma DBLP_invert :
     Build_DBLPMetamodel_Object dbcl_arg t1 = Build_DBLPMetamodel_Object dbcl_arg t2 -> t1 = t2.
 Proof.
   intros.
-  Tactics.dep_inversion H.
+  PropUtils.dep_inversion H.
   assumption.
 Qed.
 

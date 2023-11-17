@@ -20,9 +20,9 @@ Proof.
   destruct H2 as (mt2 & ? & ?).
   specialize (WF_2 mt1 mt2 H H1).
   unfold Elements.convert_transition in H0.
-  PropUtils.destruct_match H0 ; [ PropUtils.inj H0 | discriminate H0 ] ; simpl in *.
+  PropUtils.destruct_match_H H0 ; [ PropUtils.inj H0 | discriminate H0 ] ; simpl in *.
   unfold Elements.convert_transition in H2.
-  PropUtils.destruct_match H2 ; [ PropUtils.inj H2 | discriminate H2 ] ; simpl in *.
+  PropUtils.destruct_match_H H2 ; [ PropUtils.inj H2 | discriminate H2 ] ; simpl in *.
   specialize (WF_2 H3 H4).
   subst.
   rewrite Heqo in Heqo0 ; PropUtils.inj Heqo0. (* auto_unif *)
@@ -51,7 +51,7 @@ Proof.
   apply Elements.transition_element_bw in H ; auto.
   destruct H as ( t0 & ? & ?).
   unfold Elements.convert_transition in H0.
-  PropUtils.destruct_match H0 ; [ PropUtils.inj H0 | discriminate H0].
+  PropUtils.destruct_match_H H0 ; [ PropUtils.inj H0 | discriminate H0].
   destruct (WF_2 _ H) as (s0 & G).
   clear Heqo.
   exists (Elements.convert_state s0).
@@ -80,7 +80,7 @@ Proof.
   apply Elements.transition_element_bw in H ; auto.
   destruct H as ( t0 & ? & ?).
   unfold Elements.convert_transition in H0.
-  PropUtils.destruct_match H0 ; [ PropUtils.inj H0 | discriminate H0].
+  PropUtils.destruct_match_H H0 ; [ PropUtils.inj H0 | discriminate H0].
   destruct (WF_1 _ H) as (s0 & G).
   clear Heqo.
   exists (Elements.convert_state s0).

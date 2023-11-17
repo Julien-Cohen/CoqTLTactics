@@ -520,7 +520,7 @@ Lemma movies_invert :
   forall (mocl_arg: moviesMetamodel_Class) (t1 t2: moviesMetamodel_getTypeByClass mocl_arg), 
     Build_moviesMetamodel_Object mocl_arg t1 = Build_moviesMetamodel_Object mocl_arg t2 -> t1 = t2.
 Proof.
-  intros. Tactics.dep_inversion H. assumption.
+  intros. PropUtils.dep_inversion H. assumption.
 Qed.
 
 

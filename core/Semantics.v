@@ -285,7 +285,7 @@ Lemma in_applyUnitOnPiece {A B C D} :
 Proof.  
   unfold applyUnitOnPiece.
   intros until it ; intro IN.
-  PropUtils.destruct_match IN ; [ | contradiction IN].
+  PropUtils.destruct_match_H IN ; [ | contradiction IN].
   eauto.
 Qed.
 

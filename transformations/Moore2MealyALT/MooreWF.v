@@ -107,8 +107,8 @@ Proof.
   apply OptionListUtils.filter_lift_in in H1, H2.
   destruct H1 as ( ? & ? & ? & ?).
   destruct H2 as ( ? & ? & ? & ?).
-  PropUtils.destruct_match H1 ; [ | discriminate H1].
-  PropUtils.destruct_match H4 ; [ | discriminate H4].
+  PropUtils.destruct_match_H H1 ; [ | discriminate H1].
+  PropUtils.destruct_match_H H4 ; [ | discriminate H4].
   destruct x ; [ discriminate H0 | PropUtils.inj H0]. (* monadInv *)
   destruct x0 ; [ discriminate H3 | PropUtils.inj H3]. (* monadInv *)
   apply internal_State_t_dec_bl in H1, H4.

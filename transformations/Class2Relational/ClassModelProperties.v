@@ -25,7 +25,7 @@ Proof.
     right ; assumption.
   }
   { (*Attribute_typeLink*)
-    Tactics.destruct_if_hyp.
+    PropUtils.destruct_if_hyp.
     { (* true *)
       PropUtils.inj G.
       apply internal_Attribute_t_dec_bl in E.
@@ -80,7 +80,7 @@ Proof.
       
     - apply IHmodelLinks in H.
     
-      Tactics.destruct_if_goal.
+      PropUtils.destruct_if_goal.
       * solve[eauto].
       * assumption.
   
@@ -206,7 +206,7 @@ Lemma getAttributeType_In_left_wf att t (m:Model ClassMetamodel.MM):
 Proof.
 
   intros WF H.
-  Tactics.duplicate H G.
+  PropUtils.duplicate H G.
   apply getAttributeType_In_left in G.
   
   destruct G as [r G] ; rewrite G.

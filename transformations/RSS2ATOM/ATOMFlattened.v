@@ -1131,8 +1131,8 @@ Lemma ATOM_invert :
   forall (atcl_arg: ATOMMetamodel_Class) (t1 t2: ATOMMetamodel_getTypeByClass atcl_arg), 
     Build_ATOMMetamodel_Object atcl_arg t1 = Build_ATOMMetamodel_Object atcl_arg t2 -> t1 = t2.
 Proof.
-  intros.
-  Tactics.dep_inversion H. assumption.
+  intros. 
+  PropUtils.dep_inversion H. assumption.
 Qed.
 
 (* Not Used *)

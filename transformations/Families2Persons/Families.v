@@ -438,7 +438,7 @@ Lemma Families_invert :
   forall (facl_arg: FamiliesMetamodel_Class) (t1 t2: FamiliesMetamodel_getTypeByClass facl_arg), 
     Build_FamiliesMetamodel_Object facl_arg t1 = Build_FamiliesMetamodel_Object facl_arg t2 -> t1 = t2.
 Proof.
-  intros. Tactics.dep_inversion H. assumption.
+  intros. PropUtils.dep_inversion H. assumption.
 Qed.
 
 (* Not Used *)

@@ -80,7 +80,7 @@ Proof.
   unfold State_outTransitions in H.
   apply OptionListUtils.filter_lift_in in H.
   destruct H as (? & ? & ? & ?).                   
-  PropUtils.destruct_match H1 ; [ | discriminate H1]. 
+  PropUtils.destruct_match_H H1 ; [ | discriminate H1]. 
   apply internal_State_t_dec_bl in H1. subst s0.    
   destruct x ; [discriminate H0 | PropUtils.inj H0]. (* monadInv *) 
   auto.
@@ -141,7 +141,7 @@ Proof.
   { contradiction. }
   { 
     simpl in H0.
-    PropUtils.destruct_match H0 ; [ | discriminate].
+    PropUtils.destruct_match_H H0 ; [ | discriminate].
     destruct p.
     clear H0.
     destruct (search_inv _ _ _ _ _ Heqo).
