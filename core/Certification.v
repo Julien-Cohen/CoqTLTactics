@@ -31,7 +31,7 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
 Proof.
   intros.
   unfold execute ; simpl.
-  unfold traceTrOnModel.
+  unfold compute_trace.
   rewrite map_flat_map.
   apply in_flat_map.
 Qed.
@@ -165,19 +165,14 @@ Lemma tr_applyUnitOnPiece_leaf :
 forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (te: TargetElementType) 
        (i:nat) (opu: OutputPatternUnit),
   evalOutputPatternUnit opu sm sp i = Some te ->
-  applyUnitOnPiece opu tr sm sp i = evalOutputPatternLink sm sp te i (drop (traceTrOnModel tr sm)) opu.
+  applyUnitOnPiece opu tr sm sp i = evalOutputPatternLink sm sp te i (drop (compute_trace tr sm)) opu.
 Proof.
   intros.
-  destruct (evalOutputPatternLink sm sp te i (drop (traceTrOnModel tr sm)) opu) eqn:dst.
+  destruct (evalOutputPatternLink sm sp te i (drop (compute_trace tr sm)) opu) eqn:dst.
   * unfold applyUnitOnPiece. crush.
   * unfold applyUnitOnPiece. crush.
 Qed.  
 
-(*TODO
-Lemma maxArity_length:
-  forall (sp : InputPiece) (tr: Transformation) (sm: SourceModel), 
-  gt (length sp) (maxArity tr) -> In sp (allTuples tr sm) -> False.
-*)
 
 
 Lemma allTuples_incl:
@@ -319,7 +314,7 @@ Program Instance CoqTLEngine :
     applyIterationOnPattern := applyIterationOnPiece;
     applyElementOnPattern := applyUnitOnPiece;
 
-    trace := (fun a b => drop (traceTrOnModel a b)) ;
+    trace := (fun a b => drop (compute_trace a b)) ;
 
     resolveAll := (fun a b c d => resolveAllIter a c d) ;
     resolve := (fun a b c d => resolveIter a c d);
@@ -346,40 +341,7 @@ Program Instance CoqTLEngine :
     tr_resolve_leaf := (* tr_resolveIter_leaf *) _ ;
 
     allTuples_incl := allTuples_incl;
-    (*tr_matchPattern_None := tr_matchingRules_None;
-
-    tr_matchRuleOnPattern_None := tr_matchRuleOnPiece_None;
-
-    tr_instantiatePattern_non_None := tr_instantiateOnPiece_non_None;
-    tr_instantiatePattern_None := tr_instantiateOnPiece_None;
-
-    tr_instantiateRuleOnPattern_non_None := tr_instantiateRuleOnPiece_non_None;
-
-    tr_instantiateIterationOnPattern_non_None := tr_instantiateIterationOnPiece_non_None;
-
-    tr_instantiateElementOnPattern_None := tr_instantiateElementOnPiece_None;
-    tr_instantiateElementOnPattern_None_iterator := tr_instantiateElementOnPiece_None_iterator;
-
-    tr_applyPattern_non_None := tr_applyOnPiece_non_None;
-    tr_applyPattern_None := tr_applyOnPiece_None;
-
-    tr_applyRuleOnPattern_non_None := tr_applyRuleOnPiece_non_None;
-
-    tr_applyIterationOnPattern_non_None := tr_applyIterationOnPiece_non_None;
-
-    tr_applyElementOnPattern_non_None := tr_applyUnitOnPiece_non_None;
-
-    tr_applyLinkOnPattern_None := tr_applyLinkOnPiece_None;
-    tr_applyLinkOnPattern_None_iterator := tr_applyLinkOnPiece_None_iterator;
-
-    tr_maxArity_in := tr_maxArity_in;
-
-    tr_instantiateElementOnPattern_Leaf := tr_instantiateElementOnPiece_Leaf;
-    tr_applyLinkOnPattern_Leaf := tr_applyLinkOnPiece_Leaf;
-    tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPiece_Leaf;
-
-    tr_resolveAll_in := tr_resolveAllIter_in;
-    tr_resolve_Leaf := tr_resolveIter_Leaf';*)
+    
   }. 
 Next Obligation.
   apply tr_resolveAllIter_in.
@@ -422,18 +384,6 @@ Proof.
        crush.
 Qed.
 
-(*Theorem tr_instantiateRuleAndIterationOnPiece_in' :
-forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: InputPiece) (te : TargetElementType),
-  In te (instantiateRuleOnPiece r sm sp) <->
-  (exists (i: nat),
-      In i (seq 0 (evalIteratorExpr r sm sp)) /\
-      (exists (opu: OutputPatternUnit),
-      In opu (Rule_getOutputPatternElements r) /\ 
-        instantiateElementOnPiece opu sm sp i = Some te)).
-Proof.
-  intros.
-  specialize (tr_instantiateRuleOnPiece_in tr r sm sp te) as inst. 
-  rewrite tr_instantiateIterationOnPiece_in with (r:=r) (sp:=sp) (te:=te) (sm:=sm)  in inst.
-  assumption. *)
+
 
 End Certification.

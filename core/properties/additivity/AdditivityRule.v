@@ -59,7 +59,7 @@ forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceMode
 Proof.
   simpl.
   unfold incl.
-  unfold traceTrOnModel.
+  unfold compute_trace.
   unfold traceTrOnPiece.
   intros ? ? ? ? ? ?.
   repeat rewrite map_flat_map.

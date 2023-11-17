@@ -37,7 +37,7 @@ Proof.
   intros.
   unfold execute.
   unfold applyTrOnModel.
-  unfold traceTrOnModel.
+  unfold compute_trace.
   unfold traceTrOnPiece.
   unfold traceRuleOnPiece.
   unfold traceIterationOnPiece.

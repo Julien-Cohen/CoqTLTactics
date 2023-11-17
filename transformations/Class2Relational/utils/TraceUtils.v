@@ -30,7 +30,7 @@ Import PoorTraceLink.
 
 (** There are exactly two kinds of correspondences in traces (one for each rule): *)
 Lemma in_trace_inv m t :
-  In t (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
+  In t (RichTraceLink.drop (compute_trace Class2Relational m)) ->
   
   (exists a, t = (buildTraceLink 
         ([AttributeElement a], 0, "col")
@@ -54,7 +54,7 @@ Lemma class_in_trace c (cm : ClassModel) :
        ([ClassElement c],0,"tab") 
        (TableElement (convert_class c))
     ) 
-    (RichTraceLink.drop (traceTrOnModel Class2Relational cm)).
+    (RichTraceLink.drop (compute_trace Class2Relational cm)).
 Proof.
   intro IN1.
 
@@ -86,7 +86,7 @@ Lemma discr m:
   forall s : list ClassMetamodel.Element * nat * string,
     discriminating_predicate
       (fun x : TraceLink => source_compare s x = true)
-      (RichTraceLink.drop (traceTrOnModel Class2Relational m)).
+      (RichTraceLink.drop (compute_trace Class2Relational m)).
 Proof.
   intro s.
   intros a b IN1 IN2 C1 C2.
@@ -118,8 +118,8 @@ Lemma in_find m :
   forall c,
     In (buildTraceLink
           ([ClassElement c], 0, "tab")
-          (TableElement (convert_class c))) (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
-      find (source_compare ([ClassElement c], 0, "tab")) (RichTraceLink.drop (traceTrOnModel Class2Relational m)) = 
+          (TableElement (convert_class c))) (RichTraceLink.drop (compute_trace Class2Relational m)) ->
+      find (source_compare ([ClassElement c], 0, "tab")) (RichTraceLink.drop (compute_trace Class2Relational m)) = 
         Some 
           (buildTraceLink ([ClassElement c], 0, "tab") 
              (TableElement (convert_class c))).
@@ -146,8 +146,8 @@ Lemma in_resolve m c :
   In (buildTraceLink
         ([ClassElement c], 0, "tab")
         (TableElement (convert_class c))) 
-    (RichTraceLink.drop (traceTrOnModel Class2Relational m)) ->
-  Resolve.resolveIter (RichTraceLink.drop (traceTrOnModel Class2Relational m)) "tab" [ClassElement c] 0 = 
+    (RichTraceLink.drop (compute_trace Class2Relational m)) ->
+  Resolve.resolveIter (RichTraceLink.drop (compute_trace Class2Relational m)) "tab" [ClassElement c] 0 = 
     Some (TableElement (convert_class c)).
 Proof.
   unfold Resolve.resolveIter. 
@@ -165,7 +165,7 @@ Lemma in_Resolve_trace_2 c (cm : ClassModel) :
   
   In (ClassElement c) cm.(modelElements) -> 
   
-  Resolve.resolve (RichTraceLink.drop (traceTrOnModel Class2Relational cm)) "tab" [ClassElement c]  =  
+  Resolve.resolve (RichTraceLink.drop (compute_trace Class2Relational cm)) "tab" [ClassElement c]  =  
     Some (TableElement (convert_class c)) 
   
   /\ In 

@@ -76,14 +76,6 @@ Ltac destruct_in_matchingRules H NEWNAME :=
       destruct H as [H NEWNAME]
   end.
 
-Ltac destruct_in_matchingRules_auto :=
-  match goal with 
-    [ H : In _ (matchingRules _ _ _) |- _ ] =>
-      let H2 := fresh "M" in
-      destruct_in_matchingRules H H2
-  end.
-
-
 
 Ltac destruct_instantiateRuleOnPiece H IN_IT_NEWNAME:=
   match type of H with 
@@ -111,12 +103,6 @@ Ltac destruct_apply_pattern H IN_MATCH_NEWNAME :=
       destruct H as (R & (IN_MATCH_NEWNAME & H))
 end.
 
-Ltac destruct_apply_pattern_auto :=
-  match goal with 
-    [ H : In _ (applyTrOnPiece _ _ _) |- _ ] => 
-      let IN1 := fresh "IN_MATCH" in
-      destruct_apply_pattern H IN1
-end.
 
 Ltac destruct_applyRuleOnPiece H NEW1 NEW2 :=
   match type of H with
@@ -127,13 +113,6 @@ Ltac destruct_applyRuleOnPiece H NEW1 NEW2 :=
       destruct H as (N & (NEW1 & NEW2))
   end.
 
-Ltac destruct_applyRuleOnPiece_auto :=
-  match goal with
-    [ H : In _ (applyRuleOnPiece _ _ _ _) |- _ ] =>
-      let IN1 := fresh "IN_IT" in 
-      let IN2 := fresh "IN_APP_PAT" in 
-      destruct_applyRuleOnPiece H IN1 IN2
-  end.
 
 Ltac destruct_applyIterationOnPiece H NEWNAME :=
   match type of H with
@@ -143,19 +122,15 @@ Ltac destruct_applyIterationOnPiece H NEWNAME :=
       destruct H as (p & (NEWNAME & H))
   end.
 
-Ltac destruct_applyIterationOnPiece_auto :=
-  match goal with
-    [ H : In _ (applyIterationOnPiece _ _ _ _ _ ) |- _ ] =>
-      destruct_applyIterationOnPiece H
-  end.
+
 
 (** On traces. *)
 Ltac destruct_trace H :=
   match type of H with 
-  | In _ (traceTrOnModel _ _ )  => 
+  | In _ (compute_trace _ _ )  => 
       let p:= fresh "p" in
       let IN := fresh "IN" in
-      unfold traceTrOnModel in H ;
+      unfold compute_trace in H ;
       apply in_flat_map in H ; 
       destruct H as (p & (IN & H))
   | _ => fail "Failure in destruct_trace."
@@ -203,11 +178,6 @@ Ltac destruct_in_optionToList H :=
     | In _ (optionToList _) => apply in_optionToList in H
   end.
 
-Ltac destruct_in_optionToList_auto :=
-  let TMP := fresh "TMP" in
-  match goal with 
-    [ H : In _ (optionToList _) |- _ ] => destruct_in_optionToList H
-  end.
 
 
 (* BW *)
@@ -215,7 +185,7 @@ Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ} :
   forall
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
   {cm} {l},
-  In l (RichTraceLink.drop ((traceTrOnModel) t cm)) ->
+  In l (RichTraceLink.drop ((compute_trace) t cm)) ->
   exists p r i outpat te,   
     In p (allTuples t cm)
     /\ In r (Syntax.rules t) 
@@ -250,7 +220,7 @@ Qed.
 Corollary in_trace_in_models_source {MM1} {T1} {T2} {BEQ} :  
   forall (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
  cm a b s i,
-    In (PoorTraceLink.buildTraceLink ([a],i,s) b ) (RichTraceLink.drop (traceTrOnModel t cm)) ->
+    In (PoorTraceLink.buildTraceLink ([a],i,s) b ) (RichTraceLink.drop (compute_trace t cm)) ->
     In a cm.(modelElements) .
 Proof.
   intros t cm a b s i IN.
@@ -271,7 +241,7 @@ Lemma in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
   forall 
     (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
     cm a b,
-     In (PoorTraceLink.buildTraceLink a b) (RichTraceLink.drop (traceTrOnModel t cm)) ->
+     In (PoorTraceLink.buildTraceLink a b) (RichTraceLink.drop (compute_trace t cm)) ->
     In b (execute t cm).(modelElements).
 Proof.
   intros t cm a b IN.
@@ -363,7 +333,7 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
       /\ In n (seq 0 (UserExpressions.evalIterator r m sp))
       /\ In p (Syntax.r_outputPattern r) 
       /\ UserExpressions.evalOutputPatternUnit p m sp n = return te
-      /\ In l (UserExpressions.evalOutputPatternLink m sp te n (RichTraceLink.drop(traceTrOnModel t m)) p).
+      /\ In l (UserExpressions.evalOutputPatternLink m sp te n (RichTraceLink.drop(compute_trace t m)) p).
 
 Proof.
   intros.
@@ -606,7 +576,7 @@ Ltac exploit_in_trace H :=
   let EV := fresh "EV" in
 
   match type of H with 
-   | In _ (RichTraceLink.drop ((traceTrOnModel) _ _)) => 
+   | In _ (RichTraceLink.drop ((compute_trace) _ _)) => 
   	destruct (destruct_in_trace_lem H) 
     	as (se & r & i & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV);
   
@@ -635,8 +605,8 @@ end.
 
 Ltac destruct_in_trace_G :=
   match goal with 
-    [ |- In _ (traceTrOnModel _ _)] => 
-      unfold traceTrOnModel ;
+    [ |- In _ (compute_trace _ _)] => 
+      unfold compute_trace ;
       apply in_flat_map
   end.
 
@@ -650,7 +620,7 @@ Lemma transform_elements_fw {tc} cm p tp (t:Syntax.Transformation (tc:=tc)) :
 Proof.
   intros IN1 IN2.
   simpl.
-  unfold traceTrOnModel.
+  unfold compute_trace.
   rewrite map_flat_map. (* a trace can have several target elements *)
   apply List.in_flat_map. (* this is doing the job *)
   eauto.
@@ -688,7 +658,7 @@ Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
     
     
     forall l,
-      In l  (UserExpressions.evalOutputPatternLink cm sp produced_element i (RichTraceLink.drop(traceTrOnModel t cm)) opu) ->
+      In l  (UserExpressions.evalOutputPatternLink cm sp produced_element i (RichTraceLink.drop(compute_trace t cm)) opu) ->
       In l (modelLinks (execute t cm)).
 Proof.
   intros sp r i opu produced_element.

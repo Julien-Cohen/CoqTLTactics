@@ -38,20 +38,20 @@ Definition traceElementOnPiece (o: OutputPatternUnit) (sm: SourceModel) (sp: Inp
   | None => None
   end.
 
-Definition traceIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) :  RichTraceLink.Trace :=
+Definition traceIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) :  Trace :=
   flat_map (fun o => optionToList (traceElementOnPiece o sm sp iter))
     r.(r_outputPattern).
 
-Definition traceRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) :  RichTraceLink.Trace :=
+Definition traceRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) : Trace :=
   flat_map (traceIterationOnPiece r sm sp)
     (seq 0 (evalIterator r sm sp)).
 
-Definition traceTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : RichTraceLink.Trace :=
+Definition traceTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : Trace :=
   flat_map (fun r => traceRuleOnPiece r sm sp) (matchingRules tr sm sp).
 
 
 
-Definition traceTrOnModel (tr: Transformation) (sm : SourceModel) :  RichTraceLink.Trace :=
+Definition compute_trace (tr: Transformation) (sm : SourceModel) :  RichTraceLink.Trace :=
   flat_map (traceTrOnPiece tr sm) (allTuples tr sm).  
 
 
@@ -69,7 +69,7 @@ Definition applyTrOnModel (sm : SourceModel) (tls:Trace): list TargetLinkType :=
 
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
-  let t := traceTrOnModel tr sm
+  let t := compute_trace tr sm
   in
   {|
     modelElements := elements_proj t ;
@@ -109,7 +109,7 @@ Definition applyUnitOnPiece {tc:TransformationConfiguration}
             (sm: SourceModel)
             (sp: InputPiece) (iter: nat) : list TargetLinkType :=
   match (evalOutputPatternUnit opu sm sp iter) with 
-  | Some l => evalOutputPatternLink sm sp l iter (drop (traceTrOnModel tr sm)) opu
+  | Some l => evalOutputPatternLink sm sp l iter (drop (compute_trace tr sm)) opu
   | None => nil
   end.
 
@@ -131,9 +131,9 @@ Definition applyTrOnModel_old {tc:TransformationConfiguration} (tr: Transformati
 
 
 (** Equivalence between the old semantics for links and the current one. *)
-Lemma exploit_in_traceTrOnModel {tc:TransformationConfiguration} tr sm :
+Lemma exploit_in_compute_trace {tc:TransformationConfiguration} tr sm :
   forall tlk,
-    In tlk (traceTrOnModel tr sm) <-> 
+    In tlk (compute_trace tr sm) <-> 
     exists r  opu, 
     In (getSourcePiece tlk) (allTuples tr sm) 
     /\ In r (matchingRules tr sm (getSourcePiece tlk))
@@ -145,7 +145,7 @@ Lemma exploit_in_traceTrOnModel {tc:TransformationConfiguration} tr sm :
 Proof.
   intro ; split ; intro H.
 {  
-  unfold traceTrOnModel.
+  unfold compute_trace.
     apply in_flat_map in H. destruct H as (ip, (IN1, IN2)).
   unfold traceTrOnPiece in IN2.
   apply in_flat_map in IN2. destruct IN2 as (r, (IN2, IN3)).
@@ -193,14 +193,14 @@ Proof.
 Qed.
 
 Lemma included_1 {tc:TransformationConfiguration} tr sm :
-  incl  (applyTrOnModel sm (traceTrOnModel tr sm))  (applyTrOnModel_old tr sm).
+  incl  (applyTrOnModel sm (compute_trace tr sm))  (applyTrOnModel_old tr sm).
 Proof.
   intro link.
   unfold applyTrOnModel.
   intro H.
   apply in_flat_map in H. destruct H as (trl, (IN1, IN2)).
 
-  apply (exploit_in_traceTrOnModel) in IN1. 
+  apply (exploit_in_compute_trace) in IN1. 
    destruct IN1 as  (r, (opu, (E1, (E2, (E3, (E4, (E5, (E6, E7)))))))).
 
   unfold applyTrOnModel.  apply in_flat_map.
@@ -232,7 +232,7 @@ Proof.
 Qed.
 
 Lemma included_2 {tc:TransformationConfiguration} tr sm :
-  incl (applyTrOnModel_old tr sm) (applyTrOnModel sm (traceTrOnModel tr sm)).
+  incl (applyTrOnModel_old tr sm) (applyTrOnModel sm (compute_trace tr sm)).
 Proof.
   intro link.
   intro H.
@@ -256,7 +256,7 @@ Proof.
   unfold getSourcePiece ; simpl.
   split ; [ | assumption ].
   
-  apply exploit_in_traceTrOnModel.
+  apply exploit_in_compute_trace.
 
   exists r.
   eexists.
@@ -265,7 +265,7 @@ Proof.
 Qed.
 
 Lemma included_3 {tc:TransformationConfiguration} tr sm :
-  forall lk, In lk (applyTrOnModel_old tr sm) <-> In lk (applyTrOnModel sm (traceTrOnModel tr sm)).
+  forall lk, In lk (applyTrOnModel_old tr sm) <-> In lk (applyTrOnModel sm (compute_trace tr sm)).
 Proof.
   intro link.
   split.
@@ -281,7 +281,7 @@ Lemma in_applyUnitOnPiece {A B C D} :
   In a (applyUnitOnPiece opu tr sm sp it) ->
   exists g, 
     evalOutputPatternUnit opu sm sp it = Some g
-    /\ In a (evalOutputPatternLink sm sp g it (drop (traceTrOnModel tr sm)) opu).
+    /\ In a (evalOutputPatternLink sm sp g it (drop (compute_trace tr sm)) opu).
 Proof.  
   unfold applyUnitOnPiece.
   intros until it ; intro IN.
