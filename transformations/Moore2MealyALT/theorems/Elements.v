@@ -4,6 +4,8 @@ Require Moore2MealyALT.Moore2Mealy.
 Require Moore2MealyALT.MooreWF.
 Require Moore2MealyALT.MealyWF.
 
+Require core.TacticsFW.
+
 Import String OptionUtils.
 
 Section Foo.
@@ -102,7 +104,7 @@ Proof.
 Qed.
 
 Notation transform_element_fw := 
-  (Tactics.transform_element_fw  (tc := Moore2Mealy.Moore2MealyTransformationConfiguration)).
+  (TacticsFW.transform_element_fw  (tc := Moore2Mealy.Moore2MealyTransformationConfiguration)).
 
 Lemma state_element_fw : 
   forall (s:Moore.State_t),

@@ -10,7 +10,7 @@ Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
 
-From core Require Tactics Certification.
+From core Require Tactics TacticsFW Certification.
 
 
 Ltac negb_inv H :=
@@ -33,7 +33,7 @@ Lemma allModelElements_allTuples e (cm:Model ClassMetamodel.MM):
   In [e] (allTuples Class2Relational cm).
 Proof. 
   intro.
-  apply (Tactics.allModelElements_allTuples (tc:=C2RConfiguration));
+  apply (TacticsFW.allModelElements_allTuples (tc:=C2RConfiguration));
     auto.
 Qed.
 

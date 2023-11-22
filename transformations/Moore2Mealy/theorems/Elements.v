@@ -1,3 +1,5 @@
+Require core.TacticsFW.
+
 Require Moore2Mealy.MooreSemantics.
 Require Moore2Mealy.MealySemantics.
 Require Moore2Mealy.Moore2Mealy.
@@ -95,7 +97,7 @@ Definition convert_transition' t (IN : List.In (Moore.Transition t) m.(Model.mod
 Defined.
 
 Notation transform_element_fw := 
-  (Tactics.transform_element_fw  (tc := Moore2Mealy.Moore2MealyTransformationConfiguration)).
+  (TacticsFW.transform_element_fw  (tc := Moore2Mealy.Moore2MealyTransformationConfiguration)).
 
 Lemma state_element_fw : 
   forall (s:Moore.State_t),

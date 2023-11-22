@@ -12,7 +12,7 @@ Require Import transformations.Class2Relational_TUPLE_SP.Class2Relational_TUPLE_
 Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
 Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
 
-From core Require Tactics Certification.
+From core Require Tactics TacticsFW Certification.
 
 (** ** Type correspondence *)
 
@@ -123,7 +123,7 @@ Lemma allModelElements_allTuples e (cm:Model ClassMM):
   In [e] (allTuples Class2Relational_TUPLE_SP cm).
 Proof. 
   intro.
-  apply (Tactics.allModelElements_allTuples (tc:=C2RConfiguration)); auto.
+  apply (TacticsFW.allModelElements_allTuples (tc:=C2RConfiguration)); auto.
   compute.
   auto.
 Qed. 

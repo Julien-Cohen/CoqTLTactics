@@ -20,7 +20,7 @@ Import Class2Relational ClassMetamodel RelationalMetamodel.
 
 
 Notation transform_element_fw := 
-  (Tactics.transform_element_fw  (tc := Class2Relational.C2RConfiguration)).
+  (TacticsFW.transform_element_fw  (tc := Class2Relational.C2RConfiguration)).
 
 
 (** Utilities on transformation of elements *)

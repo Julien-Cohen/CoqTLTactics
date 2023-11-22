@@ -29,6 +29,7 @@ core/Semantics.v
 core/Resolve.v
 core/Engine.v
 core/Tactics.v
+core/TacticsFW.v
 
 core/modeling/ModelingMetamodel.v
 core/modeling/ModelingTransformationConfiguration.v

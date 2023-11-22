@@ -12,6 +12,8 @@ Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
+Require TacticsFW. 
+
 Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
@@ -51,7 +53,7 @@ Proof.
 
   
   2:{
-    Tactics.destruct_in_trace_G.
+    TacticsFW.destruct_in_trace_G.
     
     exists ([ClassElement c]).
     split.
@@ -169,7 +171,7 @@ Proof.
   apply class_in_trace in H.
   rewrite in_trace_resolve ; [ | exact H ].
   split ; [ reflexivity | ].
-  eapply Tactics.in_trace_in_models_target in H ; eauto. 
+  eapply TacticsFW.in_trace_in_models_target in H ; eauto. 
 Qed.
 
 

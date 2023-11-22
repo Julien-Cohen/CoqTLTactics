@@ -106,7 +106,7 @@ Proof.
 
   destruct t ; simpl in H ; subst.   
 
-  eapply Tactics.in_trace_in_models_target ; eauto. 
+  eapply TacticsFW.in_trace_in_models_target ; eauto. 
 
 Qed.
 
@@ -147,7 +147,7 @@ Proof.
 
   exists{| Table_id := r.(Class_id); Table_name := r.(Class_name) |}.
 
-  eapply Tactics.in_links_fw with (tc:=C2RConfiguration) ; simpl.
+  eapply TacticsFW.in_links_fw with (tc:=C2RConfiguration) ; simpl.
   
   { apply incl_singleton. eassumption. }
   { auto. }

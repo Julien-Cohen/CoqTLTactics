@@ -72,7 +72,7 @@ Proof.
   specialize (TraceUtils.state_in_trace m s1 IN_S) ;
     intro IN_TRACE.
 
-  eapply Tactics.in_links_fw with (tc:=Moore2MealyTransformationConfiguration).
+  eapply TacticsFW.in_links_fw with (tc:=Moore2MealyTransformationConfiguration).
   
   { (* The source pattern is the considered transition *)
     apply ListUtils.incl_singleton. exact IN_T.
@@ -185,7 +185,7 @@ Proof.
   specialize (TraceUtils.state_in_trace m s1 IN_S) ; intro INTRACE.
 
 
-  eapply Tactics.in_links_fw with (tc:=Moore2MealyTransformationConfiguration).
+  eapply TacticsFW.in_links_fw with (tc:=Moore2MealyTransformationConfiguration).
   3:{
     (* only the second rule builds links. *)
     apply In_2. (* second rule *)
