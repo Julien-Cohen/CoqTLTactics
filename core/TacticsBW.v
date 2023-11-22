@@ -17,15 +17,6 @@ Import Metamodel Model.
 
 
 
-
-
-
-
-
-
-(** * Destructors *)
-
-
 (* used 3 times in this file *)
 Local Ltac destruct_in_matchingRules H NEWNAME :=
   match type of H with 
@@ -36,8 +27,6 @@ Local Ltac destruct_in_matchingRules H NEWNAME :=
 
 
 
-
-(* BW *)
 Local Lemma in_trace_inversion {MM1 : Metamodel} {T1} {T2} {BEQ} :
   forall
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
@@ -76,7 +65,7 @@ Proof.
 Qed.
 
 
-(* BW *) (* NOT USED *)
+(* NOT USED *)
 Local Corollary in_trace_in_source {MM1} {T1} {T2} {BEQ} :  
   forall (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
  m e b s i,
@@ -100,8 +89,6 @@ Proof.
 Qed.
 
 
-
-(* BW *)
 Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
@@ -137,8 +124,6 @@ Proof.
 Qed.
 
 
-
-(* BW *)
 Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
   {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))}
@@ -157,50 +142,18 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
 Proof.
   intros.
 
-  (* INLINE-ME *)
-  Local Ltac destruct_in_modelLinks_execute H NEWNAME := 
-    match type of H with
-      In _ (modelLinks (execute ?T _)) =>
-        let e := fresh "sp" in
-        rewrite (core.Certification.tr_execute_in_links T) in H;
-        destruct H as [e [NEWNAME H]]                                             end.     
+  rewrite (core.Certification.tr_execute_in_links t) in H;
+    destruct H as (sp & IN_E & H).
   
+  apply core.Certification.tr_applyOnPiece_in in H ; 
+    destruct H as (r & IN_RULE & H).
   
-  destruct_in_modelLinks_execute H IN_E. 
+  apply core.Certification.tr_applyRuleOnPiece_in in H ;
+    destruct H as (n & IN_IT & IN_APP_PAT).
   
-  (* INLINE-ME *)
-  Local  Ltac destruct_apply_pattern H IN_MATCH_NEWNAME :=
-    match type of H with 
-      In _ (applyTrOnPiece _ _ _) => 
-        let R := fresh "r" in
-        apply core.Certification.tr_applyOnPiece_in in H ; 
-        destruct H as (R & (IN_MATCH_NEWNAME & H))
-    end.
+  apply core.Certification.tr_applyIterationOnPiece_in in IN_APP_PAT ;
+    destruct IN_APP_PAT as (opu & H_IN_OUTPAT & IN_APP_PAT).
 
-  destruct_apply_pattern H IN_RULE.  
-  
-  (* INLINE-ME *)
-  Local Ltac destruct_applyRuleOnPiece H NEW1 NEW2 :=
-    match type of H with
-    | In _ (applyRuleOnPiece _ _ _ _) =>
-        let N := fresh "n" in 
-        
-        apply core.Certification.tr_applyRuleOnPiece_in in H ;
-        destruct H as (N & (NEW1 & NEW2))
-    end.
-
-  destruct_applyRuleOnPiece H IN_IT IN_APP_PAT. 
-  
-  (* INLINE-ME *)
-  Local Ltac destruct_applyIterationOnPiece H NEWNAME :=
-    match type of H with
-    | In _ (applyIterationOnPiece _ _ _ _ _ )  =>
-        let p := fresh "p" in
-        apply core.Certification.tr_applyIterationOnPiece_in in H ;
-        destruct H as (p & (NEWNAME & H))
-    end.
-  
-  destruct_applyIterationOnPiece IN_APP_PAT H_IN_OUTPAT.   
   destruct_in_matchingRules IN_RULE H_MATCH_RULE.
   unfold applyUnitOnPiece in IN_APP_PAT.
   PropUtils.destruct_match_H IN_APP_PAT ;
@@ -209,14 +162,14 @@ Proof.
 Qed.
 
 
-Ltac simpl_accessors_any H :=
+Local Ltac simpl_accessors_any H :=
   repeat first [ ConcreteSyntax.simpl_cr_accessors H 
         | ConcreteSyntax.simpl_elem_accessors H 
         | ConcreteSyntax.simpl_link_accessors H
         | Syntax.simpl_r_accessors H 
         | Syntax.simpl_opu_accessors H]. 
 
-Ltac progress_in_In_rules H :=
+Local Ltac progress_in_In_rules H :=
   match type of H with 
     | In ?R (Syntax.rules _) =>
         simpl Syntax.rules in H ;
@@ -225,7 +178,7 @@ Ltac progress_in_In_rules H :=
   end.
 
 
-Ltac exploit_evaloutpat H :=
+Local Ltac exploit_evaloutpat H :=
   match type of H with 
 
   | UserExpressions.evalOutputPatternUnit _ _ _ (Parser.parseOutputPatternUnit _) = Some _ =>
@@ -237,7 +190,7 @@ Ltac exploit_evaloutpat H :=
       ConcreteExpressions.inv_makeElement H
   end.
 
-Ltac unfold_parseRule H :=
+Local Ltac unfold_parseRule H :=
   match type of H with
     | context[Parser.parseRule (ConcreteSyntax.Build_ConcreteRule _ _ _ _ _ )] => unfold Parser.parseRule in H
 
@@ -254,7 +207,8 @@ Ltac unfold_parseRule H :=
         fail "Cannot find something to unfold (Parser.parseRule)"
   end.
 
-Ltac progress_in_In_outpat H :=
+
+Local Ltac progress_in_In_outpat H :=
   match type of H with 
     | context[Parser.parseRule _] => 
         unfold_parseRule H ;
@@ -299,7 +253,7 @@ Ltac exploit_evalGuard H :=
       
     end.
 
-(** Tactics foor the user (BW) *)
+(** Tactic for the user *)
 Ltac exploit_element_in_result H :=
   match type of H with
   | In _ (modelElements (execute _ _)) =>
@@ -342,18 +296,19 @@ Ltac exploit_element_in_result H :=
       Semantics.exploit_in_allTuples IN_ELTS
   end. 
 
-Ltac unfold_parseOutputPatternUnit H :=
+
+Local Ltac unfold_parseOutputPatternUnit H :=
     unfold Parser.parseOutputPatternUnit in H ;
     unfold Parser.parseOutputPatternLinks in H ;
     unfold Parser.parseOutputPatternLink in H ;
     repeat ConcreteSyntax.simpl_elem_accessors H.
   
-Ltac unfold_evalOutputPatternLink H :=
+Local Ltac unfold_evalOutputPatternLink H :=
     unfold UserExpressions.evalOutputPatternLink in H ;
     ConcreteSyntax.simpl_cr_accessors H ;
     Syntax.simpl_opu_accessors H.
 
-Ltac exploit_in_eval_link H :=
+Local Ltac exploit_in_eval_link H :=
     match type of H with
     | In _ (UserExpressions.evalOutputPatternLink _ _ _ _ _ (Parser.parseOutputPatternUnit _ _)) => 
         let TMP := fresh "TMP" in
@@ -373,7 +328,7 @@ Ltac exploit_in_eval_link H :=
           apply in_singleton in IN 
     end.
 
-(* BW *)
+
 Ltac exploit_link_in_result H :=
   match type of H with
   | In _ (modelLinks (execute _ _)) =>
@@ -420,7 +375,7 @@ Ltac exploit_link_in_result H :=
       exploit_in_eval_link IN_L  
   end. 
 
-(* BW *)
+
 Ltac exploit_in_trace H :=
   let se := fresh "se" in
   let r := fresh "r" in
