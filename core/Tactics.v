@@ -54,22 +54,22 @@ Local Ltac destruct_in_matchingRules H NEWNAME :=
 
 
 (* BW *)
-Lemma destruct_in_trace_lem {MM1 : Metamodel} {T1} {T2} {BEQ} :
+Local Lemma in_trace_inversion {MM1 : Metamodel} {T1} {T2} {BEQ} :
   forall
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
-  {cm} {l},
-  In l (RichTraceLink.drop ((compute_trace) t cm)) ->
+  {m} {l},
+  In l (RichTraceLink.drop ((compute_trace) t m)) ->
   exists p r i outpat te,   
-    In p (allTuples t cm)
+    In p (allTuples t m)
     /\ In r (Syntax.rules t) 
-    /\ UserExpressions.evalGuard r cm p = true 
-    /\ In i (seq 0 (UserExpressions.evalIterator r cm p))
+    /\ UserExpressions.evalGuard r m p = true 
+    /\ In i (seq 0 (UserExpressions.evalIterator r m p))
     /\ In outpat (Syntax.r_outputPattern r)
     /\ l = {|
              PoorTraceLink.source := (p, i, Syntax.opu_name outpat);
              PoorTraceLink.produced := te
            |} 
-    /\ UserExpressions.evalOutputPatternUnit outpat cm p i = return te .
+    /\ UserExpressions.evalOutputPatternUnit outpat m p i = return te .
 Proof.
   intros.
   unfold RichTraceLink.drop in H.
@@ -92,17 +92,21 @@ Proof.
 Qed.
 
 
-(* BW *)
-Corollary in_trace_in_models_source {MM1} {T1} {T2} {BEQ} :  
+(* BW *) (* NOT USED *)
+Local Corollary in_trace_in_source {MM1} {T1} {T2} {BEQ} :  
   forall (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
- cm a b s i,
-    In (PoorTraceLink.buildTraceLink ([a],i,s) b ) (RichTraceLink.drop (compute_trace t cm)) ->
-    In a cm.(modelElements) .
+ m e b s i,
+    In {| 
+        PoorTraceLink.source := ([e],i,s) ;
+        PoorTraceLink.produced := b
+      |}
+      (RichTraceLink.drop (compute_trace t m)) ->
+    In e m.(modelElements) .
 Proof.
-  intros t cm a b s i IN.
+  intros t m e b s i IN.
 
-  destruct (destruct_in_trace_lem IN) 
-    as (se & r & n & e & te & IN_SOURCE & _ & _ & _ & _ & EQ & _).
+  destruct (in_trace_inversion IN) 
+    as (se & r & n & opu & te & IN_SOURCE & _ & _ & _ & _ & EQ & _).
 
   inj EQ.
 
@@ -116,11 +120,15 @@ Qed.
 Lemma in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
   forall 
     (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
-    cm a b,
-     In (PoorTraceLink.buildTraceLink a b) (RichTraceLink.drop (compute_trace t cm)) ->
-    In b (execute t cm).(modelElements).
+    m s e,
+    In {| 
+        PoorTraceLink.source := s ;
+        PoorTraceLink.produced := e
+      |}
+      (RichTraceLink.drop (compute_trace t m)) ->
+    In e (execute t m).(modelElements).
 Proof.
-  intros t cm a b IN.
+  intros t m s e IN.
   unfold execute. 
   unfold modelElements. 
   unfold RichTraceLink.drop in IN.
@@ -137,17 +145,16 @@ Qed.
 Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
-    {cm} {a},
+    {m} {e},
     
-  In a
-    (modelElements (execute t cm)) ->
+  In e (modelElements (execute t m)) ->
   exists r sp n0 opu,
-    In sp (allTuples t cm)
+    In sp (allTuples t m)
     /\ In r (Syntax.rules t) 
-    /\ UserExpressions.evalGuard r cm sp = true 
-    /\ In n0 (seq 0 (UserExpressions.evalIterator r cm sp))
+    /\ UserExpressions.evalGuard r m sp = true 
+    /\ In n0 (seq 0 (UserExpressions.evalIterator r m sp))
     /\ In opu (Syntax.r_outputPattern r) 
-    /\ UserExpressions.evalOutputPatternUnit opu cm sp n0 = Some a.
+    /\ UserExpressions.evalOutputPatternUnit opu m sp n0 = Some e.
 Proof.
   intros. 
 
@@ -174,26 +181,26 @@ Qed.
 Lemma in_modelElements_execute_left {MM1} {T1} {T2} {BEQ} :
   forall 
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
-    {cm} {a},
+    m e,
     
-  forall r sp n0 opu,
-    In sp (allTuples t cm) ->
+  forall r s i opu,
+    In s (allTuples t m) ->
     In r (Syntax.rules t) ->
-    UserExpressions.evalGuard r cm sp = true ->
-    In n0 (seq 0 (UserExpressions.evalIterator r cm sp)) ->
+    UserExpressions.evalGuard r m s = true ->
+    In i (seq 0 (UserExpressions.evalIterator r m s)) ->
     In opu (Syntax.r_outputPattern r) ->
-    UserExpressions.evalOutputPatternUnit opu cm sp n0 = Some a ->
-    In a (modelElements (execute t cm)).
+    UserExpressions.evalOutputPatternUnit opu m s i = Some e ->
+    In e (modelElements (execute t m)).
 Proof.
   intros. 
   apply Certification.tr_execute_in_elements.
-  exists sp. split ; [assumption | ].
+  exists s. split ; [assumption | ].
   apply Certification.tr_instantiateOnPiece_in. (* FIXME : name incoherence *)
   exists r. 
   split.
   + apply Certification.tr_matchingRules_in. split ; assumption.
   + apply Certification.tr_instantiateRuleOnPiece_in.
-    exists n0.
+    exists i.
     split ; [ assumption | ].
     apply Certification.tr_instantiateIterationOnPiece_in.
     exists opu. split ; [ assumption | ].
@@ -209,18 +216,19 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
      {l}
      {m},
     In l (modelLinks (execute t m)) ->
-    exists sp r n p te,
-      In sp (allTuples t m) 
+    exists s r n p te,
+      In s (allTuples t m) 
       /\ In r (Syntax.rules t) 
-      /\ UserExpressions.evalGuard r m sp = true
-      /\ In n (seq 0 (UserExpressions.evalIterator r m sp))
+      /\ UserExpressions.evalGuard r m s = true
+      /\ In n (seq 0 (UserExpressions.evalIterator r m s))
       /\ In p (Syntax.r_outputPattern r) 
-      /\ UserExpressions.evalOutputPatternUnit p m sp n = return te
-      /\ In l (UserExpressions.evalOutputPatternLink m sp te n (RichTraceLink.drop(compute_trace t m)) p).
+      /\ UserExpressions.evalOutputPatternUnit p m s n = return te
+      /\ In l (UserExpressions.evalOutputPatternLink m s te n (RichTraceLink.drop(compute_trace t m)) p).
 
 Proof.
   intros.
-  
+
+  (* INLINE-ME *)
   Local Ltac destruct_in_modelLinks_execute H NEWNAME := 
     match type of H with
       In _ (modelLinks (execute ?T _)) =>
@@ -231,6 +239,7 @@ Proof.
   
   destruct_in_modelLinks_execute H IN_E. 
   
+  (* INLINE-ME *)
   Local  Ltac destruct_apply_pattern H IN_MATCH_NEWNAME :=
     match type of H with 
       In _ (applyTrOnPiece _ _ _) => 
@@ -241,6 +250,7 @@ Proof.
 
   destruct_apply_pattern H IN_RULE.  
   
+  (* INLINE-ME *)
   Local Ltac destruct_applyRuleOnPiece H NEW1 NEW2 :=
     match type of H with
     | In _ (applyRuleOnPiece _ _ _ _) =>
@@ -252,6 +262,7 @@ Proof.
 
   destruct_applyRuleOnPiece H IN_IT IN_APP_PAT. 
   
+  (* INLINE-ME *)
   Local Ltac destruct_applyIterationOnPiece H NEWNAME :=
     match type of H with
     | In _ (applyIterationOnPiece _ _ _ _ _ )  =>
@@ -265,7 +276,7 @@ Proof.
   unfold applyUnitOnPiece in IN_APP_PAT.
   PropUtils.destruct_match_H IN_APP_PAT ;
    [ | ListUtils.unfold_In_cons IN_APP_PAT ].
-  eauto 15.
+  repeat eexists ; eauto.
 Qed.
 
 
@@ -433,7 +444,7 @@ Ltac exploit_in_eval_link H :=
           apply in_singleton in IN 
     end.
 
-
+(* BW *)
 Ltac exploit_link_in_result H :=
   match type of H with
   | In _ (modelLinks (execute _ _)) =>
@@ -480,7 +491,7 @@ Ltac exploit_link_in_result H :=
       Tactics.exploit_in_eval_link IN_L  
   end. 
 
-
+(* BW *)
 Ltac exploit_in_trace H :=
   let se := fresh "se" in
   let r := fresh "r" in
@@ -497,7 +508,7 @@ Ltac exploit_in_trace H :=
 
   match type of H with 
    | In _ (RichTraceLink.drop ((compute_trace) _ _)) => 
-  	destruct (destruct_in_trace_lem H) 
+  	destruct (in_trace_inversion H) 
     	as (se & r & i & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV);
   
   (* 2 *)
@@ -523,6 +534,7 @@ end.
 
 (** Tactics to progress in the goal (not in the hypothesis) *)
 
+(* FW *)
 Ltac destruct_in_trace_G :=
   match goal with 
     [ |- In _ (compute_trace _ _)] => 
