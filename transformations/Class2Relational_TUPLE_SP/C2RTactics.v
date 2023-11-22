@@ -12,7 +12,7 @@ Require Import transformations.Class2Relational_TUPLE_SP.Class2Relational_TUPLE_
 Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
 Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
 
-From core Require Tactics TacticsFW Certification.
+From core Require TacticsFW Certification.
 
 (** ** Type correspondence *)
 

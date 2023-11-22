@@ -4,7 +4,7 @@ Require Moore2MealyALT.Moore2Mealy.
 Require Moore2MealyALT.MooreWF.
 Require Moore2MealyALT.MealyWF.
 
-Require core.TacticsFW.
+Require core.TacticsFW core.TacticsBW.
 
 Import String OptionUtils.
 
@@ -123,7 +123,7 @@ Lemma state_element_bw :
       List.In (Moore.StateElement s0) (Model.modelElements m) /\ s = convert_state s0.
 Proof.
   intros s H.
-  core.Tactics.exploit_element_in_result H.
+  TacticsBW.exploit_element_in_result H.
   compute in t0.
   exists t0.
   split ; auto.
@@ -136,7 +136,7 @@ Lemma transition_element_bw :
       List.In (Moore.TransitionElement t0) (Model.modelElements m) /\ Some t = convert_transition t0.
 Proof.
   intros t H.
-  core.Tactics.exploit_element_in_result H.
+  TacticsBW.exploit_element_in_result H.
   exists t1.
   split ; auto ; [].
   apply WF_T in IN_ELTS.

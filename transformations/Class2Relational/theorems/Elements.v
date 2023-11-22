@@ -6,6 +6,7 @@ Require Import core.Semantics.
 
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
+Require        core.TacticsBW.
 
 
 From transformations.Class2Relational 
@@ -73,7 +74,7 @@ Proof.
   intros cm rm H ; subst rm.
   intros i nm IN_ATTR.
 
-  Tactics.exploit_element_in_result IN_ATTR ; [] ; 
+  TacticsBW.exploit_element_in_result IN_ATTR ; [] ; 
   clear IN_ATTR.
 
   C2RTactics.negb_inv MATCH_GUARD.
@@ -96,7 +97,7 @@ Proof.
   intros cm rm H ; subst.
   intros i nm H.
 
-  Tactics.exploit_element_in_result H ; []; 
+  TacticsBW.exploit_element_in_result H ; []; 
   clear H.
 
   destruct t0 ; assumption.

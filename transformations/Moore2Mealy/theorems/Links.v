@@ -281,7 +281,7 @@ Lemma source_link_bw :
           m.(modelLinks).
 Proof.
   intros t' s' IN.
-  Tactics.exploit_link_in_result IN.
+  TacticsBW.exploit_link_in_result IN.
   { 
     PropUtils.inj IN0.
     simpl in IN_L.
@@ -341,7 +341,7 @@ Proof.
     monadInv EQ.
     destruct t as (id & i) ; simpl in *.
 
-    Tactics.exploit_in_trace H.
+    TacticsBW.exploit_in_trace H.
     PropUtils.inj EQ0.
     
     split ; [ reflexivity | ].
@@ -371,7 +371,7 @@ Lemma target_link_bw :
           m.(modelLinks).
 Proof.
   intros t' s' IN.
-  Tactics.exploit_link_in_result IN.
+  TacticsBW.exploit_link_in_result IN.
   { discriminate IN0. }
   { 
     PropUtils.inj IN0.
@@ -424,7 +424,7 @@ Proof.
 
     apply Moore.getTransition_target_inv in EQ.
 
-    Tactics.exploit_in_trace H ; [].
+    TacticsBW.exploit_in_trace H ; [].
 
     simpl in * ; PropUtils.inj EQ0.
     split ; [ reflexivity | ].

@@ -23,9 +23,7 @@ From core
   Metamodel
   modeling.ModelingMetamodel
   Model
-  utils.CpdtTactics
-  Tactics
-.
+  utils.CpdtTactics.
 
 (* Base types *)
 

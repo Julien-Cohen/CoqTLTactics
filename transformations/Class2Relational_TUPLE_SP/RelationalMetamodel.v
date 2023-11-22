@@ -8,7 +8,6 @@ Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
-Require        core.Tactics.
 
 Require Import Glue.
 

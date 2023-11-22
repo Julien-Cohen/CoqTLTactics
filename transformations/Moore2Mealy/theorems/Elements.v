@@ -1,4 +1,5 @@
-Require core.TacticsFW.
+From core 
+       Require TacticsFW TacticsBW.
 
 Require Moore2Mealy.MooreSemantics.
 Require Moore2Mealy.MealySemantics.
@@ -116,7 +117,7 @@ Lemma state_element_bw :
       List.In (Moore.State s0) (Model.modelElements m) /\ s = convert_state s0.
 Proof.
   intros s H.
-  core.Tactics.exploit_element_in_result H.
+  TacticsBW.exploit_element_in_result H.
   exists t0.
   split ; auto.
 Qed.

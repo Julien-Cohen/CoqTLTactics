@@ -10,7 +10,7 @@ Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
 
-From core Require Tactics TacticsFW Certification.
+From core Require TacticsFW Certification.
 
 
 Ltac negb_inv H :=
@@ -48,7 +48,6 @@ Proof.
   exact IN.
 Qed.
 
-(** *** January tactics *)
 
 
 Ltac unfold_toEData H :=

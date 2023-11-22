@@ -69,7 +69,7 @@ Proof.
   repeat auto_in_flat_map.
   apply in_optionToList in H3.
   OptionUtils.monadInv H3.
-  Tactics.destruct_in_matchingRules H0 M.
+  destruct_in_matchingRules H0 M.
   
   unfold RichTraceLink.convert ; simpl.
   repeat eexists ; try eassumption.
@@ -316,27 +316,27 @@ Ltac exploit_element_in_result H :=
       let EV := fresh "EV" in
             
       (* (1) *)
-      destruct (Tactics.destruct_in_modelElements_execute_lem H)
+      destruct (destruct_in_modelElements_execute_lem H)
       as (r & sp & n & opu & IN_ELTS & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & EV) ;
       
       (* (2) *)
       (* Case analysis on the rule that has matched. *)
-      Tactics.progress_in_In_rules IN_RULE ;
+      progress_in_In_rules IN_RULE ;
 
       (* (_) *) 
       (* Consider the fact that the guard was true. *)
-      Tactics.exploit_evalGuard MATCH_GUARD ; 
+      exploit_evalGuard MATCH_GUARD ; 
 
       (* (_) *)
-      Tactics.exploit_in_it IN_IT ;
+      exploit_in_it IN_IT ;
       
       (* (_) *) 
       (* Make the ouput-pattern-element appear. *)
-      Tactics.progress_in_In_outpat IN_OP ;
+      progress_in_In_outpat IN_OP ;
         
       (* (_) *)
       (* Make the matched element appear *)
-      Tactics.exploit_evaloutpat EV ;
+      exploit_evaloutpat EV ;
       
       (* (7) *)
       Semantics.exploit_in_allTuples IN_ELTS
@@ -392,32 +392,32 @@ Ltac exploit_link_in_result H :=
       let IN_L := fresh "IN_L" in
             
       (* (1) *)
-      destruct (Tactics.destruct_in_modelLinks_execute_lem H)
+      destruct (destruct_in_modelLinks_execute_lem H)
       as (sp & r & n & opu & te & IN_ELTS & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & EV & IN_L) ;
       
       (* (2) *)
       (* Case analysis on the rule that has matched. *)
-      Tactics.progress_in_In_rules IN_RULE ;
+      progress_in_In_rules IN_RULE ;
 
       (* (_) *) 
       (* Consider the fact that the guard was true. *)
-      Tactics.exploit_evalGuard MATCH_GUARD ; 
+      exploit_evalGuard MATCH_GUARD ; 
 
       (* (_) *)
-      Tactics.exploit_in_it IN_IT ;
+      exploit_in_it IN_IT ;
       
       (* (_) *) 
       (* Make the ouput-pattern-element appear. *)
-      Tactics.progress_in_In_outpat IN_OP ;
+      progress_in_In_outpat IN_OP ;
         
       (* (_) *)
       (* Make the matched element appear *)
-      Tactics.exploit_evaloutpat EV ;
+      exploit_evaloutpat EV ;
       
       (* (7) *)
       Semantics.exploit_in_allTuples IN_ELTS ;
 
-      Tactics.exploit_in_eval_link IN_L  
+      exploit_in_eval_link IN_L  
   end. 
 
 (* BW *)

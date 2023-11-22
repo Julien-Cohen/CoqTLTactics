@@ -21,7 +21,7 @@ Require Import core.Engine.
 
 Require Import  core.Semantics.
 Require Import  core.Certification.
-
+Require         core.TacticsBW.
 
 Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
@@ -45,7 +45,7 @@ Proof.
   intros T P e IN; intros.
   subst rm.
 
-  Tactics.exploit_element_in_result IN ; [ | ] ;
+  TacticsBW.exploit_element_in_result IN ; [ | ] ;
   clear IN.
 
   { apply P in IN_ELTS. apply IN_ELTS. }

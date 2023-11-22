@@ -16,6 +16,7 @@ Require Import core.Semantics.
 Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
+Require        core.TacticsBW.
 
 Require Import transformations.Class2Relational_TUPLE_SP.Class2Relational_TUPLE_SP.
 Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
@@ -45,9 +46,9 @@ Proof.
     intros cm rm E PRE co1 co2 IN1 IN2 D.
     subst rm.
 
-    Tactics.exploit_element_in_result IN1 ; [] ; 
+    TacticsBW.exploit_element_in_result IN1 ; [] ; 
     clear IN1.
-    Tactics.exploit_element_in_result IN2 ; [] ; 
+    TacticsBW.exploit_element_in_result IN2 ; [] ; 
     clear IN2.
     
     simpl.

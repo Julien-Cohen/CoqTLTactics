@@ -6,7 +6,7 @@ Require Import core.Semantics.
 
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
-
+Require        core.TacticsBW.
 
 From transformations.Class2Relational_TUPLE_SP
   Require
@@ -147,7 +147,7 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
 
-  Tactics.exploit_element_in_result H ; [] ; 
+  TacticsBW.exploit_element_in_result H ; [] ; 
   clear H.
 
   C2RTactics.exploit_guard MATCH_GUARD.
@@ -169,7 +169,7 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
   
-  Tactics.exploit_element_in_result H ; [] ; 
+  TacticsBW.exploit_element_in_result H ; [] ; 
   clear H.
 
   

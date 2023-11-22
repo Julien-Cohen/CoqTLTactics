@@ -12,7 +12,8 @@ Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
-Require TacticsFW. 
+Require TacticsFW TacticsBW. 
+
 
 Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
@@ -93,8 +94,8 @@ Proof.
   }    
   f_equal.
   
-  Tactics.exploit_in_trace IN1; 
-  Tactics.exploit_in_trace IN2 ;
+  TacticsBW.exploit_in_trace IN1; 
+  TacticsBW.exploit_in_trace IN2 ;
   PropUtils.inj EQ0 ;
   PropUtils.inj EQ ; auto.
   discriminate.

@@ -69,8 +69,8 @@ Proof.
   }    
   f_equal.
   
-  Tactics.exploit_in_trace IN1; 
-  Tactics.exploit_in_trace IN2 ; 
+  TacticsBW.exploit_in_trace IN1; 
+  TacticsBW.exploit_in_trace IN2 ; 
   try PropUtils.inj EQ0 ;  
   try PropUtils.inj EQ ; 
   try PropUtils.inj EQ1 ; auto.

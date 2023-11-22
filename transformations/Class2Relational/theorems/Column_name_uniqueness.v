@@ -47,10 +47,10 @@ Proof.
     intros cm rm E PRE co1 co2 IN1 IN2 D.
     subst rm.
 
-    Tactics.exploit_element_in_result IN1 ; [] ;
+    TacticsBW.exploit_element_in_result IN1 ; [] ;
     clear IN1.
 
-    Tactics.exploit_element_in_result IN2 ; [] ;
+    TacticsBW.exploit_element_in_result IN2 ; [] ;
     clear IN2.
 
     simpl.

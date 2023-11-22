@@ -82,7 +82,7 @@ Proof.
   intros c tb R_IN1.
   subst rm.
 
-  Tactics.exploit_link_in_result R_IN1 ; [ | ] ;  
+  TacticsBW.exploit_link_in_result R_IN1 ; [ | ] ;  
     
   clear R_IN1 ;
   
@@ -130,7 +130,7 @@ Proof.
   subst rm.
 
 
-  Tactics.exploit_element_in_result IN_COL (* or apply Elements.transform_attribute_bw (moins puissant car on perd l'info sur la garde) *) ; []; 
+  TacticsBW.exploit_element_in_result IN_COL (* or apply Elements.transform_attribute_bw (moins puissant car on perd l'info sur la garde) *) ; []; 
   clear IN_COL.
   
   specialize (PRE _ IN_ELTS).

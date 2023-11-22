@@ -15,6 +15,8 @@ Require Import core.Semantics.
 Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
+Require        core.TacticsBW.
+
 
 Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
@@ -45,10 +47,10 @@ Proof.
   intros cm rm E PRE t1 t2 IN1 IN2 D.
   subst rm.
 
-  Tactics.exploit_element_in_result IN1 ; [] ;
+  TacticsBW.exploit_element_in_result IN1 ; [] ;
   clear IN1.
 
-  Tactics.exploit_element_in_result IN2 ; [] ;
+  TacticsBW.exploit_element_in_result IN2 ; [] ;
   clear IN2.
 
   simpl in *.

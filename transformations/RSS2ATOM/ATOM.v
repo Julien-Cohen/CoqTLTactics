@@ -22,8 +22,7 @@ From core Require Import
   Metamodel 
   modeling.ModelingMetamodel 
   Model 
-  utils.CpdtTactics 
-  Tactics.
+  utils.CpdtTactics.
 
 
 (* Base types *)
