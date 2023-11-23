@@ -45,5 +45,5 @@ forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
           In sp (allTuples tr sm) /\
           In tl (LegacySemantics.applyTrOnPiece tr sm sp)).
 Proof.
-    apply tr_execute_in_links.
+    apply tr_execute_in_links_legacy.
 Qed.

@@ -61,7 +61,7 @@ forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
           In tl (LegacySemantics.applyTrOnPiece tr sm sp)) -> 
           In tl (execute tr sm).(modelLinks) .
 Proof.
-    apply tr_execute_in_links.
+    apply tr_execute_in_links_legacy.
 Qed.
 
 (*

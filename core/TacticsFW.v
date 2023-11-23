@@ -154,7 +154,7 @@ Proof.
   intros IN_MOD A IN_R EVAL_GUARD  EVAL_IT IN_OPU  EVAL_OUT_EL lk. 
   intro INLV.
 
-  apply Certification.tr_execute_in_links.
+  apply Certification.tr_execute_in_links_legacy. (* fixme *)
 
   exists sp.  
   split.

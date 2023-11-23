@@ -16,13 +16,16 @@ Definition optionToList {A:Type} (o: option A) : list A :=
 
 Lemma in_optionToList {A}:
   forall (a:A) b,
-    In a (optionToList b) -> b = Some a.
+    In a (optionToList b) <-> b = Some a.
 Proof.
-  intros a b IN.
-  destruct b ; simpl in IN.
+  intros a b. 
+  destruct b ; simpl ; split ; intro H.
   + PropUtils.remove_or_false_auto.
     congruence.
+  + left ; congruence.
+
   + contradiction.
+  + discriminate.
 Qed.
 
 Lemma optionToList_map {A} {B}: 

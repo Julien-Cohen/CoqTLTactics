@@ -21,6 +21,16 @@ Context {tc: TransformationConfiguration}.
 Definition allTuples (tr: Transformation) (sm : SourceModel) : list InputPiece :=
   tuples_up_to_n sm.(modelElements) tr.(arity).
 
+Lemma in_allTuples_incl tr sm :
+  forall t, 
+    In t (allTuples tr sm) <-> 
+      (incl t (modelElements sm) /\ Datatypes.length t <= arity tr).
+Proof.
+  unfold allTuples.
+  setoid_rewrite  <- tuples_up_to_n_incl_length.
+  tauto.
+Qed.
+
 Definition matchingRules (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list Rule :=
   filter (fun (r:Rule) => evalGuard r sm sp) tr.(rules).
 
@@ -54,13 +64,43 @@ Definition traceTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiec
 Definition compute_trace (tr: Transformation) (sm : SourceModel) :  RichTraceLink.Trace :=
   flat_map (traceTrOnPiece tr sm) (allTuples tr sm).  
 
+Lemma in_compute_trace_inv tr sm :
+  forall a, 
+  In a (compute_trace tr sm) <-> 
+    exists p : InputPiece,
+      
+      (incl p (modelElements sm) /\ Datatypes.length p <= arity tr)
+      /\ exists r : Rule,
+        (In r tr.(rules) /\ evalGuard r sm p = true) 
+        /\ exists i : nat,
+          In i (seq 0 (evalIterator r sm p))
+          /\ exists opu : OutputPatternUnit,
+            In opu r.(r_outputPattern) 
+            /\ exists e : TargetElementType,
+              {|
+                source := (p, i, opu.(opu_name));
+                produced := e;
+                linkPattern := opu.(opu_link)
+              |} = a 
+              /\ evalOutputPatternUnit opu sm p i = Some e.
+Proof.
+  repeat setoid_rewrite in_flat_map. 
+  setoid_rewrite  optionToList_map.
+  setoid_rewrite in_map_iff.
+  setoid_rewrite  in_optionToList.
+  setoid_rewrite filter_In.
+  setoid_rewrite in_allTuples_incl.
+  tauto.
+Qed.
 
 (** * Apply link part of the r.h.s of rules (uses traces) **)
 
+Definition apply_link_pattern tls sm lk := 
+    lk.(linkPattern) (drop tls) (getIteration lk) sm (getSourcePiece lk) lk.(produced).
+  
+
 Definition applyTrOnModel (sm : SourceModel) (tls:Trace): list TargetLinkType :=
-  flat_map 
-    (fun lk => lk.(linkPattern) (drop tls) (getIteration lk) sm (getSourcePiece lk) lk.(produced)) 
-    tls. 
+    flat_map (apply_link_pattern tls sm) tls. 
 
 
 
@@ -76,9 +116,30 @@ Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
     modelLinks := applyTrOnModel sm t
   |}.
 
+
+Lemma in_modelElements_inv tr sm :
+  forall e, In e (execute tr sm).(modelElements) <-> 
+              exists a : TraceLink, 
+                produced a = e 
+                /\ In a (compute_trace tr sm).
+Proof.
+  setoid_rewrite in_map_iff.
+  tauto.
+Qed.
+
+Lemma in_modelLinks_inv tr sm :
+  forall l, In l (execute tr sm).(modelLinks) <-> 
+              exists a : TraceLink,
+                In a (compute_trace tr sm) 
+                /\ In l (apply_link_pattern (compute_trace tr sm) sm a).
+Proof.
+  setoid_rewrite in_flat_map at 1.
+  tauto.
+Qed.
+
 End Semantics.
 
-
+  
 
 (** * Some tactics *)
 

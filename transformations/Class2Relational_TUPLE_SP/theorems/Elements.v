@@ -30,7 +30,7 @@ Lemma in_allTuples_2 :
 Proof.
   intros until t ; intros HA IN1 IN2.
   unfold allTuples.
-  apply TupleUtils.tuples_up_to_n_incl_length.
+  apply TupleUtils.tuples_up_to_n_incl_length ; split.
   {
     apply List.incl_cons ; auto.
     apply List.incl_cons ; auto.

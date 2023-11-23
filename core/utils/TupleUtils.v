@@ -59,20 +59,31 @@ Proof.
            exists sp4. split; [right | ]; auto.
     + simpl. apply or_assoc. right. apply IHs1 with sp3; assumption.
 Qed.
+(* Note : The reverse property is false *)
+
 
 Lemma prod_cons_in_inv :
   forall (T: Type) (se: T) (ss: list T) (s2: list T) (s3: list (list T)),
-    In se s2 -> In ss s3 -> In (se :: ss) (prod_cons s2 s3).
+    (In se s2 /\ In ss s3) <-> In (se :: ss) (prod_cons s2 s3).
 Proof.
   intros.
   generalize dependent se.
   generalize dependent ss.
-  induction s2; intros.
-  - apply in_nil in H. contradiction.
-  - simpl. apply in_or_app.
-    simpl in H. destruct H.
-    + left. rewrite H. apply in_map. assumption.
-    + right. apply IHs2 with (ss:=ss) (se:=se); assumption.
+  induction s2; intros ; simpl.
+  - tauto. 
+  - setoid_rewrite in_app_iff.
+    setoid_rewrite <- IHs2 ; clear IHs2.
+    setoid_rewrite in_map_iff.
+    split.
+    + intros (H1 & H2).
+      destruct H1 ; [ subst | ].
+      * left. eauto.
+      * auto.
+    + intro H ; destruct H.
+      * destruct H as (? & H & ?).
+        injection H ; intros ; subst.
+        auto.
+      * tauto.
 Qed.
 
 (** * cartesian_prod *)
@@ -136,25 +147,28 @@ Qed.
 
 Lemma tuples_of_length_n_incl_length :
   forall (T: Type) (n: nat) (sm: list T) (sp: list T),
-    incl sp sm -> length sp = n -> In sp (tuples_of_length_n sm n).
+    incl sp sm /\ length sp = n <-> In sp (tuples_of_length_n sm n).
 Proof.
-  induction n.
+  induction n ; intros sm sp ; simpl.
+  - setoid_rewrite length_zero_iff_nil. split.
+    + intros (H & ?) ; subst ; left ; reflexivity.
+    + intro H ; inversion_clear H ; [ subst | contradiction].
+      split ; [ apply incl_nil_l | reflexivity ].
   - intros. simpl.
-    apply length_zero_iff_nil in H0.
-    left. symmetry. assumption.
-  - intros. simpl.
-    induction sp.
-    + inversion H0.
-    + simpl.
-      apply prod_cons_in_inv with (se:=a) (ss:=sp).
-      * unfold incl in H.
-        apply H.
-        simpl. left. trivial.
-      * apply IHn.
-        apply incl_tran with (m:= a::sp).
-        -- unfold incl. simpl. intros. right. assumption.
-        -- assumption.
-        -- inversion H0. trivial.
+    destruct sp ; simpl.
+    + setoid_rewrite in_flat_map.
+      setoid_rewrite in_map_iff.
+      split.
+       * intros (_ & H) ; discriminate H. 
+       * intros ( ? & ? & ? & ? & _). discriminate.
+    + rewrite PeanoNat.Nat.succ_inj_wd.
+      rewrite <- prod_cons_in_inv.
+      rewrite <- IHn ; clear IHn.
+      split.
+      * intros (H1 & ?). apply List.incl_cons_inv in H1. tauto.
+      * intros (? & ? & ?). 
+        split ; [ | assumption].
+        apply List.incl_cons ; assumption.
 Qed.
 
 (** * tuples_up_to_n *)
@@ -231,18 +245,54 @@ Qed.
 
 Lemma tuples_up_to_n_incl_length :
     forall (T: Type) (n: nat) (sm: list T) (sp: list T),
-      incl sp sm -> le (length sp) n -> In sp (tuples_up_to_n sm n).
+      (incl sp sm /\ length sp <= n) <-> In sp (tuples_up_to_n sm n).
 Proof.
   induction n; intros; simpl.
-  - left. destruct sp.
-    + reflexivity.
-    + inversion H0.
-  - apply in_or_app.
-    inversion H0.
-    + left. apply tuples_of_length_n_incl_length with (n:= S n) in H.
-      * simpl in H. assumption.
-      * assumption.
-    + right. apply IHn; assumption.
+  - setoid_rewrite PeanoNat.Nat.le_0_r.
+    setoid_rewrite length_zero_iff_nil.
+    split.
+    + intros (? & ?) ; subst ; auto.
+    + intro H ; destruct H ; [ subst | contradiction].
+      split ; [ apply incl_nil_l | reflexivity].
+  - setoid_rewrite in_app_iff.
+    setoid_rewrite <- IHn. clear IHn.
+    setoid_rewrite in_flat_map.
+    setoid_rewrite in_map_iff.
+    setoid_rewrite <- tuples_of_length_n_incl_length.
+    split.
+    + intros (? & ?).
+      destruct sp ; simpl.
+      * right.
+        split ; simpl ; auto with arith.
+      * apply incl_cons_inv in H. destruct H. simpl in H0.
+        apply le_S_n in H0.
+        compare (length sp) n.
+        { intro. subst. clear H0.
+          
+          left.  
+          exists t.
+          split ; [ assumption | ].
+          exists sp.        
+          split ; auto.
+        }
+        {
+          intro.
+          right.
+          split.
+          apply incl_cons ; assumption.
+          apply Arith_prebase.lt_le_S_stt.
+          apply PeanoNat.Nat.le_neq.
+          split ; assumption.
+        }
+        
+    + intro H.
+      destruct H.
+      * destruct H as (? & ? & ? & ? & ? & ?).
+        subst.
+        split ; auto.
+        apply incl_cons ; assumption.
+      * destruct H.
+        split ;auto.
 Qed.
 
 Lemma tuples_up_to_n_size:

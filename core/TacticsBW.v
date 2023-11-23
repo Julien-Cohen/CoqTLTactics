@@ -18,6 +18,7 @@ Import Metamodel Model.
 
 
 (* used 3 times in this file *)
+(* ne devrait plus être utile *)
 Local Ltac destruct_in_matchingRules H NEWNAME :=
   match type of H with 
     | In _ (matchingRules ?T _ _)  =>
@@ -26,7 +27,7 @@ Local Ltac destruct_in_matchingRules H NEWNAME :=
   end.
 
 
-
+(* utiliser plutôt Semantics.in_compute_trace_inv *)
 Local Lemma in_trace_inversion {MM1 : Metamodel} {T1} {T2} {BEQ} :
   forall
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
@@ -143,7 +144,7 @@ Proof.
   intros.
 
   (* FIXME : Legacy semantics appears ater use of this lemma. *)
-  rewrite (core.Certification.tr_execute_in_links t) in H;
+  rewrite (core.Certification.tr_execute_in_links_legacy t) in H;
     destruct H as (sp & IN_E & H).
   
   apply core.Certification.tr_applyOnPiece_in in H ; 

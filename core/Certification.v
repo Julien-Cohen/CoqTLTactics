@@ -37,7 +37,8 @@ Proof.
   apply in_flat_map.
 Qed.
 
-Lemma tr_execute_in_links :
+(* Legacy Semantics. *)
+Lemma tr_execute_in_links_legacy :
 forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
   In tl (execute tr sm).(modelLinks) <->
   (exists (sp : InputPiece),
@@ -50,6 +51,18 @@ Proof.
   apply RelationClasses.iff_Symmetric.
   apply LegacySemantics.included_3.
   apply in_flat_map.
+Qed.
+
+(* Not used yet *)
+Lemma tr_execute_in_links :
+forall (tr: Transformation) (sm : SourceModel) (l : TargetLinkType),
+  In l (execute tr sm).(modelLinks) <->
+    exists x : TraceLink,
+        In x (compute_trace tr sm) /\
+          In l (apply_link_pattern (compute_trace tr sm) sm x).
+Proof.
+  setoid_rewrite Semantics.in_modelLinks_inv.
+  tauto.
 Qed.
 
 Lemma tr_matchingRules_in :
@@ -117,6 +130,7 @@ Proof.
   destruct (evalOutputPatternUnit o sm sp iter) ; reflexivity.
 Qed.
 
+(* Legacy Semantics. *)
 Lemma tr_applyOnPiece_in :
     forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (tl : TargetLinkType),
       In tl (LegacySemantics.applyTrOnPiece tr sm sp) <->
@@ -128,6 +142,7 @@ Proof.
   apply in_flat_map.
 Qed.
 
+(* Legacy Semantics. *)
 Lemma tr_applyRuleOnPiece_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: InputPiece) (tl : TargetLinkType),
       In tl (LegacySemantics.applyRuleOnPiece r tr sm sp) <->
@@ -139,6 +154,7 @@ Proof.
   apply in_flat_map.
 Qed.
 
+(* Legacy Semantics. *)
 Lemma tr_applyIterationOnPiece_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: InputPiece) (tl : TargetLinkType) (i:nat),
       In tl (LegacySemantics.applyIterationOnPiece r tr sm sp i) <->
@@ -150,6 +166,7 @@ Proof.
   apply in_flat_map.
 Qed.
 
+(* Legacy Semantics. *)
 Lemma tr_applyUnitOnPiece_leaf : 
 forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (te: TargetElementType) 
        (i:nat) (opu: OutputPatternUnit),
@@ -182,9 +199,7 @@ Lemma allTuples_incl_length:
 Proof.
   intros.
   unfold allTuples.
-  apply tuples_up_to_n_incl_length with (n:=tr.(arity)) in H.
-  - assumption.
-  - assumption.
+  apply tuples_up_to_n_incl_length ; auto.
 Qed.
 
 
@@ -292,7 +307,7 @@ Program Instance CoqTLEngine :
     (* lemmas *)
 
     tr_execute_in_elements := tr_execute_in_elements;
-    tr_execute_in_links := tr_execute_in_links;
+    tr_execute_in_links := tr_execute_in_links_legacy ;
 
     tr_matchPattern_in := tr_matchingRules_in;
     tr_matchRuleOnPattern_leaf := fun _ _ _ _ => eq_refl ;
