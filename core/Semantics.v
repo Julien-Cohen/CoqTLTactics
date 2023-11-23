@@ -69,9 +69,11 @@ Lemma in_compute_trace_inv tr sm :
   In a (compute_trace tr sm) <-> 
     exists p : InputPiece,
       
-      (incl p (modelElements sm) /\ Datatypes.length p <= arity tr)
+      incl p (modelElements sm) 
+      /\ length p <= tr.(arity)
       /\ exists r : Rule,
-        (In r tr.(rules) /\ evalGuard r sm p = true) 
+        In r tr.(rules)
+        /\ evalGuard r sm p = true 
         /\ exists i : nat,
           In i (seq 0 (evalIterator r sm p))
           /\ exists opu : OutputPatternUnit,
@@ -90,7 +92,11 @@ Proof.
   setoid_rewrite  in_optionToList.
   setoid_rewrite filter_In.
   setoid_rewrite in_allTuples_incl.
-  tauto.
+  intro a ; split. 
+  + intros (? & (( ? & ? ) & ? & ( ? & ? ) & ? & ? & ? & ? & ? & ? & ?)). 
+    subst ; repeat (first [eexists | split]) ; eassumption. 
+  + intros (? & ? & ? & ? & ? & ? & ? & ? & ? & ? & ? & ? & ?).
+    subst ; repeat (first [eexists | split]) ; eassumption. 
 Qed.
 
 (** * Apply link part of the r.h.s of rules (uses traces) **)
@@ -145,7 +151,7 @@ End Semantics.
 
 (* tactics need to be outside the section to be visible *)
 
-
+(* Deprecated : use in_allTuples_incl instead *)
 Ltac exploit_in_allTuples H :=
   match type of H with 
     In _ (allTuples _ _) => 
@@ -154,6 +160,7 @@ Ltac exploit_in_allTuples H :=
       ListUtils.incl_inv H
   end.
 
+(* Deprecated : should not be used anymore. *)
 Ltac in_allTuples_auto :=
   match goal with 
     [ H : In _ (allTuples _ _) |- _ ] =>

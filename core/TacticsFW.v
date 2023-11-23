@@ -34,7 +34,8 @@ Proof.
 Qed.
 
 (* USED *)
-Lemma in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
+(* Deprecated : use in_modelElements_inv instead. *)
+Corollary in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
   forall 
     (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
     m s e,
@@ -44,55 +45,18 @@ Lemma in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
       |}
       (RichTraceLink.drop (compute_trace t m)) ->
     In e (execute t m).(modelElements).
-Proof.
-  intros t m s e IN.
-  unfold execute. 
-  unfold modelElements. 
-  unfold RichTraceLink.drop in IN.
-  apply in_map_iff. 
-  apply in_map_iff in IN. 
-  destruct IN as (x & C & IN). 
-  exists x. 
-  split ; [ | assumption ]. 
-  destruct x ; unfold RichTraceLink.convert in C. 
-  congruence.
+Proof. 
+  intros.
+  apply RichTraceLink.in_drop_inv in H. destruct H as (? & ? & ?).
+
+  apply in_modelElements_inv. 
+  unfold RichTraceLink.convert in H. inj H.
+  exists x ; auto. 
 Qed.
 
 
-
-(** NOT USED *) 
-Lemma in_modelElements_execute_left {MM1} {T1} {T2} {BEQ} :
-  forall 
-    {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
-    m e,
-    
-  forall r s i opu,
-    In s (allTuples t m) ->
-    In r (Syntax.rules t) ->
-    UserExpressions.evalGuard r m s = true ->
-    In i (seq 0 (UserExpressions.evalIterator r m s)) ->
-    In opu (Syntax.r_outputPattern r) ->
-    UserExpressions.evalOutputPatternUnit opu m s i = Some e ->
-    In e (modelElements (execute t m)).
-Proof.
-  intros. 
-  apply Certification.tr_execute_in_elements.
-  exists s. split ; [assumption | ].
-  apply Certification.tr_instantiateOnPiece_in. (* FIXME : name incoherence *)
-  exists r. 
-  split.
-  + apply Certification.tr_matchingRules_in. split ; assumption.
-  + apply Certification.tr_instantiateRuleOnPiece_in.
-    exists i.
-    split ; [ assumption | ].
-    apply Certification.tr_instantiateIterationOnPiece_in.
-    exists opu. split ; [ assumption | ].
-    rewrite Certification.tr_instantiateElementOnPiece_leaf.
-    assumption.
-Qed.
-
-
-
+(* Deprecated : use in_compute_trace_inv *)
+(* Non car in_compute_trace_inv est trop violent, voir les usages dans TraceUtils de C2R et M2M *)
 Ltac destruct_in_trace_G :=
   match goal with 
     [ |- In _ (compute_trace _ _)] => 
@@ -128,63 +92,4 @@ Proof.
 Qed.
 
 
-Lemma in_links_fw tc cm (t:Syntax.Transformation (tc:=tc)):
-  forall (sp:InputPiece) (r:Syntax.Rule) i opu produced_element,
 
-    incl sp (modelElements cm) ->
-    
-    Datatypes.length sp <= Syntax.arity t ->
-    
-    In r t.(Syntax.rules)  ->
-    
-    UserExpressions.evalGuard r cm sp = true ->
-    
-    In i (seq 0 (UserExpressions.evalIterator r cm sp)) ->
-    
-    In opu (Syntax.r_outputPattern r) ->
-    
-    UserExpressions.evalOutputPatternUnit opu cm sp i = Some produced_element ->
-    
-    
-    forall l,
-      In l  (UserExpressions.evalOutputPatternLink cm sp produced_element i (RichTraceLink.drop(compute_trace t cm)) opu) ->
-      In l (modelLinks (execute t cm)).
-Proof.
-  intros sp r i opu produced_element.
-  intros IN_MOD A IN_R EVAL_GUARD  EVAL_IT IN_OPU  EVAL_OUT_EL lk. 
-  intro INLV.
-
-  apply Certification.tr_execute_in_links_legacy. (* fixme *)
-
-  exists sp.  
-  split.
-  
-  { apply Certification.allTuples_incl_length ; [ exact IN_MOD | exact A]. }
-  
-  {
-    apply Certification.tr_applyOnPiece_in.
-    exists r.
-    split.
-    {
-      apply Certification.tr_matchingRules_in.
-      split ; [ exact IN_R | exact EVAL_GUARD].
-    }
-    {
-      apply Certification.tr_applyRuleOnPiece_in.
-      exists i.
-      split.
-      { exact EVAL_IT. }
-      { 
-        apply Certification.tr_applyIterationOnPiece_in.
-        exists opu.
-        split.
-        { exact IN_OPU. }
-        { 
-          rewrite Certification.tr_applyUnitOnPiece_leaf with (te:=produced_element).
-          { exact INLV. }
-          { exact EVAL_OUT_EL. }
-        }
-      }
-    }
-  }
-Qed.

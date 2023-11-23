@@ -17,7 +17,7 @@ Import Metamodel Model.
 
 
 
-(* used 3 times in this file *)
+(* used 2 times in this file *)
 (* ne devrait plus être utile *)
 Local Ltac destruct_in_matchingRules H NEWNAME :=
   match type of H with 
@@ -27,7 +27,8 @@ Local Ltac destruct_in_matchingRules H NEWNAME :=
   end.
 
 
-(* utiliser plutôt Semantics.in_compute_trace_inv *)
+(* Utiliser plutôt Semantics.in_compute_trace_inv. *)
+(* Utilisé 1 fois ci-dessous. *)
 Local Lemma in_trace_inversion {MM1 : Metamodel} {T1} {T2} {BEQ} :
   forall
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
@@ -66,73 +67,40 @@ Proof.
 Qed.
 
 
-(* NOT USED *)
-Local Corollary in_trace_in_source {MM1} {T1} {T2} {BEQ} :  
-  forall (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
- m e b s i,
-    In {| 
-        PoorTraceLink.source := ([e],i,s) ;
-        PoorTraceLink.produced := b
-      |}
-      (RichTraceLink.drop (compute_trace t m)) ->
-    In e m.(modelElements) .
-Proof.
-  intros t m e b s i IN.
 
-  destruct (in_trace_inversion IN) 
-    as (se & r & n & opu & te & IN_SOURCE & _ & _ & _ & _ & EQ & _).
-
-  inj EQ.
-
-  Semantics.in_allTuples_auto.
-
-  exact IN_SOURCE.
-Qed.
-
-
-Lemma destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ} :
+(* This is a corollary of in_compute_trace_inv_weak. *)
+Corollary destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
     {m} {e},
     
   In e (modelElements (execute t m)) ->
   exists r sp n0 opu,
-    In sp (allTuples t m)
+    In sp (allTuples t m) (* fixme : improve-me *)
     /\ In r (Syntax.rules t) 
     /\ UserExpressions.evalGuard r m sp = true 
     /\ In n0 (seq 0 (UserExpressions.evalIterator r m sp))
     /\ In opu (Syntax.r_outputPattern r) 
     /\ UserExpressions.evalOutputPatternUnit opu m sp n0 = Some e.
 Proof.
-  intros. 
-
-  apply core.Certification.tr_execute_in_elements in H ;
-    destruct H as (sp & IN_E & H).
-
-  apply core.Certification.tr_instantiateOnPiece_in in H ; 
-    destruct H as (r & NEW1 & H).
-
-  apply core.Certification.tr_instantiateRuleOnPiece_in in H ;
-    destruct H as (n & NEW2 & H).  
- 
-  apply core.Certification.tr_instantiateIterationOnPiece_in in H ; 
-    destruct H as (opu & NEW3 & H). 
-
-  rewrite Certification.tr_instantiateElementOnPiece_leaf in H.
-
-  destruct_in_matchingRules NEW1 NEW4. 
-  repeat eexists ; eassumption.
+  intros t m e H. 
+  apply Semantics.in_modelElements_inv in H ; destruct H as (?&?&H).
+  apply in_compute_trace_inv in H. 
+  destruct H as (?&?&?&?&?&?&?&?&?&?&?&?&?).
+  subst.
+  repeat (first[eexists | split | eassumption]).
+  (* improvement visible here *)  apply in_allTuples_incl ; auto.
 Qed.
 
-
-Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
+(* This is a corollary of in_compute_trace_inv_weak. *)
+Corollary destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
   {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))}
      {l}
      {m},
     In l (modelLinks (execute t m)) ->
     exists s r n p te,
-      In s (allTuples t m) 
+      In s (allTuples t m) (* fixme : improve this *)
       /\ In r (Syntax.rules t) 
       /\ UserExpressions.evalGuard r m s = true
       /\ In n (seq 0 (UserExpressions.evalIterator r m s))
@@ -141,26 +109,13 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
       /\ In l (UserExpressions.evalOutputPatternLink m s te n (RichTraceLink.drop(compute_trace t m)) p).
 
 Proof.
-  intros.
-
-  (* FIXME : Legacy semantics appears ater use of this lemma. *)
-  rewrite (core.Certification.tr_execute_in_links_legacy t) in H;
-    destruct H as (sp & IN_E & H).
-  
-  apply core.Certification.tr_applyOnPiece_in in H ; 
-    destruct H as (r & IN_RULE & H).
-  
-  apply core.Certification.tr_applyRuleOnPiece_in in H ;
-    destruct H as (n & IN_IT & IN_APP_PAT).
-  
-  apply core.Certification.tr_applyIterationOnPiece_in in IN_APP_PAT ;
-    destruct IN_APP_PAT as (opu & H_IN_OUTPAT & IN_APP_PAT).
-
-  destruct_in_matchingRules IN_RULE H_MATCH_RULE.
-  unfold LegacySemantics.applyUnitOnPiece in IN_APP_PAT. (* FIXME *)
-  PropUtils.destruct_match_H IN_APP_PAT ;
-   [ | ListUtils.unfold_In_cons IN_APP_PAT ].
-  repeat eexists ; eauto.
+  intros t l m H.
+  apply Semantics.in_modelLinks_inv in H ; destruct H as (?&H&?).
+  apply in_compute_trace_inv in H. 
+  destruct H as (?&?&?&?&?&?&?&?&?&?&?&?&?).
+  subst.
+  repeat (first[eexists | split | eassumption]).
+  (* improvement visible here *)  apply in_allTuples_incl ; auto.
 Qed.
 
 
@@ -374,6 +329,7 @@ Ltac exploit_link_in_result H :=
       (* (7) *)
       Semantics.exploit_in_allTuples IN_ELTS ;
 
+      (* (8) *)
       exploit_in_eval_link IN_L  
   end. 
 

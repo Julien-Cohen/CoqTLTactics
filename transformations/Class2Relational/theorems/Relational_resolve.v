@@ -147,7 +147,9 @@ Proof.
 
   exists{| Table_id := r.(Class_id); Table_name := r.(Class_name) |}.
 
-  eapply TacticsFW.in_links_fw with (tc:=C2RConfiguration) ; simpl.
+  apply <- Semantics.in_modelLinks_inv.
+  setoid_rewrite in_compute_trace_inv.
+  repeat (first [eexists | split | eassumption]).
   
   { apply incl_singleton. eassumption. }
   { auto. }

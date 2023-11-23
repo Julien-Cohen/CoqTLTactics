@@ -97,6 +97,13 @@ Definition convert (a:TraceLink) : PoorTraceLink.TraceLink :=
 
 Definition drop := map convert.
 
+Lemma in_drop_inv t:
+  forall a, In a (drop t) <-> exists x : TraceLink, convert x = a /\ In x t.
+Proof.
+  setoid_rewrite in_map_iff.
+  tauto.
+Qed.
+
 End TraceLink.
 
 Arguments TraceLink {_}.
