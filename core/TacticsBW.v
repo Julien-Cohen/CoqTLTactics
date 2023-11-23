@@ -142,6 +142,7 @@ Lemma destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
 Proof.
   intros.
 
+  (* FIXME : Legacy semantics appears ater use of this lemma. *)
   rewrite (core.Certification.tr_execute_in_links t) in H;
     destruct H as (sp & IN_E & H).
   
@@ -155,7 +156,7 @@ Proof.
     destruct IN_APP_PAT as (opu & H_IN_OUTPAT & IN_APP_PAT).
 
   destruct_in_matchingRules IN_RULE H_MATCH_RULE.
-  unfold applyUnitOnPiece in IN_APP_PAT.
+  unfold LegacySemantics.applyUnitOnPiece in IN_APP_PAT. (* FIXME *)
   PropUtils.destruct_match_H IN_APP_PAT ;
    [ | ListUtils.unfold_In_cons IN_APP_PAT ].
   repeat eexists ; eauto.

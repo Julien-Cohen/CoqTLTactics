@@ -26,6 +26,7 @@ core/PoorTraceLink.v
 core/RichTraceLink.v
 core/Syntax.v
 core/Semantics.v
+core/LegacySemantics.v
 core/Resolve.v
 core/Engine.v
 core/TacticsBW.v

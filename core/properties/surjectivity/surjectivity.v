@@ -43,7 +43,7 @@ forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
       In tl (execute tr sm).(modelLinks) ->
       (exists (sp : InputPiece),
           In sp (allTuples tr sm) /\
-          In tl (applyTrOnPiece tr sm sp)).
+          In tl (LegacySemantics.applyTrOnPiece tr sm sp)).
 Proof.
     apply tr_execute_in_links.
 Qed.

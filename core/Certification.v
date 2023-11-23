@@ -10,6 +10,7 @@ Require Import core.Model.
 Require Import core.Engine.
 Require Import core.Syntax.
 Require Import core.Semantics.
+Require        core.LegacySemantics.
 Require Import core.Resolve.
 Require Import core.Metamodel.
 Require Import core.TransformationConfiguration.
@@ -41,13 +42,13 @@ forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
   In tl (execute tr sm).(modelLinks) <->
   (exists (sp : InputPiece),
       In sp (allTuples tr sm) /\
-      In tl (applyTrOnPiece tr sm sp)).
+      In tl (LegacySemantics.applyTrOnPiece tr sm sp)).
 Proof.
   intros.
   unfold execute ; unfold modelLinks.
   eapply RelationClasses.iff_Transitive.
   apply RelationClasses.iff_Symmetric.
-  apply included_3.
+  apply LegacySemantics.included_3.
   apply in_flat_map.
 Qed.
 
@@ -118,10 +119,10 @@ Qed.
 
 Lemma tr_applyOnPiece_in :
     forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (tl : TargetLinkType),
-      In tl (applyTrOnPiece tr sm sp) <->
+      In tl (LegacySemantics.applyTrOnPiece tr sm sp) <->
       (exists (r : Rule),
           In r (matchingRules tr sm sp) /\
-          In tl (applyRuleOnPiece r tr sm sp)).
+          In tl (LegacySemantics.applyRuleOnPiece r tr sm sp)).
 Proof.
   intros.
   apply in_flat_map.
@@ -129,10 +130,10 @@ Qed.
 
 Lemma tr_applyRuleOnPiece_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: InputPiece) (tl : TargetLinkType),
-      In tl (applyRuleOnPiece r tr sm sp) <->
+      In tl (LegacySemantics.applyRuleOnPiece r tr sm sp) <->
       (exists (i: nat),
           In i (seq 0 (evalIterator r sm sp)) /\
-          In tl (applyIterationOnPiece r tr sm sp i)).
+          In tl (LegacySemantics.applyIterationOnPiece r tr sm sp i)).
 Proof.
   intros.
   apply in_flat_map.
@@ -140,10 +141,10 @@ Qed.
 
 Lemma tr_applyIterationOnPiece_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: InputPiece) (tl : TargetLinkType) (i:nat),
-      In tl (applyIterationOnPiece r tr sm sp i) <->
+      In tl (LegacySemantics.applyIterationOnPiece r tr sm sp i) <->
       (exists (opu: OutputPatternUnit),
           In opu r.(r_outputPattern) /\ 
-          In tl (applyUnitOnPiece opu tr sm sp i)).
+          In tl (LegacySemantics.applyUnitOnPiece opu tr sm sp i)).
 Proof.
   intros.
   apply in_flat_map.
@@ -153,12 +154,12 @@ Lemma tr_applyUnitOnPiece_leaf :
 forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (te: TargetElementType) 
        (i:nat) (opu: OutputPatternUnit),
   evalOutputPatternUnit opu sm sp i = Some te ->
-  applyUnitOnPiece opu tr sm sp i = evalOutputPatternLink sm sp te i (drop (compute_trace tr sm)) opu.
+  LegacySemantics.applyUnitOnPiece opu tr sm sp i = evalOutputPatternLink sm sp te i (drop (compute_trace tr sm)) opu.
 Proof.
   intros.
   destruct (evalOutputPatternLink sm sp te i (drop (compute_trace tr sm)) opu) eqn:dst.
-  * unfold applyUnitOnPiece. crush.
-  * unfold applyUnitOnPiece. crush.
+  * unfold LegacySemantics.applyUnitOnPiece. crush.
+  * unfold LegacySemantics.applyUnitOnPiece. crush.
 Qed.  
 
 
@@ -278,10 +279,10 @@ Program Instance CoqTLEngine :
     instantiateIterationOnPattern := fun  r sm sp iter => elements_proj (traceIterationOnPiece r sm sp iter)  ;
     instantiateElementOnPattern := fun opu sm ip it => option_map produced (traceElementOnPiece opu sm ip it)  ;
 
-    applyPattern := applyTrOnPiece;
-    applyRuleOnPattern := applyRuleOnPiece;
-    applyIterationOnPattern := applyIterationOnPiece;
-    applyElementOnPattern := applyUnitOnPiece;
+    applyPattern := LegacySemantics.applyTrOnPiece;
+    applyRuleOnPattern := LegacySemantics.applyRuleOnPiece;
+    applyIterationOnPattern := LegacySemantics.applyIterationOnPiece;
+    applyElementOnPattern := LegacySemantics.applyUnitOnPiece;
 
     trace := (fun a b => drop (compute_trace a b)) ;
 

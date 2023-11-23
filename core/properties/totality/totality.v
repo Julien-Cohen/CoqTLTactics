@@ -58,7 +58,7 @@ Theorem Totality_links {tc:TransformationConfiguration} :
 forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
       (exists (sp : InputPiece),
           In sp (allTuples tr sm) /\
-          In tl (applyTrOnPiece tr sm sp)) -> 
+          In tl (LegacySemantics.applyTrOnPiece tr sm sp)) -> 
           In tl (execute tr sm).(modelLinks) .
 Proof.
     apply tr_execute_in_links.
