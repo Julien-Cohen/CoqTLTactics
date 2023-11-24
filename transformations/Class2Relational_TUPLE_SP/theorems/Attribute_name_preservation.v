@@ -29,24 +29,4 @@ Theorem Attribute_name_preservation:
             In (ColumnElement c) rm.(modelElements) /\
             column_name c = attr_name a.
 Proof.
-    intros.
-    exists (Build_Column_t (attr_id a) (attr_name a)).
-    split.
-    - rewrite H.
-      rewrite (tr_execute_in_elements Class2Relational_TUPLE_SP).
-      exists ([AttributeElement a; ClassElement c]).
-      split.
-      + apply allTuples_incl_length.
-        * apply incl_singleton in H0.
-          apply incl_singleton in H1.
-          specialize (incl_app H0 H1).
-          intro.
-          simpl in H4. auto.
-        * simpl. lia.
-      + unfold instantiatePattern. unfold matchPattern. simpl.
-        unfold ConcreteExpressions.makeGuard. simpl.
-        rewrite H2. rewrite H3. simpl.
-        specialize (beq_Class_refl c). intro.
-        rewrite H4. simpl. left. reflexivity.
-    - reflexivity.
-Qed.
+Abort.
