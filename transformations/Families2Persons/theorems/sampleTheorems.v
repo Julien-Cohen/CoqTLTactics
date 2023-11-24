@@ -26,9 +26,7 @@ Proof.
     - contradiction H0.
     - destruct x.
       + exists s. 
-        apply allTuples_incl in H.
-        unfold incl in H.
-        specialize (H s).
+        apply Semantics.in_allTuples_incl in H.
         crush.
       + exfalso. 
         specialize (allTuples_not_incl_length (s :: s0 :: x) Families2Persons sm).

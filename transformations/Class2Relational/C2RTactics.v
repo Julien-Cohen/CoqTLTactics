@@ -18,37 +18,6 @@ Ltac negb_inv H :=
     negb (Attribute_derived _) = true => 
       apply Bool.negb_true_iff in H
   end.
-  
-
-
-
-(** ** Destructors *)
-
-
-(** *** Utilities on [allTuples] *)
-
-
-Lemma allModelElements_allTuples e (cm:Model ClassMetamodel.MM): 
-  In e cm.(modelElements) ->
-  In [e] (allTuples Class2Relational cm).
-Proof. 
-  intro.
-  apply (TacticsFW.allModelElements_allTuples (tc:=C2RConfiguration));
-    auto.
-Qed.
-
-Lemma in_allTuples_singleton :
-  forall e t s, 
-    In [e] (allTuples t s) ->
-    In e s.(modelElements).
-Proof.
-  intros e t s IN.
-  apply incl_singleton.
-  eapply Certification.allTuples_incl.
-  exact IN.
-Qed.
-
-
 
 Ltac unfold_toEData H :=
   unfold toEData in H ;

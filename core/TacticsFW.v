@@ -17,21 +17,8 @@ Import Metamodel Model.
 
 
 
-(** * Tactic to transform an hypothesis H : In [e] (allTuples _ cm)
-    into H: In (e) (modelElements cm)
-*)
 
 
-Lemma allModelElements_allTuples {tc:TransformationConfiguration} e t cm: 
-  In e cm.(modelElements) ->
-  0 < Syntax.arity t ->
-  In [e] (allTuples t cm).
-Proof. 
-  intros.
-  apply Certification.allTuples_incl_length.
-   + apply incl_singleton. assumption.
-   + compute. auto.
-Qed.
 
 (* USED *)
 (* Deprecated : use in_modelElements_inv instead. *)
@@ -55,14 +42,25 @@ Proof.
 Qed.
 
 
-(* Deprecated : use in_compute_trace_inv *)
-(* Non car in_compute_trace_inv est trop violent, voir les usages dans TraceUtils de C2R et M2M *)
-Ltac destruct_in_trace_G :=
-  match goal with 
-    [ |- In _ (compute_trace _ _)] => 
-      unfold compute_trace ;
-      apply in_flat_map
-  end.
+(* This is a weak version of Semantics.in_compute_trace_inv. *)
+Lemma in_trace_split {tc:TransformationConfiguration} t m : 
+  forall a, 
+    In a (compute_trace t m) <-> 
+      exists p : InputPiece,
+        incl p (modelElements m) 
+        /\ length p <= Syntax.arity t 
+        /\ In a (traceTrOnPiece t m p).
+Proof.
+  intro.
+  unfold compute_trace.
+  setoid_rewrite in_flat_map at 1.
+  setoid_rewrite Semantics.in_allTuples_incl.
+  split.
+  + intros (?&(?&?)&?).
+    eexists ; repeat split ; eauto.
+  + intros (? & ? & ? & ?).
+    eexists ; repeat split ; eauto.
+Qed.
 
 
 
@@ -87,8 +85,8 @@ Lemma transform_element_fw {tc} cm e te (t:Syntax.Transformation (tc:=tc)) :
   In te (modelElements (execute t cm)).
 Proof.
   intros A IN1 IN2.
-  eapply allModelElements_allTuples in IN1 ; [ | exact A]. (* from element to singleton *)
-  eapply transform_elements_fw ; eassumption.
+  eapply transform_elements_fw ; [ | eassumption].  
+  apply <- in_allTuples_incl_singleton. auto.
 Qed.
 
 

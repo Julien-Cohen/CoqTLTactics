@@ -181,39 +181,13 @@ Qed.
 
 
 
-Lemma allTuples_incl:
-  forall (sp : InputPiece) (tr: Transformation) (sm: SourceModel), 
-  In sp (allTuples tr sm) -> incl sp sm.(modelElements).
-Proof.
-  intros.
-  unfold allTuples in H. simpl in H. 
-  apply tuples_up_to_n_incl in H.
-  assumption.
-Qed.
-
-Lemma allTuples_incl_length:
-  forall (sp : InputPiece) (tr: Transformation) (sm: SourceModel), 
-  incl sp sm.(modelElements) -> 
-  length sp <= tr.(arity) ->
-  In sp (allTuples tr sm).
-Proof.
-  intros.
-  unfold allTuples.
-  apply tuples_up_to_n_incl_length ; auto.
-Qed.
-
-
 Lemma allTuples_not_incl_length:
   forall (sp : InputPiece) (tr: Transformation) (sm: SourceModel), 
   length sp > tr.(arity) -> not (In sp (allTuples tr sm)).
 Proof.
-  intros sp tr sm c.
-  apply Gt.gt_not_le in c.
-  revert c.
-  apply contraposition.
-  unfold allTuples.
-  specialize (tuple_length sp sm.(modelElements) tr.(arity)).
-  crush.
+  intros. intro N. apply Semantics.in_allTuples_incl in N ; destruct N.
+  apply Gt.gt_not_le in H.
+  contradiction.
 Qed.
 
 (** * Resolve *)
@@ -325,12 +299,18 @@ Program Instance CoqTLEngine :
     tr_resolveAll_in := (*tr_resolveAllIter_in*) _ ;
     tr_resolve_leaf := (* tr_resolveIter_leaf *) _ ;
 
-    allTuples_incl := allTuples_incl;
+    allTuples_incl := _ (*allTuples_incl*) ;
     
   }. 
+
+Next Obligation.
+  apply Semantics.in_allTuples_incl in H. tauto.
+Qed.
+
 Next Obligation.
   apply tr_resolveAllIter_in.
 Qed.
+
 Next Obligation.
   apply tr_resolveIter_leaf. assumption.
 Qed.

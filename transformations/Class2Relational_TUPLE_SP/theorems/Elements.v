@@ -29,8 +29,7 @@ Lemma in_allTuples_2 :
         In [a;b] (allTuples t m).
 Proof.
   intros until t ; intros HA IN1 IN2.
-  unfold allTuples.
-  apply TupleUtils.tuples_up_to_n_incl_length ; split.
+  setoid_rewrite in_allTuples_incl ; split.
   {
     apply List.incl_cons ; auto.
     apply List.incl_cons ; auto.

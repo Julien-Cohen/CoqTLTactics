@@ -35,7 +35,7 @@ Proof.
       rewrite (tr_execute_in_elements Class2Relational).
       exists ([AttributeElement a]).
       split.
-      + apply allTuples_incl_length.
+      + apply in_allTuples_incl ; split.
         * apply incl_singleton ; assumption.
         * simpl. lia.
       + destruct a ; simpl in *.

@@ -123,9 +123,8 @@ Lemma allModelElements_allTuples e (cm:Model ClassMM):
   In [e] (allTuples Class2Relational_TUPLE_SP cm).
 Proof. 
   intro.
-  apply (TacticsFW.allModelElements_allTuples (tc:=C2RConfiguration)); auto.
-  compute.
-  auto.
+  apply <- Semantics.in_allTuples_incl_singleton.
+  compute ; auto.
 Qed. 
 
 (** * Specific tactics for this transformation. *)

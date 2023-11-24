@@ -54,11 +54,12 @@ Proof.
 
   
   2:{
-    TacticsFW.destruct_in_trace_G.
+    apply TacticsFW.in_trace_split.
     
     exists ([ClassElement c]).
-    split.
-    { apply C2RTactics.allModelElements_allTuples ; auto. } 
+    repeat split.
+    { apply incl_singleton. assumption. } 
+    { compute. auto. }
     { compute. left. reflexivity. }
   }
   { reflexivity. }

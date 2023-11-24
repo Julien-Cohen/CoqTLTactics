@@ -26,10 +26,11 @@ Proof.
   eexists.
   split.
   2:{
-    TacticsFW.destruct_in_trace_G.
+    apply TacticsFW.in_trace_split.
     exists (Moore.State s :: nil).
-    split.
-    { apply @TacticsFW.allModelElements_allTuples ; auto.  } 
+    repeat split.
+    { apply ListUtils.incl_singleton. assumption. }
+    { compute. auto. }
     { compute. left. reflexivity. }
   }
   {  reflexivity. }
