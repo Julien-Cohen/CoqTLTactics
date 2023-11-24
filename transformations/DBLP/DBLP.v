@@ -495,12 +495,12 @@ Definition beq_Record (re_arg1 : Record) (re_arg2 : Record) : bool :=
 Definition beq_Article (ar_arg1 : Article) (ar_arg2 : Article) : bool :=
 beq_Record (Article_getRecord ar_arg1) (Article_getRecord ar_arg2) &&
 ( beq_string (Article_getTitle ar_arg1) (Article_getTitle ar_arg2) ) && 
-( beq_nat (Article_getFromPage ar_arg1) (Article_getFromPage ar_arg2) ) && 
-( beq_nat (Article_getToPage ar_arg1) (Article_getToPage ar_arg2) ) && 
-( beq_nat (Article_getNumber ar_arg1) (Article_getNumber ar_arg2) ) && 
+( Nat.eqb (Article_getFromPage ar_arg1) (Article_getFromPage ar_arg2) ) && 
+( Nat.eqb (Article_getToPage ar_arg1) (Article_getToPage ar_arg2) ) && 
+( Nat.eqb (Article_getNumber ar_arg1) (Article_getNumber ar_arg2) ) && 
 ( beq_string (Article_getVolume ar_arg1) (Article_getVolume ar_arg2) ) && 
 ( beq_string (Article_getMonth ar_arg1) (Article_getMonth ar_arg2) ) && 
-( beq_nat (Article_getYear ar_arg1) (Article_getYear ar_arg2) )
+( Nat.eqb (Article_getYear ar_arg1) (Article_getYear ar_arg2) )
 .
 
 Definition beq_Author (au_arg1 : Author) (au_arg2 : Author) : bool :=
@@ -514,11 +514,11 @@ Definition beq_Journal (jo_arg1 : Journal) (jo_arg2 : Journal) : bool :=
 Definition beq_Book (bo_arg1 : Book) (bo_arg2 : Book) : bool :=
 beq_Record (Book_getRecord bo_arg1) (Book_getRecord bo_arg2) &&
 ( beq_string (Book_getTitle bo_arg1) (Book_getTitle bo_arg2) ) && 
-( beq_nat (Book_getYear bo_arg1) (Book_getYear bo_arg2) ) && 
+( Nat.eqb (Book_getYear bo_arg1) (Book_getYear bo_arg2) ) && 
 ( beq_string (Book_getMonth bo_arg1) (Book_getMonth bo_arg2) ) && 
-( beq_nat (Book_getVolume bo_arg1) (Book_getVolume bo_arg2) ) && 
+( Nat.eqb (Book_getVolume bo_arg1) (Book_getVolume bo_arg2) ) && 
 ( beq_string (Book_getSeries bo_arg1) (Book_getSeries bo_arg2) ) && 
-( beq_nat (Book_getEdition bo_arg1) (Book_getEdition bo_arg2) ) && 
+( Nat.eqb (Book_getEdition bo_arg1) (Book_getEdition bo_arg2) ) && 
 ( beq_string (Book_getIsbn bo_arg1) (Book_getIsbn bo_arg2) )
 .
 
@@ -526,9 +526,9 @@ Definition beq_InCollection (in_arg1 : InCollection) (in_arg2 : InCollection) : 
 beq_Record (InCollection_getRecord in_arg1) (InCollection_getRecord in_arg2) &&
 ( beq_string (InCollection_getTitle in_arg1) (InCollection_getTitle in_arg2) ) && 
 ( beq_string (InCollection_getBookTitle in_arg1) (InCollection_getBookTitle in_arg2) ) && 
-( beq_nat (InCollection_getYear in_arg1) (InCollection_getYear in_arg2) ) && 
-( beq_nat (InCollection_getFromPage in_arg1) (InCollection_getFromPage in_arg2) ) && 
-( beq_nat (InCollection_getToPage in_arg1) (InCollection_getToPage in_arg2) ) && 
+( Nat.eqb (InCollection_getYear in_arg1) (InCollection_getYear in_arg2) ) && 
+( Nat.eqb (InCollection_getFromPage in_arg1) (InCollection_getFromPage in_arg2) ) && 
+( Nat.eqb (InCollection_getToPage in_arg1) (InCollection_getToPage in_arg2) ) && 
 ( beq_string (InCollection_getMonth in_arg1) (InCollection_getMonth in_arg2) )
 .
 
@@ -536,23 +536,23 @@ Definition beq_InProceedings (in_arg1 : InProceedings) (in_arg2 : InProceedings)
 beq_Record (InProceedings_getRecord in_arg1) (InProceedings_getRecord in_arg2) &&
 ( beq_string (InProceedings_getTitle in_arg1) (InProceedings_getTitle in_arg2) ) && 
 ( beq_string (InProceedings_getBootitle in_arg1) (InProceedings_getBootitle in_arg2) ) && 
-( beq_nat (InProceedings_getYear in_arg1) (InProceedings_getYear in_arg2) ) && 
-( beq_nat (InProceedings_getFromPage in_arg1) (InProceedings_getFromPage in_arg2) ) && 
-( beq_nat (InProceedings_getToPage in_arg1) (InProceedings_getToPage in_arg2) ) && 
+( Nat.eqb (InProceedings_getYear in_arg1) (InProceedings_getYear in_arg2) ) && 
+( Nat.eqb (InProceedings_getFromPage in_arg1) (InProceedings_getFromPage in_arg2) ) && 
+( Nat.eqb (InProceedings_getToPage in_arg1) (InProceedings_getToPage in_arg2) ) && 
 ( beq_string (InProceedings_getMonth in_arg1) (InProceedings_getMonth in_arg2) )
 .
 
 Definition beq_MastersThesis (ma_arg1 : MastersThesis) (ma_arg2 : MastersThesis) : bool :=
 beq_Record (MastersThesis_getRecord ma_arg1) (MastersThesis_getRecord ma_arg2) &&
 ( beq_string (MastersThesis_getTitle ma_arg1) (MastersThesis_getTitle ma_arg2) ) && 
-( beq_nat (MastersThesis_getYear ma_arg1) (MastersThesis_getYear ma_arg2) ) && 
+( Nat.eqb (MastersThesis_getYear ma_arg1) (MastersThesis_getYear ma_arg2) ) && 
 ( beq_string (MastersThesis_getMonth ma_arg1) (MastersThesis_getMonth ma_arg2) )
 .
 
 Definition beq_Proceedings (pr_arg1 : Proceedings) (pr_arg2 : Proceedings) : bool :=
 beq_Record (Proceedings_getRecord pr_arg1) (Proceedings_getRecord pr_arg2) &&
 ( beq_string (Proceedings_getTitle pr_arg1) (Proceedings_getTitle pr_arg2) ) && 
-( beq_nat (Proceedings_getYear pr_arg1) (Proceedings_getYear pr_arg2) ) && 
+( Nat.eqb (Proceedings_getYear pr_arg1) (Proceedings_getYear pr_arg2) ) && 
 ( beq_string (Proceedings_getMonth pr_arg1) (Proceedings_getMonth pr_arg2) ) && 
 ( beq_string (Proceedings_getIsbn pr_arg1) (Proceedings_getIsbn pr_arg2) )
 .
@@ -560,14 +560,14 @@ beq_Record (Proceedings_getRecord pr_arg1) (Proceedings_getRecord pr_arg2) &&
 Definition beq_PhDThesis (ph_arg1 : PhDThesis) (ph_arg2 : PhDThesis) : bool :=
 beq_Record (PhDThesis_getRecord ph_arg1) (PhDThesis_getRecord ph_arg2) &&
 ( beq_string (PhDThesis_getTitle ph_arg1) (PhDThesis_getTitle ph_arg2) ) && 
-( beq_nat (PhDThesis_getYear ph_arg1) (PhDThesis_getYear ph_arg2) ) && 
+( Nat.eqb (PhDThesis_getYear ph_arg1) (PhDThesis_getYear ph_arg2) ) && 
 ( beq_string (PhDThesis_getMonth ph_arg1) (PhDThesis_getMonth ph_arg2) )
 .
 
 Definition beq_Www (ww_arg1 : Www) (ww_arg2 : Www) : bool :=
 beq_Record (Www_getRecord ww_arg1) (Www_getRecord ww_arg2) &&
 ( beq_string (Www_getTitle ww_arg1) (Www_getTitle ww_arg2) ) && 
-( beq_nat (Www_getYear ww_arg1) (Www_getYear ww_arg2) ) && 
+( Nat.eqb (Www_getYear ww_arg1) (Www_getYear ww_arg2) ) && 
 ( beq_string (Www_getMonth ww_arg1) (Www_getMonth ww_arg2) )
 .
 

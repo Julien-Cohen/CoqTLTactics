@@ -18,14 +18,14 @@ Record Node := { id : nat ; output : nat }.
 
 (** Nodes are identified only by their identifiers. This is a relation of equivalence under the hypothesis that two different nodes cannot have the same identifier. *)
 Definition beq_N n1 n2 :=
-    beq_nat n1.(id) n2.(id).
+    Nat.eqb n1.(id) n2.(id).
 
 (* Input pair: src node x input *)
 Definition IPair : Set := Node * nat.
 
 Definition beq_IPair p1 p2 :=
   match p1, p2 with
-    (n1, i1), (n2, i2) => beq_N n1 n2 && beq_nat i1 i2
+    (n1, i1), (n2, i2) => beq_N n1 n2 && Nat.eqb i1 i2
   end.
 
 (* Transition rule of Moore machine: Input pair x trg node *)
@@ -71,13 +71,13 @@ Module Mealy.
 Record Node := { id : nat }. (* FIXME *)
 
 Definition beq_N n1 n2 :=
-    beq_nat n1.(id) n2.(id).
+    Nat.eqb n1.(id) n2.(id).
 
 Definition IPair : Set := Node * nat.
 
 Definition beq_IPair p1 p2 :=
   match p1, p2 with
-    (n1, i1), (n2, i2) => beq_N n1 n2 && beq_nat i1 i2
+    (n1, i1), (n2, i2) => beq_N n1 n2 && Nat.eqb i1 i2
   end.
 
 (* Output pair: trg node x output *)

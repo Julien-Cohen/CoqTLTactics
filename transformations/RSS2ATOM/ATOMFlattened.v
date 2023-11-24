@@ -515,7 +515,7 @@ Definition beq_Link (li_arg1 : Link) (li_arg2 : Link) : bool :=
 (  option_beq string  beq_string (Link_getType li_arg1) (Link_getType li_arg2) ) && 
 (  option_beq string  beq_string (Link_getHreflang li_arg1) (Link_getHreflang li_arg2) ) && 
 (  option_beq string  beq_string (Link_getTitle li_arg1) (Link_getTitle li_arg2) ) && 
-(  option_beq nat  beq_nat (Link_getLenght li_arg1) (Link_getLenght li_arg2) )
+(  option_beq nat  Nat.eqb (Link_getLenght li_arg1) (Link_getLenght li_arg2) )
 .
 
 Definition beq_Author (au_arg1 : Author) (au_arg2 : Author) : bool :=

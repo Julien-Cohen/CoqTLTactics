@@ -412,9 +412,9 @@ Definition beq_Channel (ch_arg1 : Channel) (ch_arg2 : Channel) : bool :=
 (  option_beq string  beq_string (Channel_getWebmaster ch_arg1) (Channel_getWebmaster ch_arg2) ) && 
 (  option_beq string  beq_string (Channel_getGenerator ch_arg1) (Channel_getGenerator ch_arg2) ) && 
 (  option_beq string  beq_string (Channel_getDocs ch_arg1) (Channel_getDocs ch_arg2) ) && 
-(  option_beq nat  beq_nat (Channel_getTtl ch_arg1) (Channel_getTtl ch_arg2) ) && 
+(  option_beq nat  Nat.eqb (Channel_getTtl ch_arg1) (Channel_getTtl ch_arg2) ) && 
 (  option_beq string  beq_string (Channel_getRating ch_arg1) (Channel_getRating ch_arg2) ) && 
-(  option_beq nat  beq_nat (Channel_getSkipHours ch_arg1) (Channel_getSkipHours ch_arg2) ) && 
+(  option_beq nat  Nat.eqb (Channel_getSkipHours ch_arg1) (Channel_getSkipHours ch_arg2) ) && 
 (  option_beq string  beq_string (Channel_getPubDate ch_arg1) (Channel_getPubDate ch_arg2) ) && 
 (  option_beq string  beq_string (Channel_getSkipDays ch_arg1) (Channel_getSkipDays ch_arg2) ) && 
 (  option_beq string  beq_string (Channel_getLastBuildDate ch_arg1) (Channel_getLastBuildDate ch_arg2) )
@@ -435,8 +435,8 @@ Definition beq_Image (im_arg1 : Image) (im_arg2 : Image) : bool :=
 (  beq_string (Image_getTitle im_arg1) (Image_getTitle im_arg2) ) && 
 (  beq_string (Image_getLink im_arg1) (Image_getLink im_arg2) ) && 
 (  option_beq string  beq_string (Image_getDescription im_arg1) (Image_getDescription im_arg2) ) && 
-(  option_beq nat  beq_nat (Image_getWidth im_arg1) (Image_getWidth im_arg2) ) && 
-(  option_beq nat  beq_nat (Image_getHeight im_arg1) (Image_getHeight im_arg2) )
+(  option_beq nat  Nat.eqb (Image_getWidth im_arg1) (Image_getWidth im_arg2) ) && 
+(  option_beq nat  Nat.eqb (Image_getHeight im_arg1) (Image_getHeight im_arg2) )
 .
 
 Definition beq_TextInput (te_arg1 : TextInput) (te_arg2 : TextInput) : bool :=
@@ -448,7 +448,7 @@ Definition beq_TextInput (te_arg1 : TextInput) (te_arg2 : TextInput) : bool :=
 
 Definition beq_Cloud (cl_arg1 : Cloud) (cl_arg2 : Cloud) : bool :=
 (  beq_string (Cloud_getDomain cl_arg1) (Cloud_getDomain cl_arg2) ) && 
-(  beq_nat (Cloud_getPort cl_arg1) (Cloud_getPort cl_arg2) ) && 
+(  Nat.eqb (Cloud_getPort cl_arg1) (Cloud_getPort cl_arg2) ) && 
 (  beq_string (Cloud_getPath cl_arg1) (Cloud_getPath cl_arg2) ) && 
 (  beq_string (Cloud_getRegisterProcedure cl_arg1) (Cloud_getRegisterProcedure cl_arg2) ) && 
 (  beq_string (Cloud_getProtocol cl_arg1) (Cloud_getProtocol cl_arg2) )
@@ -461,7 +461,7 @@ Definition beq_Category (ca_arg1 : Category) (ca_arg2 : Category) : bool :=
 
 Definition beq_Enclosure (en_arg1 : Enclosure) (en_arg2 : Enclosure) : bool :=
 (  beq_string (Enclosure_getUrl en_arg1) (Enclosure_getUrl en_arg2) ) && 
-(  beq_nat (Enclosure_getLenght en_arg1) (Enclosure_getLenght en_arg2) ) && 
+(  Nat.eqb (Enclosure_getLenght en_arg1) (Enclosure_getLenght en_arg2) ) && 
 (  beq_string (Enclosure_getType en_arg1) (Enclosure_getType en_arg2) )
 .
 

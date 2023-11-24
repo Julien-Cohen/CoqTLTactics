@@ -182,7 +182,7 @@ beq_Person (Actress_getPerson ac_arg1) (Actress_getPerson ac_arg2)
 .
 
 Definition beq_Group (gr_arg1 : Group) (gr_arg2 : Group) : bool :=
-( beq_nat (Group_getAvgRating gr_arg1) (Group_getAvgRating gr_arg2) )
+( Nat.eqb (Group_getAvgRating gr_arg1) (Group_getAvgRating gr_arg2) )
 .
 
 Definition beq_Couple (co_arg1 : Couple) (co_arg2 : Couple) : bool :=
@@ -191,9 +191,9 @@ beq_Group (Couple_getGroup co_arg1) (Couple_getGroup co_arg2)
 
 Definition beq_Movie (mo_arg1 : Movie) (mo_arg2 : Movie) : bool :=
 ( beq_string (Movie_getTitle mo_arg1) (Movie_getTitle mo_arg2) ) && 
-( beq_nat (Movie_getRating mo_arg1) (Movie_getRating mo_arg2) ) && 
-( beq_nat (Movie_getYear mo_arg1) (Movie_getYear mo_arg2) ) && 
-( beq_nat (Movie_getType mo_arg1) (Movie_getType mo_arg2) )
+( Nat.eqb (Movie_getRating mo_arg1) (Movie_getRating mo_arg2) ) && 
+( Nat.eqb (Movie_getYear mo_arg1) (Movie_getYear mo_arg2) ) && 
+( Nat.eqb (Movie_getType mo_arg1) (Movie_getType mo_arg2) )
 .
 
 Definition beq_Clique (cl_arg1 : Clique) (cl_arg2 : Clique) : bool :=

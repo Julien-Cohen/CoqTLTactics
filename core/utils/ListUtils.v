@@ -88,7 +88,7 @@ Inductive subseq {A: Type} : list A -> list A -> Prop :=
 Definition singleton {A: Type} (a: A) : list A := a::nil.
 
 Definition hasLength {A : Type} (l : list A) (n: nat): bool :=
-  beq_nat (Datatypes.length l) n.
+  Nat.eqb (Datatypes.length l) n.
 
 
 
