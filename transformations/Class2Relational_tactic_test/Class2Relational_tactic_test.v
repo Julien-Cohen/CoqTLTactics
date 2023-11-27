@@ -73,11 +73,10 @@ Definition Class2Relational_tactic_test' :=
     
          LINK ::: TableColumns_K
           << fun tls _ m c t =>
-                  maybeBuildTableColumns t
-                    (maybeResolveAll tls "col" Column_K 
-                      (maybeTuples
-                        (getClassAttributesElements c m) 
-                        [(ClassElement c)]))
+            c_attributes <- getClassAttributesElements c m ; 
+            res <- resolveAll tls "col" Column_K 
+                      (tupleWith c_attributes [(ClassElement c)]) ;
+         return Build_TableColumns_t t res
          >>
       ]
     ;
@@ -90,11 +89,13 @@ Definition Class2Relational_tactic_test' :=
 
          LINK ::: TableColumns_K 
           << fun tls _ m c t =>
-                  maybeBuildTableColumns t
-                    (maybeResolveAll tls "col" Column_K 
-                      (maybeTuples
-                        (getClassAttributesElements c m) 
-                        [(ClassElement c)])) >>
+            c_attributes <- getClassAttributesElements c m ; 
+            res <- resolveAll tls "col" Column_K 
+                      (tupleWith
+                        c_attributes
+                        [(ClassElement c)]) ;
+            return Build_TableColumns_t t res
+          >>
       ]
     ;
     rule "Attribute2Column"
@@ -107,9 +108,9 @@ Definition Class2Relational_tactic_test' :=
 
          LINK ::: ColumnReference_K 
           << fun tls _ m a cl c =>
-                  maybeBuildColumnReference c
-                    (maybeResolve tls "tab" Table_K 
-                       (maybeSingleton (Some (ClassElement cl)))) >>
+            res <- resolve tls "tab" Table_K (singleton (ClassElement cl)) ;
+         return Build_ColumnReference_t c res
+           >>
     ]
   ].
 

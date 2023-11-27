@@ -69,7 +69,7 @@ Proof.
 Qed.
 
 
-(* The requirement is too strong for the general case *)
+(* The requirement is too strong for the general case. *)
 Lemma source_compare_correct :
   (forall e1 e2 : Metamodel.ElementType SourceMetamodel,
       Metamodel.elements_eqdec SourceMetamodel e1 e2 = true -> e1 = e2) ->

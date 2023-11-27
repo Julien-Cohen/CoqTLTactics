@@ -10,7 +10,6 @@ Require Import UserExpressions.
 
 Require Import RichTraceLink.
 
-Notation elements_proj := (map RichTraceLink.produced).
 
 Section Semantics.
 
@@ -121,6 +120,7 @@ Definition applyTrOnModel (sm : SourceModel) (tls:Trace): list TargetLinkType :=
 
 (** * Execute **)
 
+Definition elements_proj := map RichTraceLink.produced.
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   let t := compute_trace tr sm

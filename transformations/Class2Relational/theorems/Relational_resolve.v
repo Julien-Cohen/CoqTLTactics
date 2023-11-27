@@ -63,7 +63,6 @@ Ltac progress_in_maybeBuildColumnReference H :=
   match type of H with 
   | option_map (Build_Glue _) _ = Some _  =>
      inv_maybeBuildColumnReference H ; 
-     unfold ModelingSemantics.maybeResolve in H  ;
      ModelingSemantics.inv_denoteOutput H ; 
      toEDataT H ;
      C2RTactics.unfold_toEData H ;

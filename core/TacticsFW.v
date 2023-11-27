@@ -71,7 +71,7 @@ Lemma transform_elements_fw {tc} cm p tp (t:Syntax.Transformation (tc:=tc)) :
 Proof.
   intros IN1 IN2.
   simpl.
-  unfold compute_trace.
+  unfold compute_trace, elements_proj.
   rewrite map_flat_map. (* a trace can have several target elements *)
   apply List.in_flat_map. (* this is doing the job *)
   eauto.

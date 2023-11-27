@@ -68,7 +68,7 @@ Qed.
 
 
 
-(* This is a corollary of in_compute_trace_inv_weak. *)
+(* This is a corollary of in_compute_trace_inv. *)
 Corollary destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
@@ -92,7 +92,7 @@ Proof.
   (* improvement visible here *)  apply in_allTuples_incl ; auto.
 Qed.
 
-(* This is a corollary of in_compute_trace_inv_weak. *)
+(* This is a corollary of in_compute_trace_inv. *)
 Corollary destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
   {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))}

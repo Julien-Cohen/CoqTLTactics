@@ -6,7 +6,7 @@ Require Import core.Model.
 Require Import core.modeling.ConcreteSyntax.
 Require Import core.Syntax.
 Require Import core.Semantics.
-Require Import core.Resolve.
+Require        core.Resolve. 
 Require Import core.modeling.Parser.
 Require Import Bool.
 Require Import Arith.
@@ -20,7 +20,7 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 
 (* ** Resolve *)
-
+(* Layer over [core.Resolve] *)
 
 Local Notation TargetEKind := tmmm.(EKind).
 
@@ -50,13 +50,6 @@ Definition resolveAll (tr: list TraceLink) (name: string)
   (k: TargetEKind) (sps: list(list SourceElementType)) : option (list (denoteEDatatype k)) :=
   denoteOutputList k (Resolve.resolveAll tr name sps).
 
-Definition maybeResolve (tr: list TraceLink) (name: string)
-  (k: TargetEKind) (sp: option (list SourceElementType)) : option (denoteEDatatype k) :=
-  denoteOutput k (Resolve.maybeResolve tr name sp).
-
-Definition maybeResolveAll (tr: list TraceLink) (name: string)
-  (k: TargetEKind) (sp: option (list (list SourceElementType))) : option (list (denoteEDatatype k)) :=
-  denoteOutputList k (Resolve.maybeResolveAll tr name sp).
 
 End SemanticsModeling.
 

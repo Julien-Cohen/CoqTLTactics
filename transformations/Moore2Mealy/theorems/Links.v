@@ -407,7 +407,6 @@ Proof.
 
     rename EQ0 into R.
 
-    unfold Resolve.maybeResolve in R.
     unfold Resolve.resolve in R.
     destruct (Certification.tr_resolveIter_leaf _ _ _ _ _ R) as (tk&?&? &?&?&?).
     clear R.

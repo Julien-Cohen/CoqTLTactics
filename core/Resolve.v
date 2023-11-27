@@ -29,29 +29,14 @@ Definition resolveAll (tr: Trace) (name: string)
   (sps: list(InputPiece)) : option (list TargetElementType) :=
   resolveAllIter tr name sps 0.
 
-Definition maybeResolve (tr: Trace) (name: string)
-  (sp: option (InputPiece)) : option TargetElementType :=
-  sp' <- sp ;
-  resolve tr name sp' .
 
-
-Definition maybeResolveAll (tr: Trace) (name: string)
-  (sp: option (list (InputPiece))) : option (list TargetElementType) :=
-  sp' <- sp ; 
-  resolveAll tr name sp'.
 
 
 End Resolve.
 
 (** * Some tactics *)
 
-(* tactics need to be outside the section to be visible *)
-
-Ltac inv_maybeResolve H := 
-  OptionUtils.monadInvN maybeResolve H.
-
-Ltac inv_maybeResolveAll H := 
-  OptionUtils.monadInvN maybeResolveAll H.
+(* Tactics need to be outside the section to be visible *)
 
 
 Ltac inv_resolve H :=
@@ -62,13 +47,4 @@ Ltac inv_resolve H :=
   end.
 
 
-Ltac progress_maybeResolve H :=
-  match type of H with 
-    maybeResolve _ _ _  = Some _ =>
-      inv_maybeResolve H ;
-      inv_resolve H ; 
-      apply List.find_some in H ; 
-      let N := fresh H in
-      destruct H as (H & N)
-end.
 

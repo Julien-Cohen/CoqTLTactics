@@ -33,7 +33,7 @@ Proof.
   intros.
   unfold execute ; simpl.
   unfold compute_trace.
-  rewrite map_flat_map.
+  unfold elements_proj ; rewrite map_flat_map.
   apply in_flat_map.
 Qed.
 
@@ -85,7 +85,7 @@ forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (te : TargetElem
       In te (elements_proj (traceRuleOnPiece r sm sp))).
 Proof.
   intros.
-  unfold traceTrOnPiece.
+  unfold traceTrOnPiece, elements_proj.
   rewrite map_flat_map.
   apply in_flat_map.
 Qed.
@@ -98,7 +98,7 @@ forall (r : Rule) (sm : SourceModel) (sp: InputPiece) (te : TargetElementType),
       In te (elements_proj (traceIterationOnPiece r sm sp i))).
 Proof.
   intros.
-  unfold traceRuleOnPiece.
+  unfold traceRuleOnPiece, unfold elements_proj. 
   rewrite map_flat_map.
   apply in_flat_map.
 Qed.
@@ -111,7 +111,7 @@ forall (r : Rule) (sm : SourceModel) (sp: InputPiece) (te : TargetElementType) (
       In opu r.(r_outputPattern) /\ 
        option_map produced (traceElementOnPiece opu sm sp i) = Some te).
 Proof.
-  unfold traceIterationOnPiece.
+  unfold traceIterationOnPiece, elements_proj.
   intros r sm sp te i.
   rewrite map_flat_map. 
   rewrite in_flat_map.
