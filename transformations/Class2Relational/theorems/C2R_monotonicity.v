@@ -31,19 +31,23 @@ Proof.
   unfold incl.
   intros sm1 sm2 INC a IN.
 
+  (*  We have to deduce something in the transformed model from something in the transformed model.
+      To do this we deduce something in the source model from the fact on the transformed model, and then we deduce the expected result on the transformed model from the fact deduced on the source model. 
+      This is why we can see FW and BW reasonning below. *) 
+
   TacticsBW.exploit_element_in_result IN ; [ | ].
 
   {
     apply INC in IN_ELTS0.
     destruct t0.
-    eapply Elements.transform_class_fw (* why ? *) ; eauto.
+    eapply Elements.transform_class_fw ; eauto.
   }
   {
     C2RTactics.negb_inv MATCH_GUARD.
     destruct t0 ; simpl in MATCH_GUARD. 
     subst Attribute_derived.
     apply INC in IN_ELTS0.
-    eapply Elements.transform_attribute_fw (* why ? *) ; eauto.
+    eapply Elements.transform_attribute_fw ; eauto.
   }    
 Qed.
 

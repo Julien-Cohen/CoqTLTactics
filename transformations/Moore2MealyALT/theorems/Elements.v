@@ -103,8 +103,6 @@ Proof.
   eauto.
 Qed.
 
-Notation transform_element_fw := 
-  (TacticsFW.transform_element_fw  (tc := Moore2Mealy.Moore2MealyTransformationConfiguration)).
 
 Lemma state_element_fw : 
   forall (s:Moore.State_t),
@@ -112,8 +110,8 @@ Lemma state_element_fw :
     List.In (Mealy.StateElement (convert_state s))  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
 Proof.
   intros s IN.
-  eapply transform_element_fw ; eauto. 
-  compute ; auto.
+  TacticsFW.transform_element_fw_tac.
+  TacticsFW.first_in_list.
 Qed.
 
 Lemma state_element_bw :
@@ -160,11 +158,11 @@ Proof.
   unfold convert_transition.
   rewrite G.
   eexists ; split ; [ reflexivity| ].
-  eapply transform_element_fw ; eauto.
-  (* Here we would like to "compute", but we have to do the [rewrite G] below. *)
+  TacticsFW.transform_element_fw_tac.
+  (* Here we would like to "compute", but this does not work because the value of this computation relies on the value of [m], which is unknown here ; we have to [rewrite G] to get rid of the value of [m]. *)
   simpl.
   rewrite G.
-  auto.
+  left ; reflexivity.
 Qed.
 
 End Foo.

@@ -64,8 +64,8 @@ Qed.
 
 
 
-(* Used in Class2Relational *)
-Lemma transform_element_fw {tc} cm e te (t:Syntax.Transformation (tc:=tc)) :
+
+Lemma transform_element_fw {tc} (t:Syntax.Transformation (tc:=tc)) cm e te  :
   0 < Syntax.arity t ->
   In e (modelElements cm) ->
   In te (produced_elements (traceTrOnPiece t cm [e])) ->
@@ -79,6 +79,13 @@ Proof.
   exists ([e]) ; split ; [ | auto ].
   apply <- in_allTuples_incl_singleton. auto.
 Qed.
+
+(* Used in Class2Relational *)
+Ltac transform_element_fw_tac :=
+  match goal with
+    [ |- In _ (execute ?T _).(modelElements) ] =>
+      eapply (transform_element_fw T) ; [ solve [compute ; auto ] | try eassumption | (*try solve [compute;info_auto]*)]
+  end.
 
 
 

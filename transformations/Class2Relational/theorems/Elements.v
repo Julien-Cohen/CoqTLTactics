@@ -20,10 +20,6 @@ From transformations.Class2Relational
 Import Class2Relational ClassMetamodel RelationalMetamodel.
 
 
-Notation transform_element_fw := 
-  (TacticsFW.transform_element_fw  (tc := Class2Relational.C2RConfiguration)).
-
-
 (** Utilities on transformation of elements *)
 
 (** *** Forward Descriptions *)
@@ -39,8 +35,8 @@ Lemma transform_attribute_fw :
 Proof.
   intros cm rm H ; subst.
   intros i n H.
-  eapply transform_element_fw ; eauto.
-  compute ; auto.
+  TacticsFW.transform_element_fw_tac.
+  TacticsFW.first_in_list.
 Qed.
 
 
@@ -54,8 +50,8 @@ Lemma transform_class_fw :
 Proof.
   intros cm rm H ; subst.
   intros i n H.
-  eapply transform_element_fw ; eauto.
-  compute ; auto.
+  TacticsFW.transform_element_fw_tac.  
+  TacticsFW.first_in_list.
 Qed.
 
 

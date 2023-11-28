@@ -3,13 +3,12 @@ From core
 
 Require Moore2Mealy.MooreSemantics.
 Require Moore2Mealy.MealySemantics.
-Require Moore2Mealy.Moore2Mealy.
+Require Import Moore2Mealy.Moore2Mealy.
 Require Moore2Mealy.MooreWF.
 Require Moore2Mealy.MealyWF.
 
 Import OptionUtils.
 
-Import Moore2Mealy (* required for some tactics to have the transformation-configuration in the context (fixme) *).
 
 Section Params.
 
@@ -97,8 +96,6 @@ Definition convert_transition' t (IN : List.In (Moore.Transition t) m.(Model.mod
     discriminate H.
 Defined.
 
-Notation transform_element_fw := 
-  (TacticsFW.transform_element_fw  (tc := Moore2Mealy.Moore2MealyTransformationConfiguration)).
 
 Lemma state_element_fw : 
   forall (s:Moore.State_t),
@@ -106,8 +103,8 @@ Lemma state_element_fw :
     List.In (Mealy.State (convert_state s))  (Semantics.execute Moore2Mealy m).(Model.modelElements).
 Proof.
   intros s IN.
-  eapply transform_element_fw ; eauto. 
-  compute ; auto. (* Since CoqTL is computational, forward reasoning can rely on evaluation.*)
+  TacticsFW.transform_element_fw_tac. 
+  TacticsFW.first_in_list.
 Qed.
 
 Lemma state_element_bw :

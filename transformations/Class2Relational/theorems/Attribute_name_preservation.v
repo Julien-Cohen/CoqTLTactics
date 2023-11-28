@@ -15,6 +15,7 @@ Require Import transformations.Class2Relational.Class2Relational.
 Require Import transformations.Class2Relational.ClassMetamodel.
 Require Import transformations.Class2Relational.RelationalMetamodel.
 
+Require core.TacticsFW.
 
 Theorem Attribute_name_preservation_fw:
     forall (rm : RelationalModel) (cm: ClassModel),
@@ -30,17 +31,9 @@ Theorem Attribute_name_preservation_fw:
 Proof.
     intros.
     exists (Build_Column_t (Attribute_id a) (Attribute_name a)).
-    split.
-    - rewrite H.
-      rewrite (tr_execute_in_elements Class2Relational).
-      exists ([AttributeElement a]).
-      split.
-      + apply in_allTuples_incl ; split.
-        * apply incl_singleton ; assumption.
-        * simpl. lia.
-      + destruct a ; simpl in *.
-        subst Attribute_derived.
-        simpl. 
-        auto.
-    - reflexivity.
+    split ; [ | reflexivity].
+    subst rm.
+    TacticsFW.transform_element_fw_tac.
+    destruct a ; simpl in H1 ; subst.
+    TacticsFW.first_in_list.
 Qed.
