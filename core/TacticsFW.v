@@ -64,19 +64,6 @@ Qed.
 
 
 
-Lemma transform_elements_fw {tc} cm p tp (t:Syntax.Transformation (tc:=tc)) :
-  In p (allTuples t cm) ->
-  In tp (elements_proj (traceTrOnPiece t cm p)) ->
-  In tp (modelElements (execute t cm)).
-Proof.
-  intros IN1 IN2.
-  simpl.
-  unfold compute_trace, elements_proj.
-  rewrite map_flat_map. (* a trace can have several target elements *)
-  apply List.in_flat_map. (* this is doing the job *)
-  eauto.
-Qed.
-
 (* Used in Class2Relational *)
 Lemma transform_element_fw {tc} cm e te (t:Syntax.Transformation (tc:=tc)) :
   0 < Syntax.arity t ->
@@ -85,7 +72,11 @@ Lemma transform_element_fw {tc} cm e te (t:Syntax.Transformation (tc:=tc)) :
   In te (modelElements (execute t cm)).
 Proof.
   intros A IN1 IN2.
-  eapply transform_elements_fw ; [ | eassumption].  
+  simpl.
+  unfold compute_trace, elements_proj.
+  rewrite map_flat_map. (* a trace can have several target elements *)
+  apply List.in_flat_map. (* this is doing the job *)
+  exists ([e]) ; split ; [ | auto ].
   apply <- in_allTuples_incl_singleton. auto.
 Qed.
 
@@ -97,7 +88,6 @@ In particular in the case we have an existential variable in the goal, as in [In
 (after use of [in_compute_trace_inv]).
 
 *)
-
 Lemma In_1 {A} :
       forall (e:A) s,
       (exists r, s = e :: r) -> In e s.
