@@ -34,11 +34,11 @@ Corollary in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
     In e (execute t m).(modelElements).
 Proof. 
   intros.
-  apply RichTraceLink.in_drop_inv in H. destruct H as (? & ? & ?).
+  apply RichTraceLink.in_drop_inv in H. simpl in H. destruct H as (? & ?).
 
   apply in_modelElements_inv. 
-  unfold RichTraceLink.convert in H. inj H.
-  exists x ; auto. 
+  unfold RichTraceLink.convert in H. 
+  eexists ; split ; [ | eassumption] ; reflexivity.
 Qed.
 
 

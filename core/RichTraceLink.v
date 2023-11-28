@@ -55,10 +55,14 @@ Definition convert (a:TraceLink) : PoorTraceLink.TraceLink :=
 Definition drop := map convert.
 
 Lemma in_drop_inv t:
-  forall a, In a (drop t) <-> exists x : TraceLink, convert x = a /\ In x t.
+  forall a, In a (drop t) <-> exists x , In {| source := a.(PoorTraceLink.source) ; produced := a.(PoorTraceLink.produced) ; linkPattern := x |} t.
 Proof.
   setoid_rewrite in_map_iff.
-  tauto.
+  unfold convert.
+  intro ; split.
+  + intros (x&?&?) ; destruct x ; subst ; simpl ; eexists ; eassumption.
+  + destruct a ; simpl.
+    intros (?&?) ; eexists ; split ; [ | eassumption] ; reflexivity. 
 Qed.
 
 End TraceLink.
@@ -67,3 +71,9 @@ Arguments TraceLink {_}.
 
 Notation Trace := (list TraceLink).
 
+Ltac lift H := 
+  match type of H with
+  | In _ (RichTraceLink.drop _) => 
+      apply in_drop_inv in H ; 
+      destruct H as (? & H)  
+  end.

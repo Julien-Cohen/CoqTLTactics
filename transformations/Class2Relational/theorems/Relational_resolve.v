@@ -182,8 +182,7 @@ Proof.
     destruct G1 as (G11 & G12).
     unfold ModelingSemantics.resolve.
     rewrite G11.
-    simpl.
-    auto.
+    TacticsFW.first_in_list.
   }
 Qed.
 

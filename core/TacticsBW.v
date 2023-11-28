@@ -17,7 +17,7 @@ Import Metamodel Model.
 
 
 
-(* used 2 times in this file *)
+(* used 1 time in this file *)
 (* ne devrait plus être utile *)
 Local Ltac destruct_in_matchingRules H NEWNAME :=
   match type of H with 
@@ -335,42 +335,44 @@ Ltac exploit_link_in_result H :=
 
 
 Ltac exploit_in_trace H :=
-  let se := fresh "se" in
-  let r := fresh "r" in
-  let i := fresh "i" in
-  let e := fresh "e" in
-  let te := fresh "te" in
-  let IN_SOURCE := fresh "IN_SOURCE" in
-  let IN_RULE := fresh "IN_RULE" in
-  let MATCH_GUARD := fresh "MATCH_GUARD" in
-  let IN_IT := fresh "IN_IT" in
-  let IN_OUTPATP := fresh "IN_OUTPAT" in
-  let EQ := fresh "EQ" in
-  let EV := fresh "EV" in
-
   match type of H with 
-   | In _ (RichTraceLink.drop ((compute_trace) _ _)) => 
-  	destruct (in_trace_inversion H) 
-    	as (se & r & i & e & te & IN_SOURCE & IN_RULE & MATCH_GUARD & IN_IT & IN_OUTPAT & EQ & EV);
+  | In _ (compute_trace _ _) => 
+      let se := fresh "se" in
+      let r := fresh "r" in
+      let i := fresh "i" in
+      let opu := fresh "opu" in
+      let te := fresh "te" in
+      let A := fresh "A" in
+      let IN_SOURCE := fresh "IN_SOURCE" in
+      let IN_RULE := fresh "IN_RULE" in
+      let MATCH_GUARD := fresh "MATCH_GUARD" in
+      let IN_IT := fresh "IN_IT" in
+      let IN_OUTPATP := fresh "IN_OUTPAT" in
+      let EQ := fresh "EQ" in
+      let EV := fresh "EV" in
   
-  (* 2 *)
-  progress_in_In_rules IN_RULE ;
+      apply Semantics.in_compute_trace_inv in H ;
+
+      destruct H as (se & IN_SOURCE & A & r & IN_RULE & MATCH_GUARD & i & IN_IT & opu & IN_OUTPAT & te & EQ & EV);
   
-  (* _ *)
-  exploit_evalGuard MATCH_GUARD  ; 
-
-  (* _ *)
-  exploit_in_it IN_IT ;
-
-  (* 3 *)
-  progress_in_In_outpat IN_OUTPAT ;
-
-  (* 5 *) 
-  exploit_evaloutpat EV ; 
-
-  (* (7) *)
-  Semantics.in_allTuples_auto
-
-end.
-
-
+      (* 2 *)
+      progress_in_In_rules IN_RULE (* one sub-goal per rule *) ;
+      
+      (* _ *)
+      TacticsBW.exploit_evalGuard MATCH_GUARD  ; 
+      
+      (* _ *)
+      TacticsBW.exploit_in_it IN_IT ;
+      
+      (* 3 *)
+      progress_in_In_outpat IN_OUTPAT ;
+      
+      (* 5 *) 
+      exploit_evaloutpat EV 
+                         
+  | In _ (RichTraceLink.drop (compute_trace _ _)) => 
+      (* when poor traces are concerned, we lift them to rich traces and try again *)
+      RichTraceLink.lift H ;
+      exploit_in_trace H (* recursion *)
+                       
+  end.
