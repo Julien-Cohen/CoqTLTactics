@@ -16,58 +16,6 @@ Require Certification.
 Import Metamodel Model.
 
 
-
-(* used 1 time in this file *)
-(* ne devrait plus être utile *)
-Local Ltac destruct_in_matchingRules H NEWNAME :=
-  match type of H with 
-    | In _ (matchingRules ?T _ _)  =>
-      rewrite (core.Certification.tr_matchingRules_in T) in H ;
-      destruct H as [H NEWNAME]
-  end.
-
-
-(* Utiliser plutôt Semantics.in_compute_trace_inv. *)
-(* Utilisé 1 fois ci-dessous. *)
-Local Lemma in_trace_inversion {MM1 : Metamodel} {T1} {T2} {BEQ} :
-  forall
-    {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
-  {m} {l},
-  In l (RichTraceLink.drop ((compute_trace) t m)) ->
-  exists p r i outpat te,   
-    In p (allTuples t m)
-    /\ In r (Syntax.rules t) 
-    /\ UserExpressions.evalGuard r m p = true 
-    /\ In i (seq 0 (UserExpressions.evalIterator r m p))
-    /\ In outpat (Syntax.r_outputPattern r)
-    /\ l = {|
-             PoorTraceLink.source := (p, i, Syntax.opu_name outpat);
-             PoorTraceLink.produced := te
-           |} 
-    /\ UserExpressions.evalOutputPatternUnit outpat m p i = return te .
-Proof.
-  intros.
-  unfold RichTraceLink.drop in H.
-  apply in_map_iff in H.
-  destruct H as (lk0, (CONV, H)).
-  
-  unfold compute_trace,
-    traceTrOnPiece,
-    traceRuleOnPiece,
-    traceIterationOnPiece,
-    traceElementOnPiece in H.
-  
-  repeat auto_in_flat_map.
-  apply in_optionToList in H3.
-  OptionUtils.monadInv H3.
-  destruct_in_matchingRules H0 M.
-  
-  unfold RichTraceLink.convert ; simpl.
-  repeat eexists ; try eassumption.
-Qed.
-
-
-
 (* This is a corollary of in_compute_trace_inv. *)
 Corollary destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
