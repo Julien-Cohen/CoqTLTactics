@@ -17,6 +17,8 @@ Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
+Require core.TacticsBW.
+
 Require Import transformations.Class2Relational_tactic_test.Class2Relational_tactic_test.
 Require Import transformations.Class2Relational_tactic_test.ClassMetamodel.
 Require Import transformations.Class2Relational_tactic_test.RelationalMetamodel.
@@ -45,56 +47,8 @@ Proof.
     intros cm rm E PRE co1 co2 IN1 IN2 D.
     subst rm.
 
-
-    (* (1) *)
-    destruct (Tactics.destruct_in_modelElements_execute_lem IN1) 
-    as (r & sp & n & ope & IN_E & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & IN1').    
-
-   
-    (* (2) *)
-    Tactics.progress_in_In_rules IN_RULE ; [ | | ] ; 
-    
-    (* (3) *)
-    Tactics.progress_in_ope IN_OP ; 
-
-    (* (4) *)
-    (* not useful here *)
-    Tactics.exploit_evalGuard MATCH_GUARD ;
-
-    (* (5.E) *)
-    Tactics.exploit_evaloutpat IN1' ; 
-
-    (* (6) *)
-    clear IN_IT ;
-    
-    (* (7) *)
-    exploit_in_allTuples IN_E ; [].
-
-
-
-    (* (1) *)
-    destruct (Tactics.destruct_in_modelElements_execute_lem IN2) 
-      as (r & sp & n2 & ope & IN_E2 & IN_RULE & MATCH_GUARD2 & IN_IT & IN_OP & IN2').    
-
-    
-    (* (2) *)
-    Tactics.progress_in_In_rules IN_RULE ; [ | | ]; 
-    
-    (* (3) *)
-    Tactics.progress_in_ope IN_OP ; 
-
-    (* (4) *)
-    (* not useful here *)
-    Tactics.exploit_evalGuard MATCH_GUARD2 ;
-    
-    (* (5) *)
-    Tactics.exploit_evaloutpat IN2' ; 
-
-    (* (6) *)
-    clear IN_IT ;
-
-    (* (7) *)
-    exploit_in_allTuples IN_E2 ; [].
+    TacticsBW.exploit_element_in_result IN1.
+    TacticsBW.exploit_element_in_result IN2.
         
     simpl.
 

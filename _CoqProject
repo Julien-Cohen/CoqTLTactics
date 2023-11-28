@@ -79,6 +79,8 @@ transformations/Class2Relational_tactic_test/RelationalMetamodel.v
 transformations/Class2Relational_tactic_test/tests/PersonModel.v
 transformations/Class2Relational_tactic_test/tests/PersonTest.v
 transformations/Class2Relational_tactic_test/Class2Relational_tactic_test.v
+transformations/Class2Relational_tactic_test/theorems/Column_name_uniqueness.v
+transformations/Class2Relational_tactic_test/theorems/Table_name_uniqueness.v
 
 
 transformations/TT2BDD/TT.v
