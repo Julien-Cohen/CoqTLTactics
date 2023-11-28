@@ -68,12 +68,12 @@ Qed.
 Lemma transform_element_fw {tc} cm e te (t:Syntax.Transformation (tc:=tc)) :
   0 < Syntax.arity t ->
   In e (modelElements cm) ->
-  In te (elements_proj (traceTrOnPiece t cm [e])) ->
+  In te (produced_elements (traceTrOnPiece t cm [e])) ->
   In te (modelElements (execute t cm)).
 Proof.
   intros A IN1 IN2.
   simpl.
-  unfold compute_trace, elements_proj.
+  unfold compute_trace, produced_elements.
   rewrite map_flat_map. (* a trace can have several target elements *)
   apply List.in_flat_map. (* this is doing the job *)
   exists ([e]) ; split ; [ | auto ].

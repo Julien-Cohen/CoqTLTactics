@@ -28,12 +28,12 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
   In te (execute tr sm).(modelElements) <->
   (exists (sp : InputPiece),
       In sp (allTuples tr sm) /\
-      In te (Semantics.elements_proj (traceTrOnPiece tr sm sp))).
+      In te (Semantics.produced_elements (traceTrOnPiece tr sm sp))).
 Proof.
   intros.
   unfold execute ; simpl.
   unfold compute_trace.
-  unfold elements_proj ; rewrite map_flat_map.
+  unfold produced_elements ; rewrite map_flat_map.
   apply in_flat_map.
 Qed.
 
@@ -79,39 +79,39 @@ Qed.
 
 Lemma tr_instantiateOnPiece_in :
 forall (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (te : TargetElementType),
-  In te (elements_proj (traceTrOnPiece tr sm sp)) <->
+  In te (produced_elements (traceTrOnPiece tr sm sp)) <->
   (exists (r : Rule),
       In r (matchingRules tr sm sp) /\
-      In te (elements_proj (traceRuleOnPiece r sm sp))).
+      In te (produced_elements (traceRuleOnPiece r sm sp))).
 Proof.
   intros.
-  unfold traceTrOnPiece, elements_proj.
+  unfold traceTrOnPiece, produced_elements.
   rewrite map_flat_map.
   apply in_flat_map.
 Qed.
 
 Lemma tr_instantiateRuleOnPiece_in :
 forall (r : Rule) (sm : SourceModel) (sp: InputPiece) (te : TargetElementType),
-  In te (elements_proj (traceRuleOnPiece r sm sp)) <->
+  In te (produced_elements (traceRuleOnPiece r sm sp)) <->
   (exists (i: nat),
       In i (seq 0 (evalIterator r sm sp)) /\
-      In te (elements_proj (traceIterationOnPiece r sm sp i))).
+      In te (produced_elements (traceIterationOnPiece r sm sp i))).
 Proof.
   intros.
-  unfold traceRuleOnPiece, elements_proj. 
+  unfold traceRuleOnPiece, produced_elements. 
   rewrite map_flat_map.
   apply in_flat_map.
 Qed.
 
 Lemma tr_instantiateIterationOnPiece_in : 
 forall (r : Rule) (sm : SourceModel) (sp: InputPiece) (te : TargetElementType) (i:nat),
-  In te (elements_proj (traceIterationOnPiece r sm sp i))
+  In te (produced_elements (traceIterationOnPiece r sm sp i))
   <->
   (exists (opu: OutputPatternUnit),
       In opu r.(r_outputPattern) /\ 
        option_map produced (traceElementOnPiece opu sm sp i) = Some te).
 Proof.
-  unfold traceIterationOnPiece, elements_proj.
+  unfold traceIterationOnPiece, produced_elements.
   intros r sm sp te i.
   rewrite map_flat_map. 
   rewrite in_flat_map.
@@ -263,9 +263,9 @@ Program Instance CoqTLEngine :
     matchPattern := matchingRules;
     matchRuleOnPattern := evalGuardExpr ;
 
-    instantiatePattern := fun tr sm sp => elements_proj (traceTrOnPiece tr sm sp) ;
-    instantiateRuleOnPattern := fun r sm sp => elements_proj (traceRuleOnPiece r sm sp);
-    instantiateIterationOnPattern := fun  r sm sp iter => elements_proj (traceIterationOnPiece r sm sp iter)  ;
+    instantiatePattern := fun tr sm sp => produced_elements (traceTrOnPiece tr sm sp) ;
+    instantiateRuleOnPattern := fun r sm sp => produced_elements (traceRuleOnPiece r sm sp);
+    instantiateIterationOnPattern := fun  r sm sp iter => produced_elements (traceIterationOnPiece r sm sp iter)  ;
     instantiateElementOnPattern := fun opu sm ip it => option_map produced (traceElementOnPiece opu sm ip it)  ;
 
     applyPattern := LegacySemantics.applyTrOnPiece;
@@ -324,7 +324,7 @@ Lemma tr_match_injective :
   forall (sm : SourceModel)(sp : InputPiece)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIterator r sm sp)) /\ 
       (exists opu, In opu r.(r_outputPattern) /\  (evalOutputPatternUnit opu sm sp iter) <> None ) ->
-    (exists (te: TargetElementType),  In te (elements_proj (traceRuleOnPiece r sm sp)) ).
+    (exists (te: TargetElementType),  In te (produced_elements (traceRuleOnPiece r sm sp)) ).
 Proof.
   intros until iter.
   intros (H_iter & opu & HopuInr & HopuEval). 

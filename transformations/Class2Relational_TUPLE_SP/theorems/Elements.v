@@ -55,7 +55,7 @@ Proof.
   intros cm rm H ; subst.
   intros i n i2 n2 H1 H2 H3.
   simpl.
-  unfold compute_trace, elements_proj.
+  unfold compute_trace, produced_elements.
   rewrite map_flat_map.
   apply List.in_flat_map.
   exists ([AttributeElement
@@ -119,7 +119,7 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
   simpl.
-  unfold compute_trace, elements_proj. 
+  unfold compute_trace, produced_elements. 
   apply C2RTactics.allModelElements_allTuples in H.
   revert H ; generalize (allTuples Class2Relational_TUPLE_SP cm).
 

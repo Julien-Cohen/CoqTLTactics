@@ -120,13 +120,13 @@ Definition applyTrOnModel (sm : SourceModel) (tls:Trace): list TargetLinkType :=
 
 (** * Execute **)
 
-Definition elements_proj := map RichTraceLink.produced.
+Definition produced_elements := map RichTraceLink.produced.
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   let t := compute_trace tr sm
   in
   {|
-    modelElements := elements_proj t ;
+    modelElements := produced_elements t ;
     modelLinks := applyTrOnModel sm t
   |}.
 

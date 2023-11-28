@@ -30,7 +30,7 @@ Theorem Totality_elem {tc:TransformationConfiguration} :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
       (exists (sp : InputPiece),
           In sp (allTuples tr sm) /\
-          In te (elements_proj (traceTrOnPiece tr sm sp))) ->
+          In te (produced_elements (traceTrOnPiece tr sm sp))) ->
           In te (execute tr sm).(modelElements).
 Proof.
     apply tr_execute_in_elements.
