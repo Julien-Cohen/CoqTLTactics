@@ -98,7 +98,7 @@ forall (r : Rule) (sm : SourceModel) (sp: InputPiece) (te : TargetElementType),
       In te (elements_proj (traceIterationOnPiece r sm sp i))).
 Proof.
   intros.
-  unfold traceRuleOnPiece, unfold elements_proj. 
+  unfold traceRuleOnPiece, elements_proj. 
   rewrite map_flat_map.
   apply in_flat_map.
 Qed.
