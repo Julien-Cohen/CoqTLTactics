@@ -29,23 +29,6 @@ Hypothesis WF_T_R : Moore.WF_transition_target_glue_r_exists m.
 Hypothesis WF_TLL : MooreWF.WF_transition_dest_uniqueness m.
 Hypothesis WF_SLL : MooreWF.WF_transition_source_uniqueness m.
 
-(* tactic (tentative) *)
-Lemma In_1 {A} :
-      forall (e:A) s,
-      (exists r, s = e :: r) -> In e s.
-Proof.
-  intros e s (r&E) ; subst s. 
-  apply in_eq.
-Qed.
-
-(* tactic (tentative) *)
-Lemma In_2 {A} :
-      forall (e:A) s,
-      (exists a r, s = a :: e :: r) -> In e s.
-Proof.
-  intros e s (a&r&E) ; subst s. 
-  apply in_cons. apply in_eq.
-Qed.
 
 
 Lemma source_link_fw :
@@ -85,8 +68,7 @@ Proof.
     compute. auto. }
 
   { (* Only the second rule builds links. *)
-    apply In_2. (* second rule *)
-    eexists ; eexists. reflexivity.
+    TacticsFW.second_rule.
   }
 
   { (* eval guard *) reflexivity. }
@@ -95,8 +77,7 @@ Proof.
 
   { (* output pattern *)
     (* This rule has one output pattern. *)    
-    apply In_1.
-    eexists ; reflexivity.
+    TacticsFW.first_in_list.
   }
 
   { (* eval output pattern *)
@@ -193,8 +174,7 @@ Proof.
  
   3:{
     (* only the second rule builds links. *)
-    apply In_2. (* second rule *)
-    eexists ; eexists ; reflexivity. 
+    TacticsFW.second_rule.
   }
   { 
     (* the source pattern is the considered transition *)
@@ -207,7 +187,7 @@ Proof.
   { (* eval iterator *) compute. eauto. }
   { (* output pattern *)
     (* this rule has one output pattern *)
-    apply In_1. eexists ; reflexivity. 
+    TacticsFW.first_in_list.
   }
   { (* eval output pattern *)
     simpl.
@@ -237,7 +217,7 @@ Proof.
     eexists ; split ; [ reflexivity| ].
     apply in_flat_map.
     eexists ; split.
-    { (* second link pattern *) apply In_2; eauto. }
+    { (* second link pattern *) TacticsFW.second_in_list. }
     {
       unfold Parser.parseOutputPatternLink.
       unfold ConcreteSyntax.o_OutRefKind.

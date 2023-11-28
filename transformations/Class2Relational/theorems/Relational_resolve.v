@@ -131,13 +131,19 @@ Proof.
 
   TacticsBW.exploit_element_in_result IN_COL (* or apply Elements.transform_attribute_bw (moins puissant car on perd l'info sur la garde) *) ; []; 
   clear IN_COL.
+  compute in t0.
+
+  C2RTactics.negb_inv MATCH_GUARD.
   
   specialize (PRE _ IN_ELTS).
   destruct PRE as (c & G1).
 
-  C2RTactics.negb_inv MATCH_GUARD.
   
-  destruct t0. simpl (ClassMetamodel.Attribute_id _)  in * ; simpl (ClassMetamodel.Attribute_name _) in * ; simpl ClassMetamodel.Attribute_derived in *. (* derived a = false *)
+  destruct t0.  
+  unfold convert_attribute.
+  simpl (ClassMetamodel.Attribute_id _)  in *.
+  simpl (ClassMetamodel.Attribute_name _) in *. 
+   simpl ClassMetamodel.Attribute_derived in *. (* derived a = false *)
   subst Attribute_derived. 
 
  
@@ -146,21 +152,23 @@ Proof.
 
   exists{| Table_id := r.(Class_id); Table_name := r.(Class_name) |}.
 
-  apply <- Semantics.in_modelLinks_inv.
-  setoid_rewrite in_compute_trace_inv.
+  apply <- Semantics.in_modelLinks_inv. (* FW *)
+  setoid_rewrite Semantics.in_compute_trace_inv. 
   repeat (first [eexists | split | eassumption]).
   
   { apply incl_singleton. eassumption. }
   { auto. }
-  { (* no auto *) simpl. right. left. reflexivity. (* rule R2 *) }
+  { TacticsFW.second_rule. (* We specify the rule R2 *) }
   { auto. }
   { simpl. instantiate (1:=0). auto. }
-  { simpl ; auto. }
+  { TacticsFW.first_in_list. }
   { crush. }
-  { crush. 
+  { 
+    unfold Parser.parseOutputPatternUnit, Parser.parseOutputPatternLinks, Parser.parseOutputPatternLink.
+    unfold Syntax.opu_name, ConcreteSyntax.e_name, ConcreteSyntax.e_outlink, ConcreteSyntax.e_OutKind, Syntax.opu_link.
+    simpl. 
     unfold Parser.dropToList ; simpl.
     unfold getAttribute_typeElement.
-    unfold Parser.parseOutputPatternLink.
     simpl.
     unfold ConcreteExpressions.makeLink ; simpl.
     unfold ConcreteExpressions.wrapLink ; simpl.
