@@ -31,11 +31,10 @@ Proof.
   unfold incl.
   intros sm1 sm2 INC a IN.
 
-  TacticsBW.exploit_element_in_result IN ; [ | ] ;
-  clear IN.
+  TacticsBW.exploit_element_in_result IN ; [ | ].
 
   {
-    apply INC in IN_ELTS.
+    apply INC in IN_ELTS0.
     destruct t0.
     eapply Elements.transform_class_fw (* why ? *) ; eauto.
   }
@@ -43,7 +42,7 @@ Proof.
     C2RTactics.negb_inv MATCH_GUARD.
     destruct t0 ; simpl in MATCH_GUARD. 
     subst Attribute_derived.
-    apply INC in IN_ELTS.
+    apply INC in IN_ELTS0.
     eapply Elements.transform_attribute_fw (* why ? *) ; eauto.
   }    
 Qed.

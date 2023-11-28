@@ -16,31 +16,6 @@ Require Certification.
 Import Metamodel Model.
 
 
-(* This is a corollary of in_compute_trace_inv. *)
-(* Used only 1 time. *)
-(* REMOVE-ME *)
-Corollary destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ} :
-  forall 
-    {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
-    {m} {e},
-    
-  In e (modelElements (execute t m)) ->
-  exists r sp n0 opu,
-    In sp (allTuples t m) (* fixme : improve-me *)
-    /\ In r (Syntax.rules t) 
-    /\ UserExpressions.evalGuard r m sp = true 
-    /\ In n0 (seq 0 (UserExpressions.evalIterator r m sp))
-    /\ In opu (Syntax.r_outputPattern r) 
-    /\ UserExpressions.evalOutputPatternUnit opu m sp n0 = Some e.
-Proof.
-  intros t m e H. 
-  apply Semantics.in_modelElements_inv in H ; destruct H as (?&?&H).
-  apply in_compute_trace_inv in H. 
-  destruct H as (?&?&?&?&?&?&?&?&?&?&?&?&?).
-  subst.
-  repeat (first[eexists | split | eassumption]).
-  (* improvement visible here *)  apply in_allTuples_incl ; auto.
-Qed.
 
 (* This is a corollary of in_compute_trace_inv. *)
 (* Used only 1 time. *)
@@ -162,48 +137,6 @@ Ltac exploit_evalGuard H :=
       
     end.
 
-(** Tactic for the user *)
-Ltac exploit_element_in_result H :=
-  match type of H with
-  | In _ (modelElements (execute _ _)) =>
-      
-      let r := fresh "r" in
-      let sp := fresh "sp" in
-      let n := fresh "n" in
-      let opu := fresh "opu" in
-      let IN_ELTS := fresh "IN_ELTS" in
-      let IN_RULE := fresh "IN_RULE" in
-      let MATCH_GUARD := fresh "MATCH_GUARD" in
-      let IN_IT := fresh "IN_IT" in
-      let IN_OP := fresh "IN_OP" in
-      let EV := fresh "EV" in
-            
-      (* (1) *)
-      destruct (destruct_in_modelElements_execute_lem H)
-      as (r & sp & n & opu & IN_ELTS & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & EV) ;
-      
-      (* (2) *)
-      (* Case analysis on the rule that has matched. *)
-      progress_in_In_rules IN_RULE ;
-
-      (* (_) *) 
-      (* Consider the fact that the guard was true. *)
-      exploit_evalGuard MATCH_GUARD ; 
-
-      (* (_) *)
-      exploit_in_it IN_IT ;
-      
-      (* (_) *) 
-      (* Make the ouput-pattern-element appear. *)
-      progress_in_In_outpat IN_OP ;
-        
-      (* (_) *)
-      (* Make the matched element appear *)
-      exploit_evaloutpat EV ;
-      
-      (* (7) *)
-      Semantics.exploit_in_allTuples IN_ELTS
-  end. 
 
 
 Local Ltac unfold_parseOutputPatternUnit H :=
@@ -237,6 +170,7 @@ Local Ltac exploit_in_eval_link H :=
           apply in_singleton in IN 
     end.
 
+(** Tactic for the user *)
 
 Ltac exploit_link_in_result H :=
   match type of H with
@@ -285,6 +219,13 @@ Ltac exploit_link_in_result H :=
       exploit_in_eval_link IN_L  
   end. 
 
+Ltac explicit_incl H :=
+  match type of H with
+  | incl (_::_) _ =>
+      let H1 := fresh H in
+      apply incl_cons_inv in H ; destruct H as (H1 & H)
+  |  incl nil _ => clear H
+  end.
 
 Ltac exploit_in_trace H :=
   match type of H with 
@@ -295,7 +236,7 @@ Ltac exploit_in_trace H :=
       let opu := fresh "opu" in
       let te := fresh "te" in
       let A := fresh "A" in
-      let IN_SOURCE := fresh "IN_SOURCE" in
+      let IN_ELTS := fresh "IN_ELTS" in
       let IN_RULE := fresh "IN_RULE" in
       let MATCH_GUARD := fresh "MATCH_GUARD" in
       let IN_IT := fresh "IN_IT" in
@@ -305,7 +246,7 @@ Ltac exploit_in_trace H :=
   
       apply Semantics.in_compute_trace_inv in H ;
 
-      destruct H as (se & IN_SOURCE & A & r & IN_RULE & MATCH_GUARD & i & IN_IT & opu & IN_OUTPAT & te & EQ & EV);
+      destruct H as (se & IN_ELTS & A & r & IN_RULE & MATCH_GUARD & i & IN_IT & opu & IN_OUTPAT & te & EQ & EV);
   
       (* 2 *)
       progress_in_In_rules IN_RULE (* one sub-goal per rule *) ;
@@ -323,6 +264,9 @@ Ltac exploit_in_trace H :=
       exploit_evaloutpat EV ;
       
       (* ??? *)
+      repeat explicit_incl IN_ELTS ;
+
+      (* ??? *)
       try inj EQ ; try discriminate
                          
   | In _ (RichTraceLink.drop (compute_trace _ _)) => 
@@ -331,3 +275,13 @@ Ltac exploit_in_trace H :=
       exploit_in_trace H (* recursion *)
                        
   end.
+
+Ltac exploit_element_in_result IN :=
+  let H := fresh "H" in
+  let tk := fresh "tk" in
+  let p := fresh "p" in
+  apply -> Semantics.in_modelElements_inv in IN ;
+  destruct IN as (tk & H & IN) ;
+  destruct tk as [? p ?] ;
+  unfold RichTraceLink.produced in H ; subst p ; [] ;
+  exploit_in_trace IN.

@@ -147,7 +147,6 @@ Proof.
   intros i n H.
 
   TacticsBW.exploit_element_in_result H ; [] ; 
-  clear H.
 
   C2RTactics.exploit_guard MATCH_GUARD.
 
@@ -168,8 +167,7 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
   
-  TacticsBW.exploit_element_in_result H ; [] ; 
-  clear H.
+  TacticsBW.exploit_element_in_result H ; []. 
 
   
   destruct t0 ; assumption.

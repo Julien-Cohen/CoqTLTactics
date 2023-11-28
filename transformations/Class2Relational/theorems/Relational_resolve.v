@@ -129,13 +129,12 @@ Proof.
   subst rm.
 
 
-  TacticsBW.exploit_element_in_result IN_COL (* or apply Elements.transform_attribute_bw (moins puissant car on perd l'info sur la garde) *) ; []; 
-  clear IN_COL.
+  TacticsBW.exploit_element_in_result IN_COL (* or apply Elements.transform_attribute_bw (moins puissant car on perd l'info sur la garde) *) ; [].
   compute in t0.
 
   C2RTactics.negb_inv MATCH_GUARD.
   
-  specialize (PRE _ IN_ELTS).
+  specialize (PRE _ IN_ELTS0).
   destruct PRE as (c & G1).
 
   
@@ -157,7 +156,6 @@ Proof.
   repeat (first [eexists | split | eassumption]).
   
   { apply incl_singleton. eassumption. }
-  { auto. }
   { TacticsFW.second_rule. (* We specify the rule R2 *) }
   { auto. }
   { simpl. instantiate (1:=0). auto. }

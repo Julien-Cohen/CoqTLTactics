@@ -1,6 +1,6 @@
 Require Moore2MealyALT.MooreSemantics.
 Require Moore2MealyALT.MealySemantics.
-Require Moore2MealyALT.Moore2Mealy.
+Require Import Moore2MealyALT.Moore2Mealy.
 Require Moore2MealyALT.MooreWF.
 Require Moore2MealyALT.MealyWF.
 
@@ -139,8 +139,8 @@ Proof.
   TacticsBW.exploit_element_in_result H.
   exists t1.
   split ; auto ; [].
-  apply WF_T in IN_ELTS.
-  destruct IN_ELTS as (s & G).
+  apply WF_T in IN_ELTS0.
+  destruct IN_ELTS0 as (s & G).
   (* FIXME : ici on voit valueOption, c'est moche. *)
   unfold convert_transition.
   rewrite G.

@@ -45,11 +45,10 @@ Proof.
   intros T P e IN; intros.
   subst rm.
 
-  TacticsBW.exploit_element_in_result IN ; [ | ] ;
-  clear IN.
+  TacticsBW.exploit_element_in_result IN ; [ | ].
 
-  { apply P in IN_ELTS. apply IN_ELTS. }
-  { apply P in IN_ELTS. apply IN_ELTS. }
+  { apply P in IN_ELTS0. apply IN_ELTS0. }
+  { apply P in IN_ELTS0. apply IN_ELTS0. }
 Qed.
 
 

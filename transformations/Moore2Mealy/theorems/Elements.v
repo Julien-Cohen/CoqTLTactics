@@ -9,6 +9,8 @@ Require Moore2Mealy.MealyWF.
 
 Import OptionUtils.
 
+Import Moore2Mealy (* required for some tactics to have the transformation-configuration in the context (fixme) *).
+
 Section Params.
 
 Variable (m:Moore.M).
@@ -16,8 +18,6 @@ Variable (m:Moore.M).
 Hypothesis WF_U : MooreWF.state_id_uniqueness m.
 Hypothesis WF_T : Moore.WF_transition_target_exists m.
 
-Notation convert_state := Moore2Mealy.convert_state.
-Notation convert_transition := Moore2Mealy.convert_transition.
 
 (** [convert_state] is not injective, but if we consider states of a model with uniqueness of identifiers, it becomes injective. *)
 
@@ -103,7 +103,7 @@ Notation transform_element_fw :=
 Lemma state_element_fw : 
   forall (s:Moore.State_t),
     List.In (Moore.State s) (Model.modelElements m) ->
-    List.In (Mealy.State (convert_state s))  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
+    List.In (Mealy.State (convert_state s))  (Semantics.execute Moore2Mealy m).(Model.modelElements).
 Proof.
   intros s IN.
   eapply transform_element_fw ; eauto. 
@@ -112,7 +112,7 @@ Qed.
 
 Lemma state_element_bw :
   forall (s:Mealy.State_t),
-    List.In (Mealy.State s) (Model.modelElements (Semantics.execute  Moore2Mealy.Moore2Mealy m)) ->
+    List.In (Mealy.State s) (Model.modelElements (Semantics.execute Moore2Mealy m)) ->
     exists s0,
       List.In (Moore.State s0) (Model.modelElements m) /\ s = convert_state s0.
 Proof.

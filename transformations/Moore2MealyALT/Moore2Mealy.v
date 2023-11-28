@@ -50,7 +50,7 @@ Definition Moore2Mealy' :=
             return {|
               Transition_source := t.(Moore.Transition_source) ;
               Transition_input := t.(Moore.Transition_input) ;
-              Transition_output := value (option_map Moore.State_output (Moore.getTransition_target m t));
+              Transition_output := (* FIXME *) value (option_map Moore.State_output (Moore.getTransition_target m t));
               Transition_dest := t.(Moore.Transition_dest)
             |} >> 
          
