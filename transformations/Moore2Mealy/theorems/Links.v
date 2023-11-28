@@ -267,8 +267,6 @@ Lemma source_link_bw :
 Proof.
   intros t' s' IN.
   TacticsBW.exploit_link_in_result IN.
-  { 
-    PropUtils.inj IN0.
     simpl in IN_L.
 
 
@@ -276,8 +274,10 @@ Proof.
     monadInv IN_L.
     monadInv IN_L.
 
-    compute in EQ0.
-    PropUtils.inj EQ0.
+    compute in EQ.
+    PropUtils.inj EQ.
+
+    simpl in E. unfold RichTraceLink.getSourcePiece in E ; simpl in E. (* fixme : add this in the tactic *) PropUtils.inj E.
 
 
     assert (S: SUCCESS (Moore.getTransition_source m t)).
@@ -297,7 +297,7 @@ Proof.
     
     destruct t0 ; [ PropUtils.inj IN_L | discriminate IN_L].
 
-    rename EQ0 into R.
+    rename EQ into R.
 
     unfold Resolve.resolve in R.
     destruct (Certification.tr_resolveIter_leaf _ _ _ _ _ R) as (tk&?&? &?&?&?).
@@ -322,8 +322,8 @@ Proof.
 
     compute in t.
 
-    unfold convert_transition in EQ.
-    monadInv EQ.
+    unfold convert_transition in EQ0.
+    monadInv EQ0.
     destruct t as (id & i) ; simpl in *.
 
     TacticsBW.exploit_in_trace H.
@@ -331,9 +331,6 @@ Proof.
     split ; [ reflexivity | ].
     exact GS.
 
-  }
-  
-  { discriminate IN0. (* not the correct pattern. *)  }
 Qed.
 
 Lemma target_link_bw :
@@ -356,18 +353,17 @@ Lemma target_link_bw :
 Proof.
   intros t' s' IN.
   TacticsBW.exploit_link_in_result IN.
-  { discriminate IN0. }
-  { 
-    PropUtils.inj IN0.
     simpl in IN_L.
     monadInv IN_L.
     monadInv IN_L.
-    compute in EQ0. PropUtils.inj EQ0.
+    compute in EQ. PropUtils.inj EQ.
     
     compute in t.
 
-    unfold convert_transition in EQ. monadInv EQ.
+    unfold convert_transition in EQ0. monadInv EQ0.
     simpl.
+
+    unfold RichTraceLink.getSourcePiece, RichTraceLink.source in E ; PropUtils.inj E. (* fixme *)
 
     assert (S: SUCCESS (Moore.getTransition_source m t)).
     { apply WF_S. assumption. }
@@ -375,7 +371,7 @@ Proof.
 
     exists s.
     unfold Moore.Transition_getTargetObject in EQ1.
-    rewrite EQ in EQ1.
+    rewrite EQ0 in EQ1.
     simpl in EQ1. PropUtils.inj EQ1.
     
     unfold ModelingSemantics.resolve in IN_L.
@@ -384,7 +380,7 @@ Proof.
     
     destruct t0 ; [ PropUtils.inj IN_L | discriminate IN_L].
 
-    rename EQ0 into R.
+    rename EQ into R.
 
     unfold Resolve.resolve in R.
     destruct (Certification.tr_resolveIter_leaf _ _ _ _ _ R) as (tk&?&? &?&?&?).
@@ -405,15 +401,14 @@ Proof.
     unfold PoorTraceLink.getSourcePiece in H0 ;  simpl in H0.
     subst.
 
-    apply Moore.getTransition_target_inv in EQ.
+    apply Moore.getTransition_target_inv in EQ0.
 
     TacticsBW.exploit_in_trace H ; [].
 
     simpl in *.
     split ; [ reflexivity | ].
     destruct t as (id & i) ; simpl in *.
-    exact EQ.
-  }
+    exact EQ0.
   
 Qed.
 

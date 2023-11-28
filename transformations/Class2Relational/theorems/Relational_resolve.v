@@ -81,14 +81,12 @@ Proof.
   intros c tb R_IN1.
   subst rm.
 
-  TacticsBW.exploit_link_in_result R_IN1 ; [ | ] ;  
-    
-  clear R_IN1 ;
-  
-  first [discriminate IN | inj IN ] ; []. 
+  TacticsBW.exploit_link_in_result R_IN1 ; [].
   
   simpl in IN_L.
-
+  simpl in E.
+  unfold RichTraceLink.getSourcePiece in E ; simpl in E.
+  inj E.
 
   C2RTactics.negb_inv MATCH_GUARD.
   destruct t ; simpl in MATCH_GUARD ; subst Attribute_derived.

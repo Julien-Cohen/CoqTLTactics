@@ -17,35 +17,6 @@ Import Metamodel Model.
 
 
 
-(* This is a corollary of in_compute_trace_inv. *)
-(* Used only 1 time. *)
-(* REMOVE-ME *)
-Corollary destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
-  forall 
-  {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))}
-     {l}
-     {m},
-    In l (modelLinks (execute t m)) ->
-    exists s r n p te,
-      In s (allTuples t m) (* fixme : improve this *)
-      /\ In r (Syntax.rules t) 
-      /\ UserExpressions.evalGuard r m s = true
-      /\ In n (seq 0 (UserExpressions.evalIterator r m s))
-      /\ In p (Syntax.r_outputPattern r) 
-      /\ UserExpressions.evalOutputPatternUnit p m s n = return te
-      /\ In l (UserExpressions.evalOutputPatternLink m s te n (RichTraceLink.drop(compute_trace t m)) p).
-
-Proof.
-  intros t l m H.
-  apply Semantics.in_modelLinks_inv in H ; destruct H as (?&H&?).
-  apply in_compute_trace_inv in H. 
-  destruct H as (?&?&?&?&?&?&?&?&?&?&?&?&?).
-  subst.
-  repeat (first[eexists | split | eassumption]).
-  (* improvement visible here *)  apply in_allTuples_incl ; auto.
-Qed.
-
-
 Local Ltac simpl_accessors_any H :=
   repeat first [ ConcreteSyntax.simpl_cr_accessors H 
         | ConcreteSyntax.simpl_elem_accessors H 
@@ -139,85 +110,6 @@ Ltac exploit_evalGuard H :=
 
 
 
-Local Ltac unfold_parseOutputPatternUnit H :=
-    unfold Parser.parseOutputPatternUnit in H ;
-    unfold Parser.parseOutputPatternLinks in H ;
-    unfold Parser.parseOutputPatternLink in H ;
-    repeat ConcreteSyntax.simpl_elem_accessors H.
-  
-Local Ltac unfold_evalOutputPatternLink H :=
-    unfold UserExpressions.evalOutputPatternLink in H ;
-    ConcreteSyntax.simpl_cr_accessors H ;
-    Syntax.simpl_opu_accessors H.
-
-Local Ltac exploit_in_eval_link H :=
-    match type of H with
-    | In _ (UserExpressions.evalOutputPatternLink _ _ _ _ _ (Parser.parseOutputPatternUnit _ _)) => 
-        let TMP := fresh "TMP" in
-        let pl := fresh "pl" in
-        let IN := fresh "IN" in
-        let l := fresh "l" in
-        unfold_parseOutputPatternUnit H ; 
-        unfold_evalOutputPatternLink H ;
-        unfold Parser.dropToList in H ;
-        rewrite optionListToList_Some in H ;
-        apply in_flat_map in H ; destruct H as (pl, (TMP, H)) ;
-        repeat ListUtils.unfold_In_cons TMP; 
-        subst pl ;
-        apply OptionListUtils.in_optionListToList in H ; 
-        destruct H as (l & H & IN) ;
-        ConcreteExpressions.inv_makeLink H ;
-          apply in_singleton in IN 
-    end.
-
-(** Tactic for the user *)
-
-Ltac exploit_link_in_result H :=
-  match type of H with
-  | In _ (modelLinks (execute _ _)) =>
-      
-      let r := fresh "r" in
-      let sp := fresh "sp" in
-      let n := fresh "n" in
-      let opu := fresh "opu" in
-      let te := fresh "te" in
-      let IN_ELTS := fresh "IN_ELTS" in
-      let IN_RULE := fresh "IN_RULE" in
-      let MATCH_GUARD := fresh "MATCH_GUARD" in
-      let IN_IT := fresh "IN_IT" in
-      let IN_OP := fresh "IN_OP" in
-      let EV := fresh "EV" in
-      let IN_L := fresh "IN_L" in
-            
-      (* (1) *)
-      destruct (destruct_in_modelLinks_execute_lem H)
-      as (sp & r & n & opu & te & IN_ELTS & IN_RULE & MATCH_GUARD & IN_IT & IN_OP & EV & IN_L) ;
-      
-      (* (2) *)
-      (* Case analysis on the rule that has matched. *)
-      progress_in_In_rules IN_RULE ;
-
-      (* (_) *) 
-      (* Consider the fact that the guard was true. *)
-      exploit_evalGuard MATCH_GUARD ; 
-
-      (* (_) *)
-      exploit_in_it IN_IT ;
-      
-      (* (_) *) 
-      (* Make the ouput-pattern-element appear. *)
-      progress_in_In_outpat IN_OP ;
-        
-      (* (_) *)
-      (* Make the matched element appear *)
-      exploit_evaloutpat EV ;
-      
-      (* (7) *)
-      Semantics.exploit_in_allTuples IN_ELTS ;
-
-      (* (8) *)
-      exploit_in_eval_link IN_L  
-  end. 
 
 Ltac explicit_incl H :=
   match type of H with
@@ -227,6 +119,41 @@ Ltac explicit_incl H :=
   |  incl nil _ => clear H
   end.
 
+
+
+Local Ltac unfold_parseOutputPatternUnit H :=
+    unfold Parser.parseOutputPatternUnit in H ;
+    unfold Parser.parseOutputPatternLinks in H ;
+    unfold Parser.parseOutputPatternLink in H ;
+    repeat ConcreteSyntax.simpl_elem_accessors H.
+
+Local Ltac unfold_evalOutputPatternLink H :=
+    unfold UserExpressions.evalOutputPatternLink in H.
+
+Local Ltac exploit_in_eval_link H :=
+  let TMP := fresh "TMP" in
+  let pl := fresh "pl" in
+  let IN := fresh "IN" in
+  let l := fresh "l" in
+  unfold apply_link_pattern in H  ;
+  unfold_parseOutputPatternUnit H ; 
+  unfold_evalOutputPatternLink H ;
+  unfold Parser.dropToList in H ;
+  unfold RichTraceLink.linkPattern in H ;
+  rewrite optionListToList_Some in H ;
+  apply in_flat_map in H ; destruct H as (pl, (TMP, H)) ;
+  repeat ListUtils.unfold_In_cons TMP ; 
+  subst pl ;
+  apply OptionListUtils.in_optionListToList in H ; 
+  destruct H as (l & H & IN) ;
+  ConcreteExpressions.inv_makeLink H ;
+  apply in_singleton in IN ;
+  try first [discriminate IN | inj IN].
+
+
+(** * Tactics for the user *)
+
+(** Pivot tactic on traces *)
 Ltac exploit_in_trace H :=
   match type of H with 
   | In _ (compute_trace _ _) => 
@@ -244,6 +171,7 @@ Ltac exploit_in_trace H :=
       let EQ := fresh "EQ" in
       let EV := fresh "EV" in
   
+      (* 1 *)
       apply Semantics.in_compute_trace_inv in H ;
 
       destruct H as (se & IN_ELTS & A & r & IN_RULE & MATCH_GUARD & i & IN_IT & opu & IN_OUTPAT & te & EQ & EV);
@@ -276,12 +204,34 @@ Ltac exploit_in_trace H :=
                        
   end.
 
+
+(** Two tactics for user that rely on the pivot tactic above. *)
 Ltac exploit_element_in_result IN :=
   let H := fresh "H" in
   let tk := fresh "tk" in
   let p := fresh "p" in
+  
+  (* make the trace appear *)
   apply -> Semantics.in_modelElements_inv in IN ;
   destruct IN as (tk & H & IN) ;
   destruct tk as [? p ?] ;
   unfold RichTraceLink.produced in H ; subst p ; [] ;
+
+  (* exploit the trace *)
   exploit_in_trace IN.
+
+
+Ltac exploit_link_in_result IN :=
+  let H := fresh "H" in
+  let tk := fresh "tk" in
+  let p := fresh "p" in
+
+  (* make the trace appear *)
+  apply -> Semantics.in_modelLinks_inv in IN ;
+  destruct IN as (tk & IN & IN_L) ;
+  destruct tk as [? ? ?]  ;
+  
+  (* exploit the trace *)
+  exploit_in_trace IN ;
+
+  exploit_in_eval_link IN_L.
