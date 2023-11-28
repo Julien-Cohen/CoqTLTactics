@@ -327,7 +327,6 @@ Proof.
     destruct t as (id & i) ; simpl in *.
 
     TacticsBW.exploit_in_trace H.
-    PropUtils.inj EQ0.
     
     split ; [ reflexivity | ].
     exact GS.
@@ -410,7 +409,7 @@ Proof.
 
     TacticsBW.exploit_in_trace H ; [].
 
-    simpl in * ; PropUtils.inj EQ0.
+    simpl in *.
     split ; [ reflexivity | ].
     destruct t as (id & i) ; simpl in *.
     exact EQ.

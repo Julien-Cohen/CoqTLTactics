@@ -71,14 +71,9 @@ Proof.
   f_equal.
   
   TacticsBW.exploit_in_trace IN1; 
-  TacticsBW.exploit_in_trace IN2 ; 
-  try PropUtils.inj EQ0 ;  
-  try PropUtils.inj EQ ; 
-  try PropUtils.inj EQ1 ; auto.
-  discriminate.
-  discriminate.
+  TacticsBW.exploit_in_trace IN2 ; auto. 
 
-  PropUtils.unif EQ0 EQ2 ; reflexivity.
+  PropUtils.unif EQ0 EQ1 ; reflexivity.
 Qed.
 
 

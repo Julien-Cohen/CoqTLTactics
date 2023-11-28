@@ -97,10 +97,7 @@ Proof.
   
   TacticsBW.exploit_in_trace IN1; 
   TacticsBW.exploit_in_trace IN2 ;
-  PropUtils.inj EQ0 ;
-  PropUtils.inj EQ ; auto.
-  discriminate.
-  discriminate.
+  auto.
 Qed.
 
 Lemma in_find m : 

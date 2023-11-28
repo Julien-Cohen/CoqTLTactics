@@ -17,6 +17,8 @@ Import Metamodel Model.
 
 
 (* This is a corollary of in_compute_trace_inv. *)
+(* Used only 1 time. *)
+(* REMOVE-ME *)
 Corollary destruct_in_modelElements_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
     {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))} 
@@ -41,6 +43,8 @@ Proof.
 Qed.
 
 (* This is a corollary of in_compute_trace_inv. *)
+(* Used only 1 time. *)
+(* REMOVE-ME *)
 Corollary destruct_in_modelLinks_execute_lem {MM1} {T1} {T2} {BEQ} :
   forall 
   {t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ))}
@@ -316,7 +320,10 @@ Ltac exploit_in_trace H :=
       progress_in_In_outpat IN_OUTPAT ;
       
       (* 5 *) 
-      exploit_evaloutpat EV 
+      exploit_evaloutpat EV ;
+      
+      (* ??? *)
+      try inj EQ ; try discriminate
                          
   | In _ (RichTraceLink.drop (compute_trace _ _)) => 
       (* when poor traces are concerned, we lift them to rich traces and try again *)
