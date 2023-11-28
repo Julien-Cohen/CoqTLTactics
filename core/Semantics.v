@@ -154,25 +154,3 @@ Qed.
 End Semantics.
 
   
-
-(** * Some tactics *)
-
-(* tactics need to be outside the section to be visible *)
-
-(* Deprecated : use in_allTuples_incl instead *)
-Ltac exploit_in_allTuples H :=
-  match type of H with 
-    In _ (allTuples _ _) => 
-      unfold allTuples in H ; 
-      apply tuples_up_to_n_incl in H ;
-      ListUtils.incl_inv H
-  end.
-
-(* Deprecated : should not be used anymore. *)
-Ltac in_allTuples_auto :=
-  match goal with 
-    [ H : In _ (allTuples _ _) |- _ ] =>
-       exploit_in_allTuples H
-  end.
-
-
