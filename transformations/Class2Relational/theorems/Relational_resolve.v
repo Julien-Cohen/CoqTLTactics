@@ -45,29 +45,14 @@ forall (col: Column_t),
 
 (** ** Some tactics related to Class2Relational *)
 
-Ltac toEDataT H :=
-   match type of H with
-     toEData Table_K ?E = Some _ => destruct E ; [ | discriminate H] 
-   end.
-
- 
 Ltac tmp H := 
   repeat monadInv H ;
   unfold ModelingSemantics.resolve in H  ;
   ModelingSemantics.inv_denoteOutput H ; 
-  toEDataT H ;
+  C2RTactics.toEDataT H ;
   C2RTactics.unfold_toEData H ;
   PropUtils.inj H .
 
-Ltac progress_in_maybeBuildColumnReference H := 
-  match type of H with 
-  | option_map (Build_Glue _) _ = Some _  =>
-     inv_maybeBuildColumnReference H ; 
-     ModelingSemantics.inv_denoteOutput H ; 
-     toEDataT H ;
-     C2RTactics.unfold_toEData H ;
-     PropUtils.inj H
-  end.
 
 (** ** Important lemma *)
 Lemma wf_stable cm rm :
@@ -83,27 +68,40 @@ Proof.
 
   TacticsBW.exploit_link_in_result R_IN1 ; [].
   
-  simpl in IN_L.
+  (* We get hypothesis IN_ELTS, A, E, EQ, IN_L, MATCH_GUARD. *)
+  
+
+  (* IN_ELTS0 is not needed here *)
+  clear IN_ELTS0.
+  
+  (* By EQ we could have som info on c/g but we never use c/g (left part of the glue). *)
+  clear EQ.
+
+  (* E can be exploited to unify t with t0 *)
   simpl in E.
   unfold RichTraceLink.getSourcePiece in E ; simpl in E.
   inj E.
 
+  (* MATCH_GUARD can be exploited to infer the boolean value of t.(derived)*)
   C2RTactics.negb_inv MATCH_GUARD.
   destruct t ; simpl in MATCH_GUARD ; subst Attribute_derived.
 
+
+  simpl in IN_L.
+
+  (* IN_L contains the code of the link-pattern in the rule. *)
   tmp IN_L.
-  (*progress_in_maybeBuildColumnReference IN_L.*)
   
-  unfold get_E_data in EQ ; inj EQ.
-  core.Resolve.inv_resolve EQ1. 
-  apply List.find_some in EQ1 ; destruct EQ1.
-  (*ListUtils.inv_maybeSingleton EQ.*)
+  core.Resolve.inv_resolve EQ0. 
+  apply List.find_some in EQ0 ; destruct EQ0.
+
   
-  inv_getAttribute_typeElement EQ0.
+  inv_getAttribute_typeElement EQ.
 
   destruct t ; simpl in H ; subst.   
 
-  eapply TacticsFW.in_trace_in_models_target ; eauto. 
+
+  eapply TacticsFW.in_trace_in_models_target ; eassumption. 
 
 Qed.
 
@@ -154,6 +152,7 @@ Proof.
   repeat (first [eexists | split | eassumption]).
   
   { apply incl_singleton. eassumption. }
+  { compute ; auto. }
   { TacticsFW.second_rule. (* We specify the rule R2 *) }
   { auto. }
   { simpl. instantiate (1:=0). auto. }

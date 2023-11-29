@@ -101,7 +101,9 @@ Proof.
       ConcreteSyntax.r_InKinds,
       ConcreteSyntax.e_OutKind,
       ConcreteSyntax.e_outlink, 
-      ConcreteSyntax.e_outpat.
+      ConcreteSyntax.e_outpat,
+      ConcreteSyntax.e_name,
+      Syntax.opu_name.
     
 
     unfold Parser.dropToList,
@@ -113,26 +115,29 @@ Proof.
 
     apply in_flat_map.
     eexists ; split.
-    { (* first link pattern *) apply in_eq. }
+    { (* first link pattern *) TacticsFW.first_in_list. }
     {
       unfold ConcreteSyntax.o_OutRefKind, ConcreteSyntax.o_outpat.
 
       unfold ConcreteExpressions.makeLink, ConcreteExpressions.wrapLink, ConcreteExpressions.wrap,  ModelingMetamodel.toEData.
       simpl.
-      unfold Moore.Transition_getSourceObject .
 
-      specialize (MooreWF.getTransition_source_some m  WF_SLL s1 IN_S t H) ; intro S.
-      rewrite S.
-      simpl.
+      replace (Moore.Transition_getSourceObject t m) with (Some (Moore.State s1)).
+      {
+        simpl.
+        eapply TraceUtils.in_model_resolve in IN_S.
+        unfold ModelingSemantics.resolve. 
+        unfold ListUtils.singleton.
+        rewrite IN_S.
+        simpl.
+        left.
+        reflexivity.
+      }
+      { 
+        unfold Moore.Transition_getSourceObject .
+        apply (MooreWF.getTransition_source_some m  WF_SLL s1 IN_S t) in  H.  rewrite H. reflexivity.
+      }
 
-
-      eapply TraceUtils.in_model_resolve in IN_S.
-      unfold ModelingSemantics.resolve. 
-      unfold ListUtils.singleton.
-      rewrite IN_S.
-      simpl.
-      left.
-      reflexivity.
     }
   }
   Unshelve. (* why ? *)

@@ -25,5 +25,10 @@ Ltac unfold_toEData H :=
   unfold get_E_data in H.
 
 
+Ltac toEDataT H :=
+   match type of H with
+     toEData Table_K ?E = Some _ => 
+       destruct E ; [ | discriminate H] 
+   end.
 
 

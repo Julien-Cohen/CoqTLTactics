@@ -195,7 +195,9 @@ Ltac exploit_in_trace H :=
       repeat explicit_incl IN_ELTS ;
 
       (* ??? *)
-      try inj EQ ; try discriminate
+      try inj EQ ; try discriminate ;
+      
+      clear A (* this bears no information *)
                          
   | In _ (RichTraceLink.drop (compute_trace _ _)) => 
       (* when poor traces are concerned, we lift them to rich traces and try again *)
