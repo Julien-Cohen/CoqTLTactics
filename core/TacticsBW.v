@@ -135,11 +135,11 @@ Local Ltac exploit_in_eval_link H :=
   let pl := fresh "pl" in
   let IN := fresh "IN" in
   let l := fresh "l" in
-  unfold apply_link_pattern in H  ;
+  unfold apply_link_pattern in H ;
+  unfold RichTraceLink.getSourcePiece, RichTraceLink.linkPattern, RichTraceLink.getIteration, RichTraceLink.produced, RichTraceLink.source in H ;
   unfold_parseOutputPatternUnit H ; 
   unfold_evalOutputPatternLink H ;
   unfold Parser.dropToList in H ;
-  unfold RichTraceLink.linkPattern in H ;
   rewrite optionListToList_Some in H ;
   apply in_flat_map in H ; destruct H as (pl, (TMP, H)) ;
   repeat ListUtils.unfold_In_cons TMP ; 
@@ -147,6 +147,7 @@ Local Ltac exploit_in_eval_link H :=
   apply OptionListUtils.in_optionListToList in H ; 
   destruct H as (l & H & IN) ;
   ConcreteExpressions.inv_makeLink H ;
+  unfold ConcreteSyntax.o_outpat in H ;
   apply in_singleton in IN ;
   try first [discriminate IN | inj IN].
 

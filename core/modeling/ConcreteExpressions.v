@@ -253,6 +253,7 @@ Ltac dummy_inv H :=
        let e := fresh "e" in
        let sp := fresh "sp" in 
        let t:= fresh "t" in 
+       let E := fresh "E" in
        let T_e := fresh "T_e" in
        apply ConcreteExpressions.wrap_inv_cons in H ;
        destruct H as (e & sp & t & E & T_e & H) ; 

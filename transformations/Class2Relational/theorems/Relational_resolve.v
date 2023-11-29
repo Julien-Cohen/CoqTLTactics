@@ -68,26 +68,15 @@ Proof.
 
   TacticsBW.exploit_link_in_result R_IN1 ; [].
   
-  (* We get hypothesis IN_ELTS, A, E, EQ, IN_L, MATCH_GUARD. *)
+  (* We get the hypothesis IN_ELTS0, EQ, IN_L and MATCH_GUARD. *)
   
-
-  (* IN_ELTS0 is not needed here *)
-  clear IN_ELTS0.
-  
-  (* By EQ we could have som info on c/g but we never use c/g (left part of the glue). *)
-  clear EQ.
-
-  (* E can be exploited to unify t with t0 *)
-  simpl in E.
-  unfold RichTraceLink.getSourcePiece in E ; simpl in E.
-  inj E.
+  (* IN_ELTS0 and EQ are not needed here *)
+  clear IN_ELTS0 EQ.
 
   (* MATCH_GUARD can be exploited to infer the boolean value of t.(derived)*)
   C2RTactics.negb_inv MATCH_GUARD.
   destruct t ; simpl in MATCH_GUARD ; subst Attribute_derived.
 
-
-  simpl in IN_L.
 
   (* IN_L contains the code of the link-pattern in the rule. *)
   tmp IN_L.
