@@ -73,23 +73,21 @@ Proof.
   (* IN_ELTS0 and EQ are not needed here *)
   clear IN_ELTS0 EQ.
 
-  (* MATCH_GUARD can be exploited to infer the boolean value of t.(derived)*)
+  (* Exploit MATCH_GUARD *)
   C2RTactics.negb_inv MATCH_GUARD.
   destruct t ; simpl in MATCH_GUARD ; subst Attribute_derived.
 
-
+  (* Exploit IN_L *)
   (* IN_L contains the code of the link-pattern in the rule. *)
-  tmp IN_L.
+  tmp IN_L. (* fixme *)
   
-  core.Resolve.inv_resolve EQ0. 
-  apply List.find_some in EQ0 ; destruct EQ0.
+  (* EQ not needed. *)
+  clear EQ.
 
+  (* Exploit Resolve. *)
+  rename EQ0 into R.
+  apply Certification.tr_resolve_leaf in R; [ | exact ClassMetamodel.internal_Element_dec_bl]. (* fixme *)
   
-  inv_getAttribute_typeElement EQ.
-
-  destruct t ; simpl in H ; subst.   
-
-
   eapply TacticsFW.in_trace_in_models_target ; eassumption. 
 
 Qed.

@@ -300,34 +300,19 @@ Proof.
     destruct t0 ; [ PropUtils.inj IN_L | discriminate IN_L].
 
     (* Exploit resolve *)
-    rename EQ into R.
-    unfold Resolve.resolve in R.
-    destruct (Certification.tr_resolveIter_leaf _ _ _ _ _ R) 
-      as (tk & H & H0 & _ & _ & H3).
-    clear R.
-
-    apply Bool.Is_true_eq_true in H0.
-    apply ListUtils.list_beq_correct in H0 ; [ | exact Moore.internal_Element_dec_bl].
-
-    destruct tk ; simpl in * ; subst.
-
-    unfold ListUtils.singleton in H0.
-
-    destruct source. destruct p. 
-
-    unfold PoorTraceLink.getSourcePiece in H0 ;  simpl in H0.
-    subst.
-
+    rename EQ into R.    
+    apply Certification.tr_resolve_leaf in R; [ | exact Moore.internal_Element_dec_bl]. (* fixme *)
+    
     apply Moore.getTransition_source_inv in GS. 
-
+    
     compute in t.
-
+    
     unfold convert_transition in EQ0.
     monadInv EQ0.
 
     destruct t as (id & i) ; simpl in *.
 
-    TacticsBW.exploit_in_trace H.
+    TacticsBW.exploit_in_trace R.
     
     split ; [ reflexivity | ].
     exact GS.
@@ -365,56 +350,40 @@ Proof.
   compute in t.
 
   (* Exploit EQ0. *)
-    unfold convert_transition in EQ0. monadInv EQ0.
-    simpl.
-
-    assert (S: SUCCESS (Moore.getTransition_source m t)).
-    { apply WF_S. assumption. }
-    destruct S as ( s1 & GS ).
-
-    exists s.
-
-    (* Exploit EQ *)
-    unfold Moore.Transition_getTargetObject in EQ.
-    rewrite EQ0 in EQ.
-    PropUtils.inj EQ.
-
-
-    (* Exploit IN_L (from resolve) *)
-    unfold ModelingSemantics.resolve in IN_L.
-    unfold ModelingSemantics.denoteOutput in IN_L.
-    monadInv IN_L. compute in IN_L. 
-    
-    PropUtils.destruct_match_H IN_L ; [ PropUtils.inj IN_L | discriminate IN_L].
-
-    rename EQ into R.
-
-    (* Exploit resolve *)
-    unfold Resolve.resolve in R.
-    destruct (Certification.tr_resolveIter_leaf _ _ _ _ _ R) 
-      as (tk & H & H0 & _ & _ & H3).
-    clear R.
-
-    apply Bool.Is_true_eq_true in H0. (* fixme *)
-    apply ListUtils.list_beq_correct in H0 ; [ | exact Moore.internal_Element_dec_bl].
-
-    destruct tk ; simpl in * ; subst.
-
-    unfold ListUtils.singleton in H0.
-
-    destruct source as ((?&?)&?). 
-
-    unfold PoorTraceLink.getSourcePiece in H0 ;  simpl in H0.
-    subst.
-
-    apply Moore.getTransition_target_inv in EQ0.
-
-    TacticsBW.exploit_in_trace H ; [].
-
-    split ; [ reflexivity | ].
-    destruct t as (id & i) ; simpl.
-    exact EQ0.
+  unfold convert_transition in EQ0. monadInv EQ0.
+  simpl.
   
+  assert (S: SUCCESS (Moore.getTransition_source m t)).
+  { apply WF_S. assumption. }
+  destruct S as ( s1 & GS ).
+  
+  exists s.
+  
+  (* Exploit EQ *)
+  unfold Moore.Transition_getTargetObject in EQ.
+  rewrite EQ0 in EQ.
+  PropUtils.inj EQ.
+  
+  
+  (* Exploit IN_L (from resolve) *)
+  unfold ModelingSemantics.resolve in IN_L.
+  unfold ModelingSemantics.denoteOutput in IN_L.
+  monadInv IN_L. compute in IN_L. 
+  
+  PropUtils.destruct_match_H IN_L ; [ PropUtils.inj IN_L | discriminate IN_L].
+  
+  rename EQ into R.
+  
+  (* Exploit resolve *)
+  apply Certification.tr_resolve_leaf in R; [ | exact Moore.internal_Element_dec_bl]. (* fixme *)
+  
+  apply Moore.getTransition_target_inv in EQ0.
+  
+  TacticsBW.exploit_in_trace R ; [].
+  
+  split ; [ reflexivity | ].
+  destruct t as (id & i) ; simpl.
+  exact EQ0.
 Qed.
 
 End Foo.

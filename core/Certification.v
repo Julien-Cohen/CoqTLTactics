@@ -225,7 +225,7 @@ Proof.
 Qed.
 
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
-Theorem tr_resolveIter_leaf: 
+Theorem tr_resolveIter_leaf_aux: 
   forall (tls:list PoorTraceLink.TraceLink)  (name: string)
     (sp: InputPiece) (iter: nat) (x: TargetElementType),
     resolveIter tls name sp iter = return x ->
@@ -250,6 +250,68 @@ Proof.
   * apply beq_nat_true. assumption.      
   * apply String.eqb_eq. assumption.
 Qed.
+
+Theorem tr_resolveIter_leaf: 
+  forall (tls:list PoorTraceLink.TraceLink)  (name: string)
+    (sp: InputPiece) (iter: nat) (x: TargetElementType),
+    resolveIter tls name sp iter = return x ->
+      (exists (tl : PoorTraceLink.TraceLink),
+        In tl tls 
+        /\ list_beq (@elements_eqdec tc.(SourceMetamodel)) (PoorTraceLink.getSourcePiece tl) sp = true 
+        /\ ((PoorTraceLink.getIteration tl) = iter) 
+        /\ ((PoorTraceLink.getName tl) = name)%string
+        /\  tl.(PoorTraceLink.produced) = x).
+Proof.
+  intros until x ; intro H ; apply tr_resolveIter_leaf_aux in H.
+  destruct H as (?&?&?&?&?&?).
+  eexists ; repeat split ; try eassumption.
+  apply Is_true_eq_true ; assumption. 
+Qed.
+
+(* tmp *)
+Corollary tr_resolveIter_leaf_2: 
+  forall (tls:list PoorTraceLink.TraceLink)  (name: string)
+    (sp: InputPiece) (i: nat) (x: TargetElementType),
+    resolveIter tls name sp i = return x ->
+    exists sp', list_beq (elements_eqdec SourceMetamodel) sp' sp = true /\
+        In {| PoorTraceLink.source := (sp', i, name) ; PoorTraceLink.produced := x |} tls. 
+Proof.
+  intros until x ; intro H ; apply tr_resolveIter_leaf in H.
+  destruct H as (?&?&?&?&?&?).
+  destruct x0 ; simpl in * ; subst.
+  destruct source as ((?&?)&?).
+  unfold PoorTraceLink.getIteration, PoorTraceLink.getSourcePiece, PoorTraceLink.getName, PoorTraceLink.source in *. 
+  eauto.
+Qed.
+
+(* tmp *)
+Corollary tr_resolveIter_leaf_3: 
+  forall (tls:list PoorTraceLink.TraceLink)  (name: string)
+    (sp: InputPiece) (i: nat) (x: TargetElementType),
+    resolveIter tls name sp i = return x ->
+    (forall a b : ElementType SourceMetamodel,
+  elements_eqdec SourceMetamodel a b = true -> a = b)->
+    In {| PoorTraceLink.source := (sp, i, name) ; PoorTraceLink.produced := x |} tls. 
+Proof.
+  intros until x ; intros H1 H2 ; apply tr_resolveIter_leaf_2 in H1.
+  destruct H1 as (?&H&?).
+  apply list_beq_correct in H.
+  + subst ; assumption.
+  + exact H2.
+Qed.
+
+(* move-me *)
+Theorem tr_resolve_leaf: 
+  forall (tls:list PoorTraceLink.TraceLink)  (name: string)
+    (sp: InputPiece) (x: TargetElementType),
+    resolve tls name sp = return x ->
+    (forall a b : ElementType SourceMetamodel,
+  elements_eqdec SourceMetamodel a b = true -> a = b)->
+    In {| PoorTraceLink.source := (sp, 0, name) ; PoorTraceLink.produced := x |} tls. 
+Proof.
+  intros ; apply tr_resolveIter_leaf_3 ; assumption.
+Qed.
+
 
 
 Program Instance CoqTLEngine :
@@ -312,7 +374,7 @@ Next Obligation.
 Qed.
 
 Next Obligation.
-  apply tr_resolveIter_leaf. assumption.
+  apply tr_resolveIter_leaf_aux. assumption.
 Qed.
 
 (* matched sp must produce matched rule's output element 
