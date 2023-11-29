@@ -14,11 +14,11 @@ Class TransformationConfiguration := {
   SourceModel := Model SourceMetamodel;
   TargetModel := Model TargetMetamodel;
 
-  SourceElement_eqdec := @elements_eqdec SourceMetamodel;
-  TargetElement_eqdec := @elements_eqdec TargetMetamodel;
+  SourceElement_eqdec := @elements_eq_dec SourceMetamodel;
+  TargetElement_eqdec := @elements_eq_dec TargetMetamodel;
 
-  SourceElement_eqb := @elements_eqdec SourceMetamodel;
-  TargetElement_eqb := @elements_eqdec TargetMetamodel;
+  SourceElement_eqb := @elements_beq SourceMetamodel;
+  TargetElement_eqb := @elements_beq TargetMetamodel;
 }.
 
 

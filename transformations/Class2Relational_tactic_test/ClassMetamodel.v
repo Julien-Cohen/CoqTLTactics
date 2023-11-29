@@ -111,7 +111,7 @@ Definition ClassMM : Metamodel :=
 {|
   ElementType := Element ;
   LinkType := Link ;
-  elements_eqdec := Element_beq ;
+  elements_eq_dec := Element_eq_dec ;
 |}.
 
 
@@ -251,29 +251,4 @@ Proof.
   intros ; destruct a ; congruence.
 Qed.
 
-Lemma Class_dec :
-  forall x y : Class_t, {x = y} + {x <> y}.
-Proof.
-  decide equality.
-  - apply String.string_dec.
-  - apply Nat.eq_dec.
-Qed.
 
-Lemma Attribute_dec :
-  forall x y : Attribute_t, {x = y} + {x <> y}.
-Proof.
-  decide equality.
-  - apply String.string_dec.
-  - apply Bool.bool_dec.
-  - apply Nat.eq_dec.
-Qed.
-
-Lemma eq_dec : forall (x y : Element), {x = y} + {x <> y}.
-  intros ; destruct x, y ; try (right; discriminate).
-  - destruct (Class_dec c c0).
-    + left. congruence.
-    + right. congruence. 
-  - destruct (Attribute_dec a a0).
-    + left. congruence.
-    + right. congruence.
-Qed.

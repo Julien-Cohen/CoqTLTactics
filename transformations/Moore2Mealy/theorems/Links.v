@@ -301,7 +301,7 @@ Proof.
 
     (* Exploit resolve *)
     rename EQ into R.    
-    apply Certification.tr_resolve_leaf in R; [ | exact Moore.internal_Element_dec_bl]. (* fixme *)
+    apply Certification.tr_resolve_leaf in R. 
     
     apply Moore.getTransition_source_inv in GS. 
     
@@ -375,7 +375,7 @@ Proof.
   rename EQ into R.
   
   (* Exploit resolve *)
-  apply Certification.tr_resolve_leaf in R; [ | exact Moore.internal_Element_dec_bl]. (* fixme *)
+  apply Certification.tr_resolve_leaf in R.
   
   apply Moore.getTransition_target_inv in EQ0.
   

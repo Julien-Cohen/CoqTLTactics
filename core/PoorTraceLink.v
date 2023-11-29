@@ -46,7 +46,7 @@ Open Scope bool_scope.
 Definition source_compare (s:InputPiece * nat * string) (t:TraceLink) : bool :=
   match s with 
     (e,i,n) =>
-      list_beq tc.(SourceElement_eqb) (getSourcePiece t) e
+      list_beq (tc.(SourceElement_eqb)) (getSourcePiece t) e
       && Nat.eqb (getIteration t) i
       && String.eqb (getName t) n
   end.
@@ -54,39 +54,36 @@ Definition source_compare (s:InputPiece * nat * string) (t:TraceLink) : bool :=
 
 
 Lemma source_compare_refl : 
-  (forall e,  SourceElement_eqb e e = true) ->
   forall a b, 
     source_compare a {| source := a ; produced := b |} = true.
 Proof.
-  intros R a b.
+  intros a b.
   destruct a as ((l & i) & n). 
   simpl.
   unfold getSourcePiece, getIteration, getName ; simpl.
-  rewrite list_beq_refl ; [ | exact R].
-  rewrite NPeano.Nat.eqb_refl.
-  rewrite String.eqb_refl. 
-  reflexivity.
+  rewrite list_beq_refl ; [ | ].
+  + rewrite NPeano.Nat.eqb_refl.
+    rewrite String.eqb_refl. 
+    reflexivity.
+  + intro. 
+    apply Metamodel.beq_refl.
 Qed.
 
 
-(* The requirement is too strong for the general case. *)
 Lemma source_compare_correct :
-  (forall e1 e2 : Metamodel.ElementType SourceMetamodel,
-      Metamodel.elements_eqdec SourceMetamodel e1 e2 = true -> e1 = e2) ->
   forall a b,
     source_compare a b = true -> b.(source) = a.
 Proof.
-  intro H1.
   unfold source_compare.
   intros a b H2 ; destruct a ; destruct p ; destruct b.
   simpl. destruct source0 ; simpl in *.
   BoolUtils.destruct_conjunctions.
   destruct p ; simpl in *.
-  apply EqNat.beq_nat_true in H2 ; subst .
+  apply EqNat.beq_nat_true in H1 ; subst .
   apply String.eqb_eq in H0 ; subst.
   apply list_beq_correct in H ; subst.
   + reflexivity.
-  + exact H1. 
+  + apply Metamodel.beq_correct. 
 Qed.
 
 

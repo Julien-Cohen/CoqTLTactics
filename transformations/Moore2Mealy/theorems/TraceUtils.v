@@ -58,16 +58,10 @@ Proof.
   apply source_compare_correct in C1.
   simpl in C1.
   subst.
-  2:{
-    simpl. apply Moore.internal_Element_dec_bl.
-  }    
   destruct b.
   apply source_compare_correct in C2.
   simpl in C2.
   subst.
-  2:{
-    apply Moore.internal_Element_dec_bl.
-  }    
   f_equal.
   
   TacticsBW.exploit_in_trace IN1; 
@@ -100,7 +94,7 @@ Proof.
     unfold source_compare ; simpl.
     unfold TransformationConfiguration.SourceElement_eqb.
     simpl.    
-    rewrite Moore.internal_State_t_dec_lb ; reflexivity.
+    rewrite Metamodel.beq_refl ; reflexivity.
   }
 
   { exact H. }

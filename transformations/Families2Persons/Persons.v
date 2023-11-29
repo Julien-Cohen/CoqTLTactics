@@ -97,17 +97,13 @@ Definition PersonsMetamodel_getERoleTypesByEReference (pere_arg : PersonsMetamod
   end.
 
 (* Generic types *)			
-Inductive PersonsMetamodel_Object : Set :=
- | Build_PersonsMetamodel_Object : 
-    forall (pecl_arg: PersonsMetamodel_Class), (PersonsMetamodel_getTypeByClass pecl_arg) -> PersonsMetamodel_Object.
+Inductive PersonsMetamodel_Object : Set := 
+ | Build_Person : Person -> PersonsMetamodel_Object
+ | Build_Male : Male -> PersonsMetamodel_Object
+ | Build_Female : Female -> PersonsMetamodel_Object.
+ 
+Scheme Equality for PersonsMetamodel_Object.
 
-Definition beq_PersonsMetamodel_Object (c1 : PersonsMetamodel_Object) (c2 : PersonsMetamodel_Object) : bool :=
-  match c1, c2 with
-  | Build_PersonsMetamodel_Object PersonClass o1, Build_PersonsMetamodel_Object PersonClass o2 => beq_Person o1 o2
-  | Build_PersonsMetamodel_Object MaleClass o1, Build_PersonsMetamodel_Object MaleClass o2 => beq_Male o1 o2
-  | Build_PersonsMetamodel_Object FemaleClass o1, Build_PersonsMetamodel_Object FemaleClass o2 => beq_Female o1 o2
-  | _, _ => false
-  end.
 
 Inductive PersonsMetamodel_Link : Set :=
  | Build_PersonsMetamodel_Link : 
@@ -125,7 +121,9 @@ Proof. repeat decide equality. Defined.
 
 Definition PersonsMetamodel_getEClass (peob_arg : PersonsMetamodel_Object) : PersonsMetamodel_Class :=
    match peob_arg with
-  | (Build_PersonsMetamodel_Object peob_arg _) => peob_arg
+  | Build_Person _ => PersonClass
+  | Build_Male _ => MaleClass
+  | Build_Female _ => FemaleClass
    end.
 
 Definition PersonsMetamodel_getEReference (peli_arg : PersonsMetamodel_Link) : PersonsMetamodel_Reference :=
@@ -137,11 +135,16 @@ Definition PersonsMetamodel_getEReference (peli_arg : PersonsMetamodel_Link) : P
 
 Definition PersonsMetamodel_toClass (pecl_arg : PersonsMetamodel_Class) (peob_arg : PersonsMetamodel_Object) : option (PersonsMetamodel_getTypeByClass pecl_arg).
 Proof.
-  destruct peob_arg as [arg1 arg2].
-  destruct (PersonsMetamodel_eqEClass_dec arg1 pecl_arg) as [e|] eqn:dec_case.
-  - rewrite e in arg2.
-    exact (Some arg2).
-  - exact None.
+  destruct pecl_arg ; destruct peob_arg ; simpl.
+  + exact (Some p).
+  + exact None.
+  + exact None.
+  + exact None.
+  + exact (Some m).
+  + exact None.
+  + exact None.
+  + exact None.
+  + exact (Some f).
 Defined.
 
 Definition PersonsMetamodel_toReference (pere_arg : PersonsMetamodel_Reference) (peli_arg : PersonsMetamodel_Link) : option (PersonsMetamodel_getTypeByReference pere_arg).
@@ -160,14 +163,19 @@ Definition PersonsMetamodel_Metamodel_Instance :
   {|
     ElementType := PersonsMetamodel_Object;
     LinkType := PersonsMetamodel_Link;
-    elements_eqdec := beq_PersonsMetamodel_Object ;
+    elements_eq_dec := PersonsMetamodel_Object_eq_dec ;
   |}.
 
 
 Definition PersonsModel := Model PersonsMetamodel_Metamodel_Instance.
 
-Definition PersonsMetamodel_toObject (pecl_arg: PersonsMetamodel_Class) (t: PersonsMetamodel_getTypeByClass pecl_arg) : PersonsMetamodel_Object :=
-  (Build_PersonsMetamodel_Object pecl_arg t).
+Definition PersonsMetamodel_toObject (pecl_arg: PersonsMetamodel_Class) (t: PersonsMetamodel_getTypeByClass pecl_arg) : PersonsMetamodel_Object. 
+Proof.
+  destruct pecl_arg ; simpl in t.
+  + exact (Build_Person t).
+  + exact (Build_Male t).
+  + exact (Build_Female t).
+Defined.
 
 Definition PersonsMetamodel_toLink (pere_arg: PersonsMetamodel_Reference) (t: PersonsMetamodel_getTypeByReference pere_arg) : PersonsMetamodel_Link :=
   (Build_PersonsMetamodel_Link pere_arg t).
@@ -175,7 +183,7 @@ Definition PersonsMetamodel_toLink (pere_arg: PersonsMetamodel_Reference) (t: Pe
 
 Fixpoint PersonsMetamodel_Person_downcastMale (pe_arg : Person) (l : list PersonsMetamodel_Object) : option Male := 
   match l with
-	 | Build_PersonsMetamodel_Object MaleClass (BuildMale eSuper ) :: l' => 
+	 | Build_Male (BuildMale eSuper ) :: l' => 
 		if beq_Person pe_arg eSuper then (Some (BuildMale eSuper )) else (PersonsMetamodel_Person_downcastMale pe_arg l')
 	 | _ :: l' => (PersonsMetamodel_Person_downcastMale pe_arg l')
 	 | nil => None
@@ -186,7 +194,7 @@ Definition Person_downcastMale (pe_arg : Person) (m : PersonsModel) : option Mal
 
 Fixpoint PersonsMetamodel_Person_downcastFemale (pe_arg : Person) (l : list PersonsMetamodel_Object) : option Female := 
   match l with
-	 | Build_PersonsMetamodel_Object FemaleClass (BuildFemale eSuper ) :: l' => 
+	 | Build_Female (BuildFemale eSuper ) :: l' => 
 		if beq_Person pe_arg eSuper then (Some (BuildFemale eSuper )) else (PersonsMetamodel_Person_downcastFemale pe_arg l')
 	 | _ :: l' => (PersonsMetamodel_Person_downcastFemale pe_arg l')
 	 | nil => None
@@ -232,15 +240,6 @@ Instance PersonsMetamodel_ModelingMetamodel_Instance :
 
 (* Useful lemmas *)
 
-Lemma Persons_invert : 
-  forall (pecl_arg: PersonsMetamodel_Class) (t1 t2: PersonsMetamodel_getTypeByClass pecl_arg), 
-    Build_PersonsMetamodel_Object pecl_arg t1 = Build_PersonsMetamodel_Object pecl_arg t2 -> t1 = t2.
-Proof.
-  intros c m1 m2 E.
-  inversion E. 
-  apply Eqdep.EqdepTheory.inj_pair2.
-  exact H0.
-Qed.
 
 (* Not Used *)
 Definition PersonsMetamodel_instanceOfEClass :

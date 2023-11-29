@@ -766,7 +766,6 @@ Definition DBLPMetamodel_Metamodel_Instance :
   {|
     ElementType := DBLPMetamodel_Object;
     LinkType := DBLPMetamodel_Link;
-    elements_eqdec := beq_DBLPMetamodel_Object ;
   |}.
 
 

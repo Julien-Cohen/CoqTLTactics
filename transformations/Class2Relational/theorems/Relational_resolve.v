@@ -86,7 +86,7 @@ Proof.
 
   (* Exploit Resolve. *)
   rename EQ0 into R.
-  apply Certification.tr_resolve_leaf in R; [ | exact ClassMetamodel.internal_Element_dec_bl]. (* fixme *)
+  apply Certification.tr_resolve_leaf in R.
   
   eapply TacticsFW.in_trace_in_models_target ; eassumption. 
 

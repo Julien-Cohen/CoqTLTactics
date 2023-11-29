@@ -64,7 +64,7 @@ Proof.
   }
   { reflexivity. }
 Qed.
-
+(* Qed long. Pourquoi ? parce que plusieurs compute dans la preuve ?*)
 
 (** Discrminating predicate to switch between [List.In] and [List.find]. 
 
@@ -83,16 +83,10 @@ Proof.
   apply source_compare_correct in C1.
   simpl in C1.
   subst.
-  2:{
-    simpl. apply ClassMetamodel.internal_Element_dec_bl.
-  }    
   destruct b.
   apply source_compare_correct in C2.
   simpl in C2.
   subst.
-  2:{
-    apply ClassMetamodel.internal_Element_dec_bl.
-  }    
   f_equal.
   
   TacticsBW.exploit_in_trace IN1; 
@@ -124,7 +118,7 @@ Proof.
     unfold source_compare ; simpl.
     unfold TransformationConfiguration.SourceElement_eqb.
     simpl.    
-    rewrite internal_Class_t_dec_lb ; reflexivity.
+    rewrite Metamodel.beq_refl ; reflexivity.
   }
 
   { exact H. }

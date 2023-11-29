@@ -225,79 +225,27 @@ Proof.
 Qed.
 
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
-Theorem tr_resolveIter_leaf_aux: 
+Lemma tr_resolveIter_leaf: 
   forall (tls:list PoorTraceLink.TraceLink)  (name: string)
-    (sp: InputPiece) (iter: nat) (x: TargetElementType),
-    resolveIter tls name sp iter = return x ->
-      (exists (tl : PoorTraceLink.TraceLink),
-        In tl tls /\
-        Is_true (list_beq (@elements_eqdec tc.(SourceMetamodel)) (PoorTraceLink.getSourcePiece tl) sp) /\
-        ((PoorTraceLink.getIteration tl) = iter) /\ 
-        ((PoorTraceLink.getName tl) = name)%string /\
-        tl.(PoorTraceLink.produced) = x).
+    (sp: InputPiece) (i: nat) (x: TargetElementType),
+    resolveIter tls name sp i = return x ->
+    In {| PoorTraceLink.source := (sp, i, name) ; PoorTraceLink.produced := x |} tls. 
 Proof.
-  intros.
+  intros until x ; intro H.
   unfold resolveIter in H.
   monadInv H.
   apply List.find_some in H.
   destruct H.
-  exists t. 
   unfold PoorTraceLink.source_compare in H0.
   repeat (apply andb_prop in H0 ; destruct H0).
-  repeat split.
-  * assumption.
-  * apply Is_true_eq_left. assumption.
-  * apply beq_nat_true. assumption.      
-  * apply String.eqb_eq. assumption.
-Qed.
-
-Theorem tr_resolveIter_leaf: 
-  forall (tls:list PoorTraceLink.TraceLink)  (name: string)
-    (sp: InputPiece) (iter: nat) (x: TargetElementType),
-    resolveIter tls name sp iter = return x ->
-      (exists (tl : PoorTraceLink.TraceLink),
-        In tl tls 
-        /\ list_beq (@elements_eqdec tc.(SourceMetamodel)) (PoorTraceLink.getSourcePiece tl) sp = true 
-        /\ ((PoorTraceLink.getIteration tl) = iter) 
-        /\ ((PoorTraceLink.getName tl) = name)%string
-        /\  tl.(PoorTraceLink.produced) = x).
-Proof.
-  intros until x ; intro H ; apply tr_resolveIter_leaf_aux in H.
-  destruct H as (?&?&?&?&?&?).
-  eexists ; repeat split ; try eassumption.
-  apply Is_true_eq_true ; assumption. 
-Qed.
-
-(* tmp *)
-Corollary tr_resolveIter_leaf_2: 
-  forall (tls:list PoorTraceLink.TraceLink)  (name: string)
-    (sp: InputPiece) (i: nat) (x: TargetElementType),
-    resolveIter tls name sp i = return x ->
-    exists sp', list_beq (elements_eqdec SourceMetamodel) sp' sp = true /\
-        In {| PoorTraceLink.source := (sp', i, name) ; PoorTraceLink.produced := x |} tls. 
-Proof.
-  intros until x ; intro H ; apply tr_resolveIter_leaf in H.
-  destruct H as (?&?&?&?&?&?).
-  destruct x0 ; simpl in * ; subst.
-  destruct source as ((?&?)&?).
-  unfold PoorTraceLink.getIteration, PoorTraceLink.getSourcePiece, PoorTraceLink.getName, PoorTraceLink.source in *. 
-  eauto.
-Qed.
-
-(* tmp *)
-Corollary tr_resolveIter_leaf_3: 
-  forall (tls:list PoorTraceLink.TraceLink)  (name: string)
-    (sp: InputPiece) (i: nat) (x: TargetElementType),
-    resolveIter tls name sp i = return x ->
-    (forall a b : ElementType SourceMetamodel,
-  elements_eqdec SourceMetamodel a b = true -> a = b)->
-    In {| PoorTraceLink.source := (sp, i, name) ; PoorTraceLink.produced := x |} tls. 
-Proof.
-  intros until x ; intros H1 H2 ; apply tr_resolveIter_leaf_2 in H1.
-  destruct H1 as (?&H&?).
-  apply list_beq_correct in H.
-  + subst ; assumption.
-  + exact H2.
+  apply list_beq_correct in H0.
+  + destruct t as (((?&?)&?)&?). simpl in *.
+    unfold PoorTraceLink.getIteration, PoorTraceLink.getSourcePiece, PoorTraceLink.getName, PoorTraceLink.source in *.
+    subst.
+    apply beq_nat_true in H2; subst.
+    apply String.eqb_eq in H1 ; subst.
+    assumption.
+  + apply Metamodel.beq_correct.
 Qed.
 
 (* move-me *)
@@ -305,11 +253,9 @@ Theorem tr_resolve_leaf:
   forall (tls:list PoorTraceLink.TraceLink)  (name: string)
     (sp: InputPiece) (x: TargetElementType),
     resolve tls name sp = return x ->
-    (forall a b : ElementType SourceMetamodel,
-  elements_eqdec SourceMetamodel a b = true -> a = b)->
     In {| PoorTraceLink.source := (sp, 0, name) ; PoorTraceLink.produced := x |} tls. 
 Proof.
-  intros ; apply tr_resolveIter_leaf_3 ; assumption.
+  intros ; apply tr_resolveIter_leaf ; assumption.
 Qed.
 
 
@@ -374,7 +320,11 @@ Next Obligation.
 Qed.
 
 Next Obligation.
-  apply tr_resolveIter_leaf_aux. assumption.
+  apply tr_resolveIter_leaf in H. eexists ; repeat split ; try eassumption ; try reflexivity ; [].
+  apply Is_true_eq_left.
+  unfold PoorTraceLink.getSourcePiece, PoorTraceLink.source.
+  apply list_beq_refl.
+  apply Metamodel.beq_refl.
 Qed.
 
 (* matched sp must produce matched rule's output element 

@@ -91,7 +91,7 @@ Definition MM : Metamodel :=
 {|
   ElementType := Element ;
   LinkType := Link ;
-  elements_eqdec := Element_beq ;
+  elements_eq_dec := Element_eq_dec ;
 |}.
 
 

@@ -102,7 +102,7 @@ Definition MM : Metamodel :=
 {|
   ElementType := Element ;
   LinkType := Link ;
-  elements_eqdec := Element_beq ;
+  elements_eq_dec := Element_eq_dec
 |}.
 
 
@@ -382,12 +382,4 @@ Proof.
   destruct g ; auto.
 Qed.
 
-
-(** For user *)
-Definition maybeBuildTransitionSource (tr_arg: Transition_t) (so_arg: option (State_t)) : option (@Glue Transition_t State_t) :=
-  option_map (@Build_Glue _ _ tr_arg) so_arg.
-
-Definition maybeBuildTransitionTarget (tr_arg: Transition_t) (ta_arg: option (State_t)) : option (@Glue Transition_t State_t) :=
-  option_map (@Build_Glue _ _ tr_arg) ta_arg.
- 
 

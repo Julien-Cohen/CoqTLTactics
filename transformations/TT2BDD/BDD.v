@@ -21,14 +21,11 @@ Inductive BDDEdge :=
   (* parent *) BDDNode ->
   BDDEdge.
 
-Definition BDDEq (a b : BDDNode) := 
-  match a, b with
-  | BuildBDDNode n1, BuildBDDNode n2 => String.eqb n1 n2 
-  end.
+Scheme Equality for BDDNode.
 
 Definition BDDM : Metamodel :=
 {|
   ElementType := BDDNode;
   LinkType := BDDEdge;
-  elements_eqdec := BDDEq ;
+  elements_eq_dec := BDDNode_eq_dec ;
 |}.
