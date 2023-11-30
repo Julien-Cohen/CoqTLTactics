@@ -52,76 +52,42 @@ Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2R
 
 Open Scope coqtl.
 
-
-Definition convert_class c :=
-  {| 
-    Table_id := c.(Class_id) ; 
-    Table_name := c.(Class_name) 
-  |}.
-
-Definition convert_attribute c :=
-  {| 
-    Column_id := c.(Attribute_id) ;
-    Column_name := c.(Attribute_name)
-  |}.
-
-
-Definition R1 : ConcreteRule := 
-  rule "Class2Table"
-    from [ (* c *) Class_K]
-
-    to [ ELEM "tab" (* t *) ::: Table_K  
-        << fun _ _ c => return convert_class c >>
+Definition Class2Relational' :=
+  transformation [ 
+    rule "Class2Table"
+    from [ Class_K]
+    to [ 
+      ELEM "tab" ::: Table_K  
+        << fun _ _ c => return   {| 
+          Table_id := c.(Class_id) ; 
+          Table_name := c.(Class_name) 
+        |} >>
         
         LINK ::: Table_columns_K
-         << fun thisModule _ m c t =>
-           c_attributes <- getClass_attributesElements c m ;
-           res <- resolveAll thisModule "col" Column_K (singletons c_attributes) ;
-           do_glue t with res 
-            >> ].
-
-(*rule Class2Table {
-       from 
-         c : Class
-       to 
-         tab: Table (
-           id <- c.id,
-           name <- c.name,
-           columns <- c.attributes->collect(a | thisModule.resolve(a, 'col'))
-         )
-    }*)
-
-
-Definition R2 : ConcreteRule :=
-  rule "Attribute2Column"
-    from [Attribute_K (* a *)]
+        << fun thisModule _ m c t =>
+            c_attributes <- getClass_attributesElements c m ;
+            res <- resolveAll thisModule "col" Column_K (singletons c_attributes) ;
+            do_glue t with res 
+        >> ] ; 
+        
+    rule "Attribute2Column"
+    from [Attribute_K]
     where (fun _ a => negb a.(Attribute_derived))
     to [ 
-      ELEM "col" (* c *) ::: Column_K 
-        << fun _ _ a => return convert_attribute a >>
-             
-       LINK ::: Column_reference_K
-       <<  fun thisModule _ m a c =>
-         a_type <- getAttribute_typeElement a m ;
-         res <- resolve thisModule "tab" Table_K (singleton a_type) ;
-         do_glue c with res           
-         >> 
-    ].
-
-(*rule Attribute2Column {
-        from 
-          a : Attribute (not a.derived)
-        to 
-          col: Column (
-            id <- a.id,
-            name <- a.name,
-            reference <- thisModule.resolve(a.type, 'tab')
-          )
-    }
-   }*)
-
-Definition Class2Relational' :=
-  transformation  [ R1 ; R2 ].
+      ELEM "col" ::: Column_K 
+        << fun _ _ a => return {| 
+          Column_id := a.(Attribute_id) ;
+          Column_name := a.(Attribute_name)
+        |} >>
+              
+        LINK ::: Column_reference_K
+        << fun thisModule _ m a c =>
+          a_type <- getAttribute_typeElement a m ;
+          res <- resolve thisModule "tab" Table_K (singleton a_type) ;
+          do_glue c with res           
+        >> 
+    ]
+  ].
 
 Definition Class2Relational := parse Class2Relational'.
 
