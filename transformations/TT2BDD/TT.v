@@ -22,6 +22,22 @@ Inductive TTElem :=
     (* output *) nat ->
     TTElem.
 
+Lemma dec : forall (a b : TTElem), {a=b} + {a<>b}.
+Proof.
+  destruct a ; destruct b ; try (right ; intro ; discriminate).
+  + compare n n0 ; intro ; [ subst | ].
+    - destruct (string_dec s s0) ; [ subst ; left ; reflexivity | right ].
+      contradict n ; congruence.  
+    - right.  contradict n1.  congruence.
+  + compare l l0.
+    - intro ; subst.
+      compare n n0 ; intro ; [ subst ; left | right].
+      * reflexivity.
+      * contradict n1 ; congruence.
+    - intro. right. contradict n1 ; congruence.
+    - decide equality.
+Qed.
+
 Definition TTEq (a b : TTElem) := 
     match a, b with
     | BuildColumn n1 l1, BuildColumn n2 l2 => String.eqb n1 n2 && Nat.eqb l1 l2
@@ -73,7 +89,7 @@ Definition TTM : Metamodel :=
   {| 
     ElementType := TTElem ;
     LinkType := TTRef ;
-    elements_eqdec := TTEq ;
+    elements_eq_dec := dec ;
   |}.
 
 
