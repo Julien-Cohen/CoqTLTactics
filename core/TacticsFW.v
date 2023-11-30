@@ -84,7 +84,7 @@ Qed.
 Ltac transform_element_fw_tac :=
   match goal with
     [ |- In _ (execute ?T _).(modelElements) ] =>
-      eapply (transform_element_fw T) ; [ solve [compute ; auto ] | try eassumption | (*try solve [compute;info_auto]*)]
+      eapply (transform_element_fw T) ; [ solve [compute ; auto ] | try eassumption | try (solve [simpl;auto])]
   end.
 
 

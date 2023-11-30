@@ -36,7 +36,6 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
   TacticsFW.transform_element_fw_tac.
-  TacticsFW.first_in_list.
 Qed.
 
 (* Coming from previous work *)
@@ -77,7 +76,6 @@ Proof.
   intros cm rm H ; subst.
   intros i n H.
   TacticsFW.transform_element_fw_tac.  
-  TacticsFW.first_in_list.
 Qed.
 
 

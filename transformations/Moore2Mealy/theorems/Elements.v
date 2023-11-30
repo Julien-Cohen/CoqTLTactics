@@ -104,7 +104,6 @@ Lemma state_element_fw :
 Proof.
   intros s IN.
   TacticsFW.transform_element_fw_tac. 
-  TacticsFW.first_in_list.
 Qed.
 
 Lemma state_element_bw :
