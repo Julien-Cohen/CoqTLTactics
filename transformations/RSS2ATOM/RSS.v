@@ -13,43 +13,40 @@ Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
-(* manual insertion here *)
-Notation unknown_type := string.
-
 (** Base types for elements *)
-Record RSS_t := { RSS_version : unknown_type }.
+Record RSS_t := { RSS_version : string }.
 Scheme Equality for RSS_t.
 
-(* manual : replace all unknown_type by nat *)
-Record Channel_t := { Channel_title : unknown_type ; Channel_link : unknown_type ; Channel_description : unknown_type ; Channel_language : unknown_type ; Channel_copyright : unknown_type ; Channel_managingEditor : unknown_type ; Channel_webmaster : unknown_type ; Channel_generator : unknown_type ; Channel_docs : unknown_type ; Channel_ttl : unknown_type ; Channel_rating : unknown_type ; Channel_skipHours : unknown_type ; Channel_pubDate : unknown_type ; Channel_skipDays : unknown_type ; Channel_lastBuildDate : unknown_type }.
+
+Record Channel_t := { Channel_title : string ; Channel_link : string ; Channel_description : string ; Channel_language : string ; Channel_copyright : string ; Channel_managingEditor : string ; Channel_webmaster : string ; Channel_generator : string ; Channel_docs : string ; Channel_ttl : nat ; Channel_rating : string ; Channel_skipHours : nat ; Channel_pubDate : string ; Channel_skipDays : string ; Channel_lastBuildDate : string }.
 Scheme Equality for Channel_t.
 
 
-Record Item_t := { Item_title : unknown_type ; Item_link : unknown_type ; Item_description : unknown_type ; Item_pubDate : unknown_type ; Item_author : unknown_type ; Item_comments : unknown_type ; Item_guid : unknown_type }.
+Record Item_t := { Item_title : string ; Item_link : string ; Item_description : string ; Item_pubDate : string ; Item_author : string ; Item_comments : string ; Item_guid : string }.
 Scheme Equality for Item_t.
 
 
-Record Image_t := { Image_url : unknown_type ; Image_title : unknown_type ; Image_link : unknown_type ; Image_description : unknown_type ; Image_width : unknown_type ; Image_height : unknown_type }.
+Record Image_t := { Image_url : string ; Image_title : string ; Image_link : string ; Image_description : string ; Image_width : nat ; Image_height : nat }.
 Scheme Equality for Image_t.
 
 
-Record TextInput_t := { TextInput_title : unknown_type ; TextInput_description : unknown_type ; TextInput_name : unknown_type ; TextInput_link : unknown_type }.
+Record TextInput_t := { TextInput_title : string ; TextInput_description : string ; TextInput_name : string ; TextInput_link : string }.
 Scheme Equality for TextInput_t.
 
 
-Record Cloud_t := { Cloud_domain : unknown_type ; Cloud_port : unknown_type ; Cloud_path : unknown_type ; Cloud_registerProcedure : unknown_type ; Cloud_protocol : unknown_type }.
+Record Cloud_t := { Cloud_domain : string ; Cloud_port : nat ; Cloud_path : string ; Cloud_registerProcedure : string ; Cloud_protocol : string }.
 Scheme Equality for Cloud_t.
 
 
-Record Category_t := { Category_domain : unknown_type ; Category_value : unknown_type }.
+Record Category_t := { Category_domain : string ; Category_value : string }.
 Scheme Equality for Category_t.
 
 
-Record Enclosure_t := { Enclosure_url : unknown_type ; Enclosure_lenght : unknown_type ; Enclosure_type : unknown_type }.
+Record Enclosure_t := { Enclosure_url : string ; Enclosure_lenght : nat ; Enclosure_type : string }.
 Scheme Equality for Enclosure_t.
 
 
-Record Source_t := { Source_url : unknown_type ; Source_value : unknown_type }.
+Record Source_t := { Source_url : string ; Source_value : string }.
 Scheme Equality for Source_t.
 
 

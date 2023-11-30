@@ -15,11 +15,16 @@ def map_eType(eType):
     tp = eType.name
     if tp == "EInt":
         return "nat"
+    if tp == "Integer":
+        return "nat"
     elif tp == "EBoolean":
         return "bool"
     elif tp == "EString":
         return "string"
+    elif tp == "String":
+        return "string"
     else:
+        print ("unknown type:" + tp)
         return "unknown_type"
 
 def write(path, str):

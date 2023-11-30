@@ -13,65 +13,61 @@ Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
-(* Manual addition *)
-Notation unknown_type := string.
-
-
 (** Base types for elements *)
-Record ATOM_t := { ATOM_title : unknown_type ; ATOM_id : unknown_type ; ATOM_subtitle : unknown_type ; ATOM_rights : unknown_type ; ATOM_icon : unknown_type ; ATOM_logo : unknown_type ; ATOM_lastUpdate : unknown_type }.
-Scheme Equality for ATOM_t.
+Record ATOMFlattened_t := { ATOMFlattened_title : string ; ATOMFlattened_id : string ; ATOMFlattened_subtitle : string ; ATOMFlattened_rights : string ; ATOMFlattened_icon : string ; ATOMFlattened_logo : string ; ATOMFlattened_lastUpdate : string }.
+Scheme Equality for ATOMFlattened_t.
 
 
-Record Entry_t := { Entry_title : unknown_type ; Entry_id : unknown_type ; Entry_rights : unknown_type ; Entry_summary : unknown_type ; Entry_published : unknown_type ; Entry_lastUpdate : unknown_type }.
+Record Entry_t := { Entry_title : string ; Entry_id : string ; Entry_rights : string ; Entry_summary : string ; Entry_published : string ; Entry_lastUpdate : string }.
 Scheme Equality for Entry_t.
 
 
-Record Source_t := { Source_id : unknown_type ; Source_icon : unknown_type ; Source_logo : unknown_type ; Source_rights : unknown_type ; Source_title : unknown_type ; Source_subtitle : unknown_type ; Source_lastUpdate : unknown_type }.
+Record Source_t := { Source_id : string ; Source_icon : string ; Source_logo : string ; Source_rights : string ; Source_title : string ; Source_subtitle : string ; Source_lastUpdate : string }.
 Scheme Equality for Source_t.
 
 
-Record Content_t := { Content_type : unknown_type ; Content_mode : unknown_type ; Content_text : unknown_type }.
+Record Content_t := { Content_type : string ; Content_mode : string ; Content_text : string }.
 Scheme Equality for Content_t.
 
 
-Record Generator_t := { Generator_uri : unknown_type ; Generator_version : unknown_type ; Generator_name : unknown_type }.
+Record Generator_t := { Generator_uri : string ; Generator_version : string ; Generator_name : string }.
 Scheme Equality for Generator_t.
 
 
-Record Category_t := { Category_term : unknown_type ; Category_scheme : unknown_type ; Category_label : unknown_type }.
+Record Category_t := { Category_term : string ; Category_scheme : string ; Category_label : string }.
 Scheme Equality for Category_t.
 
 
-Record Link_t := { Link_rel : unknown_type ; Link_hrefl : unknown_type ; Link_type : unknown_type ; Link_hreflang : unknown_type ; Link_title : unknown_type ; Link_lenght : unknown_type }.
+Record Link_t := { Link_rel : string ; Link_hrefl : string ; Link_type : string ; Link_hreflang : string ; Link_title : string ; Link_lenght : nat }.
 Scheme Equality for Link_t.
 
 
-Record Author_t := { Author_name : unknown_type ; Author_uri : unknown_type ; Author_email : unknown_type }.
+Record Author_t := { Author_name : string ; Author_uri : string ; Author_email : string }.
 Scheme Equality for Author_t.
 
 
-Record Contributor_t := { Contributor_name : unknown_type ; Contributor_uri : unknown_type ; Contributor_email : unknown_type }.
+Record Contributor_t := { Contributor_name : string ; Contributor_uri : string ; Contributor_email : string }.
 Scheme Equality for Contributor_t.
 
 
 
 (** Base types for links *)
-Record ATOM_links_t := { ATOM_links_t_lglue : ATOM_t ; ATOM_links_t_rglue : list Link_t }.
+Record ATOMFlattened_links_t := { ATOMFlattened_links_t_lglue : ATOMFlattened_t ; ATOMFlattened_links_t_rglue : list Link_t }.
 
 
-Record ATOM_generator_t := { ATOM_generator_t_lglue : ATOM_t ; ATOM_generator_t_rglue : Generator_t }.
+Record ATOMFlattened_generator_t := { ATOMFlattened_generator_t_lglue : ATOMFlattened_t ; ATOMFlattened_generator_t_rglue : Generator_t }.
 
 
-Record ATOM_categories_t := { ATOM_categories_t_lglue : ATOM_t ; ATOM_categories_t_rglue : list Category_t }.
+Record ATOMFlattened_categories_t := { ATOMFlattened_categories_t_lglue : ATOMFlattened_t ; ATOMFlattened_categories_t_rglue : list Category_t }.
 
 
-Record ATOM_authors_t := { ATOM_authors_t_lglue : ATOM_t ; ATOM_authors_t_rglue : list Author_t }.
+Record ATOMFlattened_authors_t := { ATOMFlattened_authors_t_lglue : ATOMFlattened_t ; ATOMFlattened_authors_t_rglue : list Author_t }.
 
 
-Record ATOM_contributors_t := { ATOM_contributors_t_lglue : ATOM_t ; ATOM_contributors_t_rglue : list Contributor_t }.
+Record ATOMFlattened_contributors_t := { ATOMFlattened_contributors_t_lglue : ATOMFlattened_t ; ATOMFlattened_contributors_t_rglue : list Contributor_t }.
 
 
-Record ATOM_entrie_t := { ATOM_entrie_t_lglue : ATOM_t ; ATOM_entrie_t_rglue : list Entry_t }.
+Record ATOMFlattened_entrie_t := { ATOMFlattened_entrie_t_lglue : ATOMFlattened_t ; ATOMFlattened_entrie_t_rglue : list Entry_t }.
 
 
 Record Entry_links_t := { Entry_links_t_lglue : Entry_t ; Entry_links_t_rglue : list Link_t }.
@@ -92,7 +88,7 @@ Record Entry_authors_t := { Entry_authors_t_lglue : Entry_t ; Entry_authors_t_rg
 Record Entry_contributors_t := { Entry_contributors_t_lglue : Entry_t ; Entry_contributors_t_rglue : list Contributor_t }.
 
 
-Record Entry_atom_t := { Entry_atom_t_lglue : Entry_t ; Entry_atom_t_rglue : ATOM_t }.
+Record Entry_atom_t := { Entry_atom_t_lglue : Entry_t ; Entry_atom_t_rglue : ATOMFlattened_t }.
 
 
 Record Source_links_t := { Source_links_t_lglue : Source_t ; Source_links_t_rglue : list Link_t }.
@@ -110,25 +106,25 @@ Record Source_categories_t := { Source_categories_t_lglue : Source_t ; Source_ca
 Record Source_author_t := { Source_author_t_lglue : Source_t ; Source_author_t_rglue : Author_t }.
 
 
-Record Category_atom_t := { Category_atom_t_lglue : Category_t ; Category_atom_t_rglue : ATOM_t }.
+Record Category_atom_t := { Category_atom_t_lglue : Category_t ; Category_atom_t_rglue : ATOMFlattened_t }.
 
 
 Record Category_entry_t := { Category_entry_t_lglue : Category_t ; Category_entry_t_rglue : Entry_t }.
 
 
-Record Link_atom_t := { Link_atom_t_lglue : Link_t ; Link_atom_t_rglue : ATOM_t }.
+Record Link_atom_t := { Link_atom_t_lglue : Link_t ; Link_atom_t_rglue : ATOMFlattened_t }.
 
 
 Record Link_entry_t := { Link_entry_t_lglue : Link_t ; Link_entry_t_rglue : Entry_t }.
 
 
-Record Author_atom_t := { Author_atom_t_lglue : Author_t ; Author_atom_t_rglue : ATOM_t }.
+Record Author_atom_t := { Author_atom_t_lglue : Author_t ; Author_atom_t_rglue : ATOMFlattened_t }.
 
 
 
 (** Data types for element (to build models) *)
 Inductive Element : Set :=
-  | ATOMElement : ATOM_t -> Element
+  | ATOMFlattenedElement : ATOMFlattened_t -> Element
   | EntryElement : Entry_t -> Element
   | SourceElement : Source_t -> Element
   | ContentElement : Content_t -> Element
@@ -142,12 +138,12 @@ Scheme Equality for Element.
 
 (** Data types for link (to build models) *)
 Inductive Link : Set :=
-  | ATOM_linksLink : ATOM_links_t -> Link
-  | ATOM_generatorLink : ATOM_generator_t -> Link
-  | ATOM_categoriesLink : ATOM_categories_t -> Link
-  | ATOM_authorsLink : ATOM_authors_t -> Link
-  | ATOM_contributorsLink : ATOM_contributors_t -> Link
-  | ATOM_entrieLink : ATOM_entrie_t -> Link
+  | ATOMFlattened_linksLink : ATOMFlattened_links_t -> Link
+  | ATOMFlattened_generatorLink : ATOMFlattened_generator_t -> Link
+  | ATOMFlattened_categoriesLink : ATOMFlattened_categories_t -> Link
+  | ATOMFlattened_authorsLink : ATOMFlattened_authors_t -> Link
+  | ATOMFlattened_contributorsLink : ATOMFlattened_contributors_t -> Link
+  | ATOMFlattened_entrieLink : ATOMFlattened_entrie_t -> Link
   | Entry_linksLink : Entry_links_t -> Link
   | Entry_sourceLink : Entry_source_t -> Link
   | Entry_contentLink : Entry_content_t -> Link
@@ -169,7 +165,7 @@ Inductive Link : Set :=
 
 (** Meta-types (or kinds, to be used in rules) *)
 Inductive ElementKind : Set :=
-  | ATOM_K
+  | ATOMFlattened_K
   | Entry_K
   | Source_K
   | Content_K
@@ -183,12 +179,12 @@ Scheme Equality for ElementKind.
 
 
 Inductive LinkKind : Set :=
-  | ATOM_links_K
-  | ATOM_generator_K
-  | ATOM_categories_K
-  | ATOM_authors_K
-  | ATOM_contributors_K
-  | ATOM_entrie_K
+  | ATOMFlattened_links_K
+  | ATOMFlattened_generator_K
+  | ATOMFlattened_categories_K
+  | ATOMFlattened_authors_K
+  | ATOMFlattened_contributors_K
+  | ATOMFlattened_entrie_K
   | Entry_links_K
   | Entry_source_K
   | Entry_content_K
@@ -212,7 +208,7 @@ Scheme Equality for LinkKind.
 (** Reflective functions (typing : correspondence between abstract types (kinds) and model data) *)
 Definition getTypeByEKind (k : ElementKind) : Set :=
   match k with
-  | ATOM_K => ATOM_t
+  | ATOMFlattened_K => ATOMFlattened_t
   | Entry_K => Entry_t
   | Source_K => Source_t
   | Content_K => Content_t
@@ -226,7 +222,7 @@ Definition getTypeByEKind (k : ElementKind) : Set :=
 
 Definition lift_EKind k : (getTypeByEKind k) -> Element := 
   match k with
-  | ATOM_K => ATOMElement
+  | ATOMFlattened_K => ATOMFlattenedElement
   | Entry_K => EntryElement
   | Source_K => SourceElement
   | Content_K => ContentElement
@@ -240,7 +236,7 @@ Definition lift_EKind k : (getTypeByEKind k) -> Element :=
 
 Definition get_E_data (k : ElementKind) (c : Element) : option (getTypeByEKind k) :=
   match (k,c) as e return (option (getTypeByEKind (fst e))) with
-  | (ATOM_K, ATOMElement v)  => Some v
+  | (ATOMFlattened_K, ATOMFlattenedElement v)  => Some v
   | (Entry_K, EntryElement v)  => Some v
   | (Source_K, SourceElement v)  => Some v
   | (Content_K, ContentElement v)  => Some v
@@ -255,12 +251,12 @@ Definition get_E_data (k : ElementKind) (c : Element) : option (getTypeByEKind k
 
 Definition getTypeByLKind (k : LinkKind) : Set :=
   match k with
-  | ATOM_links_K => ATOM_links_t
-  | ATOM_generator_K => ATOM_generator_t
-  | ATOM_categories_K => ATOM_categories_t
-  | ATOM_authors_K => ATOM_authors_t
-  | ATOM_contributors_K => ATOM_contributors_t
-  | ATOM_entrie_K => ATOM_entrie_t
+  | ATOMFlattened_links_K => ATOMFlattened_links_t
+  | ATOMFlattened_generator_K => ATOMFlattened_generator_t
+  | ATOMFlattened_categories_K => ATOMFlattened_categories_t
+  | ATOMFlattened_authors_K => ATOMFlattened_authors_t
+  | ATOMFlattened_contributors_K => ATOMFlattened_contributors_t
+  | ATOMFlattened_entrie_K => ATOMFlattened_entrie_t
   | Entry_links_K => Entry_links_t
   | Entry_source_K => Entry_source_t
   | Entry_content_K => Entry_content_t
@@ -283,12 +279,12 @@ Definition getTypeByLKind (k : LinkKind) : Set :=
 
 Definition lift_LKind k : (getTypeByLKind k) -> Link :=
   match k with
-  | ATOM_links_K => ATOM_linksLink
-  | ATOM_generator_K => ATOM_generatorLink
-  | ATOM_categories_K => ATOM_categoriesLink
-  | ATOM_authors_K => ATOM_authorsLink
-  | ATOM_contributors_K => ATOM_contributorsLink
-  | ATOM_entrie_K => ATOM_entrieLink
+  | ATOMFlattened_links_K => ATOMFlattened_linksLink
+  | ATOMFlattened_generator_K => ATOMFlattened_generatorLink
+  | ATOMFlattened_categories_K => ATOMFlattened_categoriesLink
+  | ATOMFlattened_authors_K => ATOMFlattened_authorsLink
+  | ATOMFlattened_contributors_K => ATOMFlattened_contributorsLink
+  | ATOMFlattened_entrie_K => ATOMFlattened_entrieLink
   | Entry_links_K => Entry_linksLink
   | Entry_source_K => Entry_sourceLink
   | Entry_content_K => Entry_contentLink
@@ -311,12 +307,12 @@ Definition lift_LKind k : (getTypeByLKind k) -> Link :=
 
 Definition get_L_data (t : LinkKind) (c : Link) : option (getTypeByLKind t) :=
   match (t,c) as e return (option (getTypeByLKind (fst e))) with
-  | (ATOM_links_K, ATOM_linksLink v)  => Some v
-  | (ATOM_generator_K, ATOM_generatorLink v)  => Some v
-  | (ATOM_categories_K, ATOM_categoriesLink v)  => Some v
-  | (ATOM_authors_K, ATOM_authorsLink v)  => Some v
-  | (ATOM_contributors_K, ATOM_contributorsLink v)  => Some v
-  | (ATOM_entrie_K, ATOM_entrieLink v)  => Some v
+  | (ATOMFlattened_links_K, ATOMFlattened_linksLink v)  => Some v
+  | (ATOMFlattened_generator_K, ATOMFlattened_generatorLink v)  => Some v
+  | (ATOMFlattened_categories_K, ATOMFlattened_categoriesLink v)  => Some v
+  | (ATOMFlattened_authors_K, ATOMFlattened_authorsLink v)  => Some v
+  | (ATOMFlattened_contributors_K, ATOMFlattened_contributorsLink v)  => Some v
+  | (ATOMFlattened_entrie_K, ATOMFlattened_entrieLink v)  => Some v
   | (Entry_links_K, Entry_linksLink v)  => Some v
   | (Entry_source_K, Entry_sourceLink v)  => Some v
   | (Entry_content_K, Entry_contentLink v)  => Some v
@@ -347,7 +343,7 @@ Definition MM : Metamodel :=
 
 
 #[export]
-Instance ATOMElementDenotation : Denotation Element ElementKind :=
+Instance ATOMFlattenedElementDenotation : Denotation Element ElementKind :=
 {
   denoteDatatype := getTypeByEKind ;
   unbox := get_E_data ;
@@ -356,7 +352,7 @@ Instance ATOMElementDenotation : Denotation Element ElementKind :=
 
 
 #[export]
-Instance ATOMLinkDenotation : Denotation Link LinkKind :=
+Instance ATOMFlattenedLinkDenotation : Denotation Link LinkKind :=
 {
   denoteDatatype := getTypeByLKind ;
   unbox := get_L_data ;
@@ -367,102 +363,102 @@ Instance ATOMLinkDenotation : Denotation Link LinkKind :=
 #[export]
 Instance MMM : ModelingMetamodel MM :=
 {
-  elements := ATOMElementDenotation ;
-  links := ATOMLinkDenotation ;
+  elements := ATOMFlattenedElementDenotation ;
+  links := ATOMFlattenedLinkDenotation ;
 }.
 
 
 Definition M := Model MM.
 
 (** General functions (used in transformations) *)
-Fixpoint getATOM_linksOnLinks (a : ATOM_t) (l : list Link) : option (list Link_t) :=
+Fixpoint getATOMFlattened_linksOnLinks (a : ATOMFlattened_t) (l : list Link) : option (list Link_t) :=
  match l with
-  | (ATOM_linksLink x) :: l1 =>
-    if ATOM_t_beq x.(ATOM_links_t_lglue) a
-      then (Some x.(ATOM_links_t_rglue))
-      else getATOM_linksOnLinks a l1
-  | _ :: l1 => getATOM_linksOnLinks a l1
+  | (ATOMFlattened_linksLink x) :: l1 =>
+    if ATOMFlattened_t_beq x.(ATOMFlattened_links_t_lglue) a
+      then (Some x.(ATOMFlattened_links_t_rglue))
+      else getATOMFlattened_linksOnLinks a l1
+  | _ :: l1 => getATOMFlattened_linksOnLinks a l1
   | nil => None
  end.
 
 
-Definition getATOM_links (m : M) (a : ATOM_t) : option (list Link_t) :=
-  getATOM_linksOnLinks a m.(modelLinks).
+Definition getATOMFlattened_links (m : M) (a : ATOMFlattened_t) : option (list Link_t) :=
+  getATOMFlattened_linksOnLinks a m.(modelLinks).
 
 
-Fixpoint getATOM_generatorOnLinks (a : ATOM_t) (l : list Link) : option (Generator_t) :=
+Fixpoint getATOMFlattened_generatorOnLinks (a : ATOMFlattened_t) (l : list Link) : option (Generator_t) :=
  match l with
-  | (ATOM_generatorLink x) :: l1 =>
-    if ATOM_t_beq x.(ATOM_generator_t_lglue) a
-      then (Some x.(ATOM_generator_t_rglue))
-      else getATOM_generatorOnLinks a l1
-  | _ :: l1 => getATOM_generatorOnLinks a l1
+  | (ATOMFlattened_generatorLink x) :: l1 =>
+    if ATOMFlattened_t_beq x.(ATOMFlattened_generator_t_lglue) a
+      then (Some x.(ATOMFlattened_generator_t_rglue))
+      else getATOMFlattened_generatorOnLinks a l1
+  | _ :: l1 => getATOMFlattened_generatorOnLinks a l1
   | nil => None
  end.
 
 
-Definition getATOM_generator (m : M) (a : ATOM_t) : option (Generator_t) :=
-  getATOM_generatorOnLinks a m.(modelLinks).
+Definition getATOMFlattened_generator (m : M) (a : ATOMFlattened_t) : option (Generator_t) :=
+  getATOMFlattened_generatorOnLinks a m.(modelLinks).
 
 
-Fixpoint getATOM_categoriesOnLinks (a : ATOM_t) (l : list Link) : option (list Category_t) :=
+Fixpoint getATOMFlattened_categoriesOnLinks (a : ATOMFlattened_t) (l : list Link) : option (list Category_t) :=
  match l with
-  | (ATOM_categoriesLink x) :: l1 =>
-    if ATOM_t_beq x.(ATOM_categories_t_lglue) a
-      then (Some x.(ATOM_categories_t_rglue))
-      else getATOM_categoriesOnLinks a l1
-  | _ :: l1 => getATOM_categoriesOnLinks a l1
+  | (ATOMFlattened_categoriesLink x) :: l1 =>
+    if ATOMFlattened_t_beq x.(ATOMFlattened_categories_t_lglue) a
+      then (Some x.(ATOMFlattened_categories_t_rglue))
+      else getATOMFlattened_categoriesOnLinks a l1
+  | _ :: l1 => getATOMFlattened_categoriesOnLinks a l1
   | nil => None
  end.
 
 
-Definition getATOM_categories (m : M) (a : ATOM_t) : option (list Category_t) :=
-  getATOM_categoriesOnLinks a m.(modelLinks).
+Definition getATOMFlattened_categories (m : M) (a : ATOMFlattened_t) : option (list Category_t) :=
+  getATOMFlattened_categoriesOnLinks a m.(modelLinks).
 
 
-Fixpoint getATOM_authorsOnLinks (a : ATOM_t) (l : list Link) : option (list Author_t) :=
+Fixpoint getATOMFlattened_authorsOnLinks (a : ATOMFlattened_t) (l : list Link) : option (list Author_t) :=
  match l with
-  | (ATOM_authorsLink x) :: l1 =>
-    if ATOM_t_beq x.(ATOM_authors_t_lglue) a
-      then (Some x.(ATOM_authors_t_rglue))
-      else getATOM_authorsOnLinks a l1
-  | _ :: l1 => getATOM_authorsOnLinks a l1
+  | (ATOMFlattened_authorsLink x) :: l1 =>
+    if ATOMFlattened_t_beq x.(ATOMFlattened_authors_t_lglue) a
+      then (Some x.(ATOMFlattened_authors_t_rglue))
+      else getATOMFlattened_authorsOnLinks a l1
+  | _ :: l1 => getATOMFlattened_authorsOnLinks a l1
   | nil => None
  end.
 
 
-Definition getATOM_authors (m : M) (a : ATOM_t) : option (list Author_t) :=
-  getATOM_authorsOnLinks a m.(modelLinks).
+Definition getATOMFlattened_authors (m : M) (a : ATOMFlattened_t) : option (list Author_t) :=
+  getATOMFlattened_authorsOnLinks a m.(modelLinks).
 
 
-Fixpoint getATOM_contributorsOnLinks (a : ATOM_t) (l : list Link) : option (list Contributor_t) :=
+Fixpoint getATOMFlattened_contributorsOnLinks (a : ATOMFlattened_t) (l : list Link) : option (list Contributor_t) :=
  match l with
-  | (ATOM_contributorsLink x) :: l1 =>
-    if ATOM_t_beq x.(ATOM_contributors_t_lglue) a
-      then (Some x.(ATOM_contributors_t_rglue))
-      else getATOM_contributorsOnLinks a l1
-  | _ :: l1 => getATOM_contributorsOnLinks a l1
+  | (ATOMFlattened_contributorsLink x) :: l1 =>
+    if ATOMFlattened_t_beq x.(ATOMFlattened_contributors_t_lglue) a
+      then (Some x.(ATOMFlattened_contributors_t_rglue))
+      else getATOMFlattened_contributorsOnLinks a l1
+  | _ :: l1 => getATOMFlattened_contributorsOnLinks a l1
   | nil => None
  end.
 
 
-Definition getATOM_contributors (m : M) (a : ATOM_t) : option (list Contributor_t) :=
-  getATOM_contributorsOnLinks a m.(modelLinks).
+Definition getATOMFlattened_contributors (m : M) (a : ATOMFlattened_t) : option (list Contributor_t) :=
+  getATOMFlattened_contributorsOnLinks a m.(modelLinks).
 
 
-Fixpoint getATOM_entrieOnLinks (a : ATOM_t) (l : list Link) : option (list Entry_t) :=
+Fixpoint getATOMFlattened_entrieOnLinks (a : ATOMFlattened_t) (l : list Link) : option (list Entry_t) :=
  match l with
-  | (ATOM_entrieLink x) :: l1 =>
-    if ATOM_t_beq x.(ATOM_entrie_t_lglue) a
-      then (Some x.(ATOM_entrie_t_rglue))
-      else getATOM_entrieOnLinks a l1
-  | _ :: l1 => getATOM_entrieOnLinks a l1
+  | (ATOMFlattened_entrieLink x) :: l1 =>
+    if ATOMFlattened_t_beq x.(ATOMFlattened_entrie_t_lglue) a
+      then (Some x.(ATOMFlattened_entrie_t_rglue))
+      else getATOMFlattened_entrieOnLinks a l1
+  | _ :: l1 => getATOMFlattened_entrieOnLinks a l1
   | nil => None
  end.
 
 
-Definition getATOM_entrie (m : M) (a : ATOM_t) : option (list Entry_t) :=
-  getATOM_entrieOnLinks a m.(modelLinks).
+Definition getATOMFlattened_entrie (m : M) (a : ATOMFlattened_t) : option (list Entry_t) :=
+  getATOMFlattened_entrieOnLinks a m.(modelLinks).
 
 
 Fixpoint getEntry_linksOnLinks (e : Entry_t) (l : list Link) : option (list Link_t) :=
@@ -555,7 +551,7 @@ Definition getEntry_contributors (m : M) (e : Entry_t) : option (list Contributo
   getEntry_contributorsOnLinks e m.(modelLinks).
 
 
-Fixpoint getEntry_atomOnLinks (e : Entry_t) (l : list Link) : option (ATOM_t) :=
+Fixpoint getEntry_atomOnLinks (e : Entry_t) (l : list Link) : option (ATOMFlattened_t) :=
  match l with
   | (Entry_atomLink x) :: l1 =>
     if Entry_t_beq x.(Entry_atom_t_lglue) e
@@ -566,7 +562,7 @@ Fixpoint getEntry_atomOnLinks (e : Entry_t) (l : list Link) : option (ATOM_t) :=
  end.
 
 
-Definition getEntry_atom (m : M) (e : Entry_t) : option (ATOM_t) :=
+Definition getEntry_atom (m : M) (e : Entry_t) : option (ATOMFlattened_t) :=
   getEntry_atomOnLinks e m.(modelLinks).
 
 
@@ -645,7 +641,7 @@ Definition getSource_author (m : M) (s : Source_t) : option (Author_t) :=
   getSource_authorOnLinks s m.(modelLinks).
 
 
-Fixpoint getCategory_atomOnLinks (c : Category_t) (l : list Link) : option (ATOM_t) :=
+Fixpoint getCategory_atomOnLinks (c : Category_t) (l : list Link) : option (ATOMFlattened_t) :=
  match l with
   | (Category_atomLink x) :: l1 =>
     if Category_t_beq x.(Category_atom_t_lglue) c
@@ -656,7 +652,7 @@ Fixpoint getCategory_atomOnLinks (c : Category_t) (l : list Link) : option (ATOM
  end.
 
 
-Definition getCategory_atom (m : M) (c : Category_t) : option (ATOM_t) :=
+Definition getCategory_atom (m : M) (c : Category_t) : option (ATOMFlattened_t) :=
   getCategory_atomOnLinks c m.(modelLinks).
 
 
@@ -675,7 +671,7 @@ Definition getCategory_entry (m : M) (c : Category_t) : option (Entry_t) :=
   getCategory_entryOnLinks c m.(modelLinks).
 
 
-Fixpoint getLink_atomOnLinks (_l : Link_t) (l : list Link) : option (ATOM_t) :=
+Fixpoint getLink_atomOnLinks (_l : Link_t) (l : list Link) : option (ATOMFlattened_t) :=
  match l with
   | (Link_atomLink x) :: l1 =>
     if Link_t_beq x.(Link_atom_t_lglue) _l
@@ -686,7 +682,7 @@ Fixpoint getLink_atomOnLinks (_l : Link_t) (l : list Link) : option (ATOM_t) :=
  end.
 
 
-Definition getLink_atom (m : M) (l : Link_t) : option (ATOM_t) :=
+Definition getLink_atom (m : M) (l : Link_t) : option (ATOMFlattened_t) :=
   getLink_atomOnLinks l m.(modelLinks).
 
 
@@ -705,7 +701,7 @@ Definition getLink_entry (m : M) (l : Link_t) : option (Entry_t) :=
   getLink_entryOnLinks l m.(modelLinks).
 
 
-Fixpoint getAuthor_atomOnLinks (a : Author_t) (l : list Link) : option (ATOM_t) :=
+Fixpoint getAuthor_atomOnLinks (a : Author_t) (l : list Link) : option (ATOMFlattened_t) :=
  match l with
   | (Author_atomLink x) :: l1 =>
     if Author_t_beq x.(Author_atom_t_lglue) a
@@ -716,7 +712,7 @@ Fixpoint getAuthor_atomOnLinks (a : Author_t) (l : list Link) : option (ATOM_t) 
  end.
 
 
-Definition getAuthor_atom (m : M) (a : Author_t) : option (ATOM_t) :=
+Definition getAuthor_atom (m : M) (a : Author_t) : option (ATOMFlattened_t) :=
   getAuthor_atomOnLinks a m.(modelLinks).
 
 

@@ -13,23 +13,20 @@ Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
-(* Manual addition *)
-Notation unknown_type := string.
-
 (** Base types for elements *)
-Record ATOM_t := { ATOM_title : unknown_type ; ATOM_id : unknown_type ; ATOM_subtitle : unknown_type ; ATOM_rights : unknown_type ; ATOM_icon : unknown_type ; ATOM_logo : unknown_type ; ATOM_lastUpdate : unknown_type }.
+Record ATOM_t := { ATOM_title : string ; ATOM_id : string ; ATOM_subtitle : string ; ATOM_rights : string ; ATOM_icon : string ; ATOM_logo : string ; ATOM_lastUpdate : string }.
 Scheme Equality for ATOM_t.
 
 
-Record Entry_t := { Entry_title : unknown_type ; Entry_id : unknown_type ; Entry_rights : unknown_type ; Entry_summary : unknown_type ; Entry_published : unknown_type ; Entry_lastUpdate : unknown_type }.
+Record Entry_t := { Entry_title : string ; Entry_id : string ; Entry_rights : string ; Entry_summary : string ; Entry_published : string ; Entry_lastUpdate : string }.
 Scheme Equality for Entry_t.
 
 
-Record Source_t := { Source_id : unknown_type ; Source_icon : unknown_type ; Source_logo : unknown_type ; Source_rights : unknown_type ; Source_title : unknown_type ; Source_subtitle : unknown_type ; Source_lastUpdate : unknown_type }.
+Record Source_t := { Source_id : string ; Source_icon : string ; Source_logo : string ; Source_rights : string ; Source_title : string ; Source_subtitle : string ; Source_lastUpdate : string }.
 Scheme Equality for Source_t.
 
 
-Record Content_t := { Content_type : unknown_type ; Content_mode : unknown_type ; Content_text : unknown_type }.
+Record Content_t := { Content_type : string ; Content_mode : string ; Content_text : string }.
 Scheme Equality for Content_t.
 
 
@@ -45,23 +42,23 @@ Record InLineOtherContent_t := {  }.
 Scheme Equality for InLineOtherContent_t.
 
 
-Record OutOfLineContent_t := { OutOfLineContent_src : unknown_type }.
+Record OutOfLineContent_t := { OutOfLineContent_src : string }.
 Scheme Equality for OutOfLineContent_t.
 
 
-Record Generator_t := { Generator_uri : unknown_type ; Generator_version : unknown_type ; Generator_name : unknown_type }.
+Record Generator_t := { Generator_uri : string ; Generator_version : string ; Generator_name : string }.
 Scheme Equality for Generator_t.
 
 
-Record Category_t := { Category_term : unknown_type ; Category_scheme : unknown_type ; Category_label : unknown_type }.
+Record Category_t := { Category_term : string ; Category_scheme : string ; Category_label : string }.
 Scheme Equality for Category_t.
 
 
-Record Link_t := { Link_rel : unknown_type ; Link_hrefl : unknown_type ; Link_type : unknown_type ; Link_hreflang : unknown_type ; Link_title : unknown_type ; Link_lenght : unknown_type }.
+Record Link_t := { Link_rel : string ; Link_hrefl : string ; Link_type : string ; Link_hreflang : string ; Link_title : string ; Link_lenght : nat }.
 Scheme Equality for Link_t.
 
 
-Record Person_t := { Person_name : unknown_type ; Person_uri : unknown_type ; Person_email : unknown_type }.
+Record Person_t := { Person_name : string ; Person_uri : string ; Person_email : string }.
 Scheme Equality for Person_t.
 
 
