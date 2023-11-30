@@ -135,3 +135,58 @@ Ltac second_rule :=
     [ |- In _ (Syntax.rules _)] =>
       second_in_list
   end.
+
+
+
+(** --------------------------------- *)
+
+(* fixme : a similar tactic exists *)
+Ltac unfold_parse :=
+  unfold Parser.parseOutputPatternUnit,
+    Parser.parseOutputPatternLinks,
+    Parser.parseOutputPatternLink.
+
+(* fixme : a similar tactic exists *)
+Ltac unfold_accessors :=
+  unfold Syntax.opu_name,
+    ConcreteSyntax.e_name,
+    ConcreteSyntax.e_outlink,
+    ConcreteSyntax.e_OutKind,
+    Syntax.opu_link.
+
+Ltac incl_singleton :=
+  apply incl_singleton ; eassumption.
+
+
+Ltac transform_link_fw_tac r_num pat_num i :=
+  match goal with
+    [ |- In _ (execute _ _).(modelLinks) ] =>
+      apply <- Semantics.in_modelLinks_inv ;
+      setoid_rewrite Semantics.in_compute_trace_inv (*in the left part*) ;
+      eexists ; split ; [ eexists ; split ; [ (*1*) | split ; [ (*2*)| eexists ; split ; [ (*3*)| split ; [ (*4*)| eexists ; split ; [ (*5*)| eexists ; split ; [ (*6*) |  eexists ; split ; [ (* 7 *)| (* 8*)] ] ] ] ] ] ] | (*9*)] ;
+      [ | | | | | | reflexivity | | ] ;
+      
+      (* this works only for singletons *)
+      [ incl_singleton | | | | | | | ] ;
+      
+      (* arity *)
+      [ solve [simpl;auto] | | | | | | ] ;
+      
+      (* select the correct rule based on the hint received as parameter *) 
+      [ match r_num with 1 => TacticsFW.first_rule | 2 => TacticsFW.second_rule end | | | | | ] ;
+      
+      (* if the user has selected the correct rule, the match guard should evaluate to true *)
+      [ reflexivity | | | | ] ;
+      
+      (* iteration *)
+      [ instantiate (1:=i) ; simpl ; solve [auto] | | | ] ; 
+      
+      (* which output pattern is concerned *)
+      [  match pat_num with 1 => TacticsFW.first_in_list idtac | 2 => TacticsFW.second_in_list end | | ] ; 
+
+      unfold_parse ; unfold_accessors ;
+      
+      (* identify the instanciation of the out pattern *)
+      [ try reflexivity (* sometimes needs a rewrite *)| ]
+        
+  end.

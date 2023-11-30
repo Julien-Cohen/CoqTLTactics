@@ -55,30 +55,9 @@ Proof.
   specialize (TraceUtils.state_in_trace m s1 IN_S) ;
     intro IN_TRACE.
 
-  apply <- Semantics.in_modelLinks_inv.
-  setoid_rewrite Semantics.in_compute_trace_inv.
-  repeat (first [eexists | split | eassumption]).
-  
-  
-  { (* The source pattern is the considered transition *)
-    apply ListUtils.incl_singleton. exact IN_T.
-  }
 
-  { (* arity *)
-    compute. auto. }
 
-  { (* Only the second rule builds links. *)
-    TacticsFW.second_rule.
-  }
-
-  { (* eval guard *) reflexivity. }
-
-  { (* eval iterator *) compute. eauto. }
-
-  { (* output pattern *)
-    (* This rule has one output pattern. *)    
-    TacticsFW.first_in_list.
-  }
+TacticsFW.transform_link_fw_tac 2 1 0 ; [ | ].
 
   { (* eval output pattern *)
     simpl. 
@@ -140,8 +119,6 @@ Proof.
 
     }
   }
-  Unshelve. (* why ? *)
-  exact 0.
 Qed.
 
 
@@ -173,27 +150,8 @@ Proof.
 
   specialize (TraceUtils.state_in_trace m s1 IN_S) ; intro INTRACE.
 
-  apply <- Semantics.in_modelLinks_inv.
-  setoid_rewrite Semantics.in_compute_trace_inv.
-  repeat (first [eexists | split | eassumption]).
- 
-  3:{
-    (* only the second rule builds links. *)
-    TacticsFW.second_rule.
-  }
-  { 
-    (* the source pattern is the considered transition *)
-    apply ListUtils.incl_singleton.
-    exact IN_T.
-  }
-  { (* arity *)
-    compute ; auto. }
-  { (* eval guard *) reflexivity. }
-  { (* eval iterator *) compute. eauto. }
-  { (* output pattern *)
-    (* this rule has one output pattern *)
-    TacticsFW.first_in_list.
-  }
+  TacticsFW.transform_link_fw_tac 2 1 0 ; [ | ].
+
   { (* eval output pattern *)
     simpl.
     unfold ConcreteExpressions.makeElement.
@@ -208,25 +166,21 @@ Proof.
     (* the output patern in this rule has two link patterns. *)
     (* Transition targets are managed by the second link pattern. *)
 
-    unfold ConcreteSyntax.e_OutKind.
-    unfold ConcreteSyntax.e_outpat.
-    unfold Parser.parseOutputPatternUnit.    
     unfold UserExpressions.evalOutputPatternLink.
-    unfold Syntax.opu_link.
-    unfold ConcreteSyntax.e_OutKind.
-    unfold ConcreteSyntax.e_outlink.
+    unfold ConcreteSyntax.r_InKinds.
     unfold Parser.dropToList.
-    unfold Parser.parseOutputPatternLink.
-    unfold Parser.parseOutputPatternLinks.
     apply OptionListUtils.in_optionListToList.
     eexists ; split ; [ reflexivity| ].
     apply in_flat_map.
     eexists ; split.
     { (* second link pattern *) TacticsFW.second_in_list. }
     {
-      unfold Parser.parseOutputPatternLink.
-      unfold ConcreteSyntax.o_OutRefKind.
-      unfold ConcreteSyntax.o_outpat.
+      unfold RichTraceLink.getSourcePiece, 
+        RichTraceLink.getIteration, 
+        RichTraceLink.source, 
+        RichTraceLink.produced.
+      unfold ConcreteSyntax.o_OutRefKind, 
+        ConcreteSyntax.o_outpat.
       unfold ConcreteExpressions.makeLink.
       unfold ConcreteExpressions.wrapLink.
       unfold ConcreteExpressions.wrap.
@@ -248,8 +202,6 @@ Proof.
       exact H.
     }
   }
-  Unshelve. (* why ? *)
-  exact 0.
 Qed.
 
 Lemma source_link_bw :

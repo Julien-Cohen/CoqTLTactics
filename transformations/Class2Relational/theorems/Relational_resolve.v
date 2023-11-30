@@ -134,20 +134,8 @@ Proof.
 
   exists{| Table_id := r.(Class_id); Table_name := r.(Class_name) |}.
 
-  apply <- Semantics.in_modelLinks_inv. (* FW *)
-  setoid_rewrite Semantics.in_compute_trace_inv. 
-  repeat (first [eexists | split | eassumption]).
-  
-  { apply incl_singleton. eassumption. }
-  { compute ; auto. }
-  { TacticsFW.second_rule. (* We specify the rule R2 *) }
-  { auto. }
-  { simpl. instantiate (1:=0). auto. }
-  { TacticsFW.first_in_list. }
-  { crush. }
-  { 
-    unfold Parser.parseOutputPatternUnit, Parser.parseOutputPatternLinks, Parser.parseOutputPatternLink.
-    unfold Syntax.opu_name, ConcreteSyntax.e_name, ConcreteSyntax.e_outlink, ConcreteSyntax.e_OutKind, Syntax.opu_link.
+  TacticsFW.transform_link_fw_tac 2 1 0 ; []. 
+
     simpl. 
     unfold Parser.dropToList ; simpl.
     unfold getAttribute_typeElement.
@@ -165,7 +153,6 @@ Proof.
     unfold ModelingSemantics.resolve.
     rewrite G11.
     TacticsFW.first_in_list.
-  }
 Qed.
 
      
