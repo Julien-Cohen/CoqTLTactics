@@ -178,20 +178,6 @@ Definition getClass_attributesElements (c : Class_t) (m : ClassModel) : option (
 Definition getAttribute_typeElement (a : Attribute_t) (m : ClassModel) : option Element :=
   option_map ClassElement (getAttribute_type a m).
 
-Ltac inv_getAttribute_typeElement H :=
-   match type of H with 
-     getAttribute_typeElement _ _ = Some _ =>
-       unfold getAttribute_typeElement in H ;
-       OptionUtils.monadInv H
-   end.
-
-
-
-Definition getId (c : Element) : nat :=
-  match c with
-  | ClassElement c => c.(Class_id)
-  | AttributeElement a => a.(Attribute_id)
-  end.
 
 Definition getName (c : Element) : string :=
   match c with

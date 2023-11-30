@@ -176,12 +176,6 @@ Definition getColumn_reference (c : Column_t) (m : RelationalModel) : option (Ta
 (** Manual addition *)
 
 
-Definition getId (r : Element) : nat :=
-  match r with
-  | TableElement c => Table_id c
-  | ColumnElement a => Column_id a
-  end.
-
 Definition getName (r : Element) : string :=
   match r with
   | TableElement c => Table_name c
