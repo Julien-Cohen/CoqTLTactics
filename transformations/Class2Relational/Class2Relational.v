@@ -55,7 +55,7 @@ Open Scope coqtl.
 Definition Class2Relational' :=
   transformation [ 
     rule "Class2Table"
-    from [ Class_K]
+    from [Class_K]
     to [ 
       ELEM "tab" ::: Table_K  
         << fun _ _ c => return   {| 
@@ -63,13 +63,14 @@ Definition Class2Relational' :=
           Table_name := c.(Class_name) 
         |} >>
         
-        LINK ::: Table_columns_K
+      LINK ::: Table_columns_K
         << fun thisModule _ m c t =>
             c_attributes <- getClass_attributesElements c m ;
             res <- resolveAll thisModule "col" Column_K (singletons c_attributes) ;
             do_glue t with res 
-        >> ] ; 
-        
+        >> 
+    ] ; 
+
     rule "Attribute2Column"
     from [Attribute_K]
     where (fun _ a => negb a.(Attribute_derived))
@@ -80,7 +81,7 @@ Definition Class2Relational' :=
           Column_name := a.(Attribute_name)
         |} >>
               
-        LINK ::: Column_reference_K
+      LINK ::: Column_reference_K
         << fun thisModule _ m a c =>
           a_type <- getAttribute_typeElement a m ;
           res <- resolve thisModule "tab" Table_K (singleton a_type) ;
