@@ -1,0 +1,2 @@
+%.v : %.ecore
+	python3  libs/coqtl-model-import.py $<
