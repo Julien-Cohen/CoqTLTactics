@@ -179,7 +179,17 @@ Proof.
   * unfold LegacySemantics.applyUnitOnPiece. crush.
 Qed.  
 
-
+(* For reference *)
+  Lemma allTuples_incl_length:
+    forall (sp : InputPiece) (tr: Transformation) (sm: SourceModel), 
+    incl sp sm.(modelElements) -> length sp <= tr.(arity) -> In sp (allTuples tr sm).
+  Proof.
+    intros.
+    unfold allTuples.
+    apply tuples_up_to_n_incl_length. split.
+    - assumption.
+    - assumption.
+  Qed.  
 
 Lemma allTuples_not_incl_length:
   forall (sp : InputPiece) (tr: Transformation) (sm: SourceModel), 

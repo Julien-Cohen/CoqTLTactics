@@ -39,6 +39,32 @@ Proof.
   TacticsFW.first_in_list.
 Qed.
 
+(* Coming from previous work *)
+Lemma transform_attribute_fw_no_tactic : 
+  forall (cm : ClassModel) (rm : RelationalModel), 
+  (* transformation *) rm = execute Class2Relational cm ->
+  (* precondition *)  forall id name,
+    In (AttributeElement {| Attribute_id:= id ; Attribute_derived := false ; Attribute_name := name|}) cm.(modelElements) ->
+  (* postcondition *) 
+    In (ColumnElement {| Column_id := id; Column_name := name |}) (rm.(modelElements)). 
+Proof.
+    intros.
+    rewrite H.
+    apply <- Certification.tr_execute_in_elements.
+    exists ([AttributeElement {| Attribute_id := id; Attribute_derived := false; Attribute_name := name |}]).
+    split.
+    + apply Certification.allTuples_incl_length.
+      * unfold incl.
+        intros.
+        apply in_inv in H1.
+        destruct H1.
+        -- rewrite <- H1. assumption.
+        -- contradiction H1.
+      * unfold Syntax.arity. simpl. auto.
+    + simpl.
+      left.
+      reflexivity.
+Qed.
 
 Lemma transform_class_fw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
