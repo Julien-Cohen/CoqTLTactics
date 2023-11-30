@@ -44,22 +44,22 @@ Scheme Equality for Clique_t.
 
 
 (** Base types for links *)
-Record Person_movies_t := { Person_movies_t_lglue : Person_t ; Person_movies_t_rglue : list Movie_t }.
+Record Person_movies_glue := { Person_movies_lglue : Person_t ; Person_movies_rglue : list Movie_t }.
 
 
-Record Couple_p1_t := { Couple_p1_t_lglue : Couple_t ; Couple_p1_t_rglue : Person_t }.
+Record Couple_p1_glue := { Couple_p1_lglue : Couple_t ; Couple_p1_rglue : Person_t }.
 
 
-Record Couple_p2_t := { Couple_p2_t_lglue : Couple_t ; Couple_p2_t_rglue : Person_t }.
+Record Couple_p2_glue := { Couple_p2_lglue : Couple_t ; Couple_p2_rglue : Person_t }.
 
 
-Record Movie_persons_t := { Movie_persons_t_lglue : Movie_t ; Movie_persons_t_rglue : list Person_t }.
+Record Movie_persons_glue := { Movie_persons_lglue : Movie_t ; Movie_persons_rglue : list Person_t }.
 
 
-Record Group_commonMovies_t := { Group_commonMovies_t_lglue : Group_t ; Group_commonMovies_t_rglue : list Movie_t }.
+Record Group_commonMovies_glue := { Group_commonMovies_lglue : Group_t ; Group_commonMovies_rglue : list Movie_t }.
 
 
-Record Clique_persons_t := { Clique_persons_t_lglue : Clique_t ; Clique_persons_t_rglue : list Person_t }.
+Record Clique_persons_glue := { Clique_persons_lglue : Clique_t ; Clique_persons_rglue : list Person_t }.
 
 
 
@@ -77,12 +77,12 @@ Scheme Equality for Element.
 
 (** Data types for link (to build models) *)
 Inductive Link : Set :=
-  | Person_moviesLink : Person_movies_t -> Link
-  | Couple_p1Link : Couple_p1_t -> Link
-  | Couple_p2Link : Couple_p2_t -> Link
-  | Movie_personsLink : Movie_persons_t -> Link
-  | Group_commonMoviesLink : Group_commonMovies_t -> Link
-  | Clique_personsLink : Clique_persons_t -> Link
+  | Person_moviesLink : Person_movies_glue -> Link
+  | Couple_p1Link : Couple_p1_glue -> Link
+  | Couple_p2Link : Couple_p2_glue -> Link
+  | Movie_personsLink : Movie_persons_glue -> Link
+  | Group_commonMoviesLink : Group_commonMovies_glue -> Link
+  | Clique_personsLink : Clique_persons_glue -> Link
 .
 
 (** Meta-types (or kinds, to be used in rules) *)
@@ -148,12 +148,12 @@ Definition get_E_data (k : ElementKind) (c : Element) : option (getTypeByEKind k
 
 Definition getTypeByLKind (k : LinkKind) : Set :=
   match k with
-  | Person_movies_K => Person_movies_t
-  | Couple_p1_K => Couple_p1_t
-  | Couple_p2_K => Couple_p2_t
-  | Movie_persons_K => Movie_persons_t
-  | Group_commonMovies_K => Group_commonMovies_t
-  | Clique_persons_K => Clique_persons_t
+  | Person_movies_K => Person_movies_glue
+  | Couple_p1_K => Couple_p1_glue
+  | Couple_p2_K => Couple_p2_glue
+  | Movie_persons_K => Movie_persons_glue
+  | Group_commonMovies_K => Group_commonMovies_glue
+  | Clique_persons_K => Clique_persons_glue
   end.
 
 
@@ -220,8 +220,8 @@ Definition M := Model MM.
 Fixpoint getPerson_moviesOnLinks (p : Person_t) (l : list Link) : option (list Movie_t) :=
  match l with
   | (Person_moviesLink x) :: l1 =>
-    if Person_t_beq x.(Person_movies_t_lglue) p
-      then (Some x.(Person_movies_t_rglue))
+    if Person_t_beq x.(Person_movies_lglue) p
+      then (Some x.(Person_movies_rglue))
       else getPerson_moviesOnLinks p l1
   | _ :: l1 => getPerson_moviesOnLinks p l1
   | nil => None
@@ -235,8 +235,8 @@ Definition getPerson_movies (m : M) (p : Person_t) : option (list Movie_t) :=
 Fixpoint getCouple_p1OnLinks (c : Couple_t) (l : list Link) : option (Person_t) :=
  match l with
   | (Couple_p1Link x) :: l1 =>
-    if Couple_t_beq x.(Couple_p1_t_lglue) c
-      then (Some x.(Couple_p1_t_rglue))
+    if Couple_t_beq x.(Couple_p1_lglue) c
+      then (Some x.(Couple_p1_rglue))
       else getCouple_p1OnLinks c l1
   | _ :: l1 => getCouple_p1OnLinks c l1
   | nil => None
@@ -250,8 +250,8 @@ Definition getCouple_p1 (m : M) (c : Couple_t) : option (Person_t) :=
 Fixpoint getCouple_p2OnLinks (c : Couple_t) (l : list Link) : option (Person_t) :=
  match l with
   | (Couple_p2Link x) :: l1 =>
-    if Couple_t_beq x.(Couple_p2_t_lglue) c
-      then (Some x.(Couple_p2_t_rglue))
+    if Couple_t_beq x.(Couple_p2_lglue) c
+      then (Some x.(Couple_p2_rglue))
       else getCouple_p2OnLinks c l1
   | _ :: l1 => getCouple_p2OnLinks c l1
   | nil => None
@@ -265,8 +265,8 @@ Definition getCouple_p2 (m : M) (c : Couple_t) : option (Person_t) :=
 Fixpoint getMovie_personsOnLinks (m : Movie_t) (l : list Link) : option (list Person_t) :=
  match l with
   | (Movie_personsLink x) :: l1 =>
-    if Movie_t_beq x.(Movie_persons_t_lglue) m
-      then (Some x.(Movie_persons_t_rglue))
+    if Movie_t_beq x.(Movie_persons_lglue) m
+      then (Some x.(Movie_persons_rglue))
       else getMovie_personsOnLinks m l1
   | _ :: l1 => getMovie_personsOnLinks m l1
   | nil => None
@@ -280,8 +280,8 @@ Definition getMovie_persons (_m : M) (m : Movie_t) : option (list Person_t) :=
 Fixpoint getGroup_commonMoviesOnLinks (g : Group_t) (l : list Link) : option (list Movie_t) :=
  match l with
   | (Group_commonMoviesLink x) :: l1 =>
-    if Group_t_beq x.(Group_commonMovies_t_lglue) g
-      then (Some x.(Group_commonMovies_t_rglue))
+    if Group_t_beq x.(Group_commonMovies_lglue) g
+      then (Some x.(Group_commonMovies_rglue))
       else getGroup_commonMoviesOnLinks g l1
   | _ :: l1 => getGroup_commonMoviesOnLinks g l1
   | nil => None
@@ -295,8 +295,8 @@ Definition getGroup_commonMovies (m : M) (g : Group_t) : option (list Movie_t) :
 Fixpoint getClique_personsOnLinks (c : Clique_t) (l : list Link) : option (list Person_t) :=
  match l with
   | (Clique_personsLink x) :: l1 =>
-    if Clique_t_beq x.(Clique_persons_t_lglue) c
-      then (Some x.(Clique_persons_t_rglue))
+    if Clique_t_beq x.(Clique_persons_lglue) c
+      then (Some x.(Clique_persons_rglue))
       else getClique_personsOnLinks c l1
   | _ :: l1 => getClique_personsOnLinks c l1
   | nil => None

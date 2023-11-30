@@ -10,8 +10,6 @@ Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
-
-
 Require Import Glue.
 
 (** Base types for elements *)
@@ -25,10 +23,13 @@ Record Column_t := { Column_id : nat ; Column_name : string }.
 Scheme Equality for Column_t.
 
 
+
 (** Base types for links *)
 Notation Table_columns_glue := (Glue Table_t (list Column_t)).
 
+
 Notation Column_reference_glue := (Glue Column_t Table_t).
+
 
 
 (** Data types for element (to build models) *)

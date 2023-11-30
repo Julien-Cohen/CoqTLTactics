@@ -10,23 +10,24 @@ Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
-
 Require Import Glue.
 
 (** Base types for elements *)
 Record Class_t := { Class_id : nat ; Class_name : string }.
-
 Scheme Equality for Class_t.
 
-Record Attribute_t := { Attribute_id : nat ; Attribute_derived : bool ; Attribute_name : string }.
 
+Record Attribute_t := { Attribute_id : nat ; Attribute_derived : bool ; Attribute_name : string }.
 Scheme Equality for Attribute_t.
+
 
 
 (** Base types for links *)
 Notation Class_attributes_glue := (Glue Class_t (list Attribute_t)).
 
+
 Notation Attribute_type_glue := (Glue Attribute_t Class_t).
+
 
 
 (** Data types for element (to build models) *)
@@ -38,10 +39,9 @@ Scheme Equality for Element.
 
 (** Data types for link (to build models) *)
 Inductive Link : Set :=
-  | Class_attributesLink :  Class_attributes_glue -> Link
+  | Class_attributesLink : Class_attributes_glue -> Link
   | Attribute_typeLink : Attribute_type_glue -> Link
 .
-
 
 (** Meta-types (or kinds, to be used in rules) *)
 Inductive ElementKind : Set :=

@@ -11,6 +11,7 @@ Require Import String.
 Require Import transformations.Families2Persons.Families.
 Open Scope string_scope.
 
+Import Glue.
 
 Definition InputModel : Families.M :=
 	(Build_Model Families.MM
@@ -28,22 +29,22 @@ Definition InputModel : Families.M :=
 		(FamilyElement (Build_Family_t  "Sailor")) :: 
 		nil)
 		(
-		(Member_familySonLink (Build_Member_familySon_t (Build_Member_t  "David") (Build_Family_t  "Sailor"))) ::
-		(Member_familyDaughterLink (Build_Member_familyDaughter_t (Build_Member_t  "Kelly") (Build_Family_t  "Sailor"))) ::
-		(Member_familyFatherLink (Build_Member_familyFather_t (Build_Member_t  "Peter") (Build_Family_t  "Sailor"))) ::
-		(Member_familyFatherLink (Build_Member_familyFather_t (Build_Member_t  "Jim") (Build_Family_t  "March"))) ::
-		(Member_familySonLink (Build_Member_familySon_t (Build_Member_t  "Dylan") (Build_Family_t  "Sailor"))) ::
-		(Family_ffatherLink (Build_Family_ffather_t (Build_Family_t  "March") (Build_Member_t  "Jim"))) ::
-		(Family_fmotherLink (Build_Family_fmother_t (Build_Family_t  "March") (Build_Member_t  "Cindy"))) ::
-		(Family_fsonsLink (Build_Family_fsons_t (Build_Family_t  "March") ((Build_Member_t  "Brandon") :: nil ))) ::
-		(Family_fdaughtersLink (Build_Family_fdaughters_t (Build_Family_t  "March") ((Build_Member_t  "Brenda") :: nil ))) ::
-		(Member_familyDaughterLink (Build_Member_familyDaughter_t (Build_Member_t  "Brenda") (Build_Family_t  "March"))) ::
-		(Member_familyMotherLink (Build_Member_familyMother_t (Build_Member_t  "Cindy") (Build_Family_t  "March"))) ::
-		(Member_familyMotherLink (Build_Member_familyMother_t (Build_Member_t  "Jackie") (Build_Family_t  "Sailor"))) ::
-		(Member_familySonLink (Build_Member_familySon_t (Build_Member_t  "Brandon") (Build_Family_t  "March"))) ::
-		(Family_ffatherLink (Build_Family_ffather_t (Build_Family_t  "Sailor") (Build_Member_t  "Peter"))) ::
-		(Family_fmotherLink (Build_Family_fmother_t (Build_Family_t  "Sailor") (Build_Member_t  "Jackie"))) ::
-		(Family_fsonsLink (Build_Family_fsons_t (Build_Family_t  "Sailor") ((Build_Member_t  "David") :: (Build_Member_t  "Dylan") :: nil ))) ::
-		(Family_fdaughtersLink (Build_Family_fdaughters_t (Build_Family_t  "Sailor") ((Build_Member_t  "Kelly") :: nil ))) ::
+		(Member_familySonLink (glue (Build_Member_t  "David") with (Build_Family_t  "Sailor"))) ::
+		(Member_familyDaughterLink (glue (Build_Member_t  "Kelly") with (Build_Family_t  "Sailor"))) ::
+		(Member_familyFatherLink (glue (Build_Member_t  "Peter") with (Build_Family_t  "Sailor"))) ::
+		(Member_familyFatherLink (glue (Build_Member_t  "Jim") with (Build_Family_t  "March"))) ::
+		(Member_familySonLink (glue (Build_Member_t  "Dylan") with (Build_Family_t  "Sailor"))) ::
+		(Family_ffatherLink (glue (Build_Family_t  "March") with (Build_Member_t  "Jim"))) ::
+		(Family_fmotherLink (glue (Build_Family_t  "March") with (Build_Member_t  "Cindy"))) ::
+		(Family_fsonsLink (glue (Build_Family_t  "March") with ((Build_Member_t  "Brandon") :: nil ))) ::
+		(Family_fdaughtersLink (glue (Build_Family_t  "March") with ((Build_Member_t  "Brenda") :: nil ))) ::
+		(Member_familyDaughterLink (glue (Build_Member_t  "Brenda") with (Build_Family_t  "March"))) ::
+		(Member_familyMotherLink (glue (Build_Member_t  "Cindy") with (Build_Family_t  "March"))) ::
+		(Member_familyMotherLink (glue (Build_Member_t  "Jackie") with (Build_Family_t  "Sailor"))) ::
+		(Member_familySonLink (glue (Build_Member_t  "Brandon") with (Build_Family_t  "March"))) ::
+		(Family_ffatherLink (glue (Build_Family_t  "Sailor") with (Build_Member_t  "Peter"))) ::
+		(Family_fmotherLink (glue (Build_Family_t  "Sailor") with (Build_Member_t  "Jackie"))) ::
+		(Family_fsonsLink (glue (Build_Family_t  "Sailor") with ((Build_Member_t  "David") :: (Build_Member_t  "Dylan") :: nil ))) ::
+		(Family_fdaughtersLink (glue (Build_Family_t  "Sailor") with ((Build_Member_t  "Kelly") :: nil ))) ::
 		nil)
 	).

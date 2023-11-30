@@ -71,6 +71,7 @@ def imports_coqtl():
     lst.append("Require Import core.Metamodel.")
     lst.append("Require Import core.modeling.ModelingMetamodel.")
     lst.append("Require Import core.Model.")
+    lst.append("Require Import Glue.")
     lst.append(br())
 
     return join(lst)
@@ -102,7 +103,7 @@ def records_link(eClasses):
 
     for eClass in eClasses:
         for eReference in eClass.eReferences:
-            lst.append(f"Record {eClass.name}_{eReference.name}_glue := {{ {eClass.name}_{eReference.name}_lglue : {eClass.name}_t ; {eClass.name}_{eReference.name}_rglue : {records_link_multiplicity(eReference)}_t }}.")
+            lst.append(f"Notation {eClass.name}_{eReference.name}_glue := (Glue {eClass.name}_t ({records_link_multiplicity(eReference)}_t)).")
 
 
             lst.append(br())
@@ -265,8 +266,8 @@ def general_function(eClasses, metamodel):
             lst.append(f"Fixpoint get{eClass.name}_{eReference.name}OnLinks ({arg(eClass.name[0])} : {eClass.name}_t) (l : list Link) : option ({records_link_multiplicity(eReference)}_t) :=")
             lst.append(f" match l with")
             lst.append(f"  | ({eClass.name}_{eReference.name}Link x) :: l1 =>")
-            lst.append(f"    if {eClass.name}_t_beq x.({eClass.name}_{eReference.name}_lglue) {arg(eClass.name[0])}")
-            lst.append(f"      then (Some x.({eClass.name}_{eReference.name}_rglue))")
+            lst.append(f"    if {eClass.name}_t_beq x.(left_glue) {arg(eClass.name[0])}")
+            lst.append(f"      then (Some x.(right_glue))")
             lst.append(f"      else get{eClass.name}_{eReference.name}OnLinks {arg(eClass.name[0])} l1")
             lst.append(f"  | _ :: l1 => get{eClass.name}_{eReference.name}OnLinks {arg(eClass.name[0])} l1")
             lst.append( "  | nil => None")
