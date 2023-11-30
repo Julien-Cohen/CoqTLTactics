@@ -173,51 +173,7 @@ Definition getColumn_reference (c : Column_t) (m : RelationalModel) : option (Ta
 
 
 
-(** Useful lemmas *)
-
-(* FIXME : not used *)
-Lemma Relational_invert : 
-  forall (k: ElementKind) (t1 t2: getTypeByEKind k),
-    constructor k t1 = constructor k t2 -> t1 = t2.
-Proof. intro k ; destruct k ; simpl; congruence.  Qed. 
-
-
-Lemma Element_dec : 
-  forall (a: Element),
-(instanceof Table_K a) = true\/(instanceof Column_K a) = true
-.
-Proof. destruct a ; auto. Qed. 
-
-
-Lemma TableElement_cast :
-  forall x y,
-    unbox Table_K x = return y -> TableElement y = x.
-Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
-
-
-Lemma ColumnElement_cast :
-  forall x y,
-    unbox Column_K x = return y -> ColumnElement y = x.
-Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
-
 (** Manual addition *)
-
-Ltac inv_maybeBuildColumnReference H := 
-    match type of H with 
-    | option_map (Build_Glue _) _ = Some _ =>
-        OptionUtils.monadInv H
-    end.
-
-
-Definition maybeBuildTableColumns (t: Table_t) (c: option (list Column_t)) : option Table_columns_glue :=
-  option_map (Build_Glue _ _ t) c.
-
-Ltac inv_maybeBuildTableColumns H := 
-    match type of H with 
-    | maybeBuildTableColumns _ _ = Some _ =>
-        unfold maybeBuildTableColumns in H ; 
-        OptionUtils.monadInv H
-    end.
 
 
 Definition getId (r : Element) : nat :=

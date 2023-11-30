@@ -151,24 +151,6 @@ Lemma Mealy_invert :
 Proof. intro k ; destruct k ; simpl; congruence.  Qed. 
 
 
-Lemma Element_dec : 
-  forall (a: Element),
-(instanceof State_K a) = true\/(instanceof Transition_K a) = true
-.
-Proof. destruct a ; auto. Qed. 
-
-
-Lemma StateElement_cast :
-  forall x y,
-    unbox State_K x = return y -> StateElement y = x.
-Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
-
-
-Lemma TransitionElement_cast :
-  forall x y,
-    unbox Transition_K x = return y -> TransitionElement y = x.
-Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
-
 
 (** Added Manually *)
 

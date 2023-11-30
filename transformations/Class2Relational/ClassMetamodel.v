@@ -170,30 +170,6 @@ Definition getAttribute_type (a : Attribute_t) (m : ClassModel) : option Class_t
 
 
 
-(** Useful lemmas *)
-Lemma Class_invert : 
-  forall (k: ElementKind) (t1 t2: getTypeByEKind k),
-    constructor k t1 = constructor k t2 -> t1 = t2.
-Proof. intro k ; destruct k ; simpl; congruence.  Qed. 
-
-
-Lemma Element_dec : 
-  forall (a: Element),
-(instanceof Class_K a) = true\/(instanceof Attribute_K a) = true
-.
-Proof. destruct a ; auto. Qed. 
-
-
-Lemma ClassElement_cast :
-  forall x y,
-    unbox Class_K x = return y -> ClassElement y = x.
-Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
-
-
-Lemma AttributeElement_cast :
-  forall x y,
-    unbox Attribute_K x = return y -> AttributeElement y = x.
-Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
 
 (** Manual addition *)
 Definition getClass_attributesElements (c : Class_t) (m : ClassModel) : option (list Element) :=
@@ -209,12 +185,6 @@ Ltac inv_getAttribute_typeElement H :=
        OptionUtils.monadInv H
    end.
 
-
-Definition defaultInstanceOfClass (c: ElementKind) : (getTypeByEKind c) :=
-  match c with
-  | Class_K => (Build_Class_t 0 "")
-  | Attribute_K => (Build_Attribute_t 0 false "")
-  end.
 
 
 Definition getId (c : Element) : nat :=

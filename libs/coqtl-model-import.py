@@ -216,7 +216,7 @@ def type_instance(metamodel):
     lst.append("{|")
     lst.append("  ElementType := Element ;")
     lst.append("  LinkType := Link ;")
-    lst.append("  elements_eqdec := Element_beq ;")
+    lst.append("  elements_eq_dec := Element_eq_dec ;")
     lst.append("|}.")
     lst.append(br())
 
@@ -279,36 +279,6 @@ def general_function(eClasses, metamodel):
     return join(lst)
 
 
-def useful_lemma(eClasses, metamodel):
-    lst = []  
-    lst.append("(** Useful lemmas *)")
-
-    lst.append(f"Lemma {metamodel.name}_invert : ")
-    lst.append("  forall (k: ElementKind) (t1 t2: getTypeByEKind k),")
-    lst.append("    constructor k t1 = constructor k t2 -> t1 = t2.")
-    lst.append("Proof. Admitted. ")
-    lst.append(br())
-
-    lst.append(f"Lemma Element_dec : ")
-    lst.append("  forall (a: Element),")
-    tmp_lst = []
-    for eClass in eClasses:
-        tmp_lst.append(f"(instanceof {eClass.name}_K a) = true")
-    lst.append("\/".join(tmp_lst))
-    lst.append(".")
-    lst.append("Proof. Admitted. ")
-    lst.append(br())
-
-    for eClass in eClasses:
-        lst.append(f"Lemma {eClass.name}Element_cast :")
-        lst.append( "  forall x y,")
-        lst.append(f"    unbox {eClass.name}_K x = return y -> {eClass.name}Element y = x.")
-        lst.append("Proof. Admitted. ")
-        lst.append(br())
-
-    lst.append(br())
-
-    return join(lst)
 
 def genCoqFile(mm_root, eClasses):
     s = ""
@@ -322,7 +292,6 @@ def genCoqFile(mm_root, eClasses):
     s += reflective_function(eClasses)
     s += type_instance(mm_root)
     s += general_function(eClasses, mm_root)
-    s += useful_lemma(eClasses, mm_root)
 
     return s
 

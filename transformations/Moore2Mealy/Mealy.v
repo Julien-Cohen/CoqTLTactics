@@ -184,31 +184,6 @@ Definition WF_transition_source_exists (m:M) : Prop :=
     SUCCESS ( getTransition_source m t ).
 
 
-(** ***  Useful lemmas *)
-Lemma Mealy_invert : 
-  forall (k: ElementKind) (t1 t2: getTypeByEKind k),
-    constructor k t1 = constructor k t2 -> t1 = t2.
-Proof. intro k ; destruct k ; simpl; congruence.  Qed. 
-
-
-Lemma Element_dec : 
-  forall (a: Element),
-(instanceof State_K a) = true\/(instanceof Transition_K a) = true
-.
-Proof. destruct a ; auto. Qed. 
-
-
-Lemma State_cast :
-  forall x y,
-    unbox State_K x = return y -> State y = x.
-Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
-
-
-Lemma Transition_cast :
-  forall x y,
-    unbox Transition_K x = return y -> Transition y = x.
-Proof. destruct x ; destruct y ; compute ; congruence. Qed. 
-
 
 (** Added Manually *)
 
