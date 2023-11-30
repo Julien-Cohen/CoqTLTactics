@@ -19,37 +19,37 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 #[export]
 Instance F2PConfiguration : TransformationConfiguration := 
-  Build_TransformationConfiguration FamiliesMetamodel_Metamodel_Instance PersonsMetamodel_Metamodel_Instance.
+  Build_TransformationConfiguration Families.MM Persons.MM.
 
 #[export]
 Instance Families2PersonsConfiguration : ModelingTransformationConfiguration F2PConfiguration :=
- Build_ModelingTransformationConfiguration F2PConfiguration FamiliesMetamodel_ModelingMetamodel_Instance PersonsMetamodel_ModelingMetamodel_Instance.
+ Build_ModelingTransformationConfiguration F2PConfiguration Families.MMM Persons.MMM. 
 
 
 Open Scope coqtl.
 
-Definition Member_isFemale (m: Member) (f: FamiliesModel): bool :=
-  match Member_getFamilyMother m f with
+Definition Member_isFemale (m:Member_t) (f:Families.M) (*fixme*): bool :=
+  match getMember_familyMother f m with
   | Some f => true
   | None => 
-    match Member_getFamilyDaughter m f with
+    match getMember_familyDaughter f m with
     | Some f => true
     | None => false
     end
   end.
 
-Definition Member_getFamilyName (m: Member) (f: FamiliesModel): string :=
-  match Member_getFamilyFather m f with
-  | Some f => Family_getLastName f
+Definition Member_getFamilyName (m: Member_t) (f: Families.M): string :=
+  match getMember_familyFather f m with
+  | Some f => f.(Family_lastName)
   | None => 
-    match Member_getFamilyMother m f with
-    | Some f => Family_getLastName f
+    match getMember_familyMother f m with
+    | Some f => f.(Family_lastName)
     | None => 
-      match Member_getFamilySon m f with
-      | Some f => Family_getLastName f
+      match getMember_familySon f m with
+      | Some f => f.(Family_lastName)
       | None => 
-        match Member_getFamilyDaughter m f with
-        | Some f => Family_getLastName f
+        match getMember_familyDaughter f m with
+        | Some f => f.(Family_lastName)
         | None => ""
         end
       end
@@ -60,27 +60,27 @@ Definition Member_getFamilyName (m: Member) (f: FamiliesModel): string :=
     transformation
     [
       rule "Member2Male"
-      from [MemberClass]
+      from [Member_K]
       where (fun m member => negb (Member_isFemale member m))
       to 
       [
-        ELEM "t" ::: MaleClass 
+        ELEM "t" ::: Male_K 
           << fun i m member => 
-            return BuildMale (BuildPerson 
-              ((Member_getFirstName member) ++ " " ++
+            return Build_Male_t (Build_Person_t 
+              ((member.(Member_firstName)) ++ " " ++
                 (Member_getFamilyName member m))) >>
           
       ];
 
       rule "Member2Female"
-      from [MemberClass]
+      from [Member_K]
       where (fun m member => Member_isFemale member m)
       to 
       [
-        ELEM "t" ::: FemaleClass 
+        ELEM "t" ::: Female_K 
           << fun i m member => 
-            return BuildFemale (BuildPerson 
-              ((Member_getFirstName member) ++ " " ++
+            return Build_Female_t (Build_Person_t 
+              ((member.(Member_firstName)) ++ " " ++
                 (Member_getFamilyName member m))) >>
           
       ]

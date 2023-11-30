@@ -11,9 +11,9 @@ Require Import core.utils.Utils.
 Require Import transformations.Families2Persons.Families2Persons.
 
 Theorem tr_FamiliesToPersons :
-    forall (sm : FamiliesModel) (te : PersonsMetamodel_Object), 
+    forall (sm : Families.M) (te : Persons.Element), 
       In te (execute Families2Persons sm).(modelElements) ->
-      (exists (se : FamiliesMetamodel_Object),
+      (exists (se : Families.Element),
           In se sm.(modelElements) /\
           In te
             (produced_elements (traceTrOnPiece Families2Persons sm [se]))).

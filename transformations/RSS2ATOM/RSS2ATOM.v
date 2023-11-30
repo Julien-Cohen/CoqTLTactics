@@ -19,15 +19,15 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 #[export]
 Instance R2AConfiguration : TransformationConfiguration := 
-  Build_TransformationConfiguration RSSMetamodel_Metamodel_Instance ATOMMetamodel_Metamodel_Instance.
+  Build_TransformationConfiguration RSS.MM ATOM.MM.
 
 #[export]
 Instance RSS2ATOMConfiguration : ModelingTransformationConfiguration R2AConfiguration :=
- Build_ModelingTransformationConfiguration R2AConfiguration RSSMetamodel_ModelingMetamodel_Instance ATOMMetamodel_ModelingMetamodel_Instance.
+ Build_ModelingTransformationConfiguration R2AConfiguration RSS.MMM ATOM.MMM.
 
 Open Scope coqtl.
 
 Definition RSS2ATOM :=
-  transformation nil.
+  transformation nil. (* FIXME *)
 
 Close Scope coqtl.
