@@ -122,7 +122,7 @@ Proof.
 
   
   destruct t0.  
-  unfold convert_attribute.
+  unfold C2RTactics.convert_attribute.
   simpl (ClassMetamodel.Attribute_id _)  in *.
   simpl (ClassMetamodel.Attribute_name _) in *. 
    simpl ClassMetamodel.Attribute_derived in *. (* derived a = false *)

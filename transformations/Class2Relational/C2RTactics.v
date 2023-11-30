@@ -31,4 +31,15 @@ Ltac toEDataT H :=
        destruct E ; [ | discriminate H] 
    end.
 
+Definition convert_class c :=
+  {| 
+    Table_id := c.(Class_id) ; 
+    Table_name := c.(Class_name) 
+  |}.
+
+Definition convert_attribute c :=
+  {| 
+    Column_id := c.(Attribute_id) ;
+    Column_name := c.(Attribute_name)
+  |}.
 

@@ -39,7 +39,7 @@ Lemma class_in_trace c (cm : ClassModel) :
     (
        {| 
          source := ([ClassElement c],0,"tab")  ;
-         produced := TableElement (convert_class c)
+         produced := TableElement (C2RTactics.convert_class c)
        |}
     ) 
     (RichTraceLink.drop (compute_trace Class2Relational cm)).
@@ -98,7 +98,7 @@ Lemma in_find m :
   forall c,
     In {|
          source :=  ([ClassElement c], 0, "tab") ;
-         produced := TableElement (convert_class c)
+         produced := TableElement (C2RTactics.convert_class c)
       |}
       (RichTraceLink.drop (compute_trace Class2Relational m)) ->
       find 
@@ -107,7 +107,7 @@ Lemma in_find m :
         Some 
           {|
             source := ([ClassElement c], 0, "tab") ;
-            produced := TableElement (convert_class c)
+            produced := TableElement (C2RTactics.convert_class c)
           |}.
 Proof.
 
@@ -131,11 +131,11 @@ Qed.
 Local Lemma in_trace_resolve m c : 
   In {|
       source := ([ClassElement c], 0, "tab") ;
-      produced := TableElement (convert_class c)
+      produced := TableElement (C2RTactics.convert_class c)
     |} 
     (RichTraceLink.drop (compute_trace Class2Relational m)) ->
   Resolve.resolveIter (RichTraceLink.drop (compute_trace Class2Relational m)) "tab" [ClassElement c] 0 = 
-    Some (TableElement (convert_class c)).
+    Some (TableElement (C2RTactics.convert_class c)).
 Proof.
   unfold Resolve.resolveIter. 
   intros IN1.
@@ -153,10 +153,10 @@ Lemma in_model_resolve c (cm : ClassModel) :
   In (ClassElement c) cm.(modelElements) -> 
   
   Resolve.resolve (RichTraceLink.drop (compute_trace Class2Relational cm)) "tab" [ClassElement c]  =  
-    Some (TableElement (convert_class c)) 
+    Some (TableElement (C2RTactics.convert_class c)) 
   
   /\ In 
-       (TableElement (convert_class c)) 
+       (TableElement (C2RTactics.convert_class c)) 
        (execute Class2Relational cm).(modelElements).
 Proof.
   intro H.
