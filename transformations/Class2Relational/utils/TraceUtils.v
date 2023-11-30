@@ -60,11 +60,11 @@ Proof.
     repeat split.
     { apply incl_singleton. assumption. } 
     { compute. auto. }
-    { compute. left. reflexivity. }
+    { TacticsFW.first_in_list. }
   }
   { reflexivity. }
 Qed.
-(* Qed long. Pourquoi ? parce que plusieurs compute dans la preuve ?*)
+
 
 (** Discrminating predicate to switch between [List.In] and [List.find]. 
 
