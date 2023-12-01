@@ -140,11 +140,33 @@ Ltac second_rule :=
 
 (** --------------------------------- *)
 
+#[global]
+Hint Unfold 
+  Semantics.traceTrOnPiece 
+  Semantics.traceRuleOnPiece 
+  Semantics.traceIterationOnPiece 
+  Semantics.traceElementOnPiece 
+  : trace.
+
+#[global]
+Hint Unfold 
+  Semantics.produced_elements 
+  : trace.
+
+#[global]
+Hint Unfold 
+  Parser.parseRule 
+  Parser.parseOutputPatternUnit
+  Parser.parseOutputPatternLinks
+  Parser.parseOutputPatternLink
+  : parse.
+
 (* fixme : a similar tactic exists *)
 Ltac unfold_parse :=
-  unfold Parser.parseOutputPatternUnit,
-    Parser.parseOutputPatternLinks,
-    Parser.parseOutputPatternLink.
+  autounfold with parse.
+
+Ltac unfold_trace :=
+  autounfold with trace.
 
 (* fixme : a similar tactic exists *)
 Ltac unfold_accessors :=

@@ -35,7 +35,12 @@ Definition convert_state (s:Moore.State_t) : Mealy.State_t :=
 Definition convert_transition m (t : Moore.Transition_t) : option Mealy.Transition_t :=
   match Moore.getTransition_target m t with
   | None => None
-  | Some s => Some (Mealy.Build_Transition_t t.(Moore.Transition_id) t.(Moore.Transition_input) s.(Moore.State_output))
+  | Some s => 
+      Some {| 
+          Mealy.Transition_id :=  t.(Moore.Transition_id) ;
+          Mealy.Transition_input := t.(Moore.Transition_input) ;
+          Mealy.Transition_output := s.(Moore.State_output) 
+        |}
   end.
 
 Definition Moore2Mealy' :=

@@ -217,7 +217,10 @@ Lemma source_link_bw :
         In 
           (Moore.TransitionSource 
              (glue 
-                 Moore.Build_Transition_t t'.(Mealy.Transition_id) t'.(Mealy.Transition_input)
+                 {| 
+                   Moore.Transition_id := t'.(Mealy.Transition_id) ; 
+                   Moore.Transition_input := t'.(Mealy.Transition_input)
+                 |}
                with s)
           )
           m.(modelLinks).
@@ -284,7 +287,7 @@ Lemma target_link_bw :
         In 
           (Moore.TransitionTarget 
              (glue 
-                 Moore.Build_Transition_t t'.(Mealy.Transition_id) t'.(Mealy.Transition_input) 
+                 {| Moore.Transition_id:= t'.(Mealy.Transition_id) ; Moore.Transition_input := t'.(Mealy.Transition_input) |} 
                with s)
           )
           m.(modelLinks).

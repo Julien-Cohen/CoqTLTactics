@@ -8,7 +8,7 @@ Require Moore2Mealy.MooreWF.
 Require Moore2Mealy.MealyWF.
 
 Import OptionUtils.
-
+Import Strings.String. (* for notation *)
 
 Section Params.
 
@@ -117,5 +117,63 @@ Proof.
   exists t0.
   split ; auto.
 Qed.
+
+
+Lemma transition_element_bw :
+  forall (t:Mealy.Transition_t),
+    List.In (Mealy.Transition t) (Model.modelElements (Semantics.execute  Moore2Mealy.Moore2Mealy m)) ->
+    exists t0,
+      List.In (Moore.Transition t0) (Model.modelElements m) /\ Some t = convert_transition m t0.
+Proof.
+  intros t H.
+  TacticsBW.exploit_element_in_result H.
+  exists t1.
+  split ; auto. 
+Qed.
+
+
+
+Lemma transition_element_fw : 
+  forall (t:Moore.Transition_t),
+    List.In (Moore.Transition t) (Model.modelElements m) ->
+    exists t', 
+      convert_transition m t = Some t' /\
+        List.In (Mealy.Transition t')  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
+Proof.
+  intros t IN.
+  destruct (WF_T _ IN) as (s & G).
+
+  assert ( C : convert_transition m t = Some
+             {|
+               Mealy.Transition_id := Moore.Transition_id t;
+               Mealy.Transition_input := Moore.Transition_input t;
+               Mealy.Transition_output := Moore.State_output s
+             |}).
+  { unfold convert_transition. rewrite G. reflexivity. }
+
+  rewrite C.
+  eexists ; split ; [ reflexivity| ].
+  TacticsFW.transform_element_fw_tac ; [].
+  (* Here we would like to "compute", but this does not work because the value of this computation relies on the value of [m], which is unknown here ; we have to [rewrite G] to get rid of the value of [m]. *)
+  simpl.
+  
+  autounfold with parse.
+  autounfold with trace.
+  
+  apply List.in_map_iff.
+  setoid_rewrite List.in_flat_map.
+  eexists ; split ; [ | eexists ; split ; [ TacticsFW.first_in_list | ]].
+
+
+  2:{
+    autounfold with parse ; simpl.
+
+    unfold ConcreteExpressions.makeElement ; simpl.
+    unfold ConcreteExpressions.wrapElement ; simpl.
+    rewrite C. left ; reflexivity.
+  }
+  { reflexivity. }
+Qed.
+
 
 End Params.
