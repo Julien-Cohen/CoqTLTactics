@@ -44,10 +44,11 @@ Proof.
   induction l.
   - inversion H.
   - destruct H.
-    + simpl. rewrite H. rewrite H0.
+    + subst. simpl. rewrite H0.
       simpl. apply incl_appl. apply incl_refl.
-    + simpl. rewrite concat_app. apply incl_appr.
-      apply IHl. assumption.
+    + simpl. destruct (f a0) ; simpl.
+      * apply incl_appr. auto.
+      * auto.
 Qed.
 
 
@@ -99,16 +100,8 @@ Proof.
   intros.
   apply concat_exists in H.
   destruct H as [l2 [H H0]].
-  induction l.
-  - inversion H.
-  - simpl in H. apply in_app_or in H. destruct H.
-    + destruct (f a) eqn: fa.
-      * exists a. split.
-        -- left. reflexivity.
-        -- rewrite fa. destruct H as [H|[]]. rewrite H. exact H0.
-      * inversion H.
-    + apply IHl in H. destruct H as [x [H H']].
-      exists x. split.
-      * right. apply H.
-      * apply H'.
+  apply optionList2List_In_eq in H.
+  apply in_map_iff in H.
+  destruct H as (?&?&?).
+  eexists ; split ; [ | rewrite H] ; assumption.
 Qed.

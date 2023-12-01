@@ -73,7 +73,7 @@ Ltac destruct_in_optionListToList H :=
 (** *** Lists of options to lists *)
 
 Definition optionList2List {A : Type} (l:list (option A)) : list A :=
-  flat_map optionToList l.
+  List.fold_right (fun e r => match e with None => r | Some a => a :: r end) nil l.
 
 
 Theorem optionListToList_In:
@@ -120,74 +120,38 @@ Proof.
       * assumption.
 Qed.
 
+Theorem optionList2List_In_eq :
+  forall (A:Type) (a: A) (l: list (option A)),
+    In (Some a) l <->
+    In a (optionList2List l).
+Proof.
+  intros ; split ; intro.
+  + apply optionList2List_In_inv ; assumption.
+  + apply optionList2List_In ; assumption.
+Qed.
+
 (** *** Lifting lists of heterogeneous types *)
 
 (** Consider a type A : C1 of t1 | C2 of t2. Here we consider we have lists of A and we want to deal with lists of t1 or lists of t2. *) 
 
-Fixpoint lift_list {A} {B} (f:A->option B) (s:list A): list B :=
-  match s with 
-  | nil => nil
-  | a::r => match f a with
-            | Some v =>  v :: lift_list f  r
-            | None => lift_list f r
-            end
-end.
+Definition lift_list {A} {B} (f:A->option B) (s:list A): list B :=
+  optionList2List (List.map f s).
 
-Lemma lift_list_map_optiontolist {A} {B} :
-  forall (f:A->option B)  s,
-    lift_list f s = optionList2List (map f s).
-Proof.
-  induction s ; simpl.
-  + reflexivity.
-  + destruct (f a) ; simpl.
-    - rewrite <- IHs. reflexivity.
-    - exact IHs.
-Qed.
 
 Lemma In_lift {A} {B} :
   forall (f:A->option B) e s,
   In e (lift_list f s) <->
   exists v, f v = Some e /\ In v s.
 Proof.
-  intros f e s.
-  split.  
-  {
-    rewrite lift_list_map_optiontolist.
-    intro H.
-    apply optionList2List_In in H.
-    apply List.in_map_iff. exact H.
-  }
-  {
-    intro H.
-    rewrite lift_list_map_optiontolist.
-    apply optionList2List_In_inv.
-    apply in_map_iff.
-    exact H.    
-  }
+  unfold lift_list.
+  setoid_rewrite <- optionList2List_In_eq.
+  setoid_rewrite List.in_map_iff. tauto.
 Qed. 
 
 
-Fixpoint find_lift {A} {B} (f1:A->option B) (f2: B->bool) (s:list A): option B :=
-  match s with 
-  | nil => None
-  | a::r => match f1 a with
-            | Some v => if f2 v then Some v else find_lift f1 f2 r
-            | None => find_lift f1 f2 r
-            end
-end.
+Definition find_lift {A} {B} (f1:A->option B) (f2: B->bool) (s:list A): option B :=
+  List.find f2 (optionList2List (List.map f1 s)).
 
-
-Lemma find_lift_filter_lift {A} {B} :
-  forall (f1:A->option B) (f2:B->bool) s,
-         find_lift f1 f2 s = find f2 (lift_list f1 s).
-Proof.
-  induction s.
-  + reflexivity.
-  + simpl.
-    destruct (f1 a) ; simpl.
-    - rewrite <- IHs. reflexivity.
-    - exact IHs.
-Qed.
 
 Lemma find_some_poor {A} {B} : 
   forall (f1:A->option B) (f2:B->bool) s r,
@@ -195,8 +159,7 @@ Lemma find_some_poor {A} {B} :
     List.In r (lift_list f1 s) /\ f2 r = true.
 Proof.
   intros f1 f2 s r H.
-  rewrite find_lift_filter_lift in H.
-  apply List.find_some ; exact H.
+  apply List.find_some. exact H.
 Qed.
 
 Lemma find_lift_some {A} {B} : 
@@ -219,7 +182,6 @@ Proof.
   intros f1 f2 s.
   split.
   { 
-    rewrite find_lift_filter_lift.
     intro H. 
     intros x IN.
     destruct (f1 x) eqn:? ; [ | solve [auto] ].
@@ -252,49 +214,21 @@ Lemma in_find_lift {A} {B} e a (l:list A) (f1:A->option B) (f2:B->bool) :
   OptionListUtils.find_lift f1 f2 l = Some a.
 Proof.
   intros.
-  rewrite find_lift_filter_lift.
   apply ListUtils.in_find ; auto.
   apply In_lift ; eauto.
 Qed.
 
-Fixpoint filter_lift {A} {B} (f1:A->option B) (f2:B->bool)(s:list A): list B :=
-  match s with 
-  | nil => nil
-  | a::r => match f1 a with
-            | Some v =>  if f2 v then v :: filter_lift f1 f2 r else filter_lift f1 f2 r
-            | None => filter_lift f1 f2 r
-            end
-end.
-
-Lemma filter_lift_lift_list {A} {B} :
-  forall (f1:A->option B) (f2:B->bool) s,
-    filter_lift f1 f2 s = filter f2 (lift_list f1 s).
-Proof.
-  induction s ; simpl.
-  + reflexivity.
-  + destruct (f1 a) ; simpl.
-    -  rewrite <- IHs. reflexivity.
-    - exact IHs.
-Qed.
+Definition filter_lift {A} {B} (f1:A->option B) (f2:B->bool)(s:list A): list B := filter f2 (lift_list f1 s).
 
 Lemma filter_lift_in {A} {B} :
   forall (f1:A->option B) (f2:B->bool) s v,
     In v (filter_lift f1 f2 s) <-> (exists a, In a s /\ f1 a = Some v /\ f2 v = true).  
 Proof.
   intros f1 f2 s v.
-  rewrite filter_lift_lift_list.
+  unfold filter_lift.
+  rewrite List.filter_In.
+  rewrite In_lift. 
   split ; intro H.
-  {
-    apply List.filter_In in H.
-    destruct H as (H & H1).
-    apply In_lift in H.
-    destruct H as (? & ? & ?) ; eauto.
-  }
-  { 
-    apply List.filter_In. 
-    destruct H as (? & ? & ? & ?).
-    split ; [ | assumption ].
-    apply In_lift.
-    eauto.
-  }
+  { destruct H as ((?&?&?) & ?) ; eauto. }
+  { destruct H as (? & ? & ? & ?) ; eauto. }
 Qed.

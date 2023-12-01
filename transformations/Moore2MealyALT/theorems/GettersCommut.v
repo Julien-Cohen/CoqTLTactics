@@ -50,7 +50,7 @@ Proof.
   PropUtils.inj H4.
 
   unfold Moore.getTransition_source.
-  rewrite OptionListUtils.find_lift_filter_lift.
+  unfold OptionListUtils.find_lift.
 
   destruct (Elements.convert_transition_nec _ _  _ H0) as  (s0 & Heqo & E) ; subst t'.
 
