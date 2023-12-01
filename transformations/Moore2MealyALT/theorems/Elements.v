@@ -35,7 +35,13 @@ Qed.
 Definition convert_transition  (t : Moore.Transition_t)   :option Mealy.Transition_t :=
   match Moore.getTransition_target m t with
   | None => None
-  | Some s => Some (Mealy.Build_Transition_t t.(Moore.Transition_source) t.(Moore.Transition_input) s.(Moore.State_output) t.(Moore.Transition_dest))
+  | Some s => 
+      Some {|
+          Mealy.Transition_source := t.(Moore.Transition_source)  ;
+          Mealy.Transition_input := t.(Moore.Transition_input) ;
+          Mealy.Transition_output := s.(Moore.State_output) ;
+          Mealy.Transition_dest := t.(Moore.Transition_dest)
+        |}
   end.
 
 
@@ -71,11 +77,11 @@ Lemma convert_transition_ok2 : forall t,
     exists s,
       Moore.getTransition_target m t = Some s /\
         convert_transition t = 
-          Some (Mealy.Build_Transition_t 
-                  t.(Moore.Transition_source) 
-                      t.(Moore.Transition_input) 
-                          s.(Moore.State_output) 
-                              t.(Moore.Transition_dest)).
+          Some {| Mealy.Transition_source := t.(Moore.Transition_source) ;
+                 Mealy.Transition_input := t.(Moore.Transition_input)  ;
+                 Mealy.Transition_output := s.(Moore.State_output) ;
+                 Mealy.Transition_dest := t.(Moore.Transition_dest) 
+               |}.
 Proof.
   intros t H.
   apply WF_T in H.
@@ -120,10 +126,7 @@ Lemma state_element_bw :
       List.In (Moore.StateElement s0) (Model.modelElements m) /\ s = convert_state s0.
 Proof.
   intros s H.
-  TacticsBW.exploit_element_in_result H.
-  compute in t0.
-  exists t0.
-  split ; auto.
+  TacticsBW.exploit_element_in_result H. eauto.
 Qed.
 
 Lemma transition_element_bw :

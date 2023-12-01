@@ -19,7 +19,12 @@ Record State_t := { State_id : NodeId }.
 Scheme Equality for State_t.
 
 
-Record Transition_t := { Transition_source : NodeId ; Transition_input : string ; Transition_output : string ; Transition_dest : NodeId }.
+Record Transition_t := { 
+    Transition_source : NodeId ;
+    Transition_input : string ;
+    Transition_output : string ;
+    Transition_dest : NodeId 
+  }.
 Scheme Equality for Transition_t.
 
 
