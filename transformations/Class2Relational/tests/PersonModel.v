@@ -17,7 +17,11 @@ Definition PersonModel : Model ClassMetamodel.MM :=
   (Build_Model ClassMetamodel.MM
      (* elements *)
      (     (ClassElement (Build_Class_t 0 "Person")) 
-        :: (AttributeElement (Build_Attribute_t 1 false "parent")) 
+        :: (AttributeElement {| 
+                Attribute_id := 1 ; 
+                Attribute_derived := false ;
+                Attribute_name := "parent" 
+              |}) 
         :: (AttributeElement (Build_Attribute_t 2 true "sibling")) 
         :: nil)
 
