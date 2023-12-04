@@ -27,19 +27,19 @@ Definition PersonModel : Model ClassMetamodel.MM :=
 
      (* links *)
      (     (Class_attributesLink {| 
-                left_glue := Build_Class_t "Person" ;
-                right_glue := (Build_Attribute_t false "parent")::nil
+                src := Build_Class_t "Person" ;
+                trg := (Build_Attribute_t false "parent")::nil
               |} )
         :: (Attribute_typeLink {| 
-                                  left_glue := Build_Attribute_t false "parent" ;
-                                  right_glue := Build_Class_t "Person" |}
+                                  src := Build_Attribute_t false "parent" ;
+                                  trg := Build_Class_t "Person" |}
         ) 
         :: (Class_attributesLink {| 
-                left_glue := (Build_Class_t "Person") ;
-                right_glue := ((Build_Attribute_t true "sibling")::nil) 
+                src := (Build_Class_t "Person") ;
+                trg := ((Build_Attribute_t true "sibling")::nil) 
               |} ) 
         :: (Attribute_typeLink {| 
-                left_glue := Build_Attribute_t true "sibling" ;
-                right_glue := Build_Class_t "Person" |}) 
+                src := Build_Attribute_t true "sibling" ;
+                trg := Build_Class_t "Person" |}) 
         :: nil)
   ).

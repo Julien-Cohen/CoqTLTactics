@@ -142,8 +142,8 @@ Definition ClassModel := Model MM.
 Fixpoint getClass_attributesOnLinks (c : Class_t) (l : list Link) : option (list Attribute_t) :=
  match l with
   | (Class_attributesLink x) :: l1 =>
-    if Class_t_beq x.(left_glue) c
-      then (Some x.(right_glue))
+    if Class_t_beq x.(src) c
+      then (Some x.(trg))
       else getClass_attributesOnLinks c l1
   | _ :: l1 => getClass_attributesOnLinks c l1
   | nil => None
@@ -157,8 +157,8 @@ Definition getClass_attributes (c : Class_t) (m : ClassModel) : option (list Att
 Fixpoint getAttribute_typeOnLinks (a : Attribute_t) (l : list Link) : option (Class_t) :=
  match l with
   | (Attribute_typeLink x) :: l1 =>
-    if Attribute_t_beq x.(left_glue) a
-      then (Some x.(right_glue))
+    if Attribute_t_beq x.(src) a
+      then (Some x.(trg))
       else getAttribute_typeOnLinks a l1
   | _ :: l1 => getAttribute_typeOnLinks a l1
   | nil => None

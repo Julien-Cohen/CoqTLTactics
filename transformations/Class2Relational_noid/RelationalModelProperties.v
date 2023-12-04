@@ -27,7 +27,7 @@ Proof.
   + reflexivity.
   + destruct a ; [ solve [auto] | ].
     destruct g.
-    destruct (Column_t_beq left_glue c).
+    destruct (Column_t_beq src c).
     * reflexivity.
     * auto.
 Qed.
@@ -35,7 +35,7 @@ Qed.
 (* Used *)
 Lemma in_getColumnReferenceOnLinks_right :
   forall (l: list Link) v (x:Table_t),
-    In (Column_referenceLink {| left_glue := v ; right_glue := x |}) l -> 
+    In (Column_referenceLink {| src := v ; trg := x |}) l -> 
       exists r' : Table_t,
         getColumn_referenceOnLinks v l = return r'.
 Proof.
@@ -51,7 +51,7 @@ Proof.
     rewrite G.
     destruct a ; eauto ; [].
     destruct g.
-    destruct ( Column_t_beq left_glue v) ; eauto.
+    destruct ( Column_t_beq src v) ; eauto.
   }
 Qed.
 
@@ -59,8 +59,8 @@ Qed.
 Corollary in_getColumnReferenceOnLinks_right_2 :
   forall (l: list Link) v, 
       (exists (x:Table_t), In (Column_referenceLink {| 
-                                   left_glue := v ; 
-                                   right_glue := x |}) l) -> 
+                                   src := v ; 
+                                   trg := x |}) l) -> 
       exists r' : Table_t,
         getColumn_referenceOnLinks v l = return r'.
 Proof.
@@ -74,7 +74,7 @@ Qed.
 Lemma in_getColumnReferenceOnLinks_left :
   forall (l: list Link) col t, 
     getColumn_referenceOnLinks col l = return t -> 
-    In (Column_referenceLink {| left_glue := col ;  right_glue := t |}) l  
+    In (Column_referenceLink {| src := col ;  trg := t |}) l  
       .
 Proof.
   induction l ; simpl ; intros c r IN ; [ discriminate IN | ].
@@ -86,10 +86,10 @@ Proof.
   }    
   { (* columns *)
     destruct g.
-    destruct(Column_t_beq left_glue c) eqn:E.
+    destruct(Column_t_beq src c) eqn:E.
     {
       PropUtils.inj IN.
-      apply internal_Column_t_dec_bl in E ; subst left_glue.
+      apply internal_Column_t_dec_bl in E ; subst src.
       left ; reflexivity.
     }
     {
@@ -105,6 +105,6 @@ Qed.
 (* Used *)
 Definition wf_all_table_references_exist (rm:RelationalModel) :=
   forall col r, 
-    In (Column_referenceLink {| left_glue := col ;  right_glue := r |}) rm.(modelLinks) ->
+    In (Column_referenceLink {| src := col ;  trg := r |}) rm.(modelLinks) ->
     In (TableElement r) rm.(modelElements).
 

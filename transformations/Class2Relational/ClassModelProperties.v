@@ -13,8 +13,8 @@ Import Glue.
 Lemma getAttributeTypeOnLinks_In_right l t v : 
   getAttribute_typeOnLinks v l = return t ->
     In (Attribute_typeLink {| 
-            left_glue  := v ;
-            right_glue := t 
+            src  := v ;
+            trg := t 
           |})
       l.
 Proof.
@@ -46,8 +46,8 @@ Qed.
 Corollary getAttributeType_In_right att m t: 
   getAttribute_type att m = Some t ->
     In (Attribute_typeLink {| 
-            left_glue := att ;
-            right_glue := t |})
+            src := att ;
+            trg := t |})
       m.(modelLinks).
 Proof.
   unfold getAttribute_type.
@@ -57,8 +57,8 @@ Qed.
 (* Used *)
 Lemma getAttributeType_In_left att t (m:Model ClassMetamodel.MM): 
   In (Attribute_typeLink {| 
-          left_glue := att ;
-          right_glue := t 
+          src := att ;
+          trg := t 
         |})
     m.(modelLinks) ->
   exists r, getAttribute_type att m = Some r.
@@ -124,13 +124,13 @@ Definition wf_classmodel_unique_class_names (cm:ClassModel) :=
 Definition wf_classmodel_unique_attribute_types (cm:ClassModel) :=
   forall attr c1 c2,
   In (Attribute_typeLink {| 
-          left_glue := attr ; 
-          right_glue := c1
+          src := attr ; 
+          trg := c1
         |}) 
     cm.(modelLinks) ->
   In (Attribute_typeLink {| 
-          left_glue := attr ;
-          right_glue := c2 |})
+          src := attr ;
+          trg := c2 |})
     cm.(modelLinks) ->
           c1 = c2. 
 (** Reminder : If two attributes of different classes have the same name, they will have different identifiers and so they are different with respect to = and <> *)
@@ -144,7 +144,7 @@ Definition wf_classmodel_unique_attribute_link (cm:ClassModel) :=
   In (Class_attributesLink a1) cm.(modelLinks) ->
   In (Class_attributesLink a2) cm.(modelLinks) ->
   a1 <> a2 ->
-  a1.(left_glue) <> a2.(left_glue).
+  a1.(src) <> a2.(src).
 
 
 (** A class does not contain two times the same attribute (same name and identifier) *)
@@ -153,8 +153,8 @@ Definition wf_classmodel_unique_attribute_link (cm:ClassModel) :=
 Definition wf_classmodel_unique_attribute_per_class (cm:ClassModel) :=
   forall c l a1 a2,
   In (Class_attributesLink {| 
-          left_glue := c ; 
-          right_glue := l |})
+          src := c ; 
+          trg := l |})
     cm.(modelLinks) ->
   In a1 l ->
   In a2 l ->
@@ -172,8 +172,8 @@ Definition wf_classmodel_unique_attribute_per_class (cm:ClassModel) :=
 Definition wf_classmodel_types_exist (cm:ClassModel) :=
   forall attr c,
     In (Attribute_typeLink {| 
-            left_glue := attr ;
-            right_glue := c |})
+            src := attr ;
+            trg := c |})
       cm.(modelLinks)  ->
     In (ClassElement c) cm.(modelElements).
 
@@ -199,8 +199,8 @@ Qed.
 Lemma getAttributeType_In_left_wf att t (m:Model ClassMetamodel.MM): 
   wf_classmodel_unique_attribute_types m ->
   In (Attribute_typeLink {| 
-          left_glue := att ; 
-          right_glue := t |})
+          src := att ; 
+          trg := t |})
     m.(modelLinks) ->
   getAttribute_type att m = Some t.
 Proof.

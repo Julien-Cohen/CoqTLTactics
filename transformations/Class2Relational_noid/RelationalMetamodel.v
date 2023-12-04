@@ -146,8 +146,8 @@ Definition RelationalModel := Model MM.
 Fixpoint getTable_columnsOnLinks (t : Table_t) (l : list Link) : option (list Column_t) :=
  match l with
   | (Table_columnsLink x) :: l1 =>
-    if Table_t_beq x.(left_glue) t
-      then (Some x.(right_glue))
+    if Table_t_beq x.(src) t
+      then (Some x.(trg))
       else getTable_columnsOnLinks t l1
   | _ :: l1 => getTable_columnsOnLinks t l1
   | nil => None

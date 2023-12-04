@@ -192,8 +192,8 @@ Definition M := Model MM.
 Fixpoint getFamily_ffatherOnLinks (f : Family_t) (l : list Link) : option (Member_t) :=
  match l with
   | (Family_ffatherLink x) :: l1 =>
-    if Family_t_beq x.(left_glue) f
-      then (Some x.(right_glue))
+    if Family_t_beq x.(src) f
+      then (Some x.(trg))
       else getFamily_ffatherOnLinks f l1
   | _ :: l1 => getFamily_ffatherOnLinks f l1
   | nil => None
@@ -207,8 +207,8 @@ Definition getFamily_ffather (m : M) (f : Family_t) : option (Member_t) :=
 Fixpoint getFamily_fmotherOnLinks (f : Family_t) (l : list Link) : option (Member_t) :=
  match l with
   | (Family_fmotherLink x) :: l1 =>
-    if Family_t_beq x.(left_glue) f
-      then (Some x.(right_glue))
+    if Family_t_beq x.(src) f
+      then (Some x.(trg))
       else getFamily_fmotherOnLinks f l1
   | _ :: l1 => getFamily_fmotherOnLinks f l1
   | nil => None
@@ -222,8 +222,8 @@ Definition getFamily_fmother (m : M) (f : Family_t) : option (Member_t) :=
 Fixpoint getFamily_fsonsOnLinks (f : Family_t) (l : list Link) : option (list Member_t) :=
  match l with
   | (Family_fsonsLink x) :: l1 =>
-    if Family_t_beq x.(left_glue) f
-      then (Some x.(right_glue))
+    if Family_t_beq x.(src) f
+      then (Some x.(trg))
       else getFamily_fsonsOnLinks f l1
   | _ :: l1 => getFamily_fsonsOnLinks f l1
   | nil => None
@@ -237,8 +237,8 @@ Definition getFamily_fsons (m : M) (f : Family_t) : option (list Member_t) :=
 Fixpoint getFamily_fdaughtersOnLinks (f : Family_t) (l : list Link) : option (list Member_t) :=
  match l with
   | (Family_fdaughtersLink x) :: l1 =>
-    if Family_t_beq x.(left_glue) f
-      then (Some x.(right_glue))
+    if Family_t_beq x.(src) f
+      then (Some x.(trg))
       else getFamily_fdaughtersOnLinks f l1
   | _ :: l1 => getFamily_fdaughtersOnLinks f l1
   | nil => None
@@ -252,8 +252,8 @@ Definition getFamily_fdaughters (m : M) (f : Family_t) : option (list Member_t) 
 Fixpoint getMember_familyFatherOnLinks (m : Member_t) (l : list Link) : option (Family_t) :=
  match l with
   | (Member_familyFatherLink x) :: l1 =>
-    if Member_t_beq x.(left_glue) m
-      then (Some x.(right_glue))
+    if Member_t_beq x.(src) m
+      then (Some x.(trg))
       else getMember_familyFatherOnLinks m l1
   | _ :: l1 => getMember_familyFatherOnLinks m l1
   | nil => None
@@ -267,8 +267,8 @@ Definition getMember_familyFather (_m : M) (m : Member_t) : option (Family_t) :=
 Fixpoint getMember_familyMotherOnLinks (m : Member_t) (l : list Link) : option (Family_t) :=
  match l with
   | (Member_familyMotherLink x) :: l1 =>
-    if Member_t_beq x.(left_glue) m
-      then (Some x.(right_glue))
+    if Member_t_beq x.(src) m
+      then (Some x.(trg))
       else getMember_familyMotherOnLinks m l1
   | _ :: l1 => getMember_familyMotherOnLinks m l1
   | nil => None
@@ -282,8 +282,8 @@ Definition getMember_familyMother (_m : M) (m : Member_t) : option (Family_t) :=
 Fixpoint getMember_familySonOnLinks (m : Member_t) (l : list Link) : option (Family_t) :=
  match l with
   | (Member_familySonLink x) :: l1 =>
-    if Member_t_beq x.(left_glue) m
-      then (Some x.(right_glue))
+    if Member_t_beq x.(src) m
+      then (Some x.(trg))
       else getMember_familySonOnLinks m l1
   | _ :: l1 => getMember_familySonOnLinks m l1
   | nil => None
@@ -297,8 +297,8 @@ Definition getMember_familySon (_m : M) (m : Member_t) : option (Family_t) :=
 Fixpoint getMember_familyDaughterOnLinks (m : Member_t) (l : list Link) : option (Family_t) :=
  match l with
   | (Member_familyDaughterLink x) :: l1 =>
-    if Member_t_beq x.(left_glue) m
-      then (Some x.(right_glue))
+    if Member_t_beq x.(src) m
+      then (Some x.(trg))
       else getMember_familyDaughterOnLinks m l1
   | _ :: l1 => getMember_familyDaughterOnLinks m l1
   | nil => None

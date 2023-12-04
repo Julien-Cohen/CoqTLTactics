@@ -65,7 +65,7 @@ Definition WF_transition_source_uniqueness (m:Mealy.M) : Prop :=
       forall lk1 lk2,
         List.In (TransitionSource lk1)  m.(Model.modelLinks) ->
         List.In (TransitionSource lk2)  m.(Model.modelLinks) ->
-        lk1.(left_glue) = lk2.(left_glue) ->
+        lk1.(src) = lk2.(src) ->
         lk1 = lk2.
 
 (** Two different (target) links cannot deal with the same transition. *)
@@ -74,7 +74,7 @@ Definition WF_transition_dest_uniqueness (m:Mealy.M) : Prop :=
       forall lk1 lk2,
         List.In (TransitionTarget lk1)  m.(Model.modelLinks) ->
         List.In (TransitionTarget lk2)  m.(Model.modelLinks) ->
-        lk1.(left_glue) = lk2.(left_glue) ->
+        lk1.(src) = lk2.(src) ->
         lk1 = lk2.
   
 
@@ -83,7 +83,7 @@ Lemma getTransition_source_some (m:Mealy.M):
   forall s,
     List.In (State s) m.(Model.modelElements) ->
     forall t,
-      let lk := {| left_glue := t ; right_glue := s |} 
+      let lk := {| src := t ; trg := s |} 
       in
       
       List.In (TransitionSource lk) (Model.modelLinks m) ->
@@ -108,7 +108,7 @@ Proof.
     apply In_transition_sourceLink ; assumption.
   }    
   { 
-    instantiate (1:=TransitionSource {| left_glue := t; right_glue := s |}). 
+    instantiate (1:=TransitionSource {| src := t; trg := s |}). 
     reflexivity.
   }        
 
@@ -121,7 +121,7 @@ Lemma getTransition_target_some (m:Mealy.M):
   forall s,
     List.In (State s) m.(Model.modelElements) ->
     forall t,
-      let lk := {| left_glue := t ; right_glue := s |} 
+      let lk := {| src := t ; trg := s |} 
       in
       
       List.In (TransitionTarget lk) (Model.modelLinks m) ->
@@ -145,7 +145,7 @@ Proof.
     apply In_transition_targetLink ; assumption.
     apply In_transition_targetLink ; assumption.
   }    
-  { instantiate (1:=TransitionTarget {| left_glue := t; right_glue := s |}). 
+  { instantiate (1:=TransitionTarget {| src := t; trg := s |}). 
     reflexivity.
   }        
 

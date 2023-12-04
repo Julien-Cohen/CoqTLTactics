@@ -139,10 +139,10 @@ Definition M := Model MM.
 (** General functions (used in transformations) *)
 Definition getTransition_sourceOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
   option_map 
-    right_glue 
+    trg 
     (find_lift 
        (get_L_data Transition_source_K) 
-       (fun s => Transition_t_beq s.(left_glue) t)
+       (fun s => Transition_t_beq s.(src) t)
        l
     ). 
 
@@ -153,10 +153,10 @@ Definition getTransition_source (m : M) (t : Transition_t) : option (State_t) :=
 
 Definition getTransition_targetOnLinks (t : Transition_t) (l : list Link) : option (State_t) :=
   option_map 
-    right_glue 
+    trg 
     (find_lift 
        (get_L_data Transition_target_K) 
-       (fun s => Transition_t_beq s.(left_glue) t)
+       (fun s => Transition_t_beq s.(src) t)
        l
     ).
 
@@ -283,7 +283,7 @@ Qed.
 
 Lemma getTransition_source_inv m t s : 
   getTransition_source m t = Some s ->
-  let lk := {|  left_glue := t ;  right_glue := s |} in
+  let lk := {|  src := t ;  trg := s |} in
   List.In (TransitionSource lk) m.(Model.modelLinks).
 Proof.
   unfold getTransition_source.
@@ -301,7 +301,7 @@ Qed.
 
 Lemma getTransition_target_inv m t s : 
   getTransition_target m t = Some s -> 
-  let lk := {| right_glue := s ; left_glue := t |} in 
+  let lk := {| trg := s ; src := t |} in 
     In (TransitionTarget lk)  m.(Model.modelLinks).
 Proof.
   unfold getTransition_target.
