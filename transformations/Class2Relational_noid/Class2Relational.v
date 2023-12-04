@@ -59,41 +59,34 @@ Definition Class2Relational' :=
     rule "Class2Table"
     from [Class_K]
     to [ 
-      ELEM "tab" ::: Table_K  
-         fun _ _ c => 
-          return   
-            {| 
-              Table_name := c.(Class_name) 
-            |} 
-        
+      ELEM "tab" ::: Table_K
+        fun _ _ cl => return   
+          {| Table_name := cl.(Class_name) |} 
         
       LINK ::: Table_columns_K
-         fun thisModule _ m c t =>
-            c_attributes <- getClass_attributesElements c m ;
-            res <- resolveAll thisModule "col" Column_K (singletons c_attributes) ;
-            do_glue t with res 
-         
+        fun traces _ m cl tab =>
+          attrs <- 
+            getClass_attributesElements cl m ;
+          cols <- resolveAll traces "col" Column_K 
+            (singletons attrs) ;
+          return {| src := tab; trg := cols |}
     ] ; 
-
+        
     rule "Attribute2Column"
     from [Attribute_K]
-    where (fun _ a => negb a.(Attribute_derived))
+      where (fun _ attr => negb attr.(Attribute_derived))
     to [ 
       ELEM "col" ::: Column_K 
-         fun _ _ a => 
-          return 
-            {| 
-              Column_name := a.(Attribute_name)
-            |} 
-            
+        fun _ _ attr => return 
+          {| Column_name := attr.(Attribute_name) |} 
               
       LINK ::: Column_reference_K
-         fun thisModule _ m a c =>
-          a_type <- getAttribute_typeElement a m ;
-          res <- resolve thisModule "tab" Table_K (singleton a_type) ;
-          do_glue c with res           
-         
-    ]
+        fun traces _ m attr col =>
+          typ <- getAttribute_typeElement attr m ;
+          tab <- resolve traces "tab" Table_K 
+            (singleton typ) ;
+          return {| src := col; trg := tab |} 
+    ] 
   ].
 
 Definition Class2Relational := parse Class2Relational'.
