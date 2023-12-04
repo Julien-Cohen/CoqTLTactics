@@ -131,25 +131,29 @@ Local Ltac unfold_evalOutputPatternLink H :=
     unfold UserExpressions.evalOutputPatternLink in H.
 
 Local Ltac exploit_in_eval_link H :=
-  let TMP := fresh "TMP" in
-  let pl := fresh "pl" in
-  let IN := fresh "IN" in
-  let l := fresh "l" in
-  unfold apply_link_pattern in H ;
-  unfold RichTraceLink.getSourcePiece, RichTraceLink.linkPattern, RichTraceLink.getIteration, RichTraceLink.produced, RichTraceLink.source in H ;
-  unfold_parseOutputPatternUnit H ; 
-  unfold_evalOutputPatternLink H ;
-  unfold Parser.dropToList in H ;
-  rewrite optionListToList_Some in H ;
-  apply in_flat_map in H ; destruct H as (pl, (TMP, H)) ;
-  repeat ListUtils.unfold_In_cons TMP ; 
-  subst pl ;
-  apply OptionListUtils.in_optionListToList in H ; 
-  destruct H as (l & H & IN) ;
-  ConcreteExpressions.inv_makeLink H ;
-  unfold ConcreteSyntax.o_outpat in H ;
-  apply in_singleton in IN ;
-  try first [discriminate IN | inj IN].
+  match type of H with 
+    In _ (apply_link_pattern (compute_trace _ _) _ _) =>
+      let TMP := fresh "TMP" in
+      let pl := fresh "pl" in
+      let IN := fresh "IN" in
+      let l := fresh "l" in
+      unfold apply_link_pattern in H ;
+      unfold RichTraceLink.getSourcePiece, RichTraceLink.linkPattern, RichTraceLink.getIteration, RichTraceLink.produced, RichTraceLink.source in H ;
+      unfold_parseOutputPatternUnit H ; 
+      unfold_evalOutputPatternLink H ;
+      unfold Parser.dropToList in H ;
+      rewrite optionListToList_Some in H ;
+      apply in_flat_map in H ; destruct H as (pl, (TMP, H)) ;
+      repeat ListUtils.unfold_In_cons TMP ; 
+      subst pl ;
+      apply OptionListUtils.in_optionListToList in H ; 
+      destruct H as (l & H & IN) ;
+      ConcreteExpressions.inv_makeLink H ;
+      unfold ConcreteSyntax.o_outpat in H ;
+      apply in_singleton in IN ;
+      try first [discriminate IN | inj IN]
+  end.
+    
 
 
 (** * Tactics for the user *)
@@ -174,31 +178,36 @@ Ltac exploit_in_trace H :=
   
       (* 1 *)
       apply Semantics.in_compute_trace_inv in H ;
-
-      destruct H as (se & IN_ELTS & A & r & IN_RULE & MATCH_GUARD & i & IN_IT & opu & IN_OUTPAT & te & EQ & EV);
+      destruct H as (se & IN_ELTS & _ & r & IN_RULE & MATCH_GUARD & i & IN_IT & opu & IN_OUTPAT & te & EQ & EV); (* the _ because there is no information here *)
   
       (* 2 *)
       progress_in_In_rules IN_RULE (* one sub-goal per rule *) ;
       
-      (* _ *)
-      TacticsBW.exploit_evalGuard MATCH_GUARD  ; 
-      
-      (* _ *)
-      TacticsBW.exploit_in_it IN_IT ;
-      
-      (* 3 *)
+      (* 3 : get rid of the rules that cannot match *)
+      exploit_evalGuard MATCH_GUARD  ; 
+
+      (* 4.a : unify the iteration number *)
+      exploit_in_it IN_IT ;
+
+      (* 4.b : unify the out-pattern with those of the selected rule *)
       progress_in_In_outpat IN_OUTPAT ;
-      
-      (* 5 *) 
+
+      (* 4.c : unify te and the evaluation of the out-pattern *)
       exploit_evaloutpat EV ;
-      
-      (* ??? *)
+
+      (* 4.d : destruct incl to In *)
       repeat explicit_incl IN_ELTS ;
 
-      (* ??? *)
-      try inj EQ ; try discriminate ;
+      (* Remark : 4.a, 4.b, 4.c and 4.d are independant ; they can be switched *)
+
+      (* 5.a *) 
+      try inj EQ ; 
+
+      (* 5.b *) 
+      try discriminate
+
+      (* Remark :  5.a and 5.b must occur after 4.a, 4.b and 4.c. Also, 5.a and 5.b can be switched *) 
       
-      clear A (* this bears no information *)
                          
   | In _ (RichTraceLink.drop (compute_trace _ _)) => 
       (* when poor traces are concerned, we lift them to rich traces and try again *)
