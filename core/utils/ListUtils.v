@@ -294,6 +294,16 @@ Lemma in_singleton A (a:A) b : a = b <-> In a (b::nil).
   + simpl. intro H. PropUtils.remove_or_false H. auto.
 Qed.
 
+
+Ltac explicit_incl H :=
+  match type of H with
+  | incl (_::_) _ =>
+      let H1 := fresh H in
+      apply incl_cons_inv in H ; destruct H as (H1 & H)
+  |  incl nil _ => clear H
+  end.
+
+
 Set Implicit Arguments.
 Scheme Equality for list.
 

@@ -146,20 +146,9 @@ Hint Unfold
   Semantics.traceRuleOnPiece 
   Semantics.traceIterationOnPiece 
   Semantics.traceElementOnPiece 
-  : trace.
-
-#[global]
-Hint Unfold 
   Semantics.produced_elements 
   : trace.
 
-#[global]
-Hint Unfold 
-  Parser.parseRule 
-  Parser.parseOutputPatternUnit
-  Parser.parseOutputPatternLinks
-  Parser.parseOutputPatternLink
-  : parse.
 
 (* fixme : a similar tactic exists *)
 Ltac unfold_parse :=

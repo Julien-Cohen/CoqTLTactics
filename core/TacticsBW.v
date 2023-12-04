@@ -18,27 +18,28 @@ Import Metamodel Model.
 
 
 Local Ltac simpl_accessors_any H :=
-  repeat first [ ConcreteSyntax.simpl_cr_accessors H 
-        | ConcreteSyntax.simpl_elem_accessors H 
-        | ConcreteSyntax.simpl_link_accessors H
-        | Syntax.simpl_r_accessors H 
-        | Syntax.simpl_opu_accessors H]. 
+  repeat first [ 
+      autounfold with ConcreteRule_accessors in H 
+    | autounfold with ConcreteOutputPatternUnit_accessors in H 
+    | autounfold with ConcreteOutputPatternLink_accessors in H
+    | Syntax.simpl_r_accessors H 
+    | Syntax.simpl_opu_accessors H]. 
 
 Local Ltac progress_in_In_rules H :=
   match type of H with 
     | In ?R (Syntax.rules _) =>
         simpl Syntax.rules in H ;
-        progress repeat unfold_In_cons H ;
+        progress repeat ListUtils.unfold_In_cons H ;
         subst R
   end.
 
 
-Local Ltac exploit_evaloutpat H :=
+Local Ltac exploit_evalOutputPatternUnit H :=
   match type of H with 
 
   | UserExpressions.evalOutputPatternUnit _ _ _ (Parser.parseOutputPatternUnit _) = Some _ =>
-      unfold Parser.parseOutputPatternUnit in H ;
-      exploit_evaloutpat H (* recursion *)
+      autounfold with parse in H ;
+      exploit_evalOutputPatternUnit H (* recursion *)
        
   | UserExpressions.evalOutputPatternUnit _ _ _ _ = Some _ =>
       simpl in H ;
@@ -78,11 +79,11 @@ Local Ltac progress_in_In_outpat H :=
             
   end.
 
-Ltac exploit_in_it H :=
+Ltac exploit_In_evalIterator H :=
   match type of H with
     | context[Parser.parseRule _] => 
         unfold_parseRule H ;
-        exploit_in_it H (* recursion *)
+        exploit_In_evalIterator H (* recursion *)
 
     | In ?I (seq _ (UserExpressions.evalIterator (Syntax.buildRule _ _ _ _ ) _ _)) => 
       unfold UserExpressions.evalIterator in H ; 
@@ -109,28 +110,14 @@ Ltac exploit_evalGuard H :=
     end.
 
 
-
-
-Ltac explicit_incl H :=
-  match type of H with
-  | incl (_::_) _ =>
-      let H1 := fresh H in
-      apply incl_cons_inv in H ; destruct H as (H1 & H)
-  |  incl nil _ => clear H
-  end.
-
-
-
 Local Ltac unfold_parseOutputPatternUnit H :=
-    unfold Parser.parseOutputPatternUnit in H ;
-    unfold Parser.parseOutputPatternLinks in H ;
-    unfold Parser.parseOutputPatternLink in H ;
-    repeat ConcreteSyntax.simpl_elem_accessors H.
+  autounfold with parse in H ;
+  autounfold with ConcreteOutputPatternUnit_accessors in H.
 
-Local Ltac unfold_evalOutputPatternLink H :=
-    unfold UserExpressions.evalOutputPatternLink in H.
 
-Local Ltac exploit_in_eval_link H :=
+
+
+Local Ltac exploit_In_apply_link H :=
   match type of H with 
     In _ (apply_link_pattern (compute_trace _ _) _ _) =>
       let TMP := fresh "TMP" in
@@ -139,8 +126,9 @@ Local Ltac exploit_in_eval_link H :=
       let l := fresh "l" in
       unfold apply_link_pattern in H ;
       unfold RichTraceLink.getSourcePiece, RichTraceLink.linkPattern, RichTraceLink.getIteration, RichTraceLink.produced, RichTraceLink.source in H ;
-      unfold_parseOutputPatternUnit H ; 
-      unfold_evalOutputPatternLink H ;
+
+      autounfold with parse in H ;
+      unfold UserExpressions.evalOutputPatternLink in H ;
       unfold Parser.dropToList in H ;
       rewrite optionListToList_Some in H ;
       apply in_flat_map in H ; destruct H as (pl, (TMP, H)) ;
@@ -167,7 +155,6 @@ Ltac exploit_in_trace H :=
       let i := fresh "i" in
       let opu := fresh "opu" in
       let te := fresh "te" in
-      let A := fresh "A" in
       let IN_ELTS := fresh "IN_ELTS" in
       let IN_RULE := fresh "IN_RULE" in
       let MATCH_GUARD := fresh "MATCH_GUARD" in
@@ -176,27 +163,27 @@ Ltac exploit_in_trace H :=
       let EQ := fresh "EQ" in
       let EV := fresh "EV" in
   
-      (* 1 *)
+      (* 1 : inversion *)
       apply Semantics.in_compute_trace_inv in H ;
       destruct H as (se & IN_ELTS & _ & r & IN_RULE & MATCH_GUARD & i & IN_IT & opu & IN_OUTPAT & te & EQ & EV); (* the _ because there is no information here *)
   
-      (* 2 *)
+      (* 2 : case analysis on the rules in the transformation *)
       progress_in_In_rules IN_RULE (* one sub-goal per rule *) ;
       
       (* 3 : get rid of the rules that cannot match *)
       exploit_evalGuard MATCH_GUARD  ; 
 
       (* 4.a : unify the iteration number *)
-      exploit_in_it IN_IT ;
+      exploit_In_evalIterator IN_IT ;
 
       (* 4.b : unify the out-pattern with those of the selected rule *)
       progress_in_In_outpat IN_OUTPAT ;
 
       (* 4.c : unify te and the evaluation of the out-pattern *)
-      exploit_evaloutpat EV ;
+      exploit_evalOutputPatternUnit EV ;
 
       (* 4.d : destruct incl to In *)
-      repeat explicit_incl IN_ELTS ;
+      repeat ListUtils.explicit_incl IN_ELTS ;
 
       (* Remark : 4.a, 4.b, 4.c and 4.d are independant ; they can be switched *)
 
@@ -246,4 +233,4 @@ Ltac exploit_link_in_result IN :=
   (* exploit the trace *)
   exploit_in_trace IN ;
 
-  exploit_in_eval_link IN_L.
+  exploit_In_apply_link IN_L.

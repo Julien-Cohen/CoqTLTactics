@@ -63,8 +63,11 @@ End Parser.
 
 (** Some tactics. *)
 
-Ltac unfold_parseRule H:=
-  unfold parseRule in H ; 
-  unfold parseOutputPatternUnit in H ; 
-  unfold parseOutputPatternLinks in H ; 
-  unfold parseOutputPatternLink in H.
+#[global]
+Hint Unfold 
+  parseRule 
+  parseOutputPatternUnit
+  parseOutputPatternLinks
+  parseOutputPatternLink
+  : parse.
+
