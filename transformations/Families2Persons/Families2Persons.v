@@ -65,10 +65,10 @@ Definition Member_getFamilyName (m: Member_t) (f: Families.M): string :=
       to 
       [
         ELEM "t" ::: Male_K 
-          << fun i m member => 
+           fun i m member => 
             return Build_Male_t (Build_Person_t 
               ((member.(Member_firstName)) ++ " " ++
-                (Member_getFamilyName member m))) >>
+                (Member_getFamilyName member m))) 
           
       ];
 
@@ -78,10 +78,10 @@ Definition Member_getFamilyName (m: Member_t) (f: Families.M): string :=
       to 
       [
         ELEM "t" ::: Female_K 
-          << fun i m member => 
+           fun i m member => 
             return Build_Female_t (Build_Person_t 
               ((member.(Member_firstName)) ++ " " ++
-                (Member_getFamilyName member m))) >>
+                (Member_getFamilyName member m))) 
           
       ]
     ].

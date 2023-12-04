@@ -69,15 +69,15 @@ Definition Class2Relational_tactic_test' :=
     from [Class_K]
     where (fun m c => (beq_string c.(class_name) "Person"))
     to [ ELEM "tab" ::: Table_K  
-          << fun _ _ c => return Build_Table_t c.(class_id) c.(class_name) >>
+           fun _ _ c => return Build_Table_t c.(class_id) c.(class_name) 
     
          LINK ::: TableColumns_K
-          << fun tls _ m c t =>
+           fun tls _ m c t =>
             c_attributes <- getClassAttributesElements c m ; 
             res <- resolveAll tls "col" Column_K 
                       (tupleWith c_attributes [(ClassElement c)]) ;
          return Build_TableColumns_t t res
-         >>
+         
       ]
     ;
     rule "Class2Table2"
@@ -85,17 +85,17 @@ Definition Class2Relational_tactic_test' :=
     where (fun m c => 
       negb (beq_string c.(class_name) "Person"))
     to [ ELEM "tab" ::: Table_K  
-          << fun _ _ c => return Build_Table_t c.(class_id) c.(class_name) >>
+           fun _ _ c => return Build_Table_t c.(class_id) c.(class_name) 
 
          LINK ::: TableColumns_K 
-          << fun tls _ m c t =>
+           fun tls _ m c t =>
             c_attributes <- getClassAttributesElements c m ; 
             res <- resolveAll tls "col" Column_K 
                       (tupleWith
                         c_attributes
                         [(ClassElement c)]) ;
             return Build_TableColumns_t t res
-          >>
+          
       ]
     ;
     rule "Attribute2Column"
@@ -104,13 +104,13 @@ Definition Class2Relational_tactic_test' :=
             andb (negb (derived a)) 
             (is_option_eq (getAttributeType a m) cl Class_t_beq))
     to [ ELEM "col" ::: Column_K 
-          << fun _ _ a cl => return Build_Column_t a.(attr_id) a.(attr_name) >>
+           fun _ _ a cl => return Build_Column_t a.(attr_id) a.(attr_name) 
 
          LINK ::: ColumnReference_K 
-          << fun tls _ m a cl c =>
+           fun tls _ m a cl c =>
             res <- resolve tls "tab" Table_K (singleton (ClassElement cl)) ;
          return Build_ColumnReference_t c res
-           >>
+           
     ]
   ].
 

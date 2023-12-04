@@ -61,19 +61,20 @@ Definition Class2Relational_TUPLE_SP' :=
     from [Class_K]
 
     to [ ELEM "tab" ::: Table_K  
-          << fun _ _ c => 
+           fun _ _ c => 
             return 
             {| 
               table_id := c.(class_id); 
               table_name := c.(class_name)
-            |} >>
+            |} 
         
         LINK ::: TableColumns_K 
-         << fun tls _ m c t =>
+          fun tls _ m c t =>
            c_attr <- getClassAttributesElements c m ;
            res <- resolveAll tls "col" Column_K (tupleWith c_attr [ClassElement c]) ;
            do_glue t with res
-         >>
+         
+
       ]
     ;
     rule "Attribute2Column"
@@ -82,18 +83,18 @@ Definition Class2Relational_TUPLE_SP' :=
             andb (negb (derived a)) 
             (is_option_eq (getAttributeType a m) cl Class_t_beq))
     to [ ELEM "col" ::: Column_K 
-         << fun _ _ a cl => 
+          fun _ _ a cl => 
            return 
            {| 
              column_id := a.(attr_id) ;
              column_name := a.(attr_name) 
-           |} >>
+           |} 
         
         LINK ::: ColumnReference_K 
-         << fun tls _ m a cl c =>
+          fun tls _ m a cl c =>
            res <- resolve tls "tab" Table_K (singleton (ClassElement cl)) ;
          do_glue c with res
-         >> ]
+          ]
   ].
 
 Definition Class2Relational_TUPLE_SP := parse Class2Relational_TUPLE_SP'.

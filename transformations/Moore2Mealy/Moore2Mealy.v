@@ -50,28 +50,28 @@ Definition Moore2Mealy' :=
       from [Moore.State_K]
       to [
         ELEM "s" ::: Mealy.State_K  
-          << fun _ _ s => return convert_state s >>
+           fun _ _ s => return convert_state s 
       ];
 
       rule "transition"
       from [Moore.Transition_K]
       to [
         ELEM "t" ::: Mealy.Transition_K
-          << fun _ m t => convert_transition m t >> 
+           fun _ m t => convert_transition m t  
           
         LINK ::: Mealy.Transition_source_K 
-          << fun tls _ m moore_tr mealy_tr =>
+           fun tls _ m moore_tr mealy_tr =>
              t_source <- Moore.Transition_getSourceObject moore_tr m ;
              res <- resolve tls "s" Mealy.State_K (singleton t_source) ;
              do_glue mealy_tr with res 
-          >> ;
+           ;
 
         LINK ::: Mealy.Transition_target_K 
-          << fun tls _ m moore_tr mealy_tr =>
+           fun tls _ m moore_tr mealy_tr =>
              t_target <- Moore.Transition_getTargetObject moore_tr m ;
              res <- resolve tls "s" Mealy.State_K (singleton t_target) ;
              do_glue mealy_tr with res 
-          >>
+          
       ]
 ].
 

@@ -58,17 +58,17 @@ Definition Class2Relational' :=
     from [Class_K]
     to [ 
       ELEM "tab" ::: Table_K  
-        << fun _ _ c => return   {| 
+        fun _ _ c => return   {| 
           Table_id := c.(Class_id) ; 
           Table_name := c.(Class_name) 
-        |} >>
+        |} 
         
       LINK ::: Table_columns_K
-        << fun thisModule _ m c t =>
+         fun thisModule _ m c t =>
             c_attributes <- getClass_attributesElements c m ;
             res <- resolveAll thisModule "col" Column_K (singletons c_attributes) ;
             do_glue t with res 
-        >> 
+         
     ] ; 
 
     rule "Attribute2Column"
@@ -76,17 +76,17 @@ Definition Class2Relational' :=
     where (fun _ a => negb a.(Attribute_derived))
     to [ 
       ELEM "col" ::: Column_K 
-        << fun _ _ a => return {| 
+        fun _ _ a => return {| 
           Column_id := a.(Attribute_id) ;
           Column_name := a.(Attribute_name)
-        |} >>
+        |}
               
       LINK ::: Column_reference_K
-        << fun thisModule _ m a c =>
+         fun thisModule _ m a c =>
           a_type <- getAttribute_typeElement a m ;
           res <- resolve thisModule "tab" Table_K (singleton a_type) ;
           do_glue c with res           
-        >> 
+         
     ]
   ].
 
