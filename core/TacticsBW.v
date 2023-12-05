@@ -15,21 +15,11 @@ Require Certification.
 
 Import Metamodel Model.
 
-
-
-Local Ltac simpl_accessors_any H :=
-  repeat first [ 
-      autounfold with ConcreteRule_accessors in H 
-    | autounfold with ConcreteOutputPatternUnit_accessors in H 
-    | autounfold with ConcreteOutputPatternLink_accessors in H
-    | Syntax.simpl_r_accessors H 
-    | Syntax.simpl_opu_accessors H]. 
-
 Local Ltac progress_in_In_rules H :=
   match type of H with 
     | In ?R (Syntax.rules _) =>
         simpl Syntax.rules in H ;
-        progress repeat ListUtils.unfold_In_cons H ;
+        progress repeat ListUtils.unfold_In_cons H ; (* generates one goal for each rule to consider *)
         subst R
   end.
 
@@ -115,8 +105,6 @@ Local Ltac unfold_parseOutputPatternUnit H :=
   autounfold with ConcreteOutputPatternUnit_accessors in H.
 
 
-
-
 Local Ltac exploit_In_apply_link H :=
   match type of H with 
     In _ (apply_link_pattern (compute_trace _ _) _ _) =>
@@ -125,8 +113,7 @@ Local Ltac exploit_In_apply_link H :=
       let IN := fresh "IN" in
       let l := fresh "l" in
       unfold apply_link_pattern in H ;
-      unfold RichTraceLink.getSourcePiece, RichTraceLink.linkPattern, RichTraceLink.getIteration, RichTraceLink.produced, RichTraceLink.source in H ;
-
+      autounfold with tracelink in H ;
       autounfold with parse in H ;
       unfold UserExpressions.evalOutputPatternLink in H ;
       unfold Parser.dropToList in H ;
@@ -137,7 +124,7 @@ Local Ltac exploit_In_apply_link H :=
       apply OptionListUtils.in_optionListToList in H ; 
       destruct H as (l & H & IN) ;
       ConcreteExpressions.inv_makeLink H ;
-      unfold ConcreteSyntax.o_outpat in H ;
+      autounfold with ConcreteOutputPatternLink_accessors in H ;
       apply in_singleton in IN ;
       try first [discriminate IN | inj IN]
   end.
@@ -221,7 +208,7 @@ Ltac exploit_element_in_result IN :=
 
 
 Ltac exploit_link_in_result IN :=
-  let H := fresh "H" in
+  let IN_L := fresh "IN_L" in
   let tk := fresh "tk" in
   let p := fresh "p" in
 

@@ -77,3 +77,12 @@ Ltac lift H :=
       apply in_drop_inv in H ; 
       destruct H as (? & H)  
   end.
+
+
+#[global]
+Hint Unfold 
+  RichTraceLink.getSourcePiece
+  RichTraceLink.linkPattern
+  RichTraceLink.getIteration
+  RichTraceLink.produced
+  RichTraceLink.source : tracelink.
