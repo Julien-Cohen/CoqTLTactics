@@ -94,3 +94,11 @@ Arguments TraceLink {_}.
 Arguments source_compare : simpl never.
 
 Notation Trace := (list TraceLink).
+
+#[global]
+Hint Unfold 
+  getSourcePiece
+  getIteration
+  getName
+  produced
+  source : tracelink.

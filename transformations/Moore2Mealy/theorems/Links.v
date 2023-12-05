@@ -228,13 +228,9 @@ Proof.
   intros t' s' IN.
   TacticsBW.exploit_link_in_result IN.
 
-    (* Exploit EQ *)
-    PropUtils.inj EQ.
+    (* Exploit EQ0 *)
+    PropUtils.inj EQ0.
 
-
-    (* Exploit IN_L (1/2) *)
-    monadInv IN_L.
-    monadInv IN_L.
 
 
     assert (S: SUCCESS (Moore.getTransition_source m t)).
@@ -242,35 +238,36 @@ Proof.
     destruct S as ( s1 & GS ).
 
     exists s1.
-    unfold Moore.Transition_getSourceObject in EQ.
-    rewrite GS in EQ.
-    PropUtils.inj EQ.
+    unfold Moore.Transition_getSourceObject in EQ1.
+    rewrite GS in EQ1.
+    PropUtils.inj EQ1.
 
-    (* Exploit IN_L (2/2) *)
+    (* Exploit IN_L) *)
     unfold ModelingSemantics.resolve in IN_L.
     unfold ModelingSemantics.denoteOutput in IN_L.
     monadInv IN_L.
+    rename EQ0 into R.    
     compute in IN_L.
     
     destruct t0 ; [ PropUtils.inj IN_L | discriminate IN_L].
 
     (* Exploit resolve *)
-    rename EQ into R.    
     apply Certification.tr_resolve_leaf in R. 
     
     apply Moore.getTransition_source_inv in GS. 
     
     compute in t.
     
-    unfold convert_transition in EQ0.
-    monadInv EQ0.
+    unfold convert_transition in EQ.
+    monadInv EQ.
 
     destruct t as (id & i) ; simpl in *.
 
     TacticsBW.exploit_in_trace R.
     
-    split ; [ reflexivity | ].
-    exact GS.
+    split ; [ | exact GS].
+    PropUtils.inj E0.
+    reflexivity.
 
 Qed.
 
@@ -295,47 +292,46 @@ Proof.
   intros t' s' IN.
   TacticsBW.exploit_link_in_result IN ; [].
 
-  (* Exploit EQ *)
-  PropUtils.inj EQ.
+  (* Exploit EQ0 *)
+  PropUtils.inj EQ0.
   
-  (* Exploit IN_L (until resolve) *)
-  monadInv IN_L.
-  monadInv IN_L.
   
   compute in t.
 
-  (* Exploit EQ0. *)
-  unfold convert_transition in EQ0. monadInv EQ0.
+  (* Exploit EQ. *)
+  unfold convert_transition in EQ. monadInv EQ.
   simpl.
   
   
   exists s.
   
-  (* Exploit EQ *)
-  unfold Moore.Transition_getTargetObject in EQ.
-  rewrite EQ0 in EQ.
-  PropUtils.inj EQ.
+  (* Exploit EQ1 *)
+  unfold Moore.Transition_getTargetObject in EQ1.
+  rewrite EQ in EQ1.
+  PropUtils.inj EQ1.
   
   
-  (* Exploit IN_L (from resolve) *)
+  (* Exploit IN_L *)
   unfold ModelingSemantics.resolve in IN_L.
   unfold ModelingSemantics.denoteOutput in IN_L.
-  monadInv IN_L. compute in IN_L. 
+  monadInv IN_L. 
+  rename EQ0 into R.
+  compute in IN_L. 
   
   PropUtils.destruct_match_H IN_L ; [ PropUtils.inj IN_L | discriminate IN_L].
   
-  rename EQ into R.
+
   
   (* Exploit resolve *)
   apply Certification.tr_resolve_leaf in R.
   
-  apply Moore.getTransition_target_inv in EQ0.
+  apply Moore.getTransition_target_inv in EQ.
   
   TacticsBW.exploit_in_trace R ; [].
-  
+  PropUtils.inj E0.
   split ; [ reflexivity | ].
   destruct t as (id & i) ; simpl.
-  exact EQ0.
+  exact EQ.
 Qed.
 
 End Foo.

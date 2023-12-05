@@ -272,7 +272,8 @@ Ltac unfold_In_cons H :=
   match type of H with
   | In _ (cons _ _) => 
       apply List.in_inv in H ;
-      PropUtils.destruct_or H
+      PropUtils.destruct_or H ;
+      try discriminate H 
   | In _ nil => inversion H
   end.
 

@@ -67,7 +67,7 @@ Proof.
   TacticsBW.exploit_in_trace IN1; 
   TacticsBW.exploit_in_trace IN2 ; auto. 
 
-  PropUtils.unif EQ0 EQ1 ; reflexivity.
+  PropUtils.unif EQ EQ0 ; reflexivity.
 Qed.
 
 

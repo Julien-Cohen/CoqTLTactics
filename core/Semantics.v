@@ -106,6 +106,94 @@ Proof.
     subst ; repeat (first [eexists | split]) ; eassumption. 
 Qed.
 
+Corollary in_compute_trace_inv_alt tr sm :
+  forall a, 
+  In a (compute_trace tr sm) <-> 
+      incl (getSourcePiece a) (modelElements sm) 
+      /\ length (getSourcePiece a) <= tr.(arity)
+      /\ exists r : Rule,
+        In r tr.(rules)
+        /\ evalGuard r sm (getSourcePiece a) = true 
+        /\ 
+          In (getIteration a) (seq 0 (evalIterator r sm (getSourcePiece a)))
+          /\ exists opu : OutputPatternUnit,
+            In opu r.(r_outputPattern) 
+            /\ getName a = opu.(opu_name) 
+            /\ a.(linkPattern) = opu.(opu_link)
+            /\ evalOutputPatternUnit opu sm (getSourcePiece a) (getIteration a) = Some a.(produced).
+Proof.
+  repeat setoid_rewrite in_compute_trace_inv. 
+  intro a.
+  split.
+  + intros (?&?&?&?&?&?&?&?&?&?&?&?&?).
+    subst a.
+    repeat first [eexists | split] ; eauto.
+  + intros (?&?&?&?&?&?&?&?&?&?&?).
+    destruct a.
+    destruct source as ((?&?)&?).
+    simpl in H5. 
+    simpl in *.
+    repeat first [eexists | split | f_equal] ; eauto.
+Qed.
+
+Corollary in_compute_trace_inv_alt_alt tr sm :
+  forall s i n res l,
+  In 
+    {| source := (s, i, n); produced := res ; linkPattern := l |}
+    (compute_trace tr sm) 
+  <-> 
+      incl s (modelElements sm) 
+      /\ length s <= tr.(arity)
+      /\ exists r : Rule,
+        In r tr.(rules)
+        /\ evalGuard r sm s = true 
+        /\ In i (seq 0 (evalIterator r sm s))
+          /\ exists opu : OutputPatternUnit,
+            In opu r.(r_outputPattern) 
+            /\ n = opu.(opu_name) 
+            /\ l = opu.(opu_link)
+            /\ evalOutputPatternUnit opu sm s i = Some res.
+Proof.
+  intros.
+  setoid_rewrite in_compute_trace_inv_alt ; simpl.
+  split.
+  + intros (?&?&?&?&?&?&?&?&?&?&?).
+    repeat first [eexists | split] ; eauto.
+  + intros (?&?&?&?&?&?&?&?&?&?&?).
+    repeat first [eexists | split | f_equal] ; eauto.
+Qed.
+
+Corollary in_compute_trace_inv_alt_alt_alt tr sm :
+  forall s i n res l,
+  In 
+    {| source := (s, i, n); produced := res ; linkPattern := l |}
+    (compute_trace tr sm) 
+  <-> 
+      incl s (modelElements sm) 
+      /\ length s <= tr.(arity)
+      /\ exists r : Rule,
+        In r tr.(rules)
+        /\ evalGuard r sm s = true 
+        /\ In i (seq 0 (evalIterator r sm s))
+        /\ exists opu_el,
+           In {| opu_name := n ; opu_element := opu_el ; opu_link := l |} r.(r_outputPattern) 
+            /\  opu_el i sm s = Some res.
+Proof.
+  intros.
+  setoid_rewrite in_compute_trace_inv_alt_alt ; simpl.
+  split.
+  + intros (?&?&?&?&?&?&z&?&?&?&?).
+    destruct z.
+    subst. simpl.
+    repeat (split ; auto).
+    exists x.
+    repeat (split ; auto).
+    exists opu_element.
+    split ; auto.
+  + intros (?&?&?&?&?&?&?&?&?).
+    repeat first [eexists | split | f_equal] ; eauto.
+Qed.
+
 (** * Apply link part of the r.h.s of rules (uses traces) **)
 
 Definition apply_link_pattern tls sm lk := 

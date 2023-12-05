@@ -81,8 +81,9 @@ Ltac lift H :=
 
 #[global]
 Hint Unfold 
-  RichTraceLink.getSourcePiece
-  RichTraceLink.linkPattern
-  RichTraceLink.getIteration
-  RichTraceLink.produced
-  RichTraceLink.source : tracelink.
+  getSourcePiece
+  linkPattern
+  getIteration
+  getName
+  produced
+  source : tracelink.

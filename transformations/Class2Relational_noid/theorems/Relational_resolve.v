@@ -70,8 +70,8 @@ Proof.
   
   (* We get the hypothesis IN_ELTS0, EQ, IN_L and MATCH_GUARD. *)
   
-  (* IN_ELTS0 and EQ are not needed here *)
-  clear IN_ELTS0 EQ.
+  (* EQ is not needed here *)
+  clear EQ.
 
   (* Exploit MATCH_GUARD *)
   C2RTactics.negb_inv MATCH_GUARD.
@@ -81,11 +81,11 @@ Proof.
   (* IN_L contains the code of the link-pattern in the rule. *)
   tmp IN_L. (* fixme *)
   
-  (* EQ not needed. *)
-  clear EQ.
+  (* EQ0 not needed. *)
+  clear EQ0.
 
   (* Exploit Resolve. *)
-  rename EQ0 into R.
+  rename EQ into R.
   apply Certification.tr_resolve_leaf in R.
   
   eapply TacticsFW.in_trace_in_models_target ; eassumption. 

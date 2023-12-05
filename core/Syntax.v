@@ -96,6 +96,8 @@ Ltac simpl_r_accessors H :=
                                          
   end.
 
+#[global]
+Hint Unfold opu_name opu_element opu_link : opu_accessors.
 
 Ltac simpl_opu_accessors H :=
   match type of H with 
