@@ -70,7 +70,7 @@ Definition WF_transition_source_uniqueness (m:Mealy.M) : Prop :=
 
 (** Two different (target) links cannot deal with the same transition. *)
 (** A transition aims at only one state. *)
-Definition WF_transition_dest_uniqueness (m:Mealy.M) : Prop :=
+Definition WF_transition_target_uniqueness (m:Mealy.M) : Prop :=
       forall lk1 lk2,
         List.In (TransitionTarget lk1)  m.(Model.modelLinks) ->
         List.In (TransitionTarget lk2)  m.(Model.modelLinks) ->
@@ -117,7 +117,7 @@ Proof.
 Qed.
 
 Lemma getTransition_target_some (m:Mealy.M):
-  WF_transition_dest_uniqueness m ->
+  WF_transition_target_uniqueness m ->
   forall s,
     List.In (State s) m.(Model.modelElements) ->
     forall t,

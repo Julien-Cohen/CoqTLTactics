@@ -67,7 +67,7 @@ Definition WF_transition_source_uniqueness (m:Moore.M) : Prop :=
 
 (** A transition is glued to only one target state. *)
 (** A transition aims at only one state. *)
-Definition WF_transition_dest_uniqueness (m:Moore.M) : Prop :=
+Definition WF_transition_target_uniqueness (m:Moore.M) : Prop :=
       forall lk1 lk2,
         List.In (TransitionTarget lk1)  m.(Model.modelLinks) ->
         List.In (TransitionTarget lk2)  m.(Model.modelLinks) ->
@@ -115,7 +115,7 @@ Proof.
 Qed.
 
 Lemma getTransition_target_some (m:Moore.M):
-  WF_transition_dest_uniqueness m ->
+  WF_transition_target_uniqueness m ->
   forall s,
     List.In (State s) m.(Model.modelElements) ->
     forall t,

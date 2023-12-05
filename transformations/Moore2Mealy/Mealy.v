@@ -184,6 +184,10 @@ Definition WF_transition_source_exists (m:M) : Prop :=
     SUCCESS ( getTransition_source m t ).
 
 
+Definition WF_transition_target_glue_r_exists (m:M) : Prop :=
+  forall lk,
+    List.In (TransitionTarget lk) m.(modelLinks) ->
+    List.In (State lk.(trg)) m.(modelElements).
 
 (** Added Manually *)
 

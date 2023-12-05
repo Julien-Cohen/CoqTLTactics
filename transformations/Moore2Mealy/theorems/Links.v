@@ -26,7 +26,7 @@ Hypothesis WF_S_L : Moore.WF_transition_source_glue_l_exists m.
 Hypothesis WF_S_R : Moore.WF_transition_source_glue_r_exists m.
 Hypothesis WF_T_L : Moore.WF_transition_target_glue_l_exists m.
 Hypothesis WF_T_R : Moore.WF_transition_target_glue_r_exists m.
-Hypothesis WF_TLL : MooreWF.WF_transition_dest_uniqueness m.
+Hypothesis WF_TLL : MooreWF.WF_transition_target_uniqueness m.
 Hypothesis WF_SLL : MooreWF.WF_transition_source_uniqueness m.
 
 
@@ -308,9 +308,6 @@ Proof.
   unfold convert_transition in EQ0. monadInv EQ0.
   simpl.
   
-  assert (S: SUCCESS (Moore.getTransition_source m t)).
-  { apply WF_S. assumption. }
-  destruct S as ( s1 & GS ).
   
   exists s.
   
