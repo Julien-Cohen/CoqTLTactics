@@ -133,7 +133,7 @@ transformations/Moore2Mealy/theorems/WFStable.v
 transformations/Moore2Mealy/theorems/InitStable.v
 transformations/Moore2Mealy/theorems/GettersCommut.v
 transformations/Moore2Mealy/theorems/StepCommut.v
-#transformations/Moore2Mealy/theorems/SemanticsPreservation.v
+transformations/Moore2Mealy/theorems/SemanticsPreservation.v
 
 transformations/Moore2MealyALT/Id.v
 transformations/Moore2MealyALT/Moore.v

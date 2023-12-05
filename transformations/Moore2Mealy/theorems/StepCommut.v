@@ -14,8 +14,6 @@ Section Foo.
 
 Variable (m:Moore.M).
 
-(*Hypothesis WF_S : Moore.WF_source m.
-Hypothesis WF_T : Moore.WF_target m.*)
 Hypothesis WF_D : MooreWF.determinist m.
 Hypothesis WF_S : Moore.WF_transition_source_exists m.
 Hypothesis WF_T : Moore.WF_transition_target_exists m.
