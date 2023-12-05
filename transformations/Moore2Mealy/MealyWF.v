@@ -166,7 +166,7 @@ Definition determinist m :=
 
 Lemma truc m :
   determinist m ->
-  MealySemantics.WF_sourceLink_source_in m ->
+  WF_transition_source_glue_r_exists m ->
   forall s i,
     ListUtils.discriminating_predicate
       (fun x : Transition_t =>
@@ -200,7 +200,7 @@ Qed.
 Lemma State_acceptTransition_some :
   forall m s i r,
     determinist m ->
-    MealySemantics.WF_sourceLink_source_in m ->
+    WF_transition_source_glue_r_exists m ->
     r.(Transition_input) = i ->
     List.In r (State_outTransitions m s) ->
     State_acceptTransition m s i = Some r.

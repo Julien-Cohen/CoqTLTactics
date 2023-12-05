@@ -189,6 +189,11 @@ Definition WF_transition_target_glue_r_exists (m:M) : Prop :=
     List.In (TransitionTarget lk) m.(modelLinks) ->
     List.In (State lk.(trg)) m.(modelElements).
 
+Definition WF_transition_source_glue_r_exists (m:Mealy.M) :=
+      forall lk, 
+        In (TransitionSource lk) m.(modelLinks) ->
+        In (State lk.(trg)) m.(modelElements).
+
 (** Added Manually *)
 
 Definition getTransition_sourceObject (t : Transition_t) (m : M) : option Element :=

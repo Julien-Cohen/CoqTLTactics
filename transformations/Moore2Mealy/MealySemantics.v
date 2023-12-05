@@ -130,14 +130,8 @@ Proof.
   eauto.
 Qed.
 
-(* fixme : move-me *)
-Definition WF_sourceLink_source_in (m:Mealy.M) :=
-      forall lk, 
-        In (TransitionSource lk) m.(modelLinks) ->
-        In (State lk.(trg)) m.(modelElements).
-
 Lemma execute_in m :
-  WF_sourceLink_source_in m ->
+  WF_transition_source_glue_r_exists m ->
   forall i s r,
     i <> nil ->
     executeFromState m s i = Some r ->

@@ -165,7 +165,7 @@ Definition determinist m :=
 
 Lemma truc m :
   determinist m ->
-  MooreSemantics.WF_sourceLink_source_in m ->
+  Moore.WF_transition_source_glue_r_exists m ->
   forall s i,
     ListUtils.discriminating_predicate
       (fun x : Transition_t =>

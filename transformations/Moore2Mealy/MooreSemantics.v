@@ -126,14 +126,9 @@ Proof.
   eauto.
 Qed.
 
-(* fixme : move-me *)
-Definition WF_sourceLink_source_in (m:Moore.M) :=
-      forall lk, 
-        In (TransitionSource lk) m.(modelLinks) ->
-        In (State lk.(trg)) m.(modelElements).
 
 Lemma search_in_left m :
-  WF_sourceLink_source_in m ->
+  WF_transition_source_glue_r_exists m ->
   forall s1 a s2,
   search m s1 a = Some s2 ->
   List.In (State s1) m.(Model.modelElements).
