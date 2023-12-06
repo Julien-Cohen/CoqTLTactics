@@ -173,7 +173,7 @@ Ltac transform_link_fw_tac r_num pat_num i :=
   match goal with
     [ |- In _ (execute _ _).(modelLinks) ] =>
       apply <- Semantics.in_modelLinks_inv ;
-      setoid_rewrite Semantics.in_compute_trace_inv (*in the left part*) ;
+      setoid_rewrite Semantics.in_compute_trace_inv_old (*in the left part*) ;
       eexists ; split ; [ eexists ; split ; [ (*1*) | split ; [ (*2*)| eexists ; split ; [ (*3*)| split ; [ (*4*)| eexists ; split ; [ (*5*)| eexists ; split ; [ (*6*) |  eexists ; split ; [ (* 7 *)| (* 8*)] ] ] ] ] ] ] | (*9*)] ;
       [ | | | | | | reflexivity | | ] ;
       

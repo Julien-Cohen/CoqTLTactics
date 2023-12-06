@@ -47,13 +47,12 @@ Definition matchingRules (tr: Transformation) (sm : SourceModel) (sp: InputPiece
 
 Definition traceElementOnPiece (o: OutputPatternUnit) (sm: SourceModel) (sp: InputPiece) (iter: nat)
   : option TraceLink :=
-  match (evalOutputPatternUnit o sm sp iter) with
-  | Some e => Some 
-                {| source := (sp, iter, o.(opu_name)) ;
-                  produced :=  e ;
-                  linkPattern := o.(opu_link) |}
-  | None => None
-  end.
+    v <- evalOutputPatternUnit o sm sp iter ;
+    return {| 
+        source := (sp, iter, o.(opu_name)) ;
+        produced := v ;
+        linkPattern := o.(opu_link) 
+      |}.
 
 Definition traceIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) :  Trace :=
   flat_map (fun o => optionToList (traceElementOnPiece o sm sp iter))
@@ -72,6 +71,61 @@ Definition compute_trace (tr: Transformation) (sm : SourceModel) :  RichTraceLin
   flat_map (traceTrOnPiece tr sm) (allTuples tr sm).  
 
 Lemma in_compute_trace_inv tr sm :
+  forall s i n res l,
+  In 
+    {| source := (s, i, n); produced := res ; linkPattern := l |}
+    (compute_trace tr sm) 
+  <-> 
+      incl s (modelElements sm) 
+      /\ length s <= tr.(arity)
+      /\ exists r : Rule,
+        In r tr.(rules)
+        /\ evalGuard r sm s = true 
+        /\ In i (seq 0 (evalIterator r sm s))
+        /\ exists opu_el,
+           In {| opu_name := n ; opu_element := opu_el ; opu_link := l |} r.(r_outputPattern) 
+            /\  opu_el i sm s = Some res.
+Proof.
+  intros.
+  setoid_rewrite in_flat_map. (* compute_trace *)
+  setoid_rewrite in_flat_map. (* traceTrOnPiece *) 
+  setoid_rewrite in_flat_map. (* traceRuleOnPiece *)
+  setoid_rewrite in_flat_map. (* traceIterationOnPiece *)
+  setoid_rewrite filter_In.   (* matchingRules *)
+  setoid_rewrite  in_optionToList.
+  unfold traceElementOnPiece.
+
+  setoid_rewrite in_allTuples_incl.
+
+
+  split.
+  +  intros (?&(?&?)&?&(?&?)&?&?& opu &?& T).
+     monadInv T.
+     split ; [assumption | ].
+     split ; [assumption | ].
+     eexists ; split ; [ eassumption | ].
+     split ; [assumption | ].
+     split ; [assumption | ].
+     destruct opu as [? b ?] ; simpl in *.
+     exists b.
+     split.
+     eassumption.
+     eassumption.
+
+  + intros (?&?&?&?&?&?&?&?& E).
+    eexists.
+    split. split ; eassumption .
+    eexists.
+    split. split ; eassumption.
+    eexists. split ; [ eassumption | ].
+    eexists. split ; [ eassumption| ].
+    unfold evalOutputPatternUnit.
+    unfold opu_element.
+    rewrite E.
+    reflexivity.
+Qed.    
+    
+Lemma in_compute_trace_inv_old tr sm :
   forall a, 
   In a (compute_trace tr sm) <-> 
     exists p : InputPiece,
@@ -106,93 +160,7 @@ Proof.
     subst ; repeat (first [eexists | split]) ; eassumption. 
 Qed.
 
-Corollary in_compute_trace_inv_alt tr sm :
-  forall a, 
-  In a (compute_trace tr sm) <-> 
-      incl (getSourcePiece a) (modelElements sm) 
-      /\ length (getSourcePiece a) <= tr.(arity)
-      /\ exists r : Rule,
-        In r tr.(rules)
-        /\ evalGuard r sm (getSourcePiece a) = true 
-        /\ 
-          In (getIteration a) (seq 0 (evalIterator r sm (getSourcePiece a)))
-          /\ exists opu : OutputPatternUnit,
-            In opu r.(r_outputPattern) 
-            /\ getName a = opu.(opu_name) 
-            /\ a.(linkPattern) = opu.(opu_link)
-            /\ evalOutputPatternUnit opu sm (getSourcePiece a) (getIteration a) = Some a.(produced).
-Proof.
-  repeat setoid_rewrite in_compute_trace_inv. 
-  intro a.
-  split.
-  + intros (?&?&?&?&?&?&?&?&?&?&?&?&?).
-    subst a.
-    repeat first [eexists | split] ; eauto.
-  + intros (?&?&?&?&?&?&?&?&?&?&?).
-    destruct a.
-    destruct source as ((?&?)&?).
-    simpl in H5. 
-    simpl in *.
-    repeat first [eexists | split | f_equal] ; eauto.
-Qed.
 
-Corollary in_compute_trace_inv_alt_alt tr sm :
-  forall s i n res l,
-  In 
-    {| source := (s, i, n); produced := res ; linkPattern := l |}
-    (compute_trace tr sm) 
-  <-> 
-      incl s (modelElements sm) 
-      /\ length s <= tr.(arity)
-      /\ exists r : Rule,
-        In r tr.(rules)
-        /\ evalGuard r sm s = true 
-        /\ In i (seq 0 (evalIterator r sm s))
-          /\ exists opu : OutputPatternUnit,
-            In opu r.(r_outputPattern) 
-            /\ n = opu.(opu_name) 
-            /\ l = opu.(opu_link)
-            /\ evalOutputPatternUnit opu sm s i = Some res.
-Proof.
-  intros.
-  setoid_rewrite in_compute_trace_inv_alt ; simpl.
-  split.
-  + intros (?&?&?&?&?&?&?&?&?&?&?).
-    repeat first [eexists | split] ; eauto.
-  + intros (?&?&?&?&?&?&?&?&?&?&?).
-    repeat first [eexists | split | f_equal] ; eauto.
-Qed.
-
-Corollary in_compute_trace_inv_alt_alt_alt tr sm :
-  forall s i n res l,
-  In 
-    {| source := (s, i, n); produced := res ; linkPattern := l |}
-    (compute_trace tr sm) 
-  <-> 
-      incl s (modelElements sm) 
-      /\ length s <= tr.(arity)
-      /\ exists r : Rule,
-        In r tr.(rules)
-        /\ evalGuard r sm s = true 
-        /\ In i (seq 0 (evalIterator r sm s))
-        /\ exists opu_el,
-           In {| opu_name := n ; opu_element := opu_el ; opu_link := l |} r.(r_outputPattern) 
-            /\  opu_el i sm s = Some res.
-Proof.
-  intros.
-  setoid_rewrite in_compute_trace_inv_alt_alt ; simpl.
-  split.
-  + intros (?&?&?&?&?&?&z&?&?&?&?).
-    destruct z.
-    subst. simpl.
-    repeat (split ; auto).
-    exists x.
-    repeat (split ; auto).
-    exists opu_element.
-    split ; auto.
-  + intros (?&?&?&?&?&?&?&?&?).
-    repeat first [eexists | split | f_equal] ; eauto.
-Qed.
 
 (** * Apply link part of the r.h.s of rules (uses traces) **)
 
