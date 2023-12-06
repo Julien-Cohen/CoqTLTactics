@@ -84,7 +84,7 @@ Proof.
     match type of IN with List.In (Moore.TransitionSource ?g) _ =>
                             remember g as g0
     end.
-    apply OptionUtils.option_map_some with (b:=g0) ; [ | subst ; reflexivity ].
+    apply OptionUtils.option_map_some. exists g0 ; split ; [ | subst ; reflexivity ].
 
     apply OptionListUtils.in_find_lift with (e:=Moore.TransitionSource g0) ; [ | reflexivity | subst ; simpl  |  exact IN]
     .

@@ -90,7 +90,7 @@ Proof.
   intros WF s H1 t lk H2.
   unfold getTransition_source.
   unfold getTransition_sourceOnLinks.
-  eapply OptionUtils.option_map_some with (b:=lk).
+  eapply OptionUtils.option_map_some. exists lk. split.
   2:{  subst lk. reflexivity. }
 
   
@@ -129,7 +129,7 @@ Proof.
   intros WF s H1 t lk H2.
   unfold getTransition_target.
   unfold getTransition_targetOnLinks.
-  apply OptionUtils.option_map_some with (b:=lk).
+  apply OptionUtils.option_map_some. exists lk. split.
   2:{ subst lk ; reflexivity. }
   subst lk.
   eapply OptionListUtils.in_find_lift.
