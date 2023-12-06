@@ -99,18 +99,9 @@ Proof.
 
 
   split.
-  +  intros (?&(?&?)&?&(?&?)&?&?& opu &?& T).
+  +  intros (?&(?&?)&?&(?&?)&?&?& [? e ?] &?& T).
      monadInv T.
-     split ; [assumption | ].
-     split ; [assumption | ].
-     eexists ; split ; [ eassumption | ].
-     split ; [assumption | ].
-     split ; [assumption | ].
-     destruct opu as [? b ?] ; simpl in *.
-     exists b.
-     split.
-     eassumption.
-     eassumption.
+     repeat first [split | eexists | eassumption].
 
   + intros (?&?&?&?&?&?&?&?& E).
     eexists.
@@ -125,40 +116,6 @@ Proof.
     reflexivity.
 Qed.    
     
-Lemma in_compute_trace_inv_old tr sm :
-  forall a, 
-  In a (compute_trace tr sm) <-> 
-    exists p : InputPiece,
-      
-      incl p (modelElements sm) 
-      /\ length p <= tr.(arity)
-      /\ exists r : Rule,
-        In r tr.(rules)
-        /\ evalGuard r sm p = true 
-        /\ exists i : nat,
-          In i (seq 0 (evalIterator r sm p))
-          /\ exists opu : OutputPatternUnit,
-            In opu r.(r_outputPattern) 
-            /\ exists e : TargetElementType,
-              {|
-                source := (p, i, opu.(opu_name));
-                produced := e;
-                linkPattern := opu.(opu_link)
-              |} = a 
-              /\ evalOutputPatternUnit opu sm p i = Some e.
-Proof.
-  repeat setoid_rewrite in_flat_map. 
-  setoid_rewrite  optionToList_map.
-  setoid_rewrite in_map_iff.
-  setoid_rewrite  in_optionToList.
-  setoid_rewrite filter_In.
-  setoid_rewrite in_allTuples_incl.
-  intro a ; split. 
-  + intros (? & (( ? & ? ) & ? & ( ? & ? ) & ? & ? & ? & ? & ? & ? & ?)). 
-    subst ; repeat (first [eexists | split]) ; eassumption. 
-  + intros (? & ? & ? & ? & ? & ? & ? & ? & ? & ? & ? & ? & ?).
-    subst ; repeat (first [eexists | split]) ; eassumption. 
-Qed.
 
 
 
@@ -187,6 +144,7 @@ Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   |}.
 
 
+(* fixme : destruct e as in in_modelLinks_inv below *)
 Lemma in_modelElements_inv tr sm :
   forall e, In e (execute tr sm).(modelElements) <-> 
               exists a : TraceLink, 
@@ -199,12 +157,16 @@ Qed.
 
 Lemma in_modelLinks_inv tr sm :
   forall l, In l (execute tr sm).(modelLinks) <-> 
-              exists a : TraceLink,
-                In a (compute_trace tr sm) 
-                /\ In l (apply_link_pattern (compute_trace tr sm) sm a).
+              exists s i n res lp,
+                In {| RichTraceLink.source := (s, i, n); RichTraceLink.produced := res ; RichTraceLink.linkPattern := lp |} (compute_trace tr sm) 
+                /\ In l (apply_link_pattern (compute_trace tr sm) sm {| RichTraceLink.source := (s, i, n); RichTraceLink.produced := res ; RichTraceLink.linkPattern := lp |}).
 Proof.
   setoid_rewrite in_flat_map at 1.
-  tauto.
+  intro ; split.
+  + intros ([((?& ?) & ?) ? ?] &?&?). 
+    repeat first [eexists | split | eassumption].
+  + intros (?&?&?&?&?&?&?).
+    repeat first [eexists | split | eassumption].
 Qed.
 
 End Semantics.

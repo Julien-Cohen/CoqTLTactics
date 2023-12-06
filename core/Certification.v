@@ -62,7 +62,9 @@ forall (tr: Transformation) (sm : SourceModel) (l : TargetLinkType),
           In l (apply_link_pattern (compute_trace tr sm) sm x).
 Proof.
   setoid_rewrite Semantics.in_modelLinks_inv.
-  tauto.
+  intros ; split.
+  + intros (?&?&?&?&?&?&?) ; eexists ; split ; eassumption.
+  + intros ([((?&?)&?) ? ?]&?&?) ; repeat eexists ; eassumption.
 Qed.
 
 Lemma tr_matchingRules_in :

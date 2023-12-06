@@ -210,13 +210,10 @@ Ltac exploit_element_in_result IN :=
 
 Ltac exploit_link_in_result IN :=
   let IN_L := fresh "IN_L" in
-  let tk := fresh "tk" in
-  let p := fresh "p" in
 
   (* make the trace appear *)
   apply -> Semantics.in_modelLinks_inv in IN ;
-  destruct IN as (tk & IN & IN_L) ;
-  destruct tk as [? ? ?]  ;
+  destruct IN as (? & ? & ? & ? & ? & IN & IN_L) ;
   
   (* exploit the trace *)
   exploit_in_trace IN ;

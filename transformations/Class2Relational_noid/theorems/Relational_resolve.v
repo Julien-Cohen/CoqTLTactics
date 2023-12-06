@@ -133,7 +133,7 @@ Proof.
 
   exists{| Table_name := r.(Class_name) |}.
 
-  TacticsFW.transform_link_fw_tac 2 1 0 ; []. 
+  TacticsFW.transform_link_fw_tac_singleton 2 1 0 ; []. 
 
     simpl. 
     unfold Parser.dropToList ; simpl.

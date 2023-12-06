@@ -168,36 +168,60 @@ Ltac unfold_accessors :=
 Ltac incl_singleton :=
   apply incl_singleton ; eassumption.
 
+Ltac rule_number n := 
+  match n with 
+    1 => TacticsFW.first_rule 
+  | 2 => TacticsFW.second_rule 
+end.
 
-Ltac transform_link_fw_tac r_num pat_num i :=
+Ltac pattern_number n :=
+  match n with 
+    1 => TacticsFW.first_in_list 
+  | 2 => TacticsFW.second_in_list 
+  end.
+
+
+Ltac transform_link_fw_tac_singleton r_num pat_num i :=
   match goal with
-    [ |- In _ (execute _ _).(modelLinks) ] =>
+    [ |- In _ (Semantics.execute _ _).(modelLinks) ] =>
       apply <- Semantics.in_modelLinks_inv ;
-      setoid_rewrite Semantics.in_compute_trace_inv_old (*in the left part*) ;
-      eexists ; split ; [ eexists ; split ; [ (*1*) | split ; [ (*2*)| eexists ; split ; [ (*3*)| split ; [ (*4*)| eexists ; split ; [ (*5*)| eexists ; split ; [ (*6*) |  eexists ; split ; [ (* 7 *)| (* 8*)] ] ] ] ] ] ] | (*9*)] ;
-      [ | | | | | | reflexivity | | ] ;
-      
-      (* this works only for singletons *)
-      [ incl_singleton | | | | | | | ] ;
-      
-      (* arity *)
-      [ solve [simpl;auto] | | | | | | ] ;
-      
-      (* select the correct rule based on the hint received as parameter *) 
-      [ match r_num with 1 => TacticsFW.first_rule | 2 => TacticsFW.second_rule end | | | | | ] ;
-      
-      (* if the user has selected the correct rule, the match guard should evaluate to true *)
-      [ reflexivity | | | | ] ;
-      
-      (* iteration *)
-      [ instantiate (1:=i) ; simpl ; solve [auto] | | | ] ; 
-      
-      (* which output pattern is concerned *)
-      [  match pat_num with 1 => TacticsFW.first_in_list idtac | 2 => TacticsFW.second_in_list end | | ] ; 
+      setoid_rewrite Semantics.in_compute_trace_inv (*in the left part*) ;
+      eexists ; eexists i ; eexists ; eexists ; eexists ;
+      split ; [ split ; [ (*1*) | split ; [ (* 2 *)|  eexists ; split ; [ (* 3 *) | split ; [(* 4 *)| split ; [ (* 5 *) |  eexists ; split ; [ (*6*) | (*7*)] ]]] ] ] |  (* 8 *)] ;
 
-      unfold_parse ; unfold_accessors ;
+
+      (* fix the rule under concern following user hint *)
+      [  | | solve [rule_number r_num] | | | | | ] ;
+
+      [ | | | | | | ] ;
+
+      (* fix the output pattern in the rule following user hint *)
+      [ | | | | solve [pattern_number pat_num] | | ] ;
       
-      (* identify the instanciation of the out pattern *)
-      [ try reflexivity (* sometimes needs a rewrite *)| ]
-        
+      [ | | | | | ] ;
+
+      (* the the source piece using the context *)
+      (* fragile : select the first element in the context instead of the good one *)
+      [ solve [TacticsFW.incl_singleton] | | | | | ] ; (* this works only for singletons *)
+
+      [ | | | | ] ;
+
+      (* solve the arity contraint (the input is fixed) *)
+      [ solve [simpl;auto] | | | | ] ;
+
+      (* Solve the guard (the input is fixed) *)
+      (* If the user has selected the correct rule, the match guard should evaluate to true *)
+      [ reflexivity | | | ] ;
+      
+      [ | | ] ;
+      
+      (* solve the iteration contraint *)
+      [ solve [ simpl ; auto] | | ] ;
+
+      [ | ] ; 
+      try reflexivity ;
+      TacticsFW.unfold_parse ; TacticsFW.unfold_accessors
+
+(* FIXME : change the order of the terms in Semantics.in_compute_trace_inv so that the order of the subgoals to solve smartly is left to right *)
+
   end.
