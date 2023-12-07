@@ -194,7 +194,7 @@ Ltac transform_link_fw_tac_singleton r_num pat_num i :=
       
       [ | | | | | ] ;
 
-      (* the the source piece using the context *)
+      (* fix the source piece using the context *)
       only 1 : solve [TacticsFW.incl_singleton] ; (* this works only for singletons *)
 
       [ | | | | ] ;
@@ -216,7 +216,61 @@ Ltac transform_link_fw_tac_singleton r_num pat_num i :=
       autounfold with 
         parse 
         ConcreteOutputPatternUnit_accessors 
-        opu_accessors 
+        opu_accessors  ;
+      
+      (* fail if one of the goal reduces to False *)
+      tryif simpl ; match goal with [ |- False] => idtac end then fail else idtac  
+
+(* FIXME : change the order of the terms in Semantics.in_compute_trace_inv so that the order of the subgoals to solve smartly is left to right *)
+
+  end.
+
+(* This is a variant of the tactic transform_link_fw_tac_singleton where the first rule that don't lead to an error is selected intead of relying on an user hint *)
+Ltac transform_link_fw_tac_singleton_auto i :=
+  match goal with
+    [ |- In _ (Semantics.execute _ _).(modelLinks) ] =>
+      apply <- Semantics.in_modelLinks_inv ;
+      setoid_rewrite Semantics.in_compute_trace_inv (*in the left part*) ;
+      eexists ; eexists i ; eexists ; eexists ; eexists ;
+      split ; [ split ; [ (*1*) | split ; [ (* 2 *)|  eexists ; split ; [ (* 3 *) | split ; [(* 4 *)| split ; [ (* 5 *) |  eexists ; split ; [ (*6*) | (*7*)] ]]] ] ] |  (* 8 *)] ;
+
+
+      (* fix the rule under concern (try and backtrack) *)
+      only 3: (TacticsFW.first_rule + TacticsFW.second_rule) ;
+
+      [ | | | | | | ] ;
+
+      (* fix the output pattern in the rule (try and backtrack) *)
+      only 5 : (TacticsFW.first_in_list + TacticsFW.second_in_list) ;
+      
+      [ | | | | | ] ;
+
+      (* fix the source piece using the context *)
+      only 1 : solve [TacticsFW.incl_singleton] ; (* this works only for singletons *)
+
+      [ | | | | ] ;
+
+      (* solve the arity contraint (the input is fixed) *)
+      only 1 : solve [simpl;auto] ;
+
+      (* Solve the guard (the input is fixed) *)
+      (* If the user has selected the correct rule, the match guard should evaluate to true *)
+      only 1 : reflexivity ;
+      
+      [ | | ] ;
+      
+      (* solve the iteration contraint *)
+      only 1 : solve [ simpl ; auto] ;
+
+      [ | ] ; 
+      try reflexivity ;
+      autounfold with 
+        parse 
+        ConcreteOutputPatternUnit_accessors 
+        opu_accessors  ;
+      
+      (* fail if one of the goal reduces to False *)
+      tryif simpl ; match goal with [ |- False] => idtac end then fail else idtac  
 
 (* FIXME : change the order of the terms in Semantics.in_compute_trace_inv so that the order of the subgoals to solve smartly is left to right *)
 
