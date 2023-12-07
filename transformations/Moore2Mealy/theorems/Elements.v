@@ -115,7 +115,8 @@ Lemma state_element_fw_no_tactic : forall rm,
 Proof.
   intros rm H s IN.
   rewrite H.
-  unfold  Semantics.execute ; simpl.
+  unfold Semantics.execute. 
+  unfold Model.modelElements. 
   unfold Semantics.compute_trace.
   unfold Semantics.produced_elements.
   rewrite ListUtils.map_flat_map.
@@ -125,9 +126,7 @@ Proof.
   + apply Certification.allTuples_incl_length.
     * apply ListUtils.incl_singleton. exact IN. 
     * simpl. auto.
-  + simpl.
-    left.
-    reflexivity.
+  + simpl. left. reflexivity.
 Qed.
 
 Lemma state_element_bw :

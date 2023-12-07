@@ -55,20 +55,24 @@ Definition traceElementOnPiece (o: OutputPatternUnit) (sm: SourceModel) (sp: Inp
       |}.
 
 Definition traceIterationOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) :  Trace :=
-  flat_map (fun o => optionToList (traceElementOnPiece o sm sp iter))
+  flat_map
+    (fun o => optionToList (traceElementOnPiece o sm sp iter))
     r.(r_outputPattern).
 
 Definition traceRuleOnPiece (r: Rule) (sm: SourceModel) (sp: InputPiece) : Trace :=
-  flat_map (traceIterationOnPiece r sm sp)
+  flat_map 
+    (traceIterationOnPiece r sm sp)
     (seq 0 (evalIterator r sm sp)).
 
 Definition traceTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : Trace :=
-  flat_map (fun r => traceRuleOnPiece r sm sp) (matchingRules tr sm sp).
-
-
+  flat_map 
+    (fun r => traceRuleOnPiece r sm sp) 
+    (matchingRules tr sm sp).
 
 Definition compute_trace (tr: Transformation) (sm : SourceModel) :  RichTraceLink.Trace :=
-  flat_map (traceTrOnPiece tr sm) (allTuples tr sm).  
+  flat_map 
+    (traceTrOnPiece tr sm) 
+    (allTuples tr sm).  
 
 Lemma in_compute_trace_inv tr sm :
   forall s i n res l,
