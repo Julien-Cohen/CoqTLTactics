@@ -106,6 +106,30 @@ Proof.
   TacticsFW.transform_element_fw_tac. 
 Qed.
 
+
+Lemma state_element_fw_no_tactic : forall rm,
+    rm = Semantics.execute Moore2Mealy m ->
+  forall (s:Moore.State_t),
+    List.In (Moore.State s) (Model.modelElements m) ->
+    List.In (Mealy.State (convert_state s))  rm.(Model.modelElements).
+Proof.
+  intros rm H s IN.
+  rewrite H.
+  unfold  Semantics.execute ; simpl.
+  unfold Semantics.compute_trace.
+  unfold Semantics.produced_elements.
+  rewrite ListUtils.map_flat_map.
+  apply List.in_flat_map.
+  eexists.
+  split.
+  + apply Certification.allTuples_incl_length.
+    * apply ListUtils.incl_singleton. exact IN. 
+    * simpl. auto.
+  + simpl.
+    left.
+    reflexivity.
+Qed.
+
 Lemma state_element_bw :
   forall (s:Mealy.State_t),
     List.In (Mealy.State s) (Model.modelElements (Semantics.execute Moore2Mealy m)) ->
