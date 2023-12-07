@@ -185,32 +185,31 @@ Ltac transform_link_fw_tac_singleton r_num pat_num i :=
 
 
       (* fix the rule under concern following user hint *)
-      [  | | solve [rule_number r_num] | | | | | ] ;
+      only 3: solve [rule_number r_num] ;
 
       [ | | | | | | ] ;
 
       (* fix the output pattern in the rule following user hint *)
-      [ | | | | solve [pattern_number pat_num] | | ] ;
+      only 5 : solve [pattern_number pat_num] ;
       
       [ | | | | | ] ;
 
       (* the the source piece using the context *)
-      (* fragile : select the first element in the context instead of the good one *)
-      [ solve [TacticsFW.incl_singleton] | | | | | ] ; (* this works only for singletons *)
+      only 1 : solve [TacticsFW.incl_singleton] ; (* this works only for singletons *)
 
       [ | | | | ] ;
 
       (* solve the arity contraint (the input is fixed) *)
-      [ solve [simpl;auto] | | | | ] ;
+      only 1 : solve [simpl;auto] ;
 
       (* Solve the guard (the input is fixed) *)
       (* If the user has selected the correct rule, the match guard should evaluate to true *)
-      [ reflexivity | | | ] ;
+      only 1 : reflexivity ;
       
       [ | | ] ;
       
       (* solve the iteration contraint *)
-      [ solve [ simpl ; auto] | | ] ;
+      only 1 : solve [ simpl ; auto] ;
 
       [ | ] ; 
       try reflexivity ;
