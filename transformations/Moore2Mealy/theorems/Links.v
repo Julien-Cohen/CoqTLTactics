@@ -56,8 +56,8 @@ Proof.
     intro IN_TRACE.
 
 
-(* FIXME : does the tactic works if we invert the position of IN_S and IN_T in the context ? Answer ; no. *)
-(*move IN_T after IN_S.*)
+(* Remark : the tactic works if we invert the position of IN_S and IN_T in the context, thanks to the use of multimatch in the tactic. Comment/uncomment the following line to explore this. *)
+  move IN_T after IN_S.
 
   TacticsFW.transform_link_fw_tac_singleton 2 1 0. 
 

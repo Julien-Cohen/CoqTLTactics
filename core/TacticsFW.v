@@ -150,8 +150,17 @@ Hint Unfold
   : trace.
 
 
+(*Ltac incl_singleton :=
+  apply ListUtils.incl_singleton ; eassumption.
+*)
 Ltac incl_singleton :=
-  apply incl_singleton ; eassumption.
+  apply ListUtils.incl_singleton ; 
+  multimatch goal with
+    [ H : List.In _ _ |- _ ] => exact H 
+                                    
+    (* multimatch is important here because it allows backtracking, as opposed to eassumption. Here, if there are two hypothsesi in the context that allow to solve the goal, because of evar in the goal, if the the selected hypothesis instanciates the evar so that the following tactics fail, it will backtrack and select another one.  This situation can be explored in the proof of Moore2MEaly/theorems/Links/source_link_fw (use move to switch the order of hypothesis) *)
+
+  end.
 
 Ltac rule_number n := 
   match n with 
