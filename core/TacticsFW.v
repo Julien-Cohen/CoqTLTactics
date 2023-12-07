@@ -150,10 +150,6 @@ Hint Unfold
   : trace.
 
 
-(* fixme : a similar tactic exists *)
-Ltac unfold_accessors :=
-  autounfold with ConcreteOutputPatternUnit_accessors opu_accessors.
-
 Ltac incl_singleton :=
   apply incl_singleton ; eassumption.
 
@@ -209,7 +205,10 @@ Ltac transform_link_fw_tac_singleton r_num pat_num i :=
 
       [ | ] ; 
       try reflexivity ;
-      autounfold with parse ; TacticsFW.unfold_accessors
+      autounfold with 
+        parse 
+        ConcreteOutputPatternUnit_accessors 
+        opu_accessors 
 
 (* FIXME : change the order of the terms in Semantics.in_compute_trace_inv so that the order of the subgoals to solve smartly is left to right *)
 
