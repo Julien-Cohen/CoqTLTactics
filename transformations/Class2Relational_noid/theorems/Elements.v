@@ -48,17 +48,21 @@ Lemma transform_attribute_fw_no_tactic :
     In (ColumnElement {| Column_name := name |}) (rm.(modelElements)). 
 Proof.
     intros.
-    rewrite H.
-    apply <- Certification.tr_execute_in_elements.
+    subst rm.
+    simpl.
+    unfold compute_trace, produced_elements. 
+    rewrite map_flat_map. 
+    apply in_flat_map.
+
     exists ([AttributeElement {| Attribute_derived := false; Attribute_name := name |}]).
     split.
     + apply Certification.allTuples_incl_length.
       * unfold incl.
         intros.
-        apply in_inv in H1.
-        destruct H1.
-        -- rewrite <- H1. assumption.
-        -- contradiction H1.
+        apply in_inv in H.
+        destruct H.
+        -- rewrite <- H. assumption.
+        -- contradiction H.
       * unfold Syntax.arity. simpl. auto.
     + simpl.
       left.
