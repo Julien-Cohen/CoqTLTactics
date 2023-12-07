@@ -35,16 +35,15 @@ Import Moore. (* For readability, we import Moore but not Mealy. *)
 Definition convert_state (s:State_t) : Mealy.State_t :=
   {| Mealy.State_id := s.(State_id) |}.
 
+
 Definition convert_transition m (t : Transition_t) : option Mealy.Transition_t :=
-  match getTransition_target m t with
-  | None => None
-  | Some s => 
-      Some {| 
-          Mealy.Transition_id :=  t.(Transition_id) ;
-          Mealy.Transition_input := t.(Transition_input) ;
-          Mealy.Transition_output := s.(State_output) 
-        |}
-  end.
+  s <- getTransition_target m t ;
+  return {| 
+       Mealy.Transition_id :=  t.(Transition_id) ;
+       Mealy.Transition_input := t.(Transition_input) ;
+       Mealy.Transition_output := s.(State_output) 
+     |}
+.
 
 Definition Moore2Mealy' :=
     transformation
