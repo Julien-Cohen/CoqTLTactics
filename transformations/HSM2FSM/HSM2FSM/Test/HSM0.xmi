@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HSM:StateMachine
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:HSM="http://HSM/1.0"
+    xsi:schemaLocation="http://HSM/1.0 /HSM2FSM/HSM.ecore">
+  <states name="S0"
+      initial="true"/>
+  <states name="S1"/>
+  <states name="S2"
+      subStates="//@states.3 //@states.4 //@states.5"/>
+  <states name="S20"
+      initial="true"/>
+  <states name="S21"/>
+  <states name="S22"/>
+  <states name="S3"
+      subStates="//@states.7 //@states.8 //@states.9"/>
+  <states name="S30"
+      initial="true"/>
+  <states name="S31"/>
+  <states name="S32"/>
+  <states name="S4"/>
+  <transitions
+      label="S0->S1"
+      source="//@states.0"
+      target="//@states.1"/>
+  <transitions
+      label="S1->S2"
+      source="//@states.1"
+      target="//@states.2"/>
+  <transitions
+      label="S20->S21"
+      source="//@states.3"
+      target="//@states.4"/>
+  <transitions
+      label="S20->S22"
+      source="//@states.3"
+      target="//@states.5"/>
+  <transitions
+      label="S2->S3"
+      source="//@states.2"
+      target="//@states.6"/>
+  <transitions
+      label="S30->S31"
+      source="//@states.7"
+      target="//@states.8"/>
+  <transitions
+      label="S31->S32"
+      source="//@states.8"
+      target="//@states.9"/>
+  <transitions
+      label="S3->S4"
+      source="//@states.6"
+      target="//@states.10"/>
+</HSM:StateMachine>

@@ -1,0 +1,71 @@
+-- @path HSM=/HSM2FSM/HSM.ecore
+
+module HSM2FSM;
+
+create OUT : HSM from IN : HSM;
+
+helper context HSM!State def : isComposite () : Boolean =
+	not self.subStates->isEmpty();
+
+rule SM2SM { 
+    from sm1 : HSM!StateMachine
+    to sm2 : HSM!StateMachine
+}
+
+rule S2S {
+    from is1 : HSM!State 
+		(not is1.isComposite())
+    to is2 : HSM!State (
+    	name <- is1.name, 
+		initial <- is1.initial, 
+		stateMachine <- is1.stateMachine
+	)
+}
+
+-- transition between two noncomposite states
+rule T2T {
+    from t : HSM!Transition 
+		(not t.source.isComposite() and not t.target.isComposite())
+    to t2 : HSM!Transition ( 
+    	label <- t.label, 
+		source <- t.source, 
+		target <- t.target, 
+		stateMachine <- t.stateMachine
+	)
+}
+
+-- transition whose source is a composite state
+rule Tcs2T { 
+    from t : HSM!Transition, ss : HSM!State 
+		(not t.target.isComposite() and t.source.subStates->includes(ss))
+    to t2 : HSM!Transition (
+    	label <- t.label, 
+		source <- ss, 
+		target <- t.target,
+		stateMachine <- t.stateMachine
+	)
+}
+
+-- transition whose target is a composite state
+rule Tct2T { 
+    from t : HSM!Transition 
+		(not t.source.isComposite() and t.target.isComposite())
+    to t2 : HSM!Transition (
+    	label <- t.label, 
+		source <- t.source, 
+		target <- t.target.subStates->any(s | s.initial),
+		stateMachine <- t.stateMachine
+	)
+}
+
+-- transition whose source and target are composite states
+rule Tcst2T { 
+    from t : HSM!Transition, ss : HSM!State 
+		(t.target.isComposite() and t.source.subStates->includes(ss))
+    to t2 : HSM!Transition (
+    	label <- t.label,
+		source <- ss,
+		target <- t.target.subStates->any(s | s.initial),
+		stateMachine <- t.stateMachine
+	)
+}

@@ -1,0 +1,23 @@
+     spec    proof comments
+       29       48        1 ./additivity/AdditivityRule.v (1%)
+     spec    proof comments
+       38      176        1 ./confluence/Confluence.v (0%)
+     spec    proof comments
+       22       10        1 ./distributivity/distributivity.v (3%)
+       29        0        1 ./distributivity/sampleMoore_distributivity.v (3%)
+       51       10        2 total (3%)
+     spec    proof comments
+       34       28        1 ./injectivity/Injectivity.v (1%)
+       22        0        1 ./injectivity/sampleMoore_injectivity.v (4%)
+       56       28        2 total (2%)
+     spec    proof comments
+       33       25        1 ./monotonicity/monotonicity.v (1%)
+       18       21        0 ./monotonicity/Moore2Mealy_monotonicity_witness.v (0%)
+       30        0        1 ./monotonicity/sampleMoore_monotonicity.v (3%)
+       81       46        2 total (1%)
+     spec    proof comments
+       31        5        3 ./surjectivity/surjectivity.v (7%)
+     spec    proof comments
+       29       11        3 ./totality/totality.v (6%)
+     spec    proof comments
+       27       53        1 ./universality/Universality.v (1%)

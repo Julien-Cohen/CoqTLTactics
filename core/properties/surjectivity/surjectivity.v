@@ -1,0 +1,49 @@
+Require Import String.
+Require Import EqNat.
+Require Import List.
+Require Import PeanoNat.
+Require Import Lia.
+Require Import FunctionalExtensionality.
+
+Require Import core.Semantics.
+Require Import core.Syntax.
+Require Import core.Model.
+Require Import core.TransformationConfiguration.
+Require Import core.Certification.
+Require Import core.utils.Utils.
+
+Require Import core.modeling.ConcreteSyntax.
+Require Import core.modeling.ModelingSemantics.
+Require Import core.modeling.ModelingMetamodel.
+Require Import core.modeling.ConcreteExpressions.
+Require Import core.modeling.Parser.
+
+
+(*************************************************************)
+(** * Surjectivity of CoqTL                                  *)
+(*************************************************************)
+
+(** Surjectivity on model elements                           *)
+
+Theorem Surjectivity_elem {tc:TransformationConfiguration} :
+forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
+      In te (execute tr sm).(modelElements) ->
+      (exists (sp : InputPiece),
+          In sp (allTuples tr sm) /\
+          In te (produced_elements (traceTrOnPiece tr sm sp))).
+Proof.
+    apply tr_execute_in_elements.
+Qed.
+
+
+(** Surjectivity on model links                              *)
+
+Theorem Surjectivity_links {tc:TransformationConfiguration} :
+forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
+      In tl (execute tr sm).(modelLinks) ->
+      (exists (sp : InputPiece),
+          In sp (allTuples tr sm) /\
+          In tl (LegacySemantics.applyTrOnPiece tr sm sp)).
+Proof.
+    apply tr_execute_in_links_legacy.
+Qed.
