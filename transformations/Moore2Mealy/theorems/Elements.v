@@ -96,32 +96,44 @@ Definition convert_transition' t (IN : List.In (Moore.Transition t) m.(Model.mod
     discriminate H.
 Defined.
 
+(* FW with the new tactic *)
+Lemma state_element_fw_alt  
+  (s:Moore.State_t)
+  (IN : List.In (Moore.State s) (Model.modelElements m)) :
+  List.In 
+    (Mealy.State (convert_state s))  
+    (Semantics.execute Moore2Mealy m).(Model.modelElements).
+Proof. 
+  TacticsFW.in_modelElements_singleton_fw_tac 1 1 0. (* fixme : "state" instead of rule number *)
 
-Lemma state_element_fw : 
-  forall (s:Moore.State_t),
-    List.In (Moore.State s) (Model.modelElements m) ->
-    List.In (Mealy.State (convert_state s))  (Semantics.execute Moore2Mealy m).(Model.modelElements).
+Qed.
+
+(* FW with the old tactics *)
+Lemma state_element_fw  
+  (s:Moore.State_t)
+  (IN : List.In (Moore.State s) (Model.modelElements m)) :
+  List.In 
+    (Mealy.State (convert_state s))  
+    (Semantics.execute Moore2Mealy m).(Model.modelElements).
 Proof.
-  intros s IN.
   TacticsFW.transform_element_fw_tac. 
 Qed.
 
 
-Lemma state_element_fw_no_tactic : forall rm,
-    rm = Semantics.execute Moore2Mealy m ->
-  forall (s:Moore.State_t),
-    List.In (Moore.State s) (Model.modelElements m) ->
-    List.In (Mealy.State (convert_state s))  rm.(Model.modelElements).
+
+Import List.
+
+(* FW without tactics *)
+Lemma state_element_fw_no_tactic rm s
+  (H: rm = Semantics.execute Moore2Mealy m) 
+  (IN: List.In (Moore.State s) (Model.modelElements m) ) :
+  List.In (Mealy.State (convert_state s))  rm.(Model.modelElements).
 Proof.
-  intros rm H s IN.
-  rewrite H.
-  unfold Semantics.execute. 
-  unfold Model.modelElements. 
-  unfold Semantics.compute_trace.
-  unfold Semantics.produced_elements.
+  subst rm.
+  autounfold with semantics.
   rewrite ListUtils.map_flat_map.
   apply List.in_flat_map.
-  eexists.
+  exists ( (Moore.State s) :: nil ).
   split.
   + apply Certification.allTuples_incl_length.
     * apply ListUtils.incl_singleton. exact IN. 
@@ -155,7 +167,39 @@ Proof.
 Qed.
 
 
+(* FW with new tactic *)
+Lemma transition_element_fw_alt: 
+  forall (t:Moore.Transition_t),
+    List.In (Moore.Transition t) (Model.modelElements m) ->
+    exists t', 
+      convert_transition m t = Some t' /\
+        List.In (Mealy.Transition t')  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
+Proof.
+  intros t IN.
+  destruct (WF_T _ IN) as (s & G).
 
+  assert ( C : convert_transition m t = Some
+             {|
+               Mealy.Transition_id := Moore.Transition_id t;
+               Mealy.Transition_input := Moore.Transition_input t;
+               Mealy.Transition_output := Moore.State_output s
+             |}).
+  { unfold convert_transition. rewrite G. reflexivity. }
+
+  rewrite C.
+  eexists ; split ; [ reflexivity| ].
+
+
+  TacticsFW.in_modelElements_singleton_fw_tac 2 1 0 ; [].
+  (* Here we would like to "compute", but this does not work because the value of this computation relies on the value of [m], which is unknown here ; we have to [rewrite C] to get rid of the value of [m]. *)
+  simpl.
+
+    unfold ConcreteExpressions.makeElement ; simpl.
+    unfold ConcreteExpressions.wrapElement ; simpl.
+    rewrite C. reflexivity.
+Qed.
+
+(* FW with old tactic *)
 Lemma transition_element_fw : 
   forall (t:Moore.Transition_t),
     List.In (Moore.Transition t) (Model.modelElements m) ->

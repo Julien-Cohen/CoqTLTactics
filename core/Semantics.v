@@ -38,6 +38,26 @@ Proof.
   setoid_rewrite in_allTuples_incl. setoid_rewrite <- incl_singleton. tauto.
 Qed.
 
+Lemma in_allTuples_2 :
+      forall a b m t,
+        t.(Syntax.arity) >= 2 ->
+        In a (modelElements m) ->
+        In b (modelElements m) ->
+        In [a;b] (allTuples t m).
+Proof.
+  intros until t ; intros HA IN1 IN2.
+  setoid_rewrite in_allTuples_incl ; split.
+  {
+    apply List.incl_cons ; auto.
+    apply List.incl_cons ; auto.
+    apply List.incl_nil_l.
+  }
+  {
+    simpl.
+    auto with arith.
+  }
+Qed.
+
 Definition matchingRules (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list Rule :=
   filter (fun (r:Rule) => evalGuard r sm sp) tr.(rules).
 

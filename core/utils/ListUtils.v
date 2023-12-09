@@ -282,10 +282,8 @@ Lemma incl_singleton :
   forall {T} (a:T) b, List.In a b <-> incl (a::nil)  b .
 Proof.
   intros ; split ; intro H.
-  + unfold incl.
-    intros e H2.
-    repeat unfold_In_cons H2.
-    subst. exact H.
+  + apply incl_cons ; auto.
+    apply incl_nil_l.
   + incl_inv H. exact H. 
 Qed.
 
@@ -303,6 +301,17 @@ Ltac explicit_incl H :=
       apply incl_cons_inv in H ; destruct H as (H1 & H)
   |  incl nil _ => clear H
   end.
+
+
+Lemma incl_pair :
+  forall {T} (a b :T) c, (List.In a c /\ List.In b c) <-> incl (a::b::nil) c.
+Proof.
+  intros ; split. 
+  + intros (H1 & H2). 
+    repeat apply incl_cons ; auto. 
+    apply incl_nil_l.
+  + intro H. repeat explicit_incl H. auto.
+Qed.
 
 
 Set Implicit Arguments.
