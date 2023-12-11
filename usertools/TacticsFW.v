@@ -25,7 +25,7 @@ Require usertools.TacticUtils.
  Ltac in_compute_trace_inv_singleton_fw r_num pat_num :=
   match goal with 
   | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
-      rewrite Semantics.in_compute_trace_inv ; 
+      rewrite SemanticsTools.in_compute_trace_inv ; 
       split ; 
       [ | split ;
           [ | eexists ; split ; 
@@ -57,7 +57,7 @@ Require usertools.TacticUtils.
 (* variant that tries to guess the rule and the pattern *)
 (*FIXME : test-me more *)
 Ltac in_compute_trace_inv_singleton_fw_auto := 
-  setoid_rewrite Semantics.in_compute_trace_inv (*in the left part*) ;
+  setoid_rewrite SemanticsTools.in_compute_trace_inv (*in the left part*) ;
   split ; 
   [ (*1*) 
   | split ; 
@@ -97,7 +97,7 @@ Ltac in_compute_trace_inv_singleton_fw_auto :=
 Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
   match goal with 
   | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
-        rewrite Semantics.in_compute_trace_inv ; 
+        rewrite SemanticsTools.in_compute_trace_inv ; 
     split ; [ | split ; [ | eexists ; split ; [ | split ; [ | split ; [ | eexists ; split ; [ | ]]]]]] ; 
       only 3 : solve [TacticUtils.rule_number r_num] (* no backtrack needed *) ;
         only 5 : solve [TacticUtils.pattern_number pat_num] ;

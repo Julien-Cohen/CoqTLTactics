@@ -158,7 +158,7 @@ Ltac exploit_in_trace H :=
       try destruct_source H ; 
   
       (* 1 : inversion *)
-      apply -> Semantics.in_compute_trace_inv in H ;
+      apply -> SemanticsTools.in_compute_trace_inv in H ;
       autounfold with tracelink in H ;
       destruct H as (IN_ELTS & _ & r & IN_RULE & MATCH_GUARD & IN_IT & opu & IN_OUTPAT & EV); (* the _ because there is no information here *)
   
