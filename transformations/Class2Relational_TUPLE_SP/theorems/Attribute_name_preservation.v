@@ -15,6 +15,8 @@ Require Import transformations.Class2Relational_TUPLE_SP.Class2Relational_TUPLE_
 Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
 Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
 
+Require TacticsFW.
+
 Theorem Attribute_name_preservation:
     forall (rm : RelationalModel) (cm: ClassModel),
         (* transformation *)
@@ -29,4 +31,20 @@ Theorem Attribute_name_preservation:
             In (ColumnElement c) rm.(modelElements) /\
             column_name c = attr_name a.
 Proof.
-Abort.
+  intros.
+  subst rm.
+  eexists.
+  
+  split.
+  + TacticsFW.in_modelElements_pair_fw_tac 2 1 0.
+    unfold ConcreteExpressions.makeGuard.
+    unfold ConcreteExpressions.wrap.
+    
+    simpl.
+    rewrite H2.
+    simpl.
+    rewrite H3.
+    simpl.
+    apply internal_Class_t_dec_lb ; auto.
+  +reflexivity.
+Qed.
