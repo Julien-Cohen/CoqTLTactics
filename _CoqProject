@@ -2,6 +2,7 @@ INSTALLDEFAULTROOT = .
 
 -R core core
 -R transformations transformations
+-R usertools usertools
 
 core/utils/CpdtTactics.v
 core/utils/NotationUtils.v
@@ -29,8 +30,10 @@ core/Semantics.v
 core/LegacySemantics.v
 core/Resolve.v
 core/Engine.v
-core/TacticsBW.v
-core/TacticsFW.v
+
+usertools/TacticsBW.v
+usertools/TacticsFW.v
+usertools/Glue.v
 
 core/modeling/ModelingMetamodel.v
 core/modeling/ModelingTransformationConfiguration.v
@@ -39,6 +42,7 @@ core/modeling/ConcreteSyntax.v
 core/modeling/ModelingEngine.v
 core/modeling/Parser.v
 core/modeling/ModelingSemantics.v
+
 
 # Engine variants
 
@@ -53,8 +57,6 @@ core/modeling/ModelingSemantics.v
 #core/modeling/byrule/Certification_ByRuleSemantics.v\
 
 # User transformations
-
-transformations/Glue.v
 
 transformations/Class2Relational/ClassMetamodel.v
 transformations/Class2Relational/ClassModelProperties.v

@@ -10,7 +10,7 @@ Require Import transformations.Class2Relational_noid.Class2Relational.
 Require Import transformations.Class2Relational_noid.ClassMetamodel.
 Require Import transformations.Class2Relational_noid.RelationalMetamodel.
 
-From core Require TacticsFW Certification.
+From usertools Require TacticsFW.
 
 
 Ltac negb_inv H :=

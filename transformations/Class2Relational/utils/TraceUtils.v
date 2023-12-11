@@ -12,7 +12,7 @@ Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
-Require TacticsFW TacticsBW. 
+From usertools Require TacticsFW TacticsBW. 
 
 
 Require Import transformations.Class2Relational.Class2Relational.

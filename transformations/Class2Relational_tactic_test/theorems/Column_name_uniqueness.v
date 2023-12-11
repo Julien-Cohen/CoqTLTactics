@@ -17,7 +17,7 @@ Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
-Require core.TacticsBW.
+Require usertools.TacticsBW.
 
 Require Import transformations.Class2Relational_tactic_test.Class2Relational_tactic_test.
 Require Import transformations.Class2Relational_tactic_test.ClassMetamodel.

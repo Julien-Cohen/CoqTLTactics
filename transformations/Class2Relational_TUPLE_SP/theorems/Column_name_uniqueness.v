@@ -16,7 +16,8 @@ Require Import core.Semantics.
 Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
-Require        core.TacticsBW.
+
+Require        usertools.TacticsBW.
 
 Require Import transformations.Class2Relational_TUPLE_SP.Class2Relational_TUPLE_SP.
 Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.

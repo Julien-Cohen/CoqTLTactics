@@ -1,10 +1,15 @@
-Require Moore2MealyALT.MooreSemantics.
-Require Moore2MealyALT.MealySemantics.
-Require Import Moore2MealyALT.Moore2Mealy.
-Require Moore2MealyALT.MooreWF.
-Require Moore2MealyALT.MealyWF.
 
-Require core.TacticsFW core.TacticsBW.
+Require Moore2MealyALT.MooreSemantics
+       Moore2MealyALT.MooreSemantics
+       Moore2MealyALT.MealySemantics
+       Moore2MealyALT.Moore2Mealy
+       Moore2MealyALT.MooreWF
+       Moore2MealyALT.MealyWF.
+
+Import Moore2Mealy.
+
+From usertools 
+  Require TacticsFW TacticsBW.
 
 Import String OptionUtils.
 

@@ -21,7 +21,8 @@ Require Import core.Engine.
 
 Require Import  core.Semantics.
 Require Import  core.Certification.
-Require         core.TacticsBW.
+
+Require         usertools.TacticsBW.
 
 Require Import transformations.Class2Relational_noid.Class2Relational.
 Require Import transformations.Class2Relational_noid.ClassMetamodel.

@@ -15,7 +15,7 @@ Require Import transformations.Class2Relational_noid.Class2Relational.
 Require Import transformations.Class2Relational_noid.ClassMetamodel.
 Require Import transformations.Class2Relational_noid.RelationalMetamodel.
 
-Require core.TacticsFW.
+Require usertools.TacticsFW.
 
 Theorem Attribute_name_preservation_fw:
     forall (rm : RelationalModel) (cm: ClassModel),

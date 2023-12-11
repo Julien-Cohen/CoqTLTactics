@@ -6,7 +6,8 @@ Require Import core.Semantics.
 
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
-Require        core.TacticsBW.
+
+Require        usertools.TacticsBW.
 
 From transformations.Class2Relational_TUPLE_SP
   Require

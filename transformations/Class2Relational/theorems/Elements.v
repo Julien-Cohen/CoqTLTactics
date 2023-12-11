@@ -6,7 +6,8 @@ Require Import core.Semantics.
 
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
-Require        core.TacticsBW.
+
+From usertools Require TacticsBW.
 
 
 From transformations.Class2Relational 

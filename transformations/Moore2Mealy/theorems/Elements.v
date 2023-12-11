@@ -1,4 +1,4 @@
-From core 
+From usertools 
        Require TacticsFW TacticsBW.
 
 Require Moore2Mealy.MooreSemantics.
