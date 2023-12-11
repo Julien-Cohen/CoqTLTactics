@@ -293,13 +293,11 @@ Ltac transform_link_fw_tac_singleton_auto i :=
   end.
 
 
-Ltac in_modelElements_inv_split_fw :=
+Ltac in_modelElements_inv_split_fw i :=
   match goal with 
     | [ |- List.In _ (Semantics.execute _ _).(Model.modelElements)] =>
       apply <- Semantics.in_modelElements_inv ; 
-      eexists ; 
-	unshelve eexists ; (* unshelve because the iteration counter is not automatically deduced later, so we have to leave it as an unshelved goal *)
-	 [ | eexists ; eexists] ; swap 1 2
+      eexists ; exists i ; eexists ; eexists 
   end.
 
 
@@ -308,8 +306,7 @@ Ltac in_modelElements_inv_split_fw :=
 Ltac in_modelElements_singleton_fw_tac r_num pat_num i :=
   match goal with 
     [ |- List.In _ (Model.modelElements (Semantics.execute ?T _)) ] =>
-      in_modelElements_inv_split_fw ; 
-      [ | exact i] ; 
+      in_modelElements_inv_split_fw i ; 
       in_compute_trace_inv_singleton_fw r_num pat_num ;
       try reflexivity
   end.
@@ -341,8 +338,7 @@ Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
 Ltac in_modelElements_pair_fw_tac r_num pat_num i:=
   match goal with 
     [ |- In _ (modelElements (execute _ _)) ] =>
-      TacticsFW.in_modelElements_inv_split_fw ;
-      [ | exact i] ;
+      TacticsFW.in_modelElements_inv_split_fw i ;
       in_compute_trace_inv_pair_fw r_num pat_num ;
       try reflexivity 
   end.
