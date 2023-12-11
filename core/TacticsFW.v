@@ -31,77 +31,6 @@ Hint Unfold
   Semantics.produced_elements : semantics.
 
 
-(* USED *)
-(* Deprecated : use in_modelElements_inv instead. *)
-Corollary in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
-  forall 
-    (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
-    m s e,
-    In {| 
-        PoorTraceLink.source := s ;
-        PoorTraceLink.produced := e
-      |}
-      (RichTraceLink.drop (compute_trace t m)) ->
-    In e (execute t m).(modelElements).
-Proof. 
-  intros.
-  apply RichTraceLink.in_drop_inv in H. simpl in H. destruct H as (? & ?).
-
-  apply in_modelElements_inv. 
-  unfold RichTraceLink.convert in H. 
-  eexists ; split ; [ | eassumption] ; reflexivity.
-Qed.
-
-
-(* This is a weak version of Semantics.in_compute_trace_inv. *)
-(* FIXME: remove-me *)
-Lemma in_trace_split {tc:TransformationConfiguration} t m : 
-  forall a, 
-    In a (compute_trace t m) <-> 
-      exists p : InputPiece,
-        incl p (modelElements m) 
-        /\ length p <= Syntax.arity t 
-        /\ In a (traceTrOnPiece t m p).
-Proof.
-  intro.
-  unfold compute_trace.
-  setoid_rewrite in_flat_map at 1.
-  setoid_rewrite Semantics.in_allTuples_incl.
-  split.
-  + intros (?&(?&?)&?).
-    eexists ; repeat split ; eauto.
-  + intros (? & ? & ? & ?).
-    eexists ; repeat split ; eauto.
-Qed.
-
-
-
-(** A simple FW tactic for elements (lemma + tactic) (only singleton patterns).
-
- The drawback of this lemma/tactic is that when the traceTrOnPiece premise is not solved by auto, it leaves the user with a painful subgal. *)
-Lemma transform_element_fw {tc} (t:Syntax.Transformation (tc:=tc)) cm e te  :
-  0 < Syntax.arity t ->
-  In e (modelElements cm) ->
-  In te (produced_elements (traceTrOnPiece t cm [e])) ->
-  In te (modelElements (execute t cm)).
-Proof.
-  intros A IN1 IN2.
-  simpl.
-  unfold compute_trace, produced_elements.
-  rewrite map_flat_map. (* a trace can have several target elements *)
-  apply List.in_flat_map. (* this is doing the job *)
-  exists ([e]) ; split ; [ | auto ].
-  apply <- in_allTuples_incl_singleton. auto.
-Qed.
-
-(* Used in Class2Relational *)
-Ltac transform_element_fw_tac :=
-  match goal with
-    [ |- In _ (execute ?T _).(modelElements) ] =>
-      eapply (transform_element_fw T) ; [ solve [simpl ; auto ] | try eassumption | try (solve [simpl;auto])]
-  end.
-
-
 (** *** Utilities *)
 
 (** When we know which rule is the one we search, the following tactics help us to say it. 
@@ -181,6 +110,8 @@ Ltac pattern_number n :=
 
 (* When a guard is applied to an input piece that does not match the explected type, evaluation of the guard will lead to false = true. This tacic detects this situation and fails when it occurs. Such a failure can bu used to trigger a backtrack. *)
 Ltac fail_on_type_mismatch :=
+(*  match goal with 
+    [ |- UserExpressions.evalGuard _ _ _ = true] =>*)
       tryif 
         assert_fails ( 
             compute ;
@@ -189,7 +120,111 @@ Ltac fail_on_type_mismatch :=
             | _ => idtac
             end) 
       then fail 
-      else idtac.
+      else idtac
+(*  end*).
+
+
+(** * Tactics on traces *)
+
+
+(* Fully unfold [In _ compute_trace _ _] and solve easy goals. *) 
+Ltac in_compute_trace_inv_singleton_fw_evar r_num pat_num i :=
+  match goal with 
+  | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
+        rewrite Semantics.in_compute_trace_inv ; 
+    split ; [ | split ; [ | eexists ; split ; [ | split ; [ | split ; [ | eexists ; split ; [ | ]]]]]] ; 
+      only 3 : solve [TacticsFW.rule_number r_num] (* no backtrack needed *) ;
+        only 5 : solve [TacticsFW.pattern_number pat_num] ;
+
+        only 4 : instantiate (2:=i) (* fixme : fragile *) (* attention, même si c'est la première evar dans le goal, ce n'est pas la première dans l'ensemble des goals *) ;
+        only 1 : (apply ListUtils.incl_singleton)  ;
+        [ | | | | ] ;
+        only 2 : solve [compute ; auto] ;
+        only 2 : simpl ;
+        only 3 : solve [compute ; auto] ;
+        only 3 : simpl ;
+        only 1 : TacticsFW.multi_eassumption (* backtrack point *);
+        only 1 : TacticsFW.fail_on_type_mismatch ;
+
+        try reflexivity
+  end.
+
+(* Variant where the iteration counter is not an evar but is already fixed *)
+ Ltac in_compute_trace_inv_singleton_fw_alt r_num pat_num :=
+  match goal with 
+  | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
+      rewrite Semantics.in_compute_trace_inv ; 
+      split ; 
+      [ | split ;
+          [ | eexists ; split ; 
+              [ | split ; 
+                  [ | split ;
+                      [ | eexists ; split 
+                          ; [ | ]]]]]] ; 
+      
+      only 3 : solve [TacticsFW.rule_number r_num] (* no backtrack needed *) ;
+      only 5 : solve [TacticsFW.pattern_number pat_num] ;
+      
+      only 1 : apply ListUtils.incl_singleton ;
+      [ | | | | ] ;
+      only 1 : TacticsFW.multi_eassumption (* backtrack point *); 
+      only 2 : (* guard *)TacticsFW.fail_on_type_mismatch ;
+      only 2 : (* guard *) simpl ;
+      only 1 : (* arity *) solve [simpl ; auto] ;
+      only 2 : (* iteration_counter *) solve [simpl ; auto] ;
+      only 2 : (* make_element *) simpl ;
+      try reflexivity
+  end.
+
+
+
+(* USED *)
+(* Deprecated : use Semantics.in_modelElements_inv instead. *)
+Corollary in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
+  forall 
+    (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
+    m s e,
+    In {| 
+        PoorTraceLink.source := s ;
+        PoorTraceLink.produced := e
+      |}
+      (RichTraceLink.drop (compute_trace t m)) ->
+    In e (execute t m).(modelElements).
+Proof. 
+  intros.
+  apply RichTraceLink.in_drop_inv in H. simpl in H. destruct H as (? & ?).
+
+  apply in_modelElements_inv. 
+  unfold RichTraceLink.convert in H. 
+  eexists ; split ; [ | eassumption] ; reflexivity.
+Qed.
+
+
+(** A simple FW tactic for elements (lemma + tactic) (only singleton patterns).
+
+ The drawback of this lemma/tactic is that when the traceTrOnPiece premise is not solved by auto, it leaves the user with a painful subgoal. *)
+Lemma transform_element_fw {tc} (t:Syntax.Transformation (tc:=tc)) cm e te  :
+  0 < Syntax.arity t ->
+  In e (modelElements cm) ->
+  In te (produced_elements (traceTrOnPiece t cm [e])) ->
+  In te (modelElements (execute t cm)).
+Proof.
+  intros A IN1 IN2.
+  simpl.
+  unfold compute_trace, produced_elements.
+  rewrite map_flat_map. (* a trace can have several target elements *)
+  apply List.in_flat_map. (* this is doing the job *)
+  exists ([e]) ; split ; [ | auto ].
+  apply <- in_allTuples_incl_singleton. auto.
+Qed.
+
+(* Used in Class2Relational *)
+Ltac transform_element_fw_tac :=
+  match goal with
+    [ |- In _ (execute ?T _).(modelElements) ] =>
+      eapply (transform_element_fw T) ; [ solve [simpl ; auto ] | try eassumption | try (solve [simpl;auto])]
+  end.
+
 
 
 (** *** Complex tactics (singleton patterns)*)
@@ -284,37 +319,20 @@ Ltac transform_link_fw_tac_singleton_auto i :=
 Ltac in_modelElements_inv_split_fw :=
   match goal with 
     | [ |- List.In _ (Semantics.execute _ _).(Model.modelElements)] =>
-      apply <- Semantics.in_modelElements_inv ; eexists ; split ; [ | ]
+      apply <- Semantics.in_modelElements_inv ; 
+      eexists ; 
+      split ; 
+      [ | ]
   end.
 
 
 
-Ltac in_compute_trace_inv_singleton_fw r_num pat_num i :=
-  match goal with 
-  | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
-        rewrite Semantics.in_compute_trace_inv ; 
-    split ; [ | split ; [ | eexists ; split ; [ | split ; [ | split ; [ | eexists ; split ; [ | ]]]]]] ; 
-      only 3 : solve [TacticsFW.rule_number r_num] (* no backtrack needed *) ;
-        only 5 : solve [TacticsFW.pattern_number pat_num] ;
-
-        only 4 : instantiate (2:=i) (* fixme : fragile *) (* attention, même si c'est la première evar dans le goal, ce n'est pas la première dans l'ensemble des goals *) ;
-        only 1 : (apply ListUtils.incl_singleton)  ;
-        [ | | | | ] ;
-        only 2 : solve [compute ; auto] ;
-        only 2 : simpl ;
-        only 3 : solve [compute ; auto] ;
-        only 3 : simpl ;
-        only 1 : TacticsFW.multi_eassumption (* backtrack point *);
-        only 1 : TacticsFW.fail_on_type_mismatch ;
-
-        try reflexivity
-  end.
 
 Ltac in_modelElements_singleton_fw_tac r_num pat_num i :=
   match goal with 
     [ |- List.In _ (Model.modelElements (Semantics.execute ?T _)) ] =>
       in_modelElements_inv_split_fw ; 
-      [ | in_compute_trace_inv_singleton_fw r_num pat_num i] ;
+      [ | in_compute_trace_inv_singleton_fw_evar r_num pat_num i] ;
       only 1 : try reflexivity
   end.
 

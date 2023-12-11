@@ -46,23 +46,11 @@ Lemma class_in_trace c (cm : ClassModel) :
 Proof.
   intro IN1.
 
-  unfold RichTraceLink.drop.
-  apply in_map_iff.
+  apply RichTraceLink.in_drop_inv.
 
   eexists.
-  split.
-
-  
-  2:{
-    apply TacticsFW.in_trace_split.
-    
-    exists ([ClassElement c]).
-    repeat split.
-    { apply incl_singleton. assumption. } 
-    { compute. auto. }
-    { TacticsFW.first_in_list. }
-  }
-  { reflexivity. }
+  simpl. 
+  TacticsFW.in_compute_trace_inv_singleton_fw_alt 1 1.
 Qed.
 
 

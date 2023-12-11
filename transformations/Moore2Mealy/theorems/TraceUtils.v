@@ -20,20 +20,11 @@ Lemma state_in_trace (m:Moore.M) (s:Moore.State_t) :
     |}
     (RichTraceLink.drop (Semantics.compute_trace Moore2Mealy m)).
 Proof.
-  intro IN.
-  unfold RichTraceLink.drop.
-  apply in_map_iff.
+  intro IN1.
+  apply RichTraceLink.in_drop_inv.
   eexists.
-  split.
-  2:{
-    apply TacticsFW.in_trace_split.
-    exists (Moore.State s :: nil).
-    repeat split.
-    { apply ListUtils.incl_singleton. assumption. }
-    { compute. auto. }
-    { compute. left. reflexivity. }
-  }
-  {  reflexivity. }
+  simpl. 
+  TacticsFW.in_compute_trace_inv_singleton_fw_alt 1 1.
 Qed.
 
 

@@ -88,7 +88,11 @@ Proof.
   rename EQ into R.
   apply Certification.tr_resolve_leaf in R.
   
-  eapply TacticsFW.in_trace_in_models_target ; eassumption. 
+  apply RichTraceLink.in_drop_inv in R ;
+  destruct R as (? & R) ; simpl in R.
+  apply <- Semantics.in_modelElements_inv.
+  eexists ; split ; eauto.
+  reflexivity.
 
 Qed.
 
