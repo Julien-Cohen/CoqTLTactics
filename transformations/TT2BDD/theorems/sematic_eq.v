@@ -13,7 +13,7 @@ Require Import transformations.TT2BDD.BDD.
 Require Import transformations.TT2BDD.TT2BDDAbstract.
 Require Import transformations.TT2BDD.tests.TTModel.
 
-Print TT2BDD.
+(*Print TT2BDD.*)
 
 
 Definition BDDNode_name (n: BDDNode) := 

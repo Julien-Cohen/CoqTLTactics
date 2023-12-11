@@ -168,56 +168,7 @@ Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   |}.
 
 
-(* fixme : destruct e as in in_modelLinks_inv below *)
-Lemma in_modelElements_inv tr sm :
-  forall e, In e (execute tr sm).(modelElements) <-> 
-              exists s i n lp, 
-                In 
-                  {| 
-                    RichTraceLink.source := (s, i, n);
-                    RichTraceLink.produced := e ;
-                    RichTraceLink.linkPattern := lp 
-                  |} 
-                  (compute_trace tr sm).
-Proof.
-  setoid_rewrite in_map_iff.
-  intro ; split.
-  + intros ([((?& ?) & ?) ? ?] &?&?).
-    subst.
-    repeat first [eexists | split | eassumption].
-  + intros (?&?&?&?&?).
-    repeat first [eexists | split | eassumption].
-    reflexivity.
-Qed.
 
-Lemma in_modelLinks_inv tr sm :
-  forall l, In l (execute tr sm).(modelLinks) <-> 
-              exists s i n res lp,
-                In 
-                  {| 
-                    RichTraceLink.source := (s, i, n);
-                    RichTraceLink.produced := res ;
-                    RichTraceLink.linkPattern := lp 
-                  |} 
-                  (compute_trace tr sm) 
-                /\ In 
-                     l 
-                     (apply_link_pattern 
-                        (compute_trace tr sm) 
-                        sm 
-                        {| 
-                          RichTraceLink.source := (s, i, n);
-                          RichTraceLink.produced := res ;
-                          RichTraceLink.linkPattern := lp
-                        |}).
-Proof.
-  setoid_rewrite in_flat_map at 1.
-  intro ; split.
-  + intros ([((?& ?) & ?) ? ?] &?&?). 
-    repeat first [eexists | split | eassumption].
-  + intros (?&?&?&?&?&?&?).
-    repeat first [eexists | split | eassumption].
-Qed.
 
 End Semantics.
 

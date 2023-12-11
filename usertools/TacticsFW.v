@@ -11,7 +11,7 @@ Require Import core.modeling.Parser.
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
 
-Require Certification.
+Require SemanticsTools.
 
 Import Metamodel Model.
 
@@ -122,14 +122,14 @@ Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
 Ltac in_modelLinks_inv_split_fw i :=
   match goal with
     [ |- In _ (Semantics.execute _ _).(modelLinks) ] =>
-      apply <- Semantics.in_modelLinks_inv ; 
+      apply <- SemanticsTools.in_modelLinks_inv ; 
       eexists ; exists i ; eexists ; eexists ; eexists ; split
   end.
 
 Ltac in_modelElements_inv_split_fw i :=
   match goal with 
     | [ |- List.In _ (Semantics.execute _ _).(Model.modelElements)] =>
-      apply <- Semantics.in_modelElements_inv ; 
+      apply <- SemanticsTools.in_modelElements_inv ; 
       eexists ; exists i ; eexists ; eexists 
   end.
 
@@ -213,7 +213,7 @@ Proof.
   intros.
   apply RichTraceLink.in_drop_inv in H. simpl in H. destruct H as (? & ?).
 
-  apply in_modelElements_inv. 
+  apply SemanticsTools.in_modelElements_inv. 
   unfold RichTraceLink.convert in H. 
   destruct s as ((?&?)&?). 
   eauto.

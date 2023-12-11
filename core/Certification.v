@@ -17,6 +17,8 @@ Require Import core.TransformationConfiguration.
 Require Import core.SyntaxCertification.
 Require Import core.UserExpressions.
 
+Require SemanticsTools.
+
 Import RichTraceLink.
 
 Section Certification.
@@ -61,7 +63,7 @@ forall (tr: Transformation) (sm : SourceModel) (l : TargetLinkType),
         In x (compute_trace tr sm) /\
           In l (apply_link_pattern (compute_trace tr sm) sm x).
 Proof.
-  setoid_rewrite Semantics.in_modelLinks_inv.
+  setoid_rewrite SemanticsTools.in_modelLinks_inv.
   intros ; split.
   + intros (?&?&?&?&?&?&?) ; eexists ; split ; eassumption.
   + intros ([((?&?)&?) ? ?]&?&?) ; repeat eexists ; eassumption.

@@ -90,7 +90,7 @@ Proof.
   
   apply RichTraceLink.in_drop_inv in R ;
   destruct R as (? & R) ; simpl in R.
-  apply <- Semantics.in_modelElements_inv.
+  apply <- SemanticsTools.in_modelElements_inv.
   eauto.
 
 Qed.

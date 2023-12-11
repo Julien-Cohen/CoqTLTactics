@@ -67,15 +67,26 @@ Proof.
   subst rm.
 
   TacticsBW.exploit_link_in_result R_IN1 ; [].
+
+  (* Exploit MATCH_GUARD *)
+  C2RTactics.negb_inv MATCH_GUARD.
+  destruct t ; simpl in MATCH_GUARD ; subst Attribute_derived.
+
   
+  (*TacticsFW.in_modelElements_singleton_fw_tac 1 1 0.
+  
+  unfold ConcreteExpressions.makeElement.
+  unfold ConcreteExpressions.wrapElement.
+  unfold ConcreteExpressions.wrap.
+  unfold toEData.
+  simpl.  
+  *)
+
   (* We get the hypothesis IN_ELTS0, EQ, IN_L and MATCH_GUARD. *)
   
   (* EQ is not needed here *)
   clear EQ.
 
-  (* Exploit MATCH_GUARD *)
-  C2RTactics.negb_inv MATCH_GUARD.
-  destruct t ; simpl in MATCH_GUARD ; subst Attribute_derived.
 
   (* Exploit IN_L *)
   (* IN_L contains the code of the link-pattern in the rule. *)
@@ -90,7 +101,7 @@ Proof.
   
   apply RichTraceLink.in_drop_inv in R ;
   destruct R as (? & R) ; simpl in R.
-  apply <- Semantics.in_modelElements_inv.
+  apply <- SemanticsTools.in_modelElements_inv.
   eauto.
 Qed.
 
