@@ -12,6 +12,44 @@ Require Import RichTraceLink.
 
 Require Import Semantics.
 
+Lemma in_allTuples_incl {tc:TransformationConfiguration} tr sm :
+  forall t, 
+    In t (allTuples tr sm) <-> 
+      (incl t (modelElements sm) /\ length t <= arity tr).
+Proof.
+  unfold allTuples.
+  setoid_rewrite  <- tuples_up_to_n_incl_length.
+  tauto.
+Qed.
+
+Corollary in_allTuples_incl_singleton {tc:TransformationConfiguration} tr sm :
+  forall t, 
+    In [t] (allTuples tr sm) <-> 
+      (In t (modelElements sm) /\ 0 < arity tr).
+Proof.
+  setoid_rewrite in_allTuples_incl. setoid_rewrite <- incl_singleton. tauto.
+Qed.
+
+Lemma in_allTuples_2 {tc:TransformationConfiguration} :
+      forall t m a b,
+        t.(Syntax.arity) >= 2 ->
+        In a (modelElements m) ->
+        In b (modelElements m) ->
+        In [a;b] (allTuples t m).
+Proof.
+  intros until t ; intros HA IN1 IN2.
+  setoid_rewrite in_allTuples_incl ; split.
+  {
+    apply List.incl_cons ; auto.
+    apply List.incl_cons ; auto.
+    apply List.incl_nil_l.
+  }
+  {
+    simpl.
+    auto with arith.
+  }
+Qed.
+
 Lemma in_compute_trace_inv {tc : TransformationConfiguration} tr sm :
   forall s i n res l,
   In 

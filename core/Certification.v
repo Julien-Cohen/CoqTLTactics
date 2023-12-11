@@ -199,7 +199,7 @@ Lemma allTuples_not_incl_length:
   forall (sp : InputPiece) (tr: Transformation) (sm: SourceModel), 
   length sp > tr.(arity) -> not (In sp (allTuples tr sm)).
 Proof.
-  intros. intro N. apply Semantics.in_allTuples_incl in N ; destruct N.
+  intros. intro N. apply SemanticsTools.in_allTuples_incl in N ; destruct N.
   apply Gt.gt_not_le in H.
   contradiction.
 Qed.
@@ -326,7 +326,7 @@ Program Instance CoqTLEngine :
   }. 
 
 Next Obligation.
-  apply Semantics.in_allTuples_incl in H. tauto.
+  apply SemanticsTools.in_allTuples_incl in H. tauto.
 Qed.
 
 Next Obligation.

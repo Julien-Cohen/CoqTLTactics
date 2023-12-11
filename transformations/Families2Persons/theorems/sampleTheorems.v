@@ -10,6 +10,8 @@ Require Import core.Syntax.
 Require Import core.utils.Utils.
 Require Import transformations.Families2Persons.Families2Persons.
 
+Require TacticsBW.
+
 Theorem tr_FamiliesToPersons :
     forall (sm : Families.M) (te : Persons.Element), 
       In te (execute Families2Persons sm).(modelElements) ->
@@ -26,7 +28,7 @@ Proof.
     - contradiction H0.
     - destruct x.
       + exists s. 
-        apply Semantics.in_allTuples_incl in H.
+        apply SemanticsTools.in_allTuples_incl in H.
         crush.
       + exfalso. 
         specialize (allTuples_not_incl_length (s :: s0 :: x) Families2Persons sm).

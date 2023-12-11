@@ -20,44 +20,6 @@ Context {tc: TransformationConfiguration}.
 Definition allTuples (tr: Transformation) (sm : SourceModel) : list InputPiece :=
   tuples_up_to_n sm.(modelElements) tr.(arity).
 
-Lemma in_allTuples_incl tr sm :
-  forall t, 
-    In t (allTuples tr sm) <-> 
-      (incl t (modelElements sm) /\ length t <= arity tr).
-Proof.
-  unfold allTuples.
-  setoid_rewrite  <- tuples_up_to_n_incl_length.
-  tauto.
-Qed.
-
-Corollary in_allTuples_incl_singleton tr sm :
-  forall t, 
-    In [t] (allTuples tr sm) <-> 
-      (In t (modelElements sm) /\ 0 < arity tr).
-Proof.
-  setoid_rewrite in_allTuples_incl. setoid_rewrite <- incl_singleton. tauto.
-Qed.
-
-Lemma in_allTuples_2 :
-      forall t m a b,
-        t.(Syntax.arity) >= 2 ->
-        In a (modelElements m) ->
-        In b (modelElements m) ->
-        In [a;b] (allTuples t m).
-Proof.
-  intros until t ; intros HA IN1 IN2.
-  setoid_rewrite in_allTuples_incl ; split.
-  {
-    apply List.incl_cons ; auto.
-    apply List.incl_cons ; auto.
-    apply List.incl_nil_l.
-  }
-  {
-    simpl.
-    auto with arith.
-  }
-Qed.
-
 Definition matchingRules (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list Rule :=
   filter (fun (r:Rule) => evalGuard r sm sp) tr.(rules).
 

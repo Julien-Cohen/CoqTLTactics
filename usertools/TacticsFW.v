@@ -238,7 +238,7 @@ Proof.
   rewrite map_flat_map. (* a trace can have several target elements *)
   apply List.in_flat_map. (* this is doing the job *)
   exists ([e]) ; split ; [ | auto ].
-  apply <- in_allTuples_incl_singleton. auto.
+  apply <- SemanticsTools.in_allTuples_incl_singleton. auto.
 Qed.
 
 (* Used in Class2Relational *)

@@ -18,26 +18,6 @@ From transformations.Class2Relational_TUPLE_SP
 Import Class2Relational_TUPLE_SP ClassMetamodel RelationalMetamodel.
 
 
-(* variation of transform_element_fw for pair patterns *)
-(* not used : see transform_attribute_fw_tentative below *)
-Lemma transform_element_fw_pair {tc} (t:Syntax.Transformation (tc:=tc)) cm e1 e2 te  :
-  1 < Syntax.arity t ->
-  In e1 (modelElements cm) ->
-  In e2 (modelElements cm) ->
-  In te (produced_elements (traceTrOnPiece t cm [e1;e2])) ->
-  In te (modelElements (execute t cm)).
-Proof.
-  intros A IN1 IN2 IN3.
-  simpl.
-  unfold compute_trace, produced_elements.
-  rewrite map_flat_map. (* a trace can have several target elements *)
-  apply List.in_flat_map. (* this is doing the job *)
-  exists ([e1;e2]) ; split ; [ | auto ].
-  apply in_allTuples_2 ; auto.
-Qed.
-
-
-
 (** Forward results *)
 
 
@@ -70,24 +50,6 @@ Proof.
 Qed.
 
 
-(* A tentative of use of a naive tactic, that is not successful (ABORTED) *)
-Lemma transform_attribute_fw_tentative : 
-  forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational_TUPLE_SP cm ->
-  (* precondition *)  forall id name id_c name_c,
-    In (AttributeElement {| attr_id:= id ; derived := false ; attr_name := name|}) cm.(modelElements) ->    
-    In (ClassElement {| class_id:= id_c ; class_name := name_c |}) cm.(modelElements) ->
-    getAttributeType
-      {| attr_id := id; derived := false; attr_name := name |} cm = Some {| class_id := id_c; class_name := name_c |} ->
-  (* postcondition *) 
-    In (ColumnElement {| column_id := id; column_name := name |}) (rm.(modelElements)). 
-Proof.
-  intros cm rm H ; subst.
-  intros i n i2 n2 H1 H2 H3.
-  eapply (transform_element_fw_pair Class2Relational_TUPLE_SP) ; 
-    [ eauto | exact H1 | exact H2 | ]. simpl. 
-(* The singleton version of this lemma allows to conclude the proof, but here it does not. Moreover, I cannot see any easy way to conclude the proof (not more easy than is transform_attribute_fw_notactic below).  *)   
-Abort.
 
 (* without tactic *)
 Lemma transform_attribute_fw_notactic : 
@@ -111,7 +73,7 @@ Proof.
             {| attr_id := i; derived := false; attr_name := n |} ; ClassElement {| class_id := i2; class_name := n2 |} ]).
   split. 
   { 
-    apply (in_allTuples_2 Class2Relational_TUPLE_SP) ; auto.
+    apply (SemanticsTools.in_allTuples_2 Class2Relational_TUPLE_SP) ; auto.
   }
   {
     unfold traceTrOnPiece.
