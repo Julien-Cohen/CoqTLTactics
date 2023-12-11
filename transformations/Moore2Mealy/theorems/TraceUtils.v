@@ -24,7 +24,7 @@ Proof.
   apply RichTraceLink.in_drop_inv.
   eexists.
   simpl. 
-  TacticsFW.in_compute_trace_inv_singleton_fw_alt 1 1.
+  TacticsFW.in_compute_trace_inv_singleton_fw 1 1.
 Qed.
 
 

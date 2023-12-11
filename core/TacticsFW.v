@@ -128,29 +128,7 @@ Ltac fail_on_type_mismatch :=
 
 
 (* Fully unfold [In _ compute_trace _ _] and solve easy goals. *) 
-Ltac in_compute_trace_inv_singleton_fw_evar r_num pat_num i :=
-  match goal with 
-  | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
-        rewrite Semantics.in_compute_trace_inv ; 
-    split ; [ | split ; [ | eexists ; split ; [ | split ; [ | split ; [ | eexists ; split ; [ | ]]]]]] ; 
-      only 3 : solve [TacticsFW.rule_number r_num] (* no backtrack needed *) ;
-        only 5 : solve [TacticsFW.pattern_number pat_num] ;
-
-        only 4 : instantiate (2:=i) (* fixme : fragile *) (* attention, même si c'est la première evar dans le goal, ce n'est pas la première dans l'ensemble des goals *) ;
-        only 1 : (apply ListUtils.incl_singleton)  ;
-        [ | | | | ] ;
-        only 2 : solve [compute ; auto] ;
-        only 2 : simpl ;
-        only 3 : solve [compute ; auto] ;
-        only 3 : simpl ;
-        only 1 : TacticsFW.multi_eassumption (* backtrack point *);
-        only 1 : TacticsFW.fail_on_type_mismatch ;
-
-        try reflexivity
-  end.
-
-(* Variant where the iteration counter is not an evar but is already fixed *)
- Ltac in_compute_trace_inv_singleton_fw_alt r_num pat_num :=
+ Ltac in_compute_trace_inv_singleton_fw r_num pat_num :=
   match goal with 
   | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
       rewrite Semantics.in_compute_trace_inv ; 
@@ -164,16 +142,14 @@ Ltac in_compute_trace_inv_singleton_fw_evar r_num pat_num i :=
       
       only 3 : solve [TacticsFW.rule_number r_num] (* no backtrack needed *) ;
       only 5 : solve [TacticsFW.pattern_number pat_num] ;
-      
       only 1 : apply ListUtils.incl_singleton ;
-      [ | | | | ] ;
       only 1 : TacticsFW.multi_eassumption (* backtrack point *); 
       only 2 : (* guard *)TacticsFW.fail_on_type_mismatch ;
       only 2 : (* guard *) simpl ;
       only 1 : (* arity *) solve [simpl ; auto] ;
       only 2 : (* iteration_counter *) solve [simpl ; auto] ;
       only 2 : (* make_element *) simpl ;
-      try reflexivity
+      try reflexivity (* guard & make_element *)
   end.
 
 
@@ -196,7 +172,8 @@ Proof.
 
   apply in_modelElements_inv. 
   unfold RichTraceLink.convert in H. 
-  eexists ; split ; [ | eassumption] ; reflexivity.
+  destruct s as ((?&?)&?). 
+  eauto.
 Qed.
 
 
@@ -321,8 +298,8 @@ Ltac in_modelElements_inv_split_fw :=
     | [ |- List.In _ (Semantics.execute _ _).(Model.modelElements)] =>
       apply <- Semantics.in_modelElements_inv ; 
       eexists ; 
-      split ; 
-      [ | ]
+	unshelve eexists ; (* unshelve because the iteration counter is not automatically deduced later, so we have to leave it as an unshelved goal *)
+	 [ | eexists ; eexists] ; swap 1 2
   end.
 
 
@@ -332,25 +309,23 @@ Ltac in_modelElements_singleton_fw_tac r_num pat_num i :=
   match goal with 
     [ |- List.In _ (Model.modelElements (Semantics.execute ?T _)) ] =>
       in_modelElements_inv_split_fw ; 
-      [ | in_compute_trace_inv_singleton_fw_evar r_num pat_num i] ;
-      only 1 : try reflexivity
+      [ | exact i] ; 
+      in_compute_trace_inv_singleton_fw r_num pat_num ;
+      try reflexivity
   end.
 
 
 (** *** Complex tactics (pair patterns) *)
 
 (* used for pair patterns *)
-Ltac in_compute_trace_inv_pair_fw r_num pat_num i :=
+Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
   match goal with 
   | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
         rewrite Semantics.in_compute_trace_inv ; 
     split ; [ | split ; [ | eexists ; split ; [ | split ; [ | split ; [ | eexists ; split ; [ | ]]]]]] ; 
       only 3 : solve [TacticsFW.rule_number r_num] (* no backtrack needed *) ;
         only 5 : solve [TacticsFW.pattern_number pat_num] ;
-
-        only 4 : instantiate (2:=i) (* fixme : fragile *) (* attention, même si c'est la première evar dans le goal, ce n'est pas la première dans l'ensemble des goals *) ;
         only 1 : (apply ListUtils.incl_pair ; split)  ;
-        [ | | | | | ] ;
         only 3 : solve [compute ; auto] ;
         only 3 : simpl ;
         only 4 : solve [compute ; auto] ;
@@ -367,6 +342,7 @@ Ltac in_modelElements_pair_fw_tac r_num pat_num i:=
   match goal with 
     [ |- In _ (modelElements (execute _ _)) ] =>
       TacticsFW.in_modelElements_inv_split_fw ;
-      [ | in_compute_trace_inv_pair_fw r_num pat_num i] ;
-      only 1 : try reflexivity 
+      [ | exact i] ;
+      in_compute_trace_inv_pair_fw r_num pat_num ;
+      try reflexivity 
   end.

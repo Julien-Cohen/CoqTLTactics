@@ -91,8 +91,7 @@ Proof.
   apply RichTraceLink.in_drop_inv in R ;
   destruct R as (? & R) ; simpl in R.
   apply <- Semantics.in_modelElements_inv.
-  eexists ; split ; eauto.
-  reflexivity.
+  eauto.
 
 Qed.
 

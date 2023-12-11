@@ -195,14 +195,14 @@ Ltac exploit_in_trace H :=
 (** Two tactics for user that rely on the pivot tactic above. *)
 Ltac exploit_element_in_result IN :=
   let H := fresh "H" in
-  let tk := fresh "tk" in
+  let s := fresh "s" in
+  let i := fresh "i" in
+  let n := fresh "n" in
   let p := fresh "p" in
   
   (* make the trace appear *)
   apply -> Semantics.in_modelElements_inv in IN ;
-  destruct IN as (tk & H & IN) ;
-  destruct tk as [? p ?] ;
-  unfold RichTraceLink.produced in H ; subst p ; [] ;
+  destruct IN as (s & i & n & p & IN) ;
 
   (* exploit the trace *)
   exploit_in_trace IN.
