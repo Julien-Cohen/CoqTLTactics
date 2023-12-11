@@ -119,14 +119,21 @@ Ltac incl_singleton :=
 
 
 (* When a guard is applied to an input piece that does not match the expected type, evaluation of the guard will lead to false = true.
-   This tacic detects this situation and fails when it occurs. Such a failure can bu used to trigger a backtrack. *)
+   This tacic detects this situation and fails when it occurs. Such a failure should be used to trigger a backtrack. *)
 Ltac fail_on_type_mismatch :=
-      tryif 
-        assert_fails ( 
-            compute ;
-            lazymatch goal with 
-            | [ |- false = true]  => fail 
-            | _ => idtac
-            end) 
-      then fail 
-      else idtac.
+  tryif 
+    compute ;
+    match goal with 
+      [ |- false = true]  => idtac 
+    end 
+  then fail 
+  else idtac.
+
+Ltac fail_on_False :=
+  tryif 
+    simpl ; 
+    match goal with 
+      [ |- False] => idtac 
+    end 
+  then fail 
+  else idtac.

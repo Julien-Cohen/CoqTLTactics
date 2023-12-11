@@ -18,14 +18,14 @@ Import Metamodel Model.
 
 Require usertools.TacticUtils.
 
-(** * Tactics on traces *)
+(** * FW Tactics on traces *)
 
 (** ** Tactics that fully unfold [In _ compute_trace _ _] and solve easy goals. *) 
 
  Ltac in_compute_trace_inv_singleton_fw r_num pat_num :=
   match goal with 
   | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
-      rewrite SemanticsTools.in_compute_trace_inv ; 
+      apply <- SemanticsTools.in_compute_trace_inv ; 
       split ; 
       [ | split ;
           [ | eexists ; split ; 
@@ -34,117 +34,126 @@ Require usertools.TacticUtils.
                       [ | eexists ; split 
                           ; [ | ]]]]]] ; 
       
-      (* fix the rule under concern following user hint *)
+      (* Begin with goals that do not need backtracking. *)
+      
+      (* Fix the rule under concern following user hint *)
       only 3 : solve [TacticUtils.rule_number r_num] (* no backtrack needed *) ;
 
-      (* fix the output pattern in the rule following user hint *)
+      (* Fix the output pattern in the rule following user hint *)
       only 5 : solve [TacticUtils.pattern_number pat_num] ;
 
-      (* fix the source piece using the context (singleton version) *)
+      (* Fix the source piece using the context (singleton version) *)
       only 1 : apply ListUtils.incl_singleton ;
       only 1 : TacticUtils.multi_eassumption (* backtrack point *); 
 
-      (* ensure that the instantiation made at the prevous step is type-safe, otherwise backtrack *)
+      (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
       only 2 : (* guard *) TacticUtils.fail_on_type_mismatch ; 
 
-      only 2 : (* guard *) simpl ;
-      only 1 : (* arity *) solve [simpl ; auto] ; (* solve the arity contraint (the input is fixed) *)
-      only 2 : (* iteration_counter *) solve [simpl ; auto] ;
+      (* Solve remaining simple goals : arity and iteration-counter *)
+      only 1 : solve [simpl ; auto] ; 
+      only 2 : solve [simpl ; auto] ;
+
+      (* The two remaining goal rely on user expressions and can be arbitrary difficult to prove *)
+      only 1 : (* guard *) simpl ;
       only 2 : (* make_element *) simpl ;
-      try reflexivity (* solves simple evalGguard & make_element goals *)
+      try reflexivity (* solve "simple" evalGuard & make_element goals *)
   end.
 
-(* variant that tries to guess the rule and the pattern *)
-(*FIXME : test-me more *)
-Ltac in_compute_trace_inv_singleton_fw_auto := 
-  setoid_rewrite SemanticsTools.in_compute_trace_inv (*in the left part*) ;
-  split ; 
-  [ (*1*) 
-  | split ; 
-    [ (* 2 *)
-    |  eexists ; split ; 
-       [ (* 3 *) 
-       | split ;
-         [(* 4 *)
-         | split ;
-           [ (* 5 *) 
-           |  eexists ; split ; 
-              [ (*6*) 
-              | (*7*)] ]]] ] ] ;
-  
-  
-  (* fix the rule under concern (try and backtrack) *)
-  only 3: (TacticUtils.first_rule + TacticUtils.second_rule) ;
-  
-  (* fix the output pattern in the rule (try and backtrack) *)
-  only 5 : (TacticUtils.first_in_list + TacticUtils.second_in_list) ;
-  
-  (* fix the source piece using the context *)
-  only 1 : solve [TacticUtils.incl_singleton] ; (* this works only for singletons *)
-  
-  (* solve the arity contraint (the input is fixed) *)
-  only 1 : solve [simpl;auto] ;
-  
-  (* Solve the guard (the input is fixed) *)
-  (* If the user has selected the correct rule, the match guard should evaluate to true *)
-  only 1 : reflexivity ; (* fixme : fail when the guard is complex *) 
-  
-  (* solve the iteration contraint *)
-  only 1 : solve [ simpl ; auto]
-.
-
-(* variant for pair patterns *)
+(* Variant for pair patterns *)
 Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
   match goal with 
   | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
-        rewrite SemanticsTools.in_compute_trace_inv ; 
-    split ; [ | split ; [ | eexists ; split ; [ | split ; [ | split ; [ | eexists ; split ; [ | ]]]]]] ; 
-      only 3 : solve [TacticUtils.rule_number r_num] (* no backtrack needed *) ;
-        only 5 : solve [TacticUtils.pattern_number pat_num] ;
-        only 1 : (apply ListUtils.incl_pair ; split)  ;
-        only 3 : solve [compute ; auto] ;
-        only 3 : simpl ;
-        only 4 : solve [compute ; auto] ;
-        only 4 : simpl ;
-        only 1 : TacticUtils.multi_eassumption (* backtrack point *);
-        only 1 : TacticUtils.multi_eassumption (* backtrack point *); (* fragile : does not backtrack in used as follows ; apply ListUtils.incl_pair ; split ; multi_eassumption *)
-        only 1 : TacticUtils.fail_on_type_mismatch ;
-
-        try reflexivity
+      apply <- SemanticsTools.in_compute_trace_inv ; 
+      split ; 
+      [ | split ; 
+          [ | eexists ; split ; 
+              [ | split ; 
+                  [ | split ; 
+                      [ | eexists ; split ; 
+                          [ | ]]]]]] ;
+      
+      (* Begin with goals that do not need backtracking. *)
+      
+      (* Fix the rule under concern following user hint *)
+      only 3 : solve [TacticUtils.rule_number r_num] ;
+      
+      (* Fix the output pattern in the rule following user hint *)
+      only 5 : solve [TacticUtils.pattern_number pat_num] ;
+      
+      (* Fix the source piece using the context (pair version) *)
+      only 1 : (apply ListUtils.incl_pair ; split)  ;
+      only 1 : TacticUtils.multi_eassumption (* backtrack point *);
+      only 1 : TacticUtils.multi_eassumption (* backtrack point *); 
+      
+      (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
+      only 2 : TacticUtils.fail_on_type_mismatch ;
+      
+      (* Solve remaining simple goals : arity and iteration-counter *)
+      only 1 : solve [compute ; auto] ;
+      only 2 : solve [compute ; auto] ;
+      
+      (* The two remaining goal rely on user expressions and can be arbitrary difficult to prove *)
+      only 1 : simpl ;
+      only 2 : simpl ;
+      try reflexivity
   end.
 
 
+(* Variant that tries to guess the rule and the pattern *)
+Ltac in_compute_trace_inv_singleton_fw_auto := 
+  apply <- SemanticsTools.in_compute_trace_inv ;
+  split ; 
+  [ (*1*) | split ; 
+    [ (* 2 *) |  eexists ; split ; 
+       [ (* 3 *) | split ;
+         [(* 4 *) | split ;
+           [ (* 5 *) |  eexists ; split ; 
+              [ (*6*) | (*7*)] ]]] ] ] ;
+  
+  
+  (* Fix the rule under concern (try and backtrack) *)
+  only 3: (TacticUtils.first_rule + TacticUtils.second_rule) ;
+  
+  (* Fix the output pattern in the rule (try and backtrack) *)
+  only 5 : (TacticUtils.first_in_list + TacticUtils.second_in_list) ;
+  
+  (* Fix the source piece using the context (singleton version) *)
+  only 1 : apply ListUtils.incl_singleton ;
+  only 1 : TacticUtils.multi_eassumption (* backtrack point *); 
+ 
+  (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
+  only 2 : TacticUtils.fail_on_type_mismatch ;
+
+  (* Solve remaining simple goals : arity and iteration-counter *)
+  only 1 : solve [simpl; auto] ;
+  only 2 : solve [simpl; auto] ;  
+
+  (* The two remaining goal rely on user expressions and can be arbitrary difficult to prove *)
+  only 1 : simpl ;
+  only 2 : simpl ;
+  try reflexivity.
 
 
 
-(** * Switch from a goal on elements/links to a goal on traces *)
 
-Ltac in_modelLinks_inv_split_fw i :=
-  match goal with
-    [ |- In _ (Semantics.execute _ _).(modelLinks) ] =>
-      apply <- SemanticsTools.in_modelLinks_inv ; 
-      eexists ; exists i ; eexists ; eexists ; eexists ; split
-  end.
-
-Ltac in_modelElements_inv_split_fw i :=
-  match goal with 
-    | [ |- List.In _ (Semantics.execute _ _).(Model.modelElements)] =>
-      apply <- SemanticsTools.in_modelElements_inv ; 
-      eexists ; exists i ; eexists ; eexists 
-  end.
 
 
 
 
 (** * Chain goal switching (elements/links -> traces) and a tactic on traces *)
 
-(** *** On elements (singleton, then pairs) *)
+(** *** On elements (singletons, then pairs) *)
 
 Ltac in_modelElements_singleton_fw_tac r_num pat_num i :=
   match goal with 
     [ |- List.In _ (Model.modelElements (Semantics.execute ?T _)) ] =>
-      in_modelElements_inv_split_fw i ; 
+
+      apply <- SemanticsTools.in_modelElements_inv ; 
+
+      eexists ; exists i ; eexists ; eexists ; 
+
       in_compute_trace_inv_singleton_fw r_num pat_num ;
+
       try reflexivity
   end.
 
@@ -152,8 +161,13 @@ Ltac in_modelElements_singleton_fw_tac r_num pat_num i :=
 Ltac in_modelElements_pair_fw_tac r_num pat_num i:=
   match goal with 
     [ |- In _ (modelElements (execute _ _)) ] =>
-      TacticsFW.in_modelElements_inv_split_fw i ;
+
+      apply <- SemanticsTools.in_modelElements_inv ; 
+
+      eexists ; exists i ; eexists ; eexists ; 
+
       in_compute_trace_inv_pair_fw r_num pat_num ;
+
       try reflexivity 
   end.
 
@@ -162,33 +176,43 @@ Ltac in_modelElements_pair_fw_tac r_num pat_num i:=
 Ltac transform_link_fw_tac_singleton r_num pat_num i :=
   match goal with
     [ |- In _ (Semantics.execute _ _).(modelLinks) ] =>
-      in_modelLinks_inv_split_fw i;
 
+      apply <- SemanticsTools.in_modelLinks_inv ; 
+      
+      eexists ; exists i ; eexists ; eexists ; eexists ; 
+
+      split ; 
+      
       [ in_compute_trace_inv_singleton_fw r_num pat_num | ] ;
+      
       autounfold with 
         parse 
         ConcreteOutputPatternUnit_accessors 
         opu_accessors 
   end.
 
-(* variant where the first rule that don't lead to an error is selected intead of relying on an user hint *)
+(* Variant where the first rule that don't lead to an error is selected intead of relying on an user hint. *)
 Ltac transform_link_fw_tac_singleton_auto i :=
   match goal with
     [ |- In _ (Semantics.execute _ _).(modelLinks) ] =>
 
-      in_modelLinks_inv_split_fw i;
+      apply <- SemanticsTools.in_modelLinks_inv ; 
 
-      [in_compute_trace_inv_singleton_fw_auto | ] ;
+      eexists ; exists i ; eexists ; eexists ; eexists ; 
       
-      try reflexivity ;
+      split ;
+
+      [ in_compute_trace_inv_singleton_fw_auto | ] ;
+  
+      (* Fail if one of the goal reduces to False 
+         (trigger backtracking)                   *)
+      TacticUtils.fail_on_False ;   
+  
       autounfold with 
         parse 
         ConcreteOutputPatternUnit_accessors 
-        opu_accessors  ;
-      
-      (* fail if one of the goal reduces to False *)
-      tryif simpl ; match goal with [ |- False] => idtac end then fail else idtac  
-
+        opu_accessors 
+        
   end.
 
 
