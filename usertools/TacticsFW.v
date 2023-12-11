@@ -15,121 +15,8 @@ Require Certification.
 
 Import Metamodel Model.
 
-#[global]
-Hint Unfold 
-  Semantics.traceTrOnPiece 
-  Semantics.traceRuleOnPiece 
-  Semantics.traceIterationOnPiece 
-  Semantics.traceElementOnPiece 
-  Semantics.produced_elements 
-  : trace.
 
-#[global]
-Hint Unfold 
-  Semantics.execute 
-  Semantics.compute_trace 
-  Semantics.produced_elements : semantics.
-
-
-(** *** Utilities *)
-
-(** When we know which rule is the one we search, the following tactics help us to say it. 
-
-In particular in the case we have an existential variable in the goal, as in [In ?r (Syntax.rules Class2Relational)]
-(after use of [in_compute_trace_inv]).
-
-*)
-
-
-(** First element in list (1 lemma, 2 tactics) *)
-Lemma In_1 {A} :
-      forall (e:A) s,
-      (exists r, s = e :: r) -> In e s.
-Proof.
-  intros e s (r&E) ; subst s. 
-  apply in_eq.
-Qed.
-
-Ltac first_in_list :=
-  match goal with 
-    [ |- In _ _ ] =>
-      apply In_1 ; eexists ; reflexivity
-  end.
-
-Ltac first_rule :=
-  match goal with 
-    [ |- In _ (Syntax.rules _)] =>
-      first_in_list
-  end.
-
-
-(** Second element in list (1 lemma, 2 tactics) *)
-Lemma In_2 {A} :
-      forall (e:A) s,
-      (exists a r, s = a :: e :: r) -> In e s.
-Proof.
-  intros e s (a&r&E) ; subst s. 
-  apply in_cons. apply in_eq.
-Qed.
-
-Ltac second_in_list :=
-  match goal with 
-    [ |- In _ _ ] =>
-      apply In_2 ; eexists ; eexists ; reflexivity
-  end.
-
-Ltac second_rule :=
-  match goal with 
-    [ |- In _ (Syntax.rules _)] =>
-      second_in_list
-  end.
-
-
-(** switch/case on positions in lists *)
-
-Ltac rule_number n := 
-  match n with 
-    1 => TacticsFW.first_rule 
-  | 2 => TacticsFW.second_rule 
-end.
-
-Ltac pattern_number n :=
-  match n with 
-    1 => TacticsFW.first_in_list 
-  | 2 => TacticsFW.second_in_list 
-  end.
-
-
-(** Hypothesis selection allowing backtracking *)
-
-Ltac multi_eassumption :=
-    multimatch goal with
-      | [ H : In _ (modelElements _) |- _ ] => exact H 
-    end.
-
-Ltac incl_singleton :=
-  apply ListUtils.incl_singleton ; 
-  multimatch goal with
-    [ H : List.In _ _ |- _ ] => exact H 
-                            
-    (* multimatch is important here because it allows backtracking, as opposed to eassumption. Here, if there are two hypothesis in the context that allow to solve the goal, because of evar in the goal, if the the selected hypothesis instanciates the evar so that the following tactics fail, it will backtrack and select another one.  This situation can be explored in the proof of Moore2MEaly/theorems/Links/source_link_fw (use move to switch the order of hypothesis) *)
-
-  end.
-
-
-(* When a guard is applied to an input piece that does not match the expected type, evaluation of the guard will lead to false = true.
-   This tacic detects this situation and fails when it occurs. Such a failure can bu used to trigger a backtrack. *)
-Ltac fail_on_type_mismatch :=
-      tryif 
-        assert_fails ( 
-            compute ;
-            lazymatch goal with 
-            | [ |- false = true]  => fail 
-            | _ => idtac
-            end) 
-      then fail 
-      else idtac.
-
+Require usertools.TacticUtils.
 
 (** * Tactics on traces *)
 
@@ -148,17 +35,17 @@ Ltac fail_on_type_mismatch :=
                           ; [ | ]]]]]] ; 
       
       (* fix the rule under concern following user hint *)
-      only 3 : solve [TacticsFW.rule_number r_num] (* no backtrack needed *) ;
+      only 3 : solve [TacticUtils.rule_number r_num] (* no backtrack needed *) ;
 
       (* fix the output pattern in the rule following user hint *)
-      only 5 : solve [TacticsFW.pattern_number pat_num] ;
+      only 5 : solve [TacticUtils.pattern_number pat_num] ;
 
       (* fix the source piece using the context (singleton version) *)
       only 1 : apply ListUtils.incl_singleton ;
-      only 1 : TacticsFW.multi_eassumption (* backtrack point *); 
+      only 1 : TacticUtils.multi_eassumption (* backtrack point *); 
 
       (* ensure that the instantiation made at the prevous step is type-safe, otherwise backtrack *)
-      only 2 : (* guard *) TacticsFW.fail_on_type_mismatch ; 
+      only 2 : (* guard *) TacticUtils.fail_on_type_mismatch ; 
 
       only 2 : (* guard *) simpl ;
       only 1 : (* arity *) solve [simpl ; auto] ; (* solve the arity contraint (the input is fixed) *)
@@ -187,13 +74,13 @@ Ltac in_compute_trace_inv_singleton_fw_auto :=
   
   
   (* fix the rule under concern (try and backtrack) *)
-  only 3: (TacticsFW.first_rule + TacticsFW.second_rule) ;
+  only 3: (TacticUtils.first_rule + TacticUtils.second_rule) ;
   
   (* fix the output pattern in the rule (try and backtrack) *)
-  only 5 : (TacticsFW.first_in_list + TacticsFW.second_in_list) ;
+  only 5 : (TacticUtils.first_in_list + TacticUtils.second_in_list) ;
   
   (* fix the source piece using the context *)
-  only 1 : solve [TacticsFW.incl_singleton] ; (* this works only for singletons *)
+  only 1 : solve [TacticUtils.incl_singleton] ; (* this works only for singletons *)
   
   (* solve the arity contraint (the input is fixed) *)
   only 1 : solve [simpl;auto] ;
@@ -212,74 +99,21 @@ Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
   | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
         rewrite Semantics.in_compute_trace_inv ; 
     split ; [ | split ; [ | eexists ; split ; [ | split ; [ | split ; [ | eexists ; split ; [ | ]]]]]] ; 
-      only 3 : solve [TacticsFW.rule_number r_num] (* no backtrack needed *) ;
-        only 5 : solve [TacticsFW.pattern_number pat_num] ;
+      only 3 : solve [TacticUtils.rule_number r_num] (* no backtrack needed *) ;
+        only 5 : solve [TacticUtils.pattern_number pat_num] ;
         only 1 : (apply ListUtils.incl_pair ; split)  ;
         only 3 : solve [compute ; auto] ;
         only 3 : simpl ;
         only 4 : solve [compute ; auto] ;
         only 4 : simpl ;
-        only 1 : TacticsFW.multi_eassumption (* backtrack point *);
-        only 1 : TacticsFW.multi_eassumption (* backtrack point *); (* fragile : does not backtrack in used as follows ; apply ListUtils.incl_pair ; split ; multi_eassumption *)
-        only 1 : TacticsFW.fail_on_type_mismatch ;
+        only 1 : TacticUtils.multi_eassumption (* backtrack point *);
+        only 1 : TacticUtils.multi_eassumption (* backtrack point *); (* fragile : does not backtrack in used as follows ; apply ListUtils.incl_pair ; split ; multi_eassumption *)
+        only 1 : TacticUtils.fail_on_type_mismatch ;
 
         try reflexivity
   end.
 
 
-(** *** Other tactics (deprecated) *)
-
-
-(* USED *)
-(* Deprecated : use Semantics.in_modelElements_inv instead. *)
-Corollary in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
-  forall 
-    (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
-    m s e,
-    In {| 
-        PoorTraceLink.source := s ;
-        PoorTraceLink.produced := e
-      |}
-      (RichTraceLink.drop (compute_trace t m)) ->
-    In e (execute t m).(modelElements).
-Proof. 
-  intros.
-  apply RichTraceLink.in_drop_inv in H. simpl in H. destruct H as (? & ?).
-
-  apply in_modelElements_inv. 
-  unfold RichTraceLink.convert in H. 
-  destruct s as ((?&?)&?). 
-  eauto.
-Qed.
-
-
-
-(** * Simple tactics (for simple situations) *)
-
-(** A simple FW tactic for elements (lemma + tactic) (only singleton patterns).
-
- The drawback of this lemma/tactic is that when the traceTrOnPiece premise is not solved by auto, it leaves the user with a painful subgoal. *)
-Lemma transform_element_fw {tc} (t:Syntax.Transformation (tc:=tc)) cm e te  :
-  0 < Syntax.arity t ->
-  In e (modelElements cm) ->
-  In te (produced_elements (traceTrOnPiece t cm [e])) ->
-  In te (modelElements (execute t cm)).
-Proof.
-  intros A IN1 IN2.
-  simpl.
-  unfold compute_trace, produced_elements.
-  rewrite map_flat_map. (* a trace can have several target elements *)
-  apply List.in_flat_map. (* this is doing the job *)
-  exists ([e]) ; split ; [ | auto ].
-  apply <- in_allTuples_incl_singleton. auto.
-Qed.
-
-(* Used in Class2Relational *)
-Ltac transform_element_fw_tac :=
-  match goal with
-    [ |- In _ (execute ?T _).(modelElements) ] =>
-      eapply (transform_element_fw T) ; [ solve [simpl ; auto ] | try eassumption | try (solve [simpl;auto])]
-  end.
 
 
 
@@ -360,4 +194,57 @@ Ltac transform_link_fw_tac_singleton_auto i :=
 
 
 
+(** * Simple or deprecated tactics *)
+
+
+(* USED *)
+(* Deprecated : use Semantics.in_modelElements_inv instead. *)
+Corollary in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
+  forall 
+    (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
+    m s e,
+    In {| 
+        PoorTraceLink.source := s ;
+        PoorTraceLink.produced := e
+      |}
+      (RichTraceLink.drop (compute_trace t m)) ->
+    In e (execute t m).(modelElements).
+Proof. 
+  intros.
+  apply RichTraceLink.in_drop_inv in H. simpl in H. destruct H as (? & ?).
+
+  apply in_modelElements_inv. 
+  unfold RichTraceLink.convert in H. 
+  destruct s as ((?&?)&?). 
+  eauto.
+Qed.
+
+
+
+(** * Simple tactics (for simple situations) *)
+
+(** A simple FW tactic for elements (lemma + tactic) (only singleton patterns).
+
+ The drawback of this lemma/tactic is that when the traceTrOnPiece premise is not solved by auto, it leaves the user with a painful subgoal. *)
+Lemma transform_element_fw {tc} (t:Syntax.Transformation (tc:=tc)) cm e te  :
+  0 < Syntax.arity t ->
+  In e (modelElements cm) ->
+  In te (produced_elements (traceTrOnPiece t cm [e])) ->
+  In te (modelElements (execute t cm)).
+Proof.
+  intros A IN1 IN2.
+  simpl.
+  unfold compute_trace, produced_elements.
+  rewrite map_flat_map. (* a trace can have several target elements *)
+  apply List.in_flat_map. (* this is doing the job *)
+  exists ([e]) ; split ; [ | auto ].
+  apply <- in_allTuples_incl_singleton. auto.
+Qed.
+
+(* Used in Class2Relational *)
+Ltac transform_element_fw_tac :=
+  match goal with
+    [ |- In _ (execute ?T _).(modelElements) ] =>
+      eapply (transform_element_fw T) ; [ solve [simpl ; auto ] | try eassumption | try (solve [simpl;auto])]
+  end.
 

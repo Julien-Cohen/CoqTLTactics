@@ -31,9 +31,6 @@ core/LegacySemantics.v
 core/Resolve.v
 core/Engine.v
 
-usertools/TacticsBW.v
-usertools/TacticsFW.v
-usertools/Glue.v
 
 core/modeling/ModelingMetamodel.v
 core/modeling/ModelingTransformationConfiguration.v
@@ -42,6 +39,11 @@ core/modeling/ConcreteSyntax.v
 core/modeling/ModelingEngine.v
 core/modeling/Parser.v
 core/modeling/ModelingSemantics.v
+
+usertools/TacticsBW.v
+usertools/TacticsFW.v
+usertools/Glue.v
+usertools/TacticUtils.v
 
 
 # Engine variants

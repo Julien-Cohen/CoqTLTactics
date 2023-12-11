@@ -35,7 +35,7 @@ Proof.
     subst rm.
     TacticsFW.transform_element_fw_tac.
     destruct a ; simpl in H1 ; subst.
-    TacticsFW.first_in_list.
+    TacticUtils.first_in_list.
 Qed.
 
 (* From previous work *)
