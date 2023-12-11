@@ -5,7 +5,7 @@ Require Import core.TransformationConfiguration.
 Require Import String.
 Require Import EqNat.
 Require Import List.
-Require Import Expressions.
+Require Import UserExpressions.
 Require Import core.utils.Utils.
 Require Import PeanoNat.
 Require Import Lia.
@@ -50,14 +50,6 @@ forall (tc: TransformationConfiguration)
     forall (sm: SourceModel),
       view_t (execute adapter sm) = execute adapter (view_s sm).
 Proof.
-  intros.
-  destruct adapter.
-  induction l.
-  2: {
-    destruct IHl as [view_s].
-    exists view_s.
-    intros.
-    specialize (H0 sm).
 Abort.
 
 (* Theorem adaptation_pushout :

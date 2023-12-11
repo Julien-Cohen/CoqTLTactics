@@ -188,24 +188,6 @@ Proof.
   - simpl. assumption.
 Qed.
 
-(*Lemma tuples_up_to_n_succ :
-  forall (T: Type)  (sm: list T)  (n : nat) (sp: list T) (a: T),
-    In sp (tuples_up_to_n sm n) -> In sp (tuples_up_to_n (sm) (n+1)).
-Proof.
-(*  induction n.
-  - intros. simpl in H. destruct H. rewrite <- H. simpl. apply in_or_app. right. simpl. left. reflexivity. contradiction H.
-  - intros.simpl in H. apply in_app_or in H. destruct H.
-    -- *)
-  induction sm.
-  - intros.
-Abort.*)
-
-(* Lemma tuples_up_to_n_cons :
-  forall (T: Type) (sm: list T) (n : nat) (sp: list T) (a: T),
-    In sp (tuples_up_to_n sm n) -> In sp (tuples_up_to_n (a::sm) n).
-Proof.
-  intros.
-Abort.*)
 
 Lemma tuples_up_to_n_In :
     forall (T: Type) (n: nat) (sm: list T) (sp: list T) (se: T),
