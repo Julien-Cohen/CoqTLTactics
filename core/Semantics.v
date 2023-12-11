@@ -39,7 +39,7 @@ Proof.
 Qed.
 
 Lemma in_allTuples_2 :
-      forall a b m t,
+      forall t m a b,
         t.(Syntax.arity) >= 2 ->
         In a (modelElements m) ->
         In b (modelElements m) ->

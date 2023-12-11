@@ -110,7 +110,7 @@ Proof.
             {| attr_id := i; derived := false; attr_name := n |} ; ClassElement {| class_id := i2; class_name := n2 |} ]).
   split. 
   { 
-    apply in_allTuples_2 ; auto.
+    apply (in_allTuples_2 Class2Relational_TUPLE_SP) ; auto.
   }
   {
     unfold traceTrOnPiece.
