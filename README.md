@@ -8,17 +8,17 @@ CoqTL is an internal language in Coq, for writing rule-based model- and graph- t
 
 ## Organization of the repository 
 
-* [core/] - The CoqTL transformation engine and language (modified).
-  * [properties/] - Properties still proven on the modified core engine. 
-* [usertools/] - Support for user proofs (lemmas and tactics, main contribution).
-* [transformations/] - Sample CoqTL transformations and user proofs.
-  * [Moore2Mealy/] - Moore / Mealy metamodels and transformation.
-    * [theorems/] - Structural properties on the transformation, and proof of preservation of the semantics.
-  * [Moore2MealyALT/] - A simpler version of Moore and Mealy metamodels, which results in simpler proofs (without use of links). 
-  * [Class2Relational/] - Class / Relational metamodels and transformation.
-    * [theorems/] - Structural properties proved on this transformation.
-  * [Class2RelationalTUPLES] - variation of Class to Relational, with more complex patterns in rules.
-* [libs/] - an importer that translates `ecore` metamodels into Coq. (The sources of the importer are in the [coqtl-model-import](https://github.com/atlanmod/coqtl-model-import) repository.)
+* `core/` - The CoqTL transformation engine and language (modified).
+  * `properties/` - Properties still proven on the modified core engine. 
+* `usertools/` - Support for user proofs (lemmas and tactics, main contribution).
+* `transformations/` - Sample CoqTL transformations and user proofs.
+  * `Moore2Mealy/` - Moore / Mealy metamodels and transformation.
+    * `theorems/` - Structural properties on the transformation, and proof of preservation of the semantics.
+  * `Moore2MealyALT/` - A simpler version of Moore and Mealy metamodels, which results in simpler proofs (without use of links). 
+  * `Class2Relational/` - Class / Relational metamodels and transformation.
+    * `theorems/` - Structural properties proved on this transformation.
+  * `Class2RelationalTUPLES` - variation of Class to Relational, with more complex patterns in rules.
+* `libs/` - an importer that translates ECore metamodels into Coq. (The sources of the importer are in the [coqtl-model-import](https://github.com/atlanmod/coqtl-model-import) repository.)
 
 
 ## Installation
@@ -31,7 +31,7 @@ cd coqTL
 ./compile.sh
 ```
 ## Usage
-* Run [./compile.sh] to build all the proofs. It takes less than a minute on a machine with 4 cores. The build include :
+* Run `./compile.sh` to build all the proofs. It takes less than a minute on a machine with 4 cores. The build include :
   * Definitions for the transformation language and the transformation engine (former contribution).
   * Proofs of some properties of the transformation engine (former contribution).
   * Proofs and tactics for user support (this contribution).
@@ -40,11 +40,11 @@ cd coqTL
   * Several proofs of properties of those transformations, both structural and semantic.
   * Several models instances of the given metamodels. 
   * Several examples of transformations computed by the engine on those models.
-* Run [make html] to build a navigable HTML version of the source code.
+* Run `make html` to build a navigable HTML version of the source code. HTML code is generated in the `html` directory.
 
 Try your own transformations: 
-* If you have an ECore file mymetamodel.ecore you want to translate into a CoqTL metamodel, run [make mymetamodel.v] . (This generator is not a contribution of this work.)
-* To explore the construction of a model transformation, add your files in the [_CoqProject] file and run [./compile.sh].
+* If you have an ECore file mymetamodel.ecore you want to translate into a CoqTL metamodel, run `make mymetamodel.v` . (That generator is not a contribution of this work.)
+* To explore the construction of a model transformation, add your files in the `_CoqProject` file and run `./compile.sh`.
     
 ## Contributors and Previous Publications
 
