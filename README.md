@@ -1,75 +1,51 @@
-# CoqTL
+# Tactics for CoqTL
 
-CoqTL is an internal language in Coq, for writing rule-based model- and graph- transformations. The language is associated with a library to simplify proving transformation correctness in Coq. 
+We provide here some support (essentially tactics) for user who have built a model transformation with CoqTL and who want to prove some properties on that transformation.
 
-For instance, the following CoqTL code transforms [Moore machines](https://en.wikipedia.org/wiki/Moore_machine) into [Mealy machines](https://en.wikipedia.org/wiki/Mealy_machine) (if we disregard the first output symbol of the Moore machine). The full transformation, including type annotations, is available [here](./transformations/Moore2Mealy/Moore2Mealy.v).
+## CoqTL
 
-```coq
-Definition Moore2Mealy :=
-  transformation
-  [
-    rule "state"
-    from [Moore.StateClass]
-    to [
-      elem "s'"
-        (fun _ _ s => BuildState (Moore.State_getName s)) nil
-    ];
-    
-    rule "transition"
-    from [Moore.TransitionClass]
-    to [
-      elem "t'"
-        (fun _ m t => 
-          BuildTransition 
-            (Moore.Transition_getInput t)
-            (value (option_map Moore.State_getOutput (Moore.Transition_getTarget t m))))
-        [
-          link
-            (fun tls _ m tr tr' =>
-              maybeBuildTransitionSource tr'
-                (maybeResolve tls m "s'" Mealy.StateClass 
-                  (maybeSingleton (Moore.Transition_getSourceObject tr m))));
-          link 
-            (fun tls _ m tr tr' =>
-              maybeBuildTransitionTarget tr'
-                (maybeResolve tls m "s'" Mealy.StateClass 
-                  (maybeSingleton (Moore.Transition_getTargetObject tr m))))
-        ]
-  ]
-].
-```
+CoqTL is an internal language in Coq, for writing rule-based model- and graph- transformations. 
 
 ## Organization of the repository 
 
-* [core/](https://github.com/atlanmod/coqtl/tree/master/core) - source files of the CoqTL engine.
-* [transformations/](https://github.com/atlanmod/coqtl/tree/master/transformations) - sample CoqTL transformations and associated proofs.
-* [libs/](https://github.com/atlanmod/coqtl/tree/master/libs) - an importer that translates `ecore` metamodels and `xmi` models into Coq. While not necessary to run CoqTL, the sources of the importer are in the [coqtl-model-import](https://github.com/atlanmod/coqtl-model-import) repository.
-* [.vscode/](https://github.com/atlanmod/coqtl/tree/master/.vscode) - convenience tasks for vscode: `make`, `clean`, `ecore2v`,  `xmi2v`.
+* [core/] - the CoqTL transformation engine and language.
+* [usertools/] - Support for user proofs (contribution).
+* [transformations/] - sample CoqTL transformations and user proofs.
+  * [Moore2Mealy/] - Moore to Mealy transformation, with some structural properties and a proof of preservation of semantics.
+  * [Moore2MealyALT/] - 
+  * [Class2Relational/] - Class to Relation transformation, with structural properties proven.
+  * [Class2RelationalTUPLES] - variation of Class to Relational, with more complex patterns in rules.
+* [libs/] - an importer that translates `ecore` metamodels into Coq. (The sources of the importer are in the [coqtl-model-import](https://github.com/atlanmod/coqtl-model-import) repository.)
+
 
 ## Installation
 
-CoqTL requires a working installation of [Coq](https://coq.inria.fr/) (`coqc` and `coq_makefile` in the path). It is tested under Coq 8.17.0 and 8.18.0.
+CoqTL requires a working installation of [Coq](https://coq.inria.fr/) (`coqc`) and Make (`make` and `coq_makefile`). It is tested under Coq 8.17.0 and 8.18.0.
 
 To install CoqTL:
 ```
 cd coqTL
 ./compile.sh
 ```
+## Usage
+* Run [./compile.sh] to build all the proofs. It takes less than a minute on a machine with 4 cores. The build include :
+  * Definitions for the transformation language and the transformation engine (former contribution).
+  * Proofs of some properties of the transformation engine (former contribution).
+  * Proofs and tactics for user support (this contribution).
+  * Several metamodels definitions.
+  * Several transformation definitions.
+  * Several proofs of properties of those transformations, both structural and semantic.
+  * Several models instances of the given metamodels. 
+  * Several examples of transformations computed by the engine on those models.
+* Run [make html] to build a navigable HTML version of the source code.
 
-### Alternative installation using Visual Studio Code remote container
+Try your own transformations: 
+* If you have an ECore file mymetamodel.ecore you want to translate into a CoqTL metamodel, run [make mymetamodel.v] . (This generator is not a contribution of this work.)
+* To explore the construction of a model transformation, add your files in the [_CoqProject] file and run [./compile.sh].
+    
+## Contributors and Previous Publications
 
-Instead of installing coq directly on your machine you can use Visual Studio Code with the development container configuration we provide.
-
-When opening the project with Visual Studio Code the editor will ask you to install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension to use the feature. Be sure to read the "Install" section of the [remote containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) to correctly install and setup docker on your machine.
-
-Then, once the remote container extension is installed and docker setup, Visual Studio Code will inform you that the current workspace can be opened in a container. Click "Reopen in Container" to start building the container. Be patient, docker will first download the image which can take some time depending on your internet connection. The image only to need to be built once, next launches are faster.
-
-
-Coq theories can be found in `/home/vscode/.opam/default/lib/coq/theories`. One can add this folder to its workspace by right clicking in the exporer panel and selecting "Add folder to workspace".
-
-## Publications
-
-Here are the publications describing CoqTL and the pointer to the version of CoqTL they refer to. 
+The contributors of this work are **Julien Cohen** (Nantes Université, LS2N), **Massimo Tisi** (IMT Atlantique, LS2N) and **Rémi Douence** (IMT Atlantique, LS2N). Zheng Cheng provided some support to test the tactics. The core transformation engine has been adapted by the contributors to support the user tactics provided here, but this core transformation engine is a previous contribution, described in the following publications.  
 
 * Massimo Tisi, Zheng Cheng. CoqTL: an Internal DSL for Model Transformation in Coq. ICMT'2018. [[pdf]](https://hal.inria.fr/hal-01828344/document) [[git]](https://github.com/atlanmod/CoqTL/tree/eee344e)
 * Zheng Cheng, Massimo Tisi, Rémi Douence. CoqTL: A Coq DSL for Rule-Based Model Transformation. SOSYM'2019. [[pdf]](https://hal.archives-ouvertes.fr/hal-02333564/document) [[git]](https://github.com/atlanmod/CoqTL/tree/eee344e)
@@ -78,10 +54,10 @@ Here are the publications describing CoqTL and the pointer to the version of Coq
 
 ## Questions and discussion
 
-If you experience issues installing or using CoqTL, you can submit an issue on [github](https://github.com/atlanmod/coqtl/issues) or contact us at:
+If you experience issues installing or using the provided tools, you can submit an issue on [github](https://github.com/atlanmod/coqtl/issues) or contact us at:
 
 * Massimo Tisi: massimo.tisi@imt-atlantique.fr
-* Zheng Cheng: zheng.cheng@inria.fr
+* Julien Cohen: Julien.Cohen@univ-nantes.fr
 
 ## License
 
