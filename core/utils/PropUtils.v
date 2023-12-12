@@ -36,7 +36,7 @@ Ltac destruct_match_H H :=
 
 Ltac destruct_match_G :=
   match goal with 
-     [ |- context[match ?P with | _ => _ end]] => destruct P 
+     [ |- context[match ?P with | _ => _ end]] => destruct P eqn:?
   end. 
 
 Ltac destruct_if_hyp :=

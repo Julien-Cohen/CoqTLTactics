@@ -6,7 +6,7 @@ Import core.utils.Utils.
 Import Semantics.
 
 From usertools 
-  Require SemanticsTools.
+  Require ConcreteExpressionTools SemanticsTools.
 
 (** BW tactics for the user. The important tactics are the last three ones : one pivot tactics, one for elements that rely on the pivot, and one for links that also rely on the pivot tactic. *)
 
@@ -26,8 +26,9 @@ Ltac exploit_evalOutputPatternUnit H :=
   match type of H with 
   | ConcreteExpressions.makeElement _ _ _ _ _ _ = Some _ => 
       simpl in H ;
-      ConcreteExpressions.inv_makeElement H
+      ConcreteExpressionTools.inv_makeElement H
   end.
+
 
 Ltac unfold_parseRule H :=
   match type of H with
@@ -38,12 +39,6 @@ Ltac unfold_parseRule H :=
            outside the transformation. *) 
         unfold E in H ; 
         unfold_parseRule H (* recursion *)
-
-    | context[Parser.parseRule _] => 
-        fail "Cannot read the rule"
-
-    | _ => 
-        fail "Cannot find something to unfold (Parser.parseRule)"
   end.
 
 
@@ -58,12 +53,12 @@ Ltac progress_in_In_outpat H :=
         unfold Syntax.r_outputPattern in H ; 
         unfold List.map in H ;
         progress repeat unfold_In_cons H ;
-        first [PropUtils.inj H | discriminate H (* useful ? *) ] (*subst opu*) 
-            
+        first [PropUtils.inj H | discriminate H (* useful ? *) ] (*subst opu*)            
   end.
 
+
 Ltac exploit_In_evalIterator H :=
-  autounfold with tracelink in  H ;
+  autounfold with tracelink in H ;
   match type of H with
     | context[Parser.parseRule _] => 
         unfold_parseRule H ;
@@ -78,6 +73,7 @@ Ltac exploit_In_evalIterator H :=
       try (is_var I ; subst I)
   end.
   
+
 Ltac exploit_evalGuard H :=
     match type of H with
       | context[Parser.parseRule _] => 
@@ -89,14 +85,15 @@ Ltac exploit_evalGuard H :=
           unfold Syntax.r_guard in H ; 
           unfold ConcreteSyntax.r_guard in H ; 
           unfold ConcreteSyntax.r_InKinds in H ; 
-          ConcreteExpressions.inv_makeGuard H
-      
+          ConcreteExpressionTools.inv_makeGuard H      
     end.
 
 
 Ltac unfold_parseOutputPatternUnit H :=
-  autounfold with parse in H ;
-  autounfold with ConcreteOutputPatternUnit_accessors in H.
+  autounfold with 
+    parse ConcreteOutputPatternUnit_accessors 
+    in H.
+
 
 Ltac exploit_In_apply_link H :=
   match type of H with 
@@ -116,7 +113,7 @@ Ltac exploit_In_apply_link H :=
       | In _ nil => solve[inversion H]
       | In _ (OptionListUtils.optionListToList _) => apply OptionListUtils.in_optionListToList in H ; destruct H as (l & H & IN)
       end  ;
-      ConcreteExpressions.inv_makeLink H ;
+      ConcreteExpressionTools.inv_makeLink H ;
 repeat match goal with [IN : List.In _ (_::_) |- _ ] => ListUtils.unfold_In_cons IN | [IN : List.In _ nil |- _] => solve[inversion IN] end  ;
       try PropUtils.inj IN
   end.
