@@ -1,7 +1,7 @@
 
 Require Eqdep.
 
-(** *** Logic *)
+(** * Logic *)
 
 Theorem contraposition : forall p q:Prop, (p->q)->(~q->~p).
 Proof.
@@ -24,7 +24,7 @@ Ltac remove_or_false_auto :=
   end.
 
 
-(** *** Basic mecanisms on goals and hypothesis *)
+(** * Basic mecanisms on goals and hypothesis *)
 
 (** Variant of the injection tactic. *)
 Ltac inj H := injection H ; clear H ; intros ; subst.

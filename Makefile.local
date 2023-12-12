@@ -1,2 +1,6 @@
+#Generation of Coq metamodels from Ecore metamodels
 %.v : %.ecore
 	python3  libs/coqtl-model-import.py $<
+
+#Fix generated html files.
+COQDOCEXTRAFLAGS=--toc-depth 8 --toc --no-lib-name --lib-subtitles --multi-index

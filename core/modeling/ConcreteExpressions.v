@@ -110,29 +110,36 @@ Definition wrapLink
 
 (** ** Use of those generators *)
 
-Definition GuardFunction : Type :=
-  SourceModel -> (list SourceElementType) -> bool.
+
+Notation GuardFunction :=
+  ( SourceModel -> (list SourceElementType) -> bool ).
 
 
 Definition makeGuard 
   (l : list SourceEKind)
-  (imp : SourceModel -> denoteSignature l bool) :
-  GuardFunction :=
+  (imp : SourceModel -> denoteSignature l bool)
+  : GuardFunction :=
   fun sm s => drop_option_to_bool (wrap l (imp sm) s).
 
-Definition makeEmptyGuard (l : list SourceEKind) : GuardFunction :=
+
+Definition makeEmptyGuard 
+  (l : list SourceEKind) 
+  : GuardFunction :=
   fun _ => fun a => drop_option_to_bool (wrap l (dummy l true) a).
 
-Definition IteratorFunction : Type :=
-  SourceModel -> (list SourceElementType) -> option nat.
 
-Definition makeIterator (l : list SourceEKind)
-  (imp : SourceModel -> denoteSignature l nat) :
-  IteratorFunction :=
+Notation IteratorFunction :=
+  ( SourceModel -> (list SourceElementType) -> option nat ).
+
+
+Definition makeIterator 
+  (l : list SourceEKind)
+  (imp : SourceModel -> denoteSignature l nat) 
+  : IteratorFunction :=
   fun sm => wrap l (imp sm).
 
-Definition ElementFunction : Type :=
-  nat -> SourceModel -> (list SourceElementType) -> option TargetElementType.
+Notation ElementFunction :=
+  ( nat -> SourceModel -> (list SourceElementType) -> option TargetElementType ).
 
 Definition makeElement 
   (l : list SourceEKind) 
@@ -141,13 +148,21 @@ Definition makeElement
   : ElementFunction :=
    fun it sm => wrapElement l k (imp it sm).
 
-Definition LinkFunction : Type :=
-  Trace
-  -> nat -> SourceModel -> (list SourceElementType) -> TargetElementType -> option (list TargetLinkType).
+Notation LinkFunction := 
+  ( Trace -> 
+    nat -> 
+    SourceModel -> 
+    (list SourceElementType) ->
+    TargetElementType -> 
+    option (list TargetLinkType)
+  ).
 
-Definition makeLink (l : list SourceEKind) (k : TargetEKind) (r : TargetLKind)
-  (imp : Trace -> nat -> SourceModel -> denoteSignature l (denoteEDatatype k -> option (denoteLDatatype r))) :
-  LinkFunction :=
+Definition makeLink 
+  (l : list SourceEKind) 
+  (k : TargetEKind)
+  (r : TargetLKind)
+  (imp : Trace -> nat -> SourceModel -> denoteSignature l (denoteEDatatype k -> option (denoteLDatatype r))) 
+  : LinkFunction :=
   fun mt it sm => wrapLink l k r (imp mt it sm).
 
 End ConcreteExpressions.

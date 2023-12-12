@@ -1,14 +1,24 @@
-Require Import String.
+(** This module defines the behavior of the model transformation engine. *)
 
-Require Import core.utils.Utils.
-Require Import core.Model.
-Require Import core.Syntax.
-Require Import Bool.
-Require Import Arith.
-Require Import TransformationConfiguration.
-Require Import UserExpressions.
 
-Require Import TraceLink.
+
+From core 
+  Require
+  utils.Utils 
+  Model 
+  Syntax 
+  TransformationConfiguration 
+  UserExpressions 
+  TraceLink.
+
+Import 
+  NotationUtils
+  OptionListUtils
+  Model 
+  Syntax 
+  TransformationConfiguration 
+  UserExpressions 
+  TraceLink.
 
 
 Section Semantics.
@@ -18,10 +28,10 @@ Context {tc: TransformationConfiguration}.
 (** * Pattern matching *)
 
 Definition allTuples (tr: Transformation) (sm : SourceModel) : list InputPiece :=
-  tuples_up_to_n sm.(modelElements) tr.(arity).
+  TupleUtils.tuples_up_to_n sm.(modelElements) tr.(arity).
 
 Definition matchingRules (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list Rule :=
-  filter (fun (r:Rule) => evalGuard r sm sp) tr.(rules).
+  List.filter (fun (r:Rule) => evalGuard r sm sp) tr.(rules).
 
 
 
@@ -75,6 +85,8 @@ Definition applyTrOnModel (sm : SourceModel) (tls:Trace): list TargetLinkType :=
 (** * Execute **)
 
 Definition produced_elements := map TraceLink.produced.
+
+(** Main definition below. *)
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   let t := compute_trace tr sm

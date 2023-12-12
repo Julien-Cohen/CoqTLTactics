@@ -1,4 +1,4 @@
-(** Tools to deal with [ConcreteExpression] constructions. *)
+(** Tools to deal with [ConcreteExpression] constructions. Concrete expressions are built from user defined rules at parsing by [makeElement], [makeGuard], [makeGuard]... *)
 
 From core Require Import ConcreteExpressions.
 
@@ -36,6 +36,8 @@ Ltac dummy_inv H :=
 
 
 (** * On [wrap] *)
+(** [wrap] is a pivot for [makeElement], [makeGuard], [makeGuard]... *)
+
 
 Lemma wrap_inv_nil 
         {tc : TransformationConfiguration.TransformationConfiguration}

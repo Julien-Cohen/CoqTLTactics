@@ -1,21 +1,16 @@
+(** SemanticTools : Bi-directional results on the transformation engine defined in [Semantics]. *) 
 
 Require Semantics.
 
-Import String.
-Import core.utils.Utils.
-Import core.Model.
-Import core.Syntax.
-Import Bool.
-
-Import TransformationConfiguration.
+Import String Bool core.utils.Utils core.Model core.Syntax TransformationConfiguration.
 
 Import Semantics TraceLink.
 
 
-(** Bi-directional results on the transformation engine defined in [Semantics] *) 
 
 
-(** On [allTuples] *) 
+
+(** * On [allTuples] *) 
 
 Lemma in_allTuples_incl {tc:TransformationConfiguration} tr sm :
   forall t, 
@@ -55,7 +50,7 @@ Proof.
     auto.
 Qed.
 
-(* On trace *)
+(** * On trace *)
 
 Lemma in_compute_trace_inv {tc : TransformationConfiguration} tr sm :
   forall s i n res l,
