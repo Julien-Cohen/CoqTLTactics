@@ -1,22 +1,13 @@
 Require Import core.Semantics.
-
-Require Import core.utils.Utils.
-
-Require Import core.modeling.ConcreteSyntax.
-Require Import core.modeling.ModelingSemantics.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.modeling.ConcreteExpressions.
-Require Import core.modeling.Parser.
-
-Require Import core.TransformationConfiguration.
-Require Import core.modeling.ModelingTransformationConfiguration.
-
-Require SemanticsTools.
-
 Import Metamodel Model.
 
+Import NotationUtils.
+Import List.
 
-Require usertools.TacticUtils.
+Import core.TransformationConfiguration.
+
+From usertools 
+  Require SemanticsTools TacticUtils.
 
 (** * FW Tactics on traces *)
 
@@ -24,7 +15,7 @@ Require usertools.TacticUtils.
 
  Ltac in_compute_trace_inv_singleton_fw r_num pat_num :=
   match goal with 
-  | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
+  | [ |- List.In _ (compute_trace ?T _)] => 
       apply <- SemanticsTools.in_compute_trace_inv ; 
       split ; 
       [ | split ;
@@ -62,7 +53,7 @@ Require usertools.TacticUtils.
 (* Variant for pair patterns *)
 Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
   match goal with 
-  | [ |- List.In _ (Semantics.compute_trace ?T _)] => 
+  | [ |- List.In _ (compute_trace ?T _)] => 
       apply <- SemanticsTools.in_compute_trace_inv ; 
       split ; 
       [ | split ; 
@@ -146,7 +137,7 @@ Ltac in_compute_trace_inv_singleton_fw_auto :=
 
 Ltac in_modelElements_singleton_fw_tac r_num pat_num i :=
   match goal with 
-    [ |- List.In _ (Model.modelElements (Semantics.execute ?T _)) ] =>
+    [ |- List.In _  (execute ?T _).(modelElements) ] =>
 
       apply <- SemanticsTools.in_modelElements_inv ; 
 
@@ -160,7 +151,7 @@ Ltac in_modelElements_singleton_fw_tac r_num pat_num i :=
 
 Ltac in_modelElements_pair_fw_tac r_num pat_num i:=
   match goal with 
-    [ |- In _ (modelElements (execute _ _)) ] =>
+    [ |- In _  (execute _ _).(modelElements) ] =>
 
       apply <- SemanticsTools.in_modelElements_inv ; 
 
@@ -175,7 +166,7 @@ Ltac in_modelElements_pair_fw_tac r_num pat_num i:=
 
 Ltac transform_link_fw_tac_singleton r_num pat_num i :=
   match goal with
-    [ |- In _ (Semantics.execute _ _).(modelLinks) ] =>
+    [ |- In _ (execute _ _).(modelLinks) ] =>
 
       apply <- SemanticsTools.in_modelLinks_inv ; 
       
@@ -186,15 +177,13 @@ Ltac transform_link_fw_tac_singleton r_num pat_num i :=
       [ in_compute_trace_inv_singleton_fw r_num pat_num | ] ;
       
       autounfold with 
-        parse 
-        ConcreteOutputPatternUnit_accessors 
-        opu_accessors 
+        parse ConcreteOutputPatternUnit_accessors opu_accessors 
   end.
 
 (* Variant where the first rule that don't lead to an error is selected intead of relying on an user hint. *)
 Ltac transform_link_fw_tac_singleton_auto i :=
   match goal with
-    [ |- In _ (Semantics.execute _ _).(modelLinks) ] =>
+    [ |- In _ (execute _ _).(modelLinks) ] =>
 
       apply <- SemanticsTools.in_modelLinks_inv ; 
 
@@ -209,10 +198,7 @@ Ltac transform_link_fw_tac_singleton_auto i :=
       TacticUtils.fail_on_False ;   
   
       autounfold with 
-        parse 
-        ConcreteOutputPatternUnit_accessors 
-        opu_accessors 
-        
+        parse ConcreteOutputPatternUnit_accessors opu_accessors         
   end.
 
 
@@ -222,7 +208,7 @@ Ltac transform_link_fw_tac_singleton_auto i :=
 
 
 (* USED *)
-(* Deprecated : use Semantics.in_modelElements_inv instead. *)
+(* Deprecated : use in_modelElements_inv instead. *)
 Corollary in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
   forall 
     (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
@@ -252,17 +238,17 @@ Qed.
  The drawback of this lemma/tactic is that when the traceTrOnPiece premise is not solved by auto, it leaves the user with a painful subgoal. *)
 Lemma transform_element_fw {tc} (t:Syntax.Transformation (tc:=tc)) cm e te  :
   0 < Syntax.arity t ->
-  In e (modelElements cm) ->
+  In e cm.(modelElements) ->
   In te (produced_elements (traceTrOnPiece t cm [e])) ->
-  In te (modelElements (execute t cm)).
+  In te (execute t cm).(modelElements).
 Proof.
   intros A IN1 IN2.
   simpl.
   unfold compute_trace, produced_elements.
-  rewrite map_flat_map. (* a trace can have several target elements *)
+  rewrite ListUtils.map_flat_map. (* a trace can have several target elements *)
   apply List.in_flat_map. (* this is doing the job *)
   exists ([e]) ; split ; [ | auto ].
-  apply <- SemanticsTools.in_allTuples_incl_singleton. auto.
+  apply <- SemanticsTools.in_allTuples_singleton. auto.
 Qed.
 
 (* Used in Class2Relational *)

@@ -73,7 +73,7 @@ Proof.
             {| attr_id := i; derived := false; attr_name := n |} ; ClassElement {| class_id := i2; class_name := n2 |} ]).
   split. 
   { 
-    apply (SemanticsTools.in_allTuples_2 Class2Relational_TUPLE_SP) ; auto.
+    apply (SemanticsTools.in_allTuples_pair Class2Relational_TUPLE_SP) ; auto.
   }
   {
     unfold traceTrOnPiece.

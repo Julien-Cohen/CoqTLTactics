@@ -1,16 +1,21 @@
-Require Import String.
 
-Require Import core.utils.Utils.
-Require Import core.Model.
-Require Import core.Syntax.
-Require Import Bool.
+Require Semantics.
 
-Require Import TransformationConfiguration.
-Require Import UserExpressions.
+Import String.
+Import core.utils.Utils.
+Import core.Model.
+Import core.Syntax.
+Import Bool.
 
-Require Import RichTraceLink.
+Import TransformationConfiguration.
 
-Require Import Semantics.
+Import Semantics RichTraceLink.
+
+
+(** Bi-directional results on the transformation engine defined in [Semantics] *) 
+
+
+(** On [allTuples] *) 
 
 Lemma in_allTuples_incl {tc:TransformationConfiguration} tr sm :
   forall t, 
@@ -22,7 +27,7 @@ Proof.
   tauto.
 Qed.
 
-Corollary in_allTuples_incl_singleton {tc:TransformationConfiguration} tr sm :
+Corollary in_allTuples_singleton {tc:TransformationConfiguration} tr sm :
   forall t, 
     In [t] (allTuples tr sm) <-> 
       (In t (modelElements sm) /\ 0 < arity tr).
@@ -30,25 +35,27 @@ Proof.
   setoid_rewrite in_allTuples_incl. setoid_rewrite <- incl_singleton. tauto.
 Qed.
 
-Lemma in_allTuples_2 {tc:TransformationConfiguration} :
+Lemma in_allTuples_pair {tc:TransformationConfiguration} :
       forall t m a b,
-        t.(Syntax.arity) >= 2 ->
-        In a (modelElements m) ->
-        In b (modelElements m) ->
+        (t.(Syntax.arity) >= 2 
+         /\ In a (modelElements m)
+         /\ In b (modelElements m)) <->
         In [a;b] (allTuples t m).
 Proof.
-  intros until t ; intros HA IN1 IN2.
-  setoid_rewrite in_allTuples_incl ; split.
-  {
-    apply List.incl_cons ; auto.
-    apply List.incl_cons ; auto.
-    apply List.incl_nil_l.
-  }
-  {
-    simpl.
-    auto with arith.
-  }
+  intros. setoid_rewrite in_allTuples_incl.
+  split.
+  - intros (?&?&?). split.
+    + apply List.incl_cons ; auto.
+      apply List.incl_cons ; auto.
+      apply List.incl_nil_l.
+    + auto with arith.
+  - intros (?&L).
+    simpl in L.
+    repeat ListUtils.explicit_incl H.
+    auto.
 Qed.
+
+(* On trace *)
 
 Lemma in_compute_trace_inv {tc : TransformationConfiguration} tr sm :
   forall s i n res l,
@@ -60,8 +67,8 @@ Lemma in_compute_trace_inv {tc : TransformationConfiguration} tr sm :
       /\ length s <= tr.(arity)
       /\ exists r : Rule,
         In r tr.(rules)
-        /\ evalGuard r sm s = true 
-        /\ In i (seq 0 (evalIterator r sm s))
+        /\ UserExpressions.evalGuard r sm s = true 
+        /\ In i (seq 0 (UserExpressions.evalIterator r sm s))
         /\ exists opu_el,
            In {| opu_name := n ; opu_element := opu_el ; opu_link := l |} r.(r_outputPattern) 
             /\  opu_el i sm s = Some res.
@@ -90,12 +97,14 @@ Proof.
     split. split ; eassumption.
     eexists. split ; [ eassumption | ].
     eexists. split ; [ eassumption| ].
-    unfold evalOutputPatternUnit.
+    unfold UserExpressions.evalOutputPatternUnit.
     unfold opu_element.
     rewrite E.
     reflexivity.
 Qed.    
 
+
+(** * On [modelElements] *)
 
 Lemma in_modelElements_inv {tc:TransformationConfiguration} tr sm :
   forall e, In e (execute tr sm).(modelElements) <-> 
@@ -117,6 +126,9 @@ Proof.
     repeat first [eexists | split | eassumption].
     reflexivity.
 Qed.
+
+
+(** * On [modelLinks] *)
 
 Lemma in_modelLinks_inv {tc:TransformationConfiguration} tr sm :
   forall l, In l (execute tr sm).(modelLinks) <-> 

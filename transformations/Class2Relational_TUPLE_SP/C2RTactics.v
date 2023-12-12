@@ -123,7 +123,7 @@ Lemma allModelElements_allTuples e (cm:Model ClassMM):
   In [e] (allTuples Class2Relational_TUPLE_SP cm).
 Proof. 
   intro.
-  apply <- SemanticsTools.in_allTuples_incl_singleton.
+  apply <- SemanticsTools.in_allTuples_singleton.
   compute ; auto.
 Qed. 
 
