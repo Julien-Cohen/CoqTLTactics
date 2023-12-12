@@ -217,14 +217,14 @@ Corollary in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
         PoorTraceLink.source := s ;
         PoorTraceLink.produced := e
       |}
-      (RichTraceLink.drop (compute_trace t m)) ->
+      (TraceLink.drop (compute_trace t m)) ->
     In e (execute t m).(modelElements).
 Proof. 
   intros.
-  apply RichTraceLink.in_drop_inv in H. simpl in H. destruct H as (? & ?).
+  apply TraceLink.in_drop_inv in H. simpl in H. destruct H as (? & ?).
 
   apply SemanticsTools.in_modelElements_inv. 
-  unfold RichTraceLink.convert in H. 
+  unfold TraceLink.convert in H. 
   destruct s as ((?&?)&?). 
   eauto.
 Qed.

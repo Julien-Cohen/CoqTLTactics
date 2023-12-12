@@ -24,7 +24,7 @@ core/Model.v
 core/Metamodel.v
 core/TransformationConfiguration.v
 core/PoorTraceLink.v
-core/RichTraceLink.v
+core/TraceLink.v
 core/Syntax.v
 core/Semantics.v
 core/LegacySemantics.v

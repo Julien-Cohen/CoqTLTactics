@@ -77,9 +77,9 @@ Proof.
       f_equal ; [ rewrite E ; auto | ]. 
       apply in_flat_map_nil.
       intros.
-      unfold RichTraceLink.convert.
-      unfold RichTraceLink.produced.
-      unfold RichTraceLink.source.
+      unfold TraceLink.convert.
+      unfold TraceLink.produced.
+      unfold TraceLink.source.
 
       apply in_flat_map in H0. destruct H0 as (i, (H1,H2)).
       rewrite in_seq in H1.
@@ -96,9 +96,9 @@ Proof.
       unfold optionToList in H2.
       apply in_singleton in H2.
       subst a.
-      unfold RichTraceLink.linkPattern.
-      unfold RichTraceLink.getIteration.
-      unfold RichTraceLink.source.      
+      unfold TraceLink.linkPattern.
+      unfold TraceLink.getIteration.
+      unfold TraceLink.source.      
       reflexivity.
 
 Qed.

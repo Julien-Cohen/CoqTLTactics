@@ -99,7 +99,7 @@ Proof.
   rename EQ into R.
   apply Certification.tr_resolve_leaf in R.
   
-  apply RichTraceLink.in_drop_inv in R ;
+  apply TraceLink.in_drop_inv in R ;
   destruct R as (? & R) ; simpl in R.
   apply <- SemanticsTools.in_modelElements_inv.
   eauto.

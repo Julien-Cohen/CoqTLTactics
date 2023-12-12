@@ -179,10 +179,10 @@ Proof.
     eexists ; split.
     { (* second link pattern *) TacticUtils.second_in_list. }
     {
-      unfold RichTraceLink.getSourcePiece, 
-        RichTraceLink.getIteration, 
-        RichTraceLink.source, 
-        RichTraceLink.produced.
+      unfold TraceLink.getSourcePiece, 
+        TraceLink.getIteration, 
+        TraceLink.source, 
+        TraceLink.produced.
       unfold ConcreteSyntax.o_OutRefKind, 
         ConcreteSyntax.o_outpat.
       unfold ConcreteExpressions.makeLink.

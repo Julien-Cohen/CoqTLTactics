@@ -42,11 +42,11 @@ Lemma class_in_trace c (cm : ClassModel) :
          produced := TableElement (C2RTactics.convert_class c)
        |}
     ) 
-    (RichTraceLink.drop (compute_trace Class2Relational cm)).
+    (TraceLink.drop (compute_trace Class2Relational cm)).
 Proof.
   intro IN1.
 
-  apply RichTraceLink.in_drop_inv.
+  apply TraceLink.in_drop_inv.
 
   eexists.
   simpl. 
@@ -63,7 +63,7 @@ Lemma discr m:
   forall s : list ClassMetamodel.Element * nat * string,
     discriminating_predicate
       (fun x : TraceLink => source_compare s x = true)
-      (RichTraceLink.drop (compute_trace Class2Relational m)).
+      (TraceLink.drop (compute_trace Class2Relational m)).
 Proof.
   intro s.
   intros a b IN1 IN2 C1 C2.
@@ -88,10 +88,10 @@ Lemma in_find m :
          source :=  ([ClassElement c], 0, "tab") ;
          produced := TableElement (C2RTactics.convert_class c)
       |}
-      (RichTraceLink.drop (compute_trace Class2Relational m)) ->
+      (TraceLink.drop (compute_trace Class2Relational m)) ->
       find 
         (source_compare ([ClassElement c], 0, "tab"))
-        (RichTraceLink.drop (compute_trace Class2Relational m)) = 
+        (TraceLink.drop (compute_trace Class2Relational m)) = 
         Some 
           {|
             source := ([ClassElement c], 0, "tab") ;
@@ -121,8 +121,8 @@ Local Lemma in_trace_resolve m c :
       source := ([ClassElement c], 0, "tab") ;
       produced := TableElement (C2RTactics.convert_class c)
     |} 
-    (RichTraceLink.drop (compute_trace Class2Relational m)) ->
-  Resolve.resolveIter (RichTraceLink.drop (compute_trace Class2Relational m)) "tab" [ClassElement c] 0 = 
+    (TraceLink.drop (compute_trace Class2Relational m)) ->
+  Resolve.resolveIter (TraceLink.drop (compute_trace Class2Relational m)) "tab" [ClassElement c] 0 = 
     Some (TableElement (C2RTactics.convert_class c)).
 Proof.
   unfold Resolve.resolveIter. 
@@ -140,7 +140,7 @@ Lemma in_model_resolve c (cm : ClassModel) :
   
   In (ClassElement c) cm.(modelElements) -> 
   
-  Resolve.resolve (RichTraceLink.drop (compute_trace Class2Relational cm)) "tab" [ClassElement c]  =  
+  Resolve.resolve (TraceLink.drop (compute_trace Class2Relational cm)) "tab" [ClassElement c]  =  
     Some (TableElement (C2RTactics.convert_class c)) 
   
   /\ In 

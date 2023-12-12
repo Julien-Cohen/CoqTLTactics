@@ -1,6 +1,6 @@
 
 Require Import Semantics.
-Import TransformationConfiguration Syntax UserExpressions RichTraceLink List Utils.
+Import TransformationConfiguration Syntax UserExpressions TraceLink List Utils.
 
 (** * Old Semantics for link generation *)
 

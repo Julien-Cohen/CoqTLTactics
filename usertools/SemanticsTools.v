@@ -9,7 +9,7 @@ Import Bool.
 
 Import TransformationConfiguration.
 
-Import Semantics RichTraceLink.
+Import Semantics TraceLink.
 
 
 (** Bi-directional results on the transformation engine defined in [Semantics] *) 

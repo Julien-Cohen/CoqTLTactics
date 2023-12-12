@@ -18,10 +18,10 @@ Lemma state_in_trace (m:Moore.M) (s:Moore.State_t) :
        source := ((Moore.State s) :: nil, 0, "s"%string)  ;
        produced := (Mealy.State (Moore2Mealy.convert_state s))
     |}
-    (RichTraceLink.drop (Semantics.compute_trace Moore2Mealy m)).
+    (TraceLink.drop (Semantics.compute_trace Moore2Mealy m)).
 Proof.
   intro IN1.
-  apply RichTraceLink.in_drop_inv.
+  apply TraceLink.in_drop_inv.
   eexists.
   simpl. 
   TacticsFW.in_compute_trace_inv_singleton_fw 1 1.
@@ -41,7 +41,7 @@ Lemma discr m:
   forall s : list Moore.Element * nat * string,
     ListUtils.discriminating_predicate
       (fun x : TraceLink => source_compare s x = true)
-      (RichTraceLink.drop (compute_trace Moore2Mealy  m)).
+      (TraceLink.drop (compute_trace Moore2Mealy  m)).
 Proof.
   intro s.
   intros a b IN1 IN2 C1 C2.
@@ -68,9 +68,9 @@ Lemma in_find m :
          source := ([Moore.State c], 0, "s"%string) ;
          produced := Mealy.State (Moore2Mealy.convert_state c)
       |} 
-      (RichTraceLink.drop (compute_trace Moore2Mealy m)) ->
+      (TraceLink.drop (compute_trace Moore2Mealy m)) ->
 
-      find (source_compare ([Moore.State c], 0, "s"%string)) (RichTraceLink.drop (compute_trace Moore2Mealy m)) = 
+      find (source_compare ([Moore.State c], 0, "s"%string)) (TraceLink.drop (compute_trace Moore2Mealy m)) = 
         Some 
           {|
             source := ([Moore.State c], 0, "s"%string) ;
@@ -100,8 +100,8 @@ Local Lemma in_trace_resolve m s :
        source := ([Moore.State s], 0, "s"%string) ;
        produced := Mealy.State (Moore2Mealy.convert_state s)
     |} 
-    (RichTraceLink.drop (compute_trace Moore2Mealy m)) ->
-  Resolve.resolveIter (RichTraceLink.drop (compute_trace  Moore2Mealy m)) "s" [Moore.State s] 0 = 
+    (TraceLink.drop (compute_trace Moore2Mealy m)) ->
+  Resolve.resolveIter (TraceLink.drop (compute_trace  Moore2Mealy m)) "s" [Moore.State s] 0 = 
     Some (Mealy.State (Moore2Mealy.convert_state s)).
 Proof.
   unfold Resolve.resolveIter. 
@@ -121,7 +121,7 @@ Lemma in_model_resolve s (m : Moore.M) :
   
   In (Moore.State s) m.(modelElements) -> 
   
-  Resolve.resolve (RichTraceLink.drop (compute_trace Moore2Mealy m)) "s" [Moore.State s]  =  
+  Resolve.resolve (TraceLink.drop (compute_trace Moore2Mealy m)) "s" [Moore.State s]  =  
     Some (Mealy.State (Moore2Mealy.convert_state s)) 
   .
 Proof.

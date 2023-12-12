@@ -73,7 +73,7 @@ Notation Trace := (list TraceLink).
 
 Ltac lift H := 
   match type of H with
-  | In _ (RichTraceLink.drop _) => 
+  | In _ (TraceLink.drop _) => 
       apply in_drop_inv in H ; 
       destruct H as (? & H)  
   end.

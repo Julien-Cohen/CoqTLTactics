@@ -19,7 +19,7 @@ Require Import core.UserExpressions.
 
 Require SemanticsTools.
 
-Import RichTraceLink.
+Import TraceLink.
 
 Section Certification.
 

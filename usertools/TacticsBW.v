@@ -132,8 +132,8 @@ Ltac destruct_source H :=
   match type of H with
   | In {| PoorTraceLink.source := (_,_,_) |} _ => idtac
   | In {| PoorTraceLink.source := ?S |} _ => is_var S ; destruct S as ((?&?)&?)
-  | In {| RichTraceLink.source := (_,_,_) |} _ => idtac
-  | In {| RichTraceLink.source := ?S |} _ => is_var S ; destruct S as ((?&?)&?)
+  | In {| TraceLink.source := (_,_,_) |} _ => idtac
+  | In {| TraceLink.source := ?S |} _ => is_var S ; destruct S as ((?&?)&?)
   end.
 
 
@@ -183,9 +183,9 @@ Ltac exploit_in_trace H :=
       (* CHECK-ME : Remark : 4.a, 4.b, 4.c and 4.d are independant ; they can be switched *)
 
                          
-  | In _ (RichTraceLink.drop (compute_trace _ _)) => 
+  | In _ (TraceLink.drop (compute_trace _ _)) => 
       (* when poor traces are concerned, we lift them to rich traces and try again *)
-      RichTraceLink.lift H ;
+      TraceLink.lift H ;
       autounfold with tracelink in H ;
       exploit_in_trace H (* recursion *)
                        

@@ -8,7 +8,7 @@ Require Import Arith.
 Require Import TransformationConfiguration.
 Require Import UserExpressions.
 
-Require Import RichTraceLink.
+Require Import TraceLink.
 
 
 Section Semantics.
@@ -51,7 +51,7 @@ Definition traceTrOnPiece (tr: Transformation) (sm : SourceModel) (sp: InputPiec
     (fun r => traceRuleOnPiece r sm sp) 
     (matchingRules tr sm sp).
 
-Definition compute_trace (tr: Transformation) (sm : SourceModel) :  RichTraceLink.Trace :=
+Definition compute_trace (tr: Transformation) (sm : SourceModel) :  TraceLink.Trace :=
   flat_map 
     (traceTrOnPiece tr sm) 
     (allTuples tr sm).  
@@ -74,7 +74,7 @@ Definition applyTrOnModel (sm : SourceModel) (tls:Trace): list TargetLinkType :=
 
 (** * Execute **)
 
-Definition produced_elements := map RichTraceLink.produced.
+Definition produced_elements := map TraceLink.produced.
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   let t := compute_trace tr sm
