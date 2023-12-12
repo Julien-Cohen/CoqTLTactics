@@ -4,3 +4,5 @@
 
 #Fix generated html files.
 COQDOCEXTRAFLAGS=--toc-depth 8 --toc --no-lib-name --lib-subtitles --multi-index
+
+COQEXTRAFLAGS=-w -intuition-auto-with-star
