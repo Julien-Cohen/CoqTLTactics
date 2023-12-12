@@ -147,21 +147,13 @@ transformations/RSS2ATOM/RSS2ATOM.v
 
 transformations/DBLP/DBLP.v
 transformations/IMDB/MOVIES.v
+transformations/HSM2FSM/HSM.v
 
-transformations/Families2Persons/tests/sampleFamilies.v
 transformations/Families2Persons/Families.v
 transformations/Families2Persons/Persons.v
 transformations/Families2Persons/Families2Persons.v
-
-transformations/Moore2MealyALT/Id.v
-transformations/Moore2MealyALT/Moore.v
-transformations/Moore2MealyALT/Mealy.v
-transformations/Moore2MealyALT/Moore2Mealy.v
-transformations/Moore2MealyALT/tests/sampleMoore.v
-transformations/Moore2MealyALT/MooreSemantics.v
-transformations/Moore2MealyALT/MooreWF.v
-transformations/Moore2MealyALT/MealySemantics.v
-transformations/Moore2MealyALT/MealyWF.v
+transformations/Families2Persons/tests/sampleFamilies.v
+transformations/Families2Persons/tests/sampleFamiliesTest.v
 
 
 
@@ -174,6 +166,19 @@ transformations/Moore2Mealy/MooreSemantics.v
 transformations/Moore2Mealy/MooreWF.v
 transformations/Moore2Mealy/MealySemantics.v
 transformations/Moore2Mealy/MealyWF.v
+
+transformations/Moore2MealyALT/Id.v
+transformations/Moore2MealyALT/Moore.v
+transformations/Moore2MealyALT/Mealy.v
+transformations/Moore2MealyALT/Moore2Mealy.v
+transformations/Moore2MealyALT/tests/sampleMoore.v
+transformations/Moore2MealyALT/tests/sampleMooreTest.v
+transformations/Moore2MealyALT/MooreSemantics.v
+transformations/Moore2MealyALT/MooreWF.v
+transformations/Moore2MealyALT/MealySemantics.v
+transformations/Moore2MealyALT/MealyWF.v
+
+
 
 
 
