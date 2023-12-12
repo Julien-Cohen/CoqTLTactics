@@ -1,36 +1,29 @@
-Require Import core.Semantics.
+From core
+  Require ConcreteExpressions Parser Semantics.
 
-Require Import core.utils.Utils.
+Import core.utils.Utils.
 
-Require Import core.modeling.ConcreteSyntax.
-Require Import core.modeling.ModelingSemantics.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.modeling.ConcreteExpressions.
-Require Import core.modeling.Parser.
+Import Semantics.
 
-Require Import core.TransformationConfiguration.
-Require Import core.modeling.ModelingTransformationConfiguration.
+From usertools 
+  Require SemanticsTools.
 
-Require Certification.
+(** BW tactics for the user. The important tactics are the last three ones : one pivot tactics, one for elements that rely on the pivot, and one for links that also rely on the pivot tactic. *)
 
-Import Metamodel Model.
+
+(** * Auxiliary BW tactics *)
 
 Ltac progress_in_In_rules H :=
   match type of H with 
     | In ?R (Syntax.rules _) =>
         simpl Syntax.rules in H ;
-        progress repeat ListUtils.unfold_In_cons H ; (* generates one goal for each rule to consider *)
+        progress repeat ListUtils.unfold_In_cons H ; (* generate one goal for each rule to consider *)
         subst R
   end.
 
 
 Ltac exploit_evalOutputPatternUnit H :=
   match type of H with 
-
-(*  | UserExpressions.evalOutputPatternUnit _ _ _ (Parser.parseOutputPatternUnit _) = Some _ =>
-      autounfold with parse in H ;
-      exploit_evalOutputPatternUnit H (* recursion *)*)
-
   | ConcreteExpressions.makeElement _ _ _ _ _ _ = Some _ => 
       simpl in H ;
       ConcreteExpressions.inv_makeElement H
