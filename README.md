@@ -8,12 +8,15 @@ CoqTL is an internal language in Coq, for writing rule-based model- and graph- t
 
 ## Organization of the repository 
 
-* [core/] - the CoqTL transformation engine and language.
-* [usertools/] - Support for user proofs (contribution).
-* [transformations/] - sample CoqTL transformations and user proofs.
-  * [Moore2Mealy/] - Moore to Mealy transformation, with some structural properties and a proof of preservation of semantics.
-  * [Moore2MealyALT/] - 
-  * [Class2Relational/] - Class to Relation transformation, with structural properties proven.
+* [core/] - The CoqTL transformation engine and language (modified).
+  * [properties/] - Properties still proven on the modified core engine. 
+* [usertools/] - Support for user proofs (lemmas and tactics, main contribution).
+* [transformations/] - Sample CoqTL transformations and user proofs.
+  * [Moore2Mealy/] - Moore / Mealy metamodels and transformation.
+    * [theorems/] - Structural properties on the transformation, and proof of preservation of the semantics.
+  * [Moore2MealyALT/] - A simpler version of Moore and Mealy metamodels, which results in simpler proofs (without use of links). 
+  * [Class2Relational/] - Class / Relational metamodels and transformation.
+    * [theorems/] - Structural properties proved on this transformation.
   * [Class2RelationalTUPLES] - variation of Class to Relational, with more complex patterns in rules.
 * [libs/] - an importer that translates `ecore` metamodels into Coq. (The sources of the importer are in the [coqtl-model-import](https://github.com/atlanmod/coqtl-model-import) repository.)
 
