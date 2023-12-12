@@ -39,23 +39,3 @@ Proof.
   crush.
 Qed.
 
-(* Non provable theorem for view adaptation *)
-
-Theorem adaptation' :
-forall (tc: TransformationConfiguration) 
-  (view_t: TargetModel -> TargetModel)
-  (adapter: Transformation),
-  (forall ms, view_t (Model_concat ms) = Model_concat (map view_t ms)) ->
-  exists (view_s: SourceModel -> SourceModel), 
-    forall (sm: SourceModel),
-      view_t (execute adapter sm) = execute adapter (view_s sm).
-Proof.
-Abort.
-
-(* Theorem adaptation_pushout :
-forall (tc: TransformationConfiguration) 
-  (tool_s: Transformation)
-  (adapter: Transformation),
-  exists (tool_t: Transformation) (view: Transformation),
-    forall (sm: SourceModel),
-       execute view (execute tool_s sm) = execute tool_t (execute adapter sm).*) 

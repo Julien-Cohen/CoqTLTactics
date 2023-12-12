@@ -89,6 +89,8 @@ core/properties/additivity/AdditivityRule.v
 core/properties/distributivity/sampleMoore_distributivity.v
 core/properties/distributivity/distributivity.v
 
+core/properties/Adaptation.v
+
 ### base engine certification
 core/EngineProofs.v
 core/SyntaxCertification.v
