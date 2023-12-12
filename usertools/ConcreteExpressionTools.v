@@ -25,8 +25,6 @@ Ltac exploit_toEData H :=
       destruct e ; compute in H ; first [ inj H | discriminate H] ; try subst V
   end.
 
-(** Remark on the tactic above : it works with the "new" way of encoding metamodels, where [destruct e] is sufficient to consider a case for each kind of data constructor. In the previous style, [destruct e] only makes appear the single constructor, and a second step of destruct is needed to consider the different element constructors. *)   
-
 
 Ltac dummy_inv H :=
   match type of H with 
