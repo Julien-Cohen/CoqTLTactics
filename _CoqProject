@@ -234,6 +234,8 @@ transformations/Class2Relational_noid/theorems/Table_name_uniqueness.v
 transformations/Class2Relational_TUPLE_SP/theorems/Table_name_uniqueness.v
 transformations/Class2Relational_TUPLE_SP/theorems/Column_name_uniqueness.v
 transformations/Class2Relational_TUPLE_SP/theorems/Elements.v
+transformations/Class2Relational_TUPLE_SP/theorems/Attribute_name_preservation.v
+transformations/Class2Relational_TUPLE_SP/theorems/Relational_name_definedness_spec.v
 
 transformations/Families2Persons/theorems/sampleTheorems.v
 
