@@ -24,15 +24,15 @@ Require Import  core.Certification.
 
 Require TacticsBW.
 
-Require Import transformations.Class2Relational_TUPLE_SP.Class2Relational_TUPLE_SP.
-Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
-Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
+Require Import transformations.Class2Relational_TUPLES.Class2Relational_TUPLES.
+Require Import transformations.Class2Relational_TUPLES.ClassMetamodel.
+Require Import transformations.Class2Relational_TUPLES.RelationalMetamodel.
 
 (* From transformations.Class2Relational Require Tactics. *)
 
 Theorem Relational_name_definedness (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : RelationalModel) :
   (* transformation *) 
-     rm = execute Class2Relational_TUPLE_SP cm ->
+     rm = execute Class2Relational_TUPLES cm ->
   (* precondition *)   
      (forall (c1 : ClassMetamodel.Element), 
          In c1 cm.(modelElements) -> 

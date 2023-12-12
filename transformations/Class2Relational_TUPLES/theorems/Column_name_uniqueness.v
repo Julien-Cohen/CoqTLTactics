@@ -19,16 +19,16 @@ Require Import core.Model.
 
 Require        usertools.TacticsBW.
 
-Require Import transformations.Class2Relational_TUPLE_SP.Class2Relational_TUPLE_SP.
-Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
-Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
+Require Import transformations.Class2Relational_TUPLES.Class2Relational_TUPLES.
+Require Import transformations.Class2Relational_TUPLES.ClassMetamodel.
+Require Import transformations.Class2Relational_TUPLES.RelationalMetamodel.
 
 (* From transformations.Class2Relational Require Tactics. *)
 
 Theorem Column_name_uniqueness:
 forall (cm : ClassModel) (rm : RelationalModel), 
     (* transformation *)
-    rm = execute Class2Relational_TUPLE_SP cm ->
+    rm = execute Class2Relational_TUPLES cm ->
     (* precondition *)
     (forall (at1: Attribute_t) (at2: Attribute_t),
         In (AttributeElement at1) cm.(modelElements) ->

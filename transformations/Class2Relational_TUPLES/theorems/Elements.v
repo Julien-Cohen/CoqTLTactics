@@ -9,13 +9,13 @@ Require Import core.Model.
 
 Require        usertools.TacticsBW.
 
-From transformations.Class2Relational_TUPLE_SP
+From transformations.Class2Relational_TUPLES
   Require
   C2RTactics
-  Class2Relational_TUPLE_SP.
+  Class2Relational_TUPLES.
 
 
-Import Class2Relational_TUPLE_SP ClassMetamodel RelationalMetamodel.
+Import Class2Relational_TUPLES ClassMetamodel RelationalMetamodel.
 
 
 (** Forward results *)
@@ -23,7 +23,7 @@ Import Class2Relational_TUPLE_SP ClassMetamodel RelationalMetamodel.
 
 Lemma transform_attribute_fw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational_TUPLE_SP cm ->
+  (* transformation *) rm = execute Class2Relational_TUPLES cm ->
   (* precondition *)  forall id name id_c name_c,
     In (AttributeElement {| attr_id:= id ; derived := false ; attr_name := name|}) cm.(modelElements) ->    
     In (ClassElement {| class_id:= id_c ; class_name := name_c |}) cm.(modelElements) ->
@@ -54,7 +54,7 @@ Qed.
 (* without tactic *)
 Lemma transform_attribute_fw_notactic : 
   forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational_TUPLE_SP cm ->
+  (* transformation *) rm = execute Class2Relational_TUPLES cm ->
   (* precondition *)  forall id name id_c name_c,
     In (AttributeElement {| attr_id:= id ; derived := false ; attr_name := name|}) cm.(modelElements) ->    
     In (ClassElement {| class_id:= id_c ; class_name := name_c |}) cm.(modelElements) ->
@@ -73,7 +73,7 @@ Proof.
             {| attr_id := i; derived := false; attr_name := n |} ; ClassElement {| class_id := i2; class_name := n2 |} ]).
   split. 
   { 
-    apply (SemanticsTools.in_allTuples_pair Class2Relational_TUPLE_SP) ; auto.
+    apply (SemanticsTools.in_allTuples_pair Class2Relational_TUPLES) ; auto.
   }
   {
     unfold traceTrOnPiece.
@@ -81,14 +81,14 @@ Proof.
     apply List.in_flat_map.
 
     match eval cbv beta iota fix 
-            delta [Class2Relational_TUPLE_SP 
-                     Class2Relational_TUPLE_SP'
+            delta [Class2Relational_TUPLES 
+                     Class2Relational_TUPLES'
                      Parser.parse
                      List.nth_error
                      Syntax.rules
                      List.map
                      ConcreteSyntax.ConcreteTransformation_getConcreteRules] 
-          in (List.nth_error Class2Relational_TUPLE_SP.(Syntax.rules) 1 (* second rule *)) 
+          in (List.nth_error Class2Relational_TUPLES.(Syntax.rules) 1 (* second rule *)) 
     with 
     | Some ?r => remember r as R ; exists R
     | None => fail
@@ -120,7 +120,7 @@ Qed.
 
 Lemma transform_class_fw_notactic : 
   forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational_TUPLE_SP cm ->
+  (* transformation *) rm = execute Class2Relational_TUPLES cm ->
   (* precondition *)  forall id name,
     In (ClassElement {| class_id:= id ; class_name := name|}) cm.(modelElements) ->
   (* postcondition *) 
@@ -131,7 +131,7 @@ Proof.
   simpl.
   unfold compute_trace, produced_elements. 
   apply C2RTactics.allModelElements_allTuples in H.
-  revert H ; generalize (allTuples Class2Relational_TUPLE_SP cm).
+  revert H ; generalize (allTuples Class2Relational_TUPLES cm).
 
   intros s H.
   rewrite map_flat_map.
@@ -143,7 +143,7 @@ Qed.
 
 Lemma transform_class_fw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational_TUPLE_SP cm ->
+  (* transformation *) rm = execute Class2Relational_TUPLES cm ->
   (* precondition *)  forall id name,
     In (ClassElement {| class_id:= id ; class_name := name|}) cm.(modelElements) ->
   (* postcondition *) 
@@ -159,7 +159,7 @@ Qed.
 
 Lemma transform_attribute_bw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational_TUPLE_SP cm ->
+  (* transformation *) rm = execute Class2Relational_TUPLES cm ->
   (* precondition *)  forall id name,
       In (ColumnElement {| column_id := id; column_name := name |}) (rm.(modelElements)) ->
   (* postcondition *) 
@@ -180,7 +180,7 @@ Qed.
 
 Lemma transform_class_bw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational_TUPLE_SP cm ->
+  (* transformation *) rm = execute Class2Relational_TUPLES cm ->
   (* precondition *)  forall id name,
       In (TableElement {| table_id := id; table_name := name |}) (rm.(modelElements)) ->
   (* postcondition *) 

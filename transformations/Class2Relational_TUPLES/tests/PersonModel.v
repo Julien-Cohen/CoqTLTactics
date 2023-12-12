@@ -3,7 +3,7 @@ Require Import String.
 
 Require Import core.Model.
 
-Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
+Require Import transformations.Class2Relational_TUPLES.ClassMetamodel.
 
 Import Glue.
 

@@ -17,9 +17,9 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require        usertools.TacticsBW.
 
-Require Import transformations.Class2Relational_TUPLE_SP.Class2Relational_TUPLE_SP.
-Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
-Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
+Require Import transformations.Class2Relational_TUPLES.Class2Relational_TUPLES.
+Require Import transformations.Class2Relational_TUPLES.ClassMetamodel.
+Require Import transformations.Class2Relational_TUPLES.RelationalMetamodel.
 
         
 
@@ -27,7 +27,7 @@ Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
 Theorem Table_name_uniqueness:
 forall (cm : ClassModel) (rm : RelationalModel), 
 (* transformation *) 
-    rm = execute Class2Relational_TUPLE_SP cm ->
+    rm = execute Class2Relational_TUPLES cm ->
 (* precondition *)   
 (forall (c1: Class_t) (c2: Class_t), 
     In (ClassElement c1) cm.(modelElements) -> 

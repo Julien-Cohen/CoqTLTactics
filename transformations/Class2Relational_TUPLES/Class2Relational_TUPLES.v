@@ -10,8 +10,8 @@ Require Import core.modeling.Parser.
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
 
-Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
-Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
+Require Import transformations.Class2Relational_TUPLES.ClassMetamodel.
+Require Import transformations.Class2Relational_TUPLES.RelationalMetamodel.
 
 Import Glue.
 
@@ -54,7 +54,7 @@ Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2R
 
 Open Scope coqtl.
 
-Definition Class2Relational_TUPLE_SP' :=
+Definition Class2Relational_TUPLES' :=
   transformation
   [
     rule "Class2Table"
@@ -97,6 +97,6 @@ Definition Class2Relational_TUPLE_SP' :=
           ]
   ].
 
-Definition Class2Relational_TUPLE_SP := parse Class2Relational_TUPLE_SP'.
+Definition Class2Relational_TUPLES := parse Class2Relational_TUPLES'.
 
 Close Scope coqtl.
