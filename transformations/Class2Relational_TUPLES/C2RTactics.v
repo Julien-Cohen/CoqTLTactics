@@ -8,16 +8,16 @@ Require Import core.Semantics.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
-Require Import transformations.Class2Relational_TUPLE_SP.Class2Relational_TUPLE_SP.
-Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
-Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
+Require Import transformations.Class2Relational_TUPLES.Class2Relational_TUPLES.
+Require Import transformations.Class2Relational_TUPLES.ClassMetamodel.
+Require Import transformations.Class2Relational_TUPLES.RelationalMetamodel.
 
 From usertools Require TacticsFW.
 
 (** ** Type correspondence *)
 
 Lemma tables_come_from_classes a b c : 
-  In (TableElement a) (produced_elements (traceTrOnPiece Class2Relational_TUPLE_SP b [c])) ->
+  In (TableElement a) (produced_elements (traceTrOnPiece Class2Relational_TUPLES b [c])) ->
   exists d, c = ClassElement d.
 Proof.
  destruct c ; simpl ; [ solve [eauto] | intro H ; exfalso ].
@@ -25,7 +25,7 @@ Proof.
 Qed.
 
 Lemma columns_come_from_attributes a b c d : 
-  In (ColumnElement a) (produced_elements (traceTrOnPiece Class2Relational_TUPLE_SP b [c; d])) ->
+  In (ColumnElement a) (produced_elements (traceTrOnPiece Class2Relational_TUPLES b [c; d])) ->
   exists e f, c = AttributeElement e /\
               d = ClassElement f.
 Proof.
@@ -45,10 +45,10 @@ Ltac show_origin :=
   let TMP := fresh in
   match goal with 
    
-   [ H : In (TableElement ?a) (produced_elements (traceTrOnPiece Class2Relational_TUPLE_SP ?b [?c])) |- _ ] =>
+   [ H : In (TableElement ?a) (produced_elements (traceTrOnPiece Class2Relational_TUPLES ?b [?c])) |- _ ] =>
       destruct (tables_come_from_classes a b c H) as [newclassname TMP]; subst c
 
- | [ H : In (ColumnElement ?a) (produced_elements (traceTrOnPiece Class2Relational_TUPLE_SP ?b [?c; ?d])) |- _ ] =>
+ | [ H : In (ColumnElement ?a) (produced_elements (traceTrOnPiece Class2Relational_TUPLES ?b [?c; ?d])) |- _ ] =>
       destruct (columns_come_from_attributes a b c d H) as [newattributename TMP]; subst c
 
 end.
@@ -57,7 +57,7 @@ end.
 Lemma unify_table_class_lem :
   forall cm c ta,
     In (TableElement ta)
-      (produced_elements (traceTrOnPiece Class2Relational_TUPLE_SP cm [ClassElement c])) ->
+      (produced_elements (traceTrOnPiece Class2Relational_TUPLES cm [ClassElement c])) ->
     ta = {| table_id := class_id c; table_name := class_name c |}.
 Proof.
   intros cm c ta H.
@@ -70,13 +70,13 @@ Qed.
 
 Ltac unify_table_class_tac H :=
   match type of H with
-    In (TableElement ?ta) (produced_elements (traceTrOnPiece Class2Relational_TUPLE_SP _ [ClassElement ?c])) => apply unify_table_class_lem in H ; subst ta
+    In (TableElement ?ta) (produced_elements (traceTrOnPiece Class2Relational_TUPLES _ [ClassElement ?c])) => apply unify_table_class_lem in H ; subst ta
   end.
 
 Lemma unify_column_attribute_lem : 
   forall m a cl c, 
   In (ColumnElement c)
-          (produced_elements (traceTrOnPiece Class2Relational_TUPLE_SP m
+          (produced_elements (traceTrOnPiece Class2Relational_TUPLES m
              [AttributeElement a; ClassElement cl])) ->
   c = {| column_id := a.(attr_id); column_name := a.(attr_name) |} /\ 
   a.(derived) = false /\
@@ -108,7 +108,7 @@ Ltac unify_column_attribute_tac H :=
   let H2 := fresh in
   match type of H with 
     In (ColumnElement ?c)
-      (produced_elements (traceTrOnPiece Class2Relational_TUPLE_SP _
+      (produced_elements (traceTrOnPiece Class2Relational_TUPLES _
          [AttributeElement ?a; ClassElement ?cl])) => 
           apply unify_column_attribute_lem in H ; destruct H as [H2 H] ; subst c
   end.
@@ -120,7 +120,7 @@ Ltac unify_column_attribute_tac H :=
 
 Lemma allModelElements_allTuples e (cm:Model ClassMM): 
   In e cm.(modelElements) ->
-  In [e] (allTuples Class2Relational_TUPLE_SP cm).
+  In [e] (allTuples Class2Relational_TUPLES cm).
 Proof. 
   intro.
   apply <- SemanticsTools.in_allTuples_singleton.

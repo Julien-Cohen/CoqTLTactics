@@ -11,16 +11,16 @@ Require Import core.Model.
 Require Import core.Semantics.
 Require Import core.Certification.
 
-Require Import transformations.Class2Relational_TUPLE_SP.Class2Relational_TUPLE_SP.
-Require Import transformations.Class2Relational_TUPLE_SP.ClassMetamodel.
-Require Import transformations.Class2Relational_TUPLE_SP.RelationalMetamodel.
+Require Import transformations.Class2Relational_TUPLES.Class2Relational_TUPLES.
+Require Import transformations.Class2Relational_TUPLES.ClassMetamodel.
+Require Import transformations.Class2Relational_TUPLES.RelationalMetamodel.
 
 Require TacticsFW.
 
 Theorem Attribute_name_preservation:
     forall (rm : RelationalModel) (cm: ClassModel),
         (* transformation *)
-        rm = execute Class2Relational_TUPLE_SP cm ->
+        rm = execute Class2Relational_TUPLES cm ->
         (* postcondition *)  
         forall (a: Attribute_t) (c: Class_t),
         In (AttributeElement a) cm.(modelElements) ->

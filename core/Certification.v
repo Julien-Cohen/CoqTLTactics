@@ -200,7 +200,7 @@ Lemma allTuples_not_incl_length:
   length sp > tr.(arity) -> not (In sp (allTuples tr sm)).
 Proof.
   intros. intro N. apply SemanticsTools.in_allTuples_incl in N ; destruct N.
-  apply Gt.gt_not_le in H.
+  apply Arith_prebase.gt_not_le_stt in H.
   contradiction.
 Qed.
 
@@ -256,7 +256,7 @@ Proof.
   + destruct t as (((?&?)&?)&?). simpl in *.
     unfold PoorTraceLink.getIteration, PoorTraceLink.getSourcePiece, PoorTraceLink.getName, PoorTraceLink.source in *.
     subst.
-    apply beq_nat_true in H2; subst.
+    apply EqNat.beq_nat_true_stt in H2; subst.
     apply String.eqb_eq in H1 ; subst.
     assumption.
   + apply Metamodel.beq_correct.
