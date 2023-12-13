@@ -89,7 +89,7 @@ Proof.
       destruct i ; [ solve [inversion H11] | ].
       clear H11.
       simpl in H2.
-      apply Lt.lt_S_n in H12.
+      apply Arith_prebase.lt_S_n_stt in H12.
       apply nth_error_Some in H12.
       destruct (nth_error l i) ; [ clear H12 | contradiction  ].
 

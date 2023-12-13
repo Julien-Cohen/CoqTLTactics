@@ -128,7 +128,7 @@ destruct (Semantics.resolveIter tls sm name sp iter) eqn: resolve_ca.
      apply andb_true_eq in H1.
      destruct H1.
      crush.
-     --- apply beq_nat_true. crush.
+     --- apply EqNat.beq_nat_true_stt. crush.
      --- apply String.eqb_eq. crush.
   -- inversion resolve_ca.
 - simpl in H. inversion H.

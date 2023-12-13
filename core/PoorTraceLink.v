@@ -79,7 +79,7 @@ Proof.
   simpl. destruct source0 ; simpl in *.
   BoolUtils.destruct_conjunctions.
   destruct p ; simpl in *.
-  apply EqNat.beq_nat_true in H1 ; subst .
+  apply EqNat.beq_nat_true_stt in H1 ; subst .
   apply String.eqb_eq in H0 ; subst.
   apply list_beq_correct in H ; subst.
   + reflexivity.
