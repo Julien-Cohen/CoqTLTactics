@@ -31,7 +31,7 @@ cd coqTL
 ./compile.sh
 ```
 ## Usage
-* Run `./compile.sh` to build all the proofs. It takes less than a minute on a machine with 4 cores. The build include :
+* Run `./compile.sh` to build all the proofs. It takes less than a minute on a machine with 4 cores, less than 3 minutes in a vritual machine with 1 core. The build include :
   * Definitions for the transformation language and the transformation engine (former contribution).
   * Proofs of some properties of the transformation engine (former contribution).
   * Proofs and tactics for user support (this contribution).
@@ -41,6 +41,7 @@ cd coqTL
   * Several models instances of the given metamodels. 
   * Several examples of transformations computed by the engine on those models.
 * Run `make html` to build a navigable HTML version of the source code. HTML code is generated in the `html` directory.
+* To run proofs interactively, open the file you want in your IDE (works with `coqide` without any additional configuration, also works with Emacs/ProofGeneral and VSCode/VsCoq).
 
 Try your own transformations: 
 * If you have an ECore file mymetamodel.ecore you want to translate into a CoqTL metamodel, run `make mymetamodel.v` . (That generator is not a contribution of this work.)
