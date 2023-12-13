@@ -25,27 +25,27 @@ CoqTL is an internal language in Coq, for writing rule-based model- and graph- t
 
 CoqTL requires a working installation of [Coq](https://coq.inria.fr/) (`coqc`) and Make (`make` and `coq_makefile`). It is tested under Coq 8.17.0 and 8.18.0.
 
-To install CoqTL:
+To init CoqTL project (generate the Makefile):
 ```
 cd coqTL
-./compile.sh
+./init.sh
 ```
 ## Usage
-* Run `./compile.sh` to build all the proofs. It takes less than a minute on a machine with 4 cores, less than 3 minutes in a vritual machine with 1 core. The build include :
+* Run `make` to build all the proofs. It takes less than a minute on a machine with 4 cores (make -j 4), less than 3 minutes in a vritual machine with 1 core. This builds :
   * Definitions for the transformation language and the transformation engine (former contribution).
-  * Proofs of some properties of the transformation engine (former contribution).
-  * Proofs and tactics for user support (this contribution).
+  * Lemmas/Proofs of some properties of the transformation engine (former contribution).
+  * Lemmas/Proofs and tactic definitions for user support (this contribution).
   * Several metamodels definitions.
   * Several transformation definitions.
-  * Several proofs of properties of those transformations, both structural and semantic.
+  * Several lemmas/proofs of properties of those transformations, some structural and some semantic properties.
   * Several models instances of the given metamodels. 
   * Several examples of transformations computed by the engine on those models.
 * Run `make html` to build a navigable HTML version of the source code. HTML code is generated in the `html` directory.
 * To run proofs interactively, open the file you want in your IDE (works with `coqide` without any additional configuration, also works with Emacs/ProofGeneral and VSCode/VsCoq).
 
 Try your own transformations: 
-* If you have an ECore file mymetamodel.ecore you want to translate into a CoqTL metamodel, run `make mymetamodel.v` . (That generator is not a contribution of this work.)
-* To explore the construction of a model transformation, add your files in the `_CoqProject` file and run `./compile.sh`.
+* If you have an ECore file mymetamodel.ecore you want to translate into a CoqTL metamodel, run `make mymetamodel.v` . The generated coq file conforms to the Metametamodel on which CoqTL rely. (That generator is not a contribution of this work.) 
+* To explore the construction of a model transformation, add your files in the `_CoqProject` file and run `./init.sh`, then `make`.
     
 ## Contributors and Previous Publications
 
