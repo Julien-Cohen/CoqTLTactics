@@ -170,22 +170,22 @@ Ltac exploit_in_trace H :=
       evalGuard_inv_tac MATCH_GUARD  ; 
 
       (* 4.a : unify the iteration number *)
-      In_evalIterator_inv_tac IN_IT  ;
+      In_evalIterator_inv_tac IN_IT ; 
 
-      (* 4.b : unify the out-pattern with those of the selected rule *)
+      (* 4.b.1 : unify the out-pattern with those of the selected rule *)
       In_outputPattern_inv_tac IN_OUTPAT ;
 
-      (* 4.c : unify te and the evaluation of the out-pattern *)
-      makeElement_inv_tac EV  ;
+      (* 4.b.2 : unify te and the evaluation of the out-pattern *)
+      makeElement_inv_tac EV  
 
-      (* 4.d : destruct incl to In *)
-      repeat ListUtils.explicit_incl IN_ELTS 
+      (* 4.c : destruct incl to In *)
+      repeat ListUtils.explicit_incl IN_ELTS ;
 
-      (* CHECK-ME : Remark : 4.a, 4.b, 4.c and 4.d are independant ; they can be switched *)
+      (* Remark : 4.a, 4.b(1-2) and 4.c are independant ; they can be switched (except 4.b.2 that must occur after 4.b.1)  *)
 
                          
   | In _ (TraceLink.drop (compute_trace _ _)) => 
-      (* when poor traces are concerned, we lift them to rich traces and try again *)
+      (* When poor traces are concerned, we lift them to rich traces and try again *)
       TraceLink.lift H ;
       autounfold with tracelink in H ;
       exploit_in_trace H (* recursion *)
