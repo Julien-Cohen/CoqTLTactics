@@ -66,7 +66,7 @@ Proof.
   2:{ eapply Elements.convert_transition_injective ; eauto. }
    
   clear H3.
-  eapply GettersCommut.getTransition_source_commut_bw_alt in H2 ; eauto.
+  eapply GettersCommut.getTransition_source_commut_bw in H2 ; eauto.
 
     unfold MooreSemantics.State_outTransitions.
     destruct H2 as (s & ? & ?).
