@@ -207,9 +207,10 @@ Ltac transform_link_fw_tac_singleton_auto i :=
 
 (** * Simple tactics (for simple situations) *)
 
-(** A simple FW tactic for elements (lemma + tactic) (only singleton patterns).
-
- The drawback of this lemma/tactic is that when the traceTrOnPiece premise is not solved by auto, it leaves the user with a painful subgoal. *)
+(** A simple FW tactic for elements (lemma + tactic) (only
+    singleton patterns).  The drawback of this lemma/tactic
+    is that when the traceTrOnPiece premise is not solved by
+    auto, it leaves the user with a painful subgoal. *)
 Lemma transform_element_fw {tc} (t:Syntax.Transformation (tc:=tc)) cm e te  :
   0 < Syntax.arity t ->
   In e cm.(modelElements) ->
@@ -225,7 +226,6 @@ Proof.
   apply <- SemanticsTools.in_allTuples_singleton. auto.
 Qed.
 
-(* Used in Class2Relational *)
 Ltac transform_element_fw_tac :=
   match goal with
     [ |- In _ (execute ?T _).(modelElements) ] =>

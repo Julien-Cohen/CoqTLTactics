@@ -219,7 +219,7 @@ Proof.
   
   destruct (MealySemantics.State_out_transitions_inv _ _ _ H5).
 
-  destruct (GettersCommut.getTransition_target_commut_bw _ WF_T _ _ H7 H1) as (?&?&s2&?&?).
+  destruct (GettersCommut.getTransition_target_commut_bw _ _ _ H7 H1) as (?&?&s2&?&?).
   replace x with t in *.
   2:{ eapply Elements.convert_transition_injective ; eauto. }
   clear H8. (* duplicate *)

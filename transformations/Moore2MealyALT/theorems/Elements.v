@@ -142,14 +142,11 @@ Lemma transition_element_bw :
 Proof.
   intros t H.
   TacticsBW.exploit_element_in_result H.
+  PropUtils.destruct_match_H EQ ; [ | discriminate ].
+  PropUtils.inj EQ.
   exists t1.
-  split ; auto ; [].
-  apply WF_T in IN_ELTS0.
-  destruct IN_ELTS0 as (s & G).
-  (* FIXME : ici on voit valueOption, c'est moche. *)
-  unfold convert_transition.
-  rewrite G.
-  reflexivity.
+  unfold convert_transition ; rewrite Heqo.
+  auto.
 Qed.
 
 
@@ -162,14 +159,16 @@ Lemma transition_element_fw :
 Proof.
   intros t IN.
   destruct (WF_T _ IN) as (s & G).
-  unfold convert_transition.
-  rewrite G.
-  eexists ; split ; [ reflexivity| ].
-  TacticsFW.transform_element_fw_tac.
+  eexists ; split ; [ | ].
+
+  + unfold convert_transition.
+    rewrite G. reflexivity.
+  + TacticsFW.in_modelElements_singleton_fw_tac 2 1 0 ; [].
   (* Here we would like to "compute", but this does not work because the value of this computation relies on the value of [m], which is unknown here ; we have to [rewrite G] to get rid of the value of [m]. *)
   simpl.
-  rewrite G.
-  left ; reflexivity.
-Qed.
+  unfold ConcreteExpressions.makeElement ; simpl.
+  unfold ConcreteExpressions.wrapElement ; simpl.
+  rewrite G. reflexivity.
+Qed.  
 
 End Foo.

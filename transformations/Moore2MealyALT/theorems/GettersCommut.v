@@ -140,7 +140,7 @@ Proof.
   intros.
   destruct (Mealy.getTransition_target_inv _ _ _ H0).
   destruct (Elements.state_element_bw _ _ H1) as (s&?&?).
-  destruct (Elements.transition_element_bw _ WF_T _ H) as (t&?&?).
+  destruct (Elements.transition_element_bw _ _ H) as (t&?&?).
 
   exists t.
   split ; auto.
