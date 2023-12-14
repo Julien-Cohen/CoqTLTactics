@@ -5,7 +5,7 @@ From core
    Semantics.
 
 Import core.utils.Utils.
-Import Semantics.
+Import Model Semantics.
 
 From usertools 
   Require 
@@ -142,34 +142,43 @@ Ltac exploit_in_trace H :=
 
       try destruct_source H ; 
   
-      (* 1 : inversion *)
+      (* 1: inversion *)
       apply -> SemanticsTools.in_compute_trace_inv in H ;
       autounfold with tracelink in H ;
-      destruct H as (IN_ELTS & _ & r & IN_RULE & MATCH_GUARD & IN_IT & opu & IN_OUTPAT & EV); (* the _ because there is no information here *)
+      destruct H 
+        as (IN_ELTS & _ & r & IN_RULE & MATCH_GUARD 
+            & IN_IT & opu & IN_OUTPAT & EV); 
+      (* The _ because there is no information here *)
   
-      (* 2 : case analysis on the rules in the transformation *)
-      In_rules_inv_tac IN_RULE (* one sub-goal per rule *) ;
+      (* 2: case analysis on the rules 
+            in the transformation *)
+      In_rules_inv_tac IN_RULE (* One sub-goal per rule *) ;
       
-      (* 3 : get rid of the rules that cannot match *)
+      (* 3: get rid of the rules that cannot match *)
       evalGuard_inv_tac MATCH_GUARD  ; 
 
-      (* 4.a : unify the iteration number *)
+      (* 4.a: unify the iteration number *)
       In_evalIterator_inv_tac IN_IT ; 
 
-      (* 4.b.1 : unify the out-pattern with those of the selected rule *)
+      (* 4.b.1 : unify the out-pattern with 
+                 those of the selected rule *)
       In_outputPattern_inv_tac IN_OUTPAT ;
 
-      (* 4.b.2 : unify te and the evaluation of the out-pattern *)
+      (* 4.b.2 : unification with the evaluation of
+                 the out-pattern *)
       makeElement_inv_tac EV ; 
 
       (* 4.c : destruct incl to In *)
       repeat ListUtils.explicit_incl IN_ELTS 
 
-      (* Remark : 4.a, 4.b(1-2) and 4.c are independant ; they can be switched (except 4.b.2 that must occur after 4.b.1)  *)
+      (* Remark: 4.a, 4.b.(1-2) and 4.c are independant ;
+                  they can be switched  (except 4.b.2 
+                  that must occur after 4.b.1)           *)
 
                          
   | In _ (TraceLink.drop (compute_trace _ _)) => 
-      (* When poor traces are concerned, we lift them to rich traces and try again *)
+      (* When poor traces are concerned, 
+         we lift them to rich traces and try again *)
       TraceLink.lift H ;
       autounfold with tracelink in H ;
       exploit_in_trace H (* recursion *)
@@ -177,29 +186,37 @@ Ltac exploit_in_trace H :=
   end.
 
 
-(** Two tactics for user that rely on the pivot tactic above. *)
-Ltac exploit_element_in_result IN :=
-  let s := fresh "s" in
-  let i := fresh "i" in
-  let n := fresh "n" in
-  let p := fresh "p" in
-  
-  (* make the trace appear *)
-  apply -> SemanticsTools.in_modelElements_inv in IN ;
-  destruct IN as (s & i & n & p & IN) ;
+(** Two tactics for user that rely on the pivot tactic. *)
 
-  (* exploit the trace *)
-  exploit_in_trace IN.
+Ltac exploit_element_in_result IN :=
+  match type of IN with 
+  | In _  (execute _ _).(modelElements) =>
+      let s := fresh "s" in
+      let i := fresh "i" in
+      let n := fresh "n" in
+      let p := fresh "p" in
+      
+      (* 1: make the trace appear *)
+      apply -> SemanticsTools.in_modelElements_inv in IN ;
+      destruct IN as (s & i & n & p & IN) ;
+      
+      (* 2: exploit the trace *)
+      exploit_in_trace IN
+  end.
 
 
 Ltac exploit_link_in_result IN :=
-  let IN_L := fresh "IN_L" in
-
-  (* make the trace appear *)
-  apply -> SemanticsTools.in_modelLinks_inv in IN ;
-  destruct IN as (? & ? & ? & ? & ? & IN & IN_L) ;
+  match type of IN with 
+  | In _ (execute _ _).(modelLinks) =>
+      let IN_L := fresh "IN_L" in
   
-  (* exploit the trace *)
-  exploit_in_trace IN ;
-
-  exploit_In_apply_link IN_L.
+      (* 1: make the trace appear *)
+      apply -> SemanticsTools.in_modelLinks_inv in IN ;
+      destruct IN as (? & ? & ? & ? & ? & IN & IN_L) ;
+      
+      (* 2: exploit the trace *)
+      exploit_in_trace IN ;
+      
+      (* 3: exploit link creation code *)
+      exploit_In_apply_link IN_L
+  end.
