@@ -50,6 +50,8 @@ core/modeling/ModelingSemantics.v
 # Tactics for user proofs
 
 usertools/ConcreteExpressionTools.v
+usertools/SyntaxTools.v
+usertools/ConcreteSyntaxTools.v
 usertools/SemanticsTools.v
 usertools/TacticsBW.v
 usertools/TacticsFW.v

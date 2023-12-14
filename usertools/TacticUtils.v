@@ -1,35 +1,18 @@
-Require Import core.Semantics.
+From core 
+       Require Import Semantics TransformationConfiguration.
 
-Require Import core.utils.Utils.
+From core.utils 
+  Require Import Utils.
 
-Require Import core.modeling.ConcreteSyntax.
-Require Import core.modeling.ModelingSemantics.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.modeling.ConcreteExpressions.
-Require Import core.modeling.Parser.
-
-Require Import core.TransformationConfiguration.
-Require Import core.modeling.ModelingTransformationConfiguration.
+From core.modeling 
+  Require Import ConcreteSyntax ModelingSemantics ModelingMetamodel ConcreteExpressions Parser ModelingTransformationConfiguration.
 
 Require Certification.
 
 Import Metamodel Model.
 
+From usertools Require Import SyntaxTools ConcreteSyntaxTools.
 
-#[global]
-Hint Unfold 
-  Semantics.traceTrOnPiece 
-  Semantics.traceRuleOnPiece 
-  Semantics.traceIterationOnPiece 
-  Semantics.traceElementOnPiece 
-  Semantics.produced_elements 
-  : trace.
-
-#[global]
-Hint Unfold 
-  Semantics.execute 
-  Semantics.compute_trace 
-  Semantics.produced_elements : semantics.
 
 
 (** *** Utilities on help the resolution of In/lists *)

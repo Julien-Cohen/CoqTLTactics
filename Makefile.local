@@ -6,3 +6,32 @@
 COQDOCEXTRAFLAGS=--toc-depth 8 --toc --no-lib-name --lib-subtitles --multi-index
 
 COQEXTRAFLAGS=-w -intuition-auto-with-star
+
+M2MPROOFS= transformations/Moore2Mealy/theorems/SemanticsPreservation.vo
+
+M2MTESTS= transformations/Moore2Mealy/tests/sampleMooreTest.vo
+
+C2RPROOFS= transformations/Class2Relational/theorems/All_classes_instantiate_impl.vo\
+	   transformations/Class2Relational/theorems/All_classes_match_impl.vo\
+	   transformations/Class2Relational/theorems/Attribute_name_preservation.vo\
+	   transformations/Class2Relational/theorems/C2R_monotonicity.vo\
+	   transformations/Class2Relational/theorems/Column_name_uniqueness.vo\
+	   transformations/Class2Relational/theorems/Elements.vo\
+	   transformations/Class2Relational/theorems/Relational_name_definedness_spec.vo\
+	   transformations/Class2Relational/theorems/Relational_resolve_spec.vo\
+	   transformations/Class2Relational/theorems/Relational_resolve.vo\
+	   transformations/Class2Relational/theorems/Table_name_uniqueness.vo
+
+C2RTESTS= transformations/Class2Relational/tests/PersonTest.vo
+
+PAIRPROOFS= transformations/Class2Relational_TUPLES/theorems/Attribute_name_preservation.vo\
+	    transformations/Class2Relational_TUPLES/theorems/Column_name_uniqueness.vo\
+	    transformations/Class2Relational_TUPLES/theorems/Elements.vo\
+	    transformations/Class2Relational_TUPLES/theorems/Relational_name_definedness_spec.vo\
+	    transformations/Class2Relational_TUPLES/theorems/Table_name_uniqueness.vo
+
+
+proofs: $(M2MPROOFS) $(C2RPROOFS) $(PAIRPROOFS)
+
+tests: $(M2MTESTS) $(C2RTESTS)
+

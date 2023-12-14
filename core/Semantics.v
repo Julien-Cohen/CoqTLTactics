@@ -1,15 +1,13 @@
 (** This module defines the behavior of the model transformation engine. *)
 
-
-
 From core 
   Require
-  utils.Utils 
-  Model 
-  Syntax 
-  TransformationConfiguration 
-  UserExpressions 
-  TraceLink.
+   utils.Utils 
+   Model 
+   Syntax 
+   TransformationConfiguration 
+   UserExpressions 
+   TraceLink.
 
 Import 
   NotationUtils

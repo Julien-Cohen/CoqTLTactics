@@ -47,10 +47,11 @@ Definition Moore2Mealy' :=
       to [
         ELEM "t" ::: Mealy.Transition_K
            fun _ m t => 
+             s <- Moore.getTransition_target m t ;
             return {|
               Transition_source := t.(Moore.Transition_source) ;
               Transition_input := t.(Moore.Transition_input) ;
-              Transition_output := (* FIXME *) value (option_map Moore.State_output (Moore.getTransition_target m t));
+              Transition_output := Moore.State_output s;
               Transition_dest := t.(Moore.Transition_dest)
             |}  
          

@@ -131,7 +131,7 @@ Ltac in_compute_trace_inv_singleton_fw_auto :=
 
 
 
-(** * Chain goal switching (elements/links -> traces) and a tactic on traces *)
+(** * FW tactics on Elements and Links *)
 
 (** *** On elements (singletons, then pairs) *)
 
@@ -180,7 +180,7 @@ Ltac transform_link_fw_tac_singleton r_num pat_num i :=
         parse ConcreteOutputPatternUnit_accessors opu_accessors 
   end.
 
-(* Variant where the first rule that don't lead to an error is selected intead of relying on an user hint. *)
+(* Variant where the first rule that don't lead to an error is selected instead of relying on an user hint. *)
 Ltac transform_link_fw_tac_singleton_auto i :=
   match goal with
     [ |- In _ (execute _ _).(modelLinks) ] =>
@@ -204,38 +204,13 @@ Ltac transform_link_fw_tac_singleton_auto i :=
 
 
 
-(** * Simple or deprecated tactics *)
-
-
-(* USED *)
-(* Deprecated : use in_modelElements_inv instead. *)
-Corollary in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
-  forall 
-    (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
-    m s e,
-    In {| 
-        PoorTraceLink.source := s ;
-        PoorTraceLink.produced := e
-      |}
-      (TraceLink.drop (compute_trace t m)) ->
-    In e (execute t m).(modelElements).
-Proof. 
-  intros.
-  apply TraceLink.in_drop_inv in H. simpl in H. destruct H as (? & ?).
-
-  apply SemanticsTools.in_modelElements_inv. 
-  unfold TraceLink.convert in H. 
-  destruct s as ((?&?)&?). 
-  eauto.
-Qed.
-
-
 
 (** * Simple tactics (for simple situations) *)
 
-(** A simple FW tactic for elements (lemma + tactic) (only singleton patterns).
-
- The drawback of this lemma/tactic is that when the traceTrOnPiece premise is not solved by auto, it leaves the user with a painful subgoal. *)
+(** A simple FW tactic for elements (lemma + tactic) (only
+    singleton patterns).  The drawback of this lemma/tactic
+    is that when the traceTrOnPiece premise is not solved by
+    auto, it leaves the user with a painful subgoal. *)
 Lemma transform_element_fw {tc} (t:Syntax.Transformation (tc:=tc)) cm e te  :
   0 < Syntax.arity t ->
   In e cm.(modelElements) ->
@@ -251,7 +226,6 @@ Proof.
   apply <- SemanticsTools.in_allTuples_singleton. auto.
 Qed.
 
-(* Used in Class2Relational *)
 Ltac transform_element_fw_tac :=
   match goal with
     [ |- In _ (execute ?T _).(modelElements) ] =>
