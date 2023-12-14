@@ -1,19 +1,23 @@
 From core
-  Require ConcreteExpressions Parser Semantics.
+  Require 
+   ConcreteExpressions 
+   Parser 
+   Semantics.
 
 Import core.utils.Utils.
-
 Import Semantics.
 
 From usertools 
-  Require ConcreteExpressionTools SemanticsTools.
+  Require 
+   ConcreteExpressionTools 
+   SemanticsTools.
 
 (** BW tactics for the user. The important tactics are the last three ones : one pivot tactics, one for elements that rely on the pivot, and one for links that also rely on the pivot tactic. *)
 
 
 (** * Auxiliary BW tactics *)
 
-Ltac progress_in_In_rules H :=
+Ltac In_rules_inv_tac H :=
   match type of H with 
     | In ?R (Syntax.rules _) =>
         simpl Syntax.rules in H ;
@@ -22,7 +26,7 @@ Ltac progress_in_In_rules H :=
   end.
 
 
-Ltac exploit_evalOutputPatternUnit H :=
+Ltac makeElement_inv_tac H :=
   match type of H with 
   | ConcreteExpressions.makeElement _ _ _ _ _ _ = Some _ => 
       simpl in H ;
@@ -32,7 +36,8 @@ Ltac exploit_evalOutputPatternUnit H :=
 
 Ltac unfold_parseRule H :=
   match type of H with
-    | context[Parser.parseRule (ConcreteSyntax.Build_ConcreteRule _ _ _ _ _ )] => unfold Parser.parseRule in H
+    | context[Parser.parseRule (ConcreteSyntax.Build_ConcreteRule _ _ _ _ _ )] => 
+        unfold Parser.parseRule in H
 
     | context[Parser.parseRule ?E] =>
         (* For the case where a rule is defined 
@@ -42,11 +47,11 @@ Ltac unfold_parseRule H :=
   end.
 
 
-Ltac progress_in_In_outpat H :=
+Ltac In_outputPattern_inv_tac H :=
   match type of H with 
     | context[Parser.parseRule _] => 
         unfold_parseRule H ;
-        progress_in_In_outpat H (* recursion *)
+        In_outputPattern_inv_tac H (* recursion *)
                       
     | In ?opu (Syntax.r_outputPattern (Syntax.buildRule _ _ _ _)) =>
         autounfold with ConcreteRule_accessors ConcreteOutputPatternUnit_accessors parse in H ;
@@ -57,12 +62,12 @@ Ltac progress_in_In_outpat H :=
   end.
 
 
-Ltac exploit_In_evalIterator H :=
+Ltac In_evalIterator_inv_tac H :=
   autounfold with tracelink in H ;
   match type of H with
     | context[Parser.parseRule _] => 
         unfold_parseRule H ;
-        exploit_In_evalIterator H (* recursion *)
+        In_evalIterator_inv_tac H (* recursion *)
 
     | In ?I (seq _ (UserExpressions.evalIterator (Syntax.buildRule _ _ _ _ ) _ _)) => 
       unfold UserExpressions.evalIterator in H ; 
@@ -74,11 +79,11 @@ Ltac exploit_In_evalIterator H :=
   end.
   
 
-Ltac exploit_evalGuard H :=
+Ltac evalGuard_inv_tac H :=
     match type of H with
       | context[Parser.parseRule _] => 
          unfold_parseRule H ;
-         exploit_evalGuard H (* recursion *)
+         evalGuard_inv_tac H (* recursion *)
 
       | UserExpressions.evalGuard (Syntax.buildRule _ _ _ _) _ _ = true => 
           unfold UserExpressions.evalGuard in H ; 
@@ -102,19 +107,27 @@ Ltac exploit_In_apply_link H :=
       let pl := fresh "pl" in
       let IN := fresh "IN" in
       let l := fresh "l" in
+
       unfold Semantics.apply_link_pattern in H ;
       autounfold with tracelink parse in H ;
-
       unfold Parser.dropToList in H ;
 
-      repeat match type of H with 
-        In _ (_ ++ _) => apply in_app_or in H ; destruct H as [H | H] 
-      | In _ (OptionListUtils.optionListToList (Some _)) => rewrite OptionListUtils.optionListToList_Some in H
-      | In _ nil => solve[inversion H]
-      | In _ (OptionListUtils.optionListToList _) => apply OptionListUtils.in_optionListToList in H ; destruct H as (l & H & IN)
-      end  ;
+      repeat 
+        match type of H with 
+        | In _ (_ ++ _) => apply in_app_or in H ; destruct H as [H | H] 
+        | In _ (OptionListUtils.optionListToList (Some _)) => rewrite OptionListUtils.optionListToList_Some in H
+        | In _ nil => solve[inversion H]
+        | In _ (OptionListUtils.optionListToList _) => apply OptionListUtils.in_optionListToList in H ; destruct H as (l & H & IN)
+        end  ;
+      
       ConcreteExpressionTools.inv_makeLink H ;
-repeat match goal with [IN : List.In _ (_::_) |- _ ] => ListUtils.unfold_In_cons IN | [IN : List.In _ nil |- _] => solve[inversion IN] end  ;
+      
+      repeat 
+        match goal with 
+        | [IN : List.In _ (_::_) |- _ ] => ListUtils.unfold_In_cons IN 
+        | [IN : List.In _ nil    |- _ ] => solve[inversion IN] 
+        end ;
+      
       try PropUtils.inj IN
   end.
     
@@ -134,9 +147,7 @@ Ltac destruct_source H :=
 Ltac exploit_in_trace H :=
   match type of H with 
    | In ?A (compute_trace _ _) => 
-      let se := fresh "se" in
       let r := fresh "r" in
-      let i := fresh "i" in
       let opu := fresh "opu" in
       let IN_ELTS := fresh "IN_ELTS" in
       let IN_RULE := fresh "IN_RULE" in
@@ -153,19 +164,19 @@ Ltac exploit_in_trace H :=
       destruct H as (IN_ELTS & _ & r & IN_RULE & MATCH_GUARD & IN_IT & opu & IN_OUTPAT & EV); (* the _ because there is no information here *)
   
       (* 2 : case analysis on the rules in the transformation *)
-      progress_in_In_rules IN_RULE (* one sub-goal per rule *) ;
+      In_rules_inv_tac IN_RULE (* one sub-goal per rule *) ;
       
       (* 3 : get rid of the rules that cannot match *)
-      exploit_evalGuard MATCH_GUARD  ; 
+      evalGuard_inv_tac MATCH_GUARD  ; 
 
       (* 4.a : unify the iteration number *)
-      exploit_In_evalIterator IN_IT  ;
+      In_evalIterator_inv_tac IN_IT  ;
 
       (* 4.b : unify the out-pattern with those of the selected rule *)
-      progress_in_In_outpat IN_OUTPAT ;
+      In_outputPattern_inv_tac IN_OUTPAT ;
 
       (* 4.c : unify te and the evaluation of the out-pattern *)
-      exploit_evalOutputPatternUnit EV  ;
+      makeElement_inv_tac EV  ;
 
       (* 4.d : destruct incl to In *)
       repeat ListUtils.explicit_incl IN_ELTS 
@@ -184,7 +195,6 @@ Ltac exploit_in_trace H :=
 
 (** Two tactics for user that rely on the pivot tactic above. *)
 Ltac exploit_element_in_result IN :=
-  let H := fresh "H" in
   let s := fresh "s" in
   let i := fresh "i" in
   let n := fresh "n" in
