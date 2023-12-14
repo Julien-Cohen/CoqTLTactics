@@ -36,7 +36,7 @@ Proof.
   }
 Qed.
 
-Lemma getTransition_source_commut_bw t :
+Lemma getTransition_source_commut_bw_aux t :
   forall s t',
       Mealy.getTransition_source (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some (Elements.convert_state s) ->
       Elements.convert_transition m t = Some t' ->
@@ -80,8 +80,8 @@ Proof.
   }
 Qed.
 
-(* FIXME : this should be the main bw lemma *)
-Corollary getTransition_source_commut_bw_alt t :
+
+Corollary getTransition_source_commut_bw t :
   forall s' t',
       Mealy.getTransition_source (Semantics.execute Moore2Mealy.Moore2Mealy m) t' = Some s' ->
       Elements.convert_transition m t = Some t' ->
@@ -91,7 +91,7 @@ Proof.
   intros.
   replace s' with (Elements.convert_state (Moore.Build_State_t s'.(Mealy.State_id) ""%string)) in H.
   { 
-    eapply getTransition_source_commut_bw in H ; eauto.
+    eapply getTransition_source_commut_bw_aux in H ; eauto.
     destruct H as (?&?&?).
     eexists ; split ; eauto.
     unfold Elements.convert_state.

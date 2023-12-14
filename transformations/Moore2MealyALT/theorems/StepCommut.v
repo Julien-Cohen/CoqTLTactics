@@ -59,20 +59,19 @@ Proof.
   2:{ eapply Elements.convert_transition_injective ; eauto. }
    
   clear H3.
-  eapply GettersCommut.getTransition_source_commut_bw_alt in H2 ; eauto.
-
-    unfold MooreSemantics.State_outTransitions.
-    destruct H2 as (s & ? & ?).
-    exists s.
-    split ; auto.
-    
-
-    apply OptionListUtils.filter_lift_in.
-    rewrite H3.
-    eexists ; split ; eauto.
-    split ; eauto.
-    apply Moore.internal_State_t_dec_lb.
-    reflexivity.
+  eapply GettersCommut.getTransition_source_commut_bw in H2 ; eauto.
+  
+  unfold MooreSemantics.State_outTransitions.
+  destruct H2 as (s & ? & ?).
+  exists s.
+  split ; auto.
+  
+  apply OptionListUtils.filter_lift_in.
+  rewrite H3.
+  eexists ; split ; eauto.
+  split ; eauto ; [].
+  apply Moore.internal_State_t_dec_lb.
+  reflexivity.
 Qed.
 
 Lemma in_outTransitions_commut_bw_2 s' t' :

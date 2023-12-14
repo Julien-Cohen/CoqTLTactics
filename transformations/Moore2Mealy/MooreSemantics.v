@@ -143,14 +143,9 @@ Proof.
   eapply WF in H5. exact H5.
 Qed.
 
-(* fixme : move-me *)
-Definition WF_targetLink_target_in (m:Moore.M) :=
-      forall lk, 
-        In (TransitionTarget lk) m.(modelLinks) ->
-        In (State lk.(trg)) m.(modelElements).
 
 Lemma search_in_right m :
-  WF_targetLink_target_in m ->
+  WF_transition_target_glue_r_exists m ->
   forall s1 a s2,
   search m s1 a = Some s2 ->
   List.In (State s2) m.(Model.modelElements).
