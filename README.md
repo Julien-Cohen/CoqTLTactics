@@ -31,16 +31,20 @@ cd coqTL
 ./init.sh
 ```
 ## Usage
-* Run `make` to build all the proofs. It takes less than a minute on a machine with 4 cores (make -j 4), less than 3 minutes in a vritual machine with 1 core. This builds :
-  * Definitions for the transformation language and the transformation engine (former contribution).
-  * Lemmas/Proofs of some properties of the transformation engine (former contribution).
-  * Lemmas/Proofs and tactic definitions for user support (this contribution).
-  * Several metamodels definitions.
-  * Several transformation definitions.
-  * Several lemmas/proofs of properties of those transformations, some structural and some semantic properties.
-  * Several models instances of the given metamodels. 
-  * Several examples of transformations computed by the engine on those models.
+* Run `make proofs` to run the proofs of properties on the two main example transformations (Moore2Mealy and Class2Relational), and their dependancies (in particular, the definition of the transformation engine).
+* Run `make tests` to run the two main example transformations on examples of models and see the output. 
+* Run `make` to build all the proofs, including proofs that are not in the previous targets.
+* This builds :
+  * Definitions for the transformation language and the transformation engine (adapted from previous work).
+  * The lemmas (with their proofs) and tactics we provide for user support (this contribution).
+  * Several definitions of metamodels.
+  * Several definitions of transformations.
+  * Several properties (with their proofs) of those transformations, some structural and some semantic properties.
+  * Several examples of models that conform to the given metamodels. 
+  * Several examples of application of the transformations run by the engine on those models.
+  * Several properties (with their proofs) of the transformation engine, such as additivity which still hold after refactoring of the the engine (adapted from previous work).
 * Run `make html` to build a navigable HTML version of the source code. HTML code is generated in the `html` directory.
+* Each build takes less than a minute on a machine with 4 cores (make -j 4), less than 3 minutes in a vritual machine with 1 core.
 * To run proofs interactively, open the file you want in your IDE (works with `coqide` without any additional configuration, also works with Emacs/ProofGeneral and VSCode/VsCoq).
 
 Try your own transformations: 
