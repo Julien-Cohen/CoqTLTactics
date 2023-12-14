@@ -34,27 +34,15 @@ Ltac makeElement_inv_tac H :=
   end.
 
 
-Ltac unfold_parseRule H :=
-  match type of H with
-    | context[Parser.parseRule (ConcreteSyntax.Build_ConcreteRule _ _ _ _ _ )] => 
-        unfold Parser.parseRule in H
-
-    | context[Parser.parseRule ?E] =>
-        (* For the case where a rule is defined 
-           outside the transformation. *) 
-        unfold E in H ; 
-        unfold_parseRule H (* recursion *)
-  end.
-
-
 Ltac In_outputPattern_inv_tac H :=
   match type of H with 
     | context[Parser.parseRule _] => 
-        unfold_parseRule H ;
+        autounfold with parse in H ;
         In_outputPattern_inv_tac H (* recursion *)
                       
     | In ?opu (Syntax.r_outputPattern (Syntax.buildRule _ _ _ _)) =>
-        autounfold with ConcreteRule_accessors ConcreteOutputPatternUnit_accessors parse in H ;
+        autounfold with 
+         ConcreteRule_accessors ConcreteOutputPatternUnit_accessors parse in H ;
         unfold Syntax.r_outputPattern in H ; 
         unfold List.map in H ;
         progress repeat unfold_In_cons H ;
@@ -66,7 +54,7 @@ Ltac In_evalIterator_inv_tac H :=
   autounfold with tracelink in H ;
   match type of H with
     | context[Parser.parseRule _] => 
-        unfold_parseRule H ;
+        autounfold with parse in H ;
         In_evalIterator_inv_tac H (* recursion *)
 
     | In ?I (seq _ (UserExpressions.evalIterator (Syntax.buildRule _ _ _ _ ) _ _)) => 
@@ -82,7 +70,7 @@ Ltac In_evalIterator_inv_tac H :=
 Ltac evalGuard_inv_tac H :=
     match type of H with
       | context[Parser.parseRule _] => 
-         unfold_parseRule H ;
+         autounfold with parse in H ;
          evalGuard_inv_tac H (* recursion *)
 
       | UserExpressions.evalGuard (Syntax.buildRule _ _ _ _) _ _ = true => 
@@ -94,17 +82,11 @@ Ltac evalGuard_inv_tac H :=
     end.
 
 
-Ltac unfold_parseOutputPatternUnit H :=
-  autounfold with 
-    parse ConcreteOutputPatternUnit_accessors 
-    in H.
 
 
 Ltac exploit_In_apply_link H :=
   match type of H with 
     In _ (Semantics.apply_link_pattern (Semantics.compute_trace _ _) _ _) =>
-      let TMP := fresh "TMP" in
-      let pl := fresh "pl" in
       let IN := fresh "IN" in
       let l := fresh "l" in
 
@@ -117,15 +99,17 @@ Ltac exploit_In_apply_link H :=
         | In _ (_ ++ _) => apply in_app_or in H ; destruct H as [H | H] 
         | In _ (OptionListUtils.optionListToList (Some _)) => rewrite OptionListUtils.optionListToList_Some in H
         | In _ nil => solve[inversion H]
-        | In _ (OptionListUtils.optionListToList _) => apply OptionListUtils.in_optionListToList in H ; destruct H as (l & H & IN)
+        | In _ (OptionListUtils.optionListToList _) => 
+            
+            apply OptionListUtils.in_optionListToList in H ; destruct H as (l & H & IN)
         end  ;
       
       ConcreteExpressionTools.inv_makeLink H ;
       
       repeat 
         match goal with 
-        | [IN : List.In _ (_::_) |- _ ] => ListUtils.unfold_In_cons IN 
-        | [IN : List.In _ nil    |- _ ] => solve[inversion IN] 
+        | [HIN : List.In _ (_::_) |- _ ] => ListUtils.unfold_In_cons HIN 
+        | [HIN : List.In _ nil    |- _ ] => solve[inversion HIN] 
         end ;
       
       try PropUtils.inj IN
@@ -176,10 +160,10 @@ Ltac exploit_in_trace H :=
       In_outputPattern_inv_tac IN_OUTPAT ;
 
       (* 4.b.2 : unify te and the evaluation of the out-pattern *)
-      makeElement_inv_tac EV  
+      makeElement_inv_tac EV ; 
 
       (* 4.c : destruct incl to In *)
-      repeat ListUtils.explicit_incl IN_ELTS ;
+      repeat ListUtils.explicit_incl IN_ELTS 
 
       (* Remark : 4.a, 4.b(1-2) and 4.c are independant ; they can be switched (except 4.b.2 that must occur after 4.b.1)  *)
 
