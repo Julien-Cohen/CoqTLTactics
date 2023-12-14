@@ -131,7 +131,7 @@ Ltac in_compute_trace_inv_singleton_fw_auto :=
 
 
 
-(** * Chain goal switching (elements/links -> traces) and a tactic on traces *)
+(** * FW tactics on Elements and Links *)
 
 (** *** On elements (singletons, then pairs) *)
 
@@ -180,7 +180,7 @@ Ltac transform_link_fw_tac_singleton r_num pat_num i :=
         parse ConcreteOutputPatternUnit_accessors opu_accessors 
   end.
 
-(* Variant where the first rule that don't lead to an error is selected intead of relying on an user hint. *)
+(* Variant where the first rule that don't lead to an error is selected instead of relying on an user hint. *)
 Ltac transform_link_fw_tac_singleton_auto i :=
   match goal with
     [ |- In _ (execute _ _).(modelLinks) ] =>
@@ -202,32 +202,6 @@ Ltac transform_link_fw_tac_singleton_auto i :=
   end.
 
 
-
-
-(** * Simple or deprecated tactics *)
-
-
-(* USED *)
-(* Deprecated : use in_modelElements_inv instead. *)
-Corollary in_trace_in_models_target {MM1:Metamodel} {T1} {T2} {BEQ} :
-  forall 
-    (t: Syntax.Transformation (tc:=Build_TransformationConfiguration MM1 (Build_Metamodel T1 T2 BEQ)))
-    m s e,
-    In {| 
-        PoorTraceLink.source := s ;
-        PoorTraceLink.produced := e
-      |}
-      (TraceLink.drop (compute_trace t m)) ->
-    In e (execute t m).(modelElements).
-Proof. 
-  intros.
-  apply TraceLink.in_drop_inv in H. simpl in H. destruct H as (? & ?).
-
-  apply SemanticsTools.in_modelElements_inv. 
-  unfold TraceLink.convert in H. 
-  destruct s as ((?&?)&?). 
-  eauto.
-Qed.
 
 
 

@@ -152,7 +152,13 @@ Proof.
   apply class_in_trace in H.
   rewrite in_trace_resolve ; [ | exact H ].
   split ; [ reflexivity | ].
-  eapply TacticsFW.in_trace_in_models_target in H ; eauto. 
+  destruct c.
+  unfold C2RTactics.convert_class in *. simpl in *.
+  unfold produced_elements.  
+  apply in_map_iff.
+  apply   TraceLink.in_drop_inv in H ; simpl in *.
+  destruct H ; simpl in *.
+  eexists ; split ; [ | eassumption] ; reflexivity.
 Qed.
 
 
