@@ -53,6 +53,7 @@ usertools/ConcreteExpressionTools.v
 usertools/SyntaxTools.v
 usertools/ConcreteSyntaxTools.v
 usertools/SemanticsTools.v
+usertools/ResolveTools.v
 usertools/TacticsBW.v
 usertools/TacticsFW.v
 usertools/Glue.v
@@ -145,11 +146,6 @@ transformations/TT2BDD/tests/TT2BDD_TTModel.v
 transformations/RSS2ATOM/RSS.v
 transformations/RSS2ATOM/ATOM.v
 transformations/RSS2ATOM/ATOMFlattened.v
-transformations/RSS2ATOM/RSS2ATOM.v
-# transformations/RSS2ATOM/tests/ExempleRSS.v FIXME
-# transformations/RSS2ATOM/tests/Exemple1RSS.v FIXME
-# transformations/RSS2ATOM/tests/ExempleATOM.v FIXME
-# transformations/RSS2ATOM/tests/Exemple1ATOM.v FIXME
 
 transformations/DBLP/DBLP.v
 transformations/IMDB/MOVIES.v
