@@ -58,6 +58,8 @@ Compute
              (Build_Table_t 0 "Person")) :: nil))).
 *)
 
+Compute (execute Class2Relational PersonModel).
+
 Fact test_ok :    
     (execute Class2Relational PersonModel) 
       =

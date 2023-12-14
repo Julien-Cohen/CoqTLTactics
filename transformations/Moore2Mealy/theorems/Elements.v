@@ -148,9 +148,7 @@ Lemma state_element_bw :
       List.In (Moore.State s0) (Model.modelElements m) /\ s = convert_state s0.
 Proof.
   intros s H.
-  TacticsBW.exploit_element_in_result H.
-  exists t0.
-  split ; auto.
+  TacticsBW.exploit_element_in_result H ; eauto.
 Qed.
 
 
