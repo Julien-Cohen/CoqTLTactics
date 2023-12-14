@@ -5,21 +5,20 @@ Require Import Coq.Arith.Gt.
 Require Import Coq.Arith.EqNat.
 Require Import List.
 
-Require Import core.utils.Utils.
-Require Import core.Semantics.
-Require Import core.Certification.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
+From core 
+  Require Import 
+  utils.Utils Semantics modeling.ModelingMetamodel Model.
 
-Require Import transformations.Class2Relational.Class2Relational.
-Require Import transformations.Class2Relational.ClassMetamodel.
-Require Import transformations.Class2Relational.RelationalMetamodel.
+From transformations.Class2Relational
+  Require Import Class2Relational ClassMetamodel RelationalMetamodel.
 
-From transformations.Class2Relational 
-  Require ClassModelProperties RelationalModelProperties.
+From usertools 
+  Require ResolveTools.
 
 From transformations.Class2Relational 
-  Require C2RTactics TraceUtils Elements.
+  Require 
+    ClassModelProperties RelationalModelProperties 
+    C2RTactics TraceUtils Elements.
 
 Import Glue.
 
@@ -68,36 +67,21 @@ Proof.
 
   TacticsBW.exploit_link_in_result R_IN1 ; [].
 
+  (* EQ and EQ0 are not needed here *)
+  clear EQ EQ0.
+
   (* Exploit MATCH_GUARD *)
   C2RTactics.negb_inv MATCH_GUARD.
   destruct t ; simpl in MATCH_GUARD ; subst Attribute_derived.
 
-  
-  (*TacticsFW.in_modelElements_singleton_fw_tac 1 1 0.
-  
-  unfold ConcreteExpressions.makeElement.
-  unfold ConcreteExpressions.wrapElement.
-  unfold ConcreteExpressions.wrap.
-  unfold toEData.
-  simpl.  
-  *)
-
-  (* We get the hypothesis IN_ELTS0, EQ, IN_L and MATCH_GUARD. *)
-  
-  (* EQ is not needed here *)
-  clear EQ.
-
-
-  (* Exploit IN_L *)
+  (* Exploit Resolve / IN_L *)
   (* IN_L contains the code of the link-pattern in the rule. *)
   tmp IN_L. (* fixme *)
   
-  (* EQ0 not needed. *)
-  clear EQ0.
 
   (* Exploit Resolve. *)
   rename EQ into R.
-  apply Certification.tr_resolve_leaf in R.
+  apply ResolveTools.tr_resolve_leaf in R.
   
   apply TraceLink.in_drop_inv in R ;
   destruct R as (? & R) ; simpl in R.

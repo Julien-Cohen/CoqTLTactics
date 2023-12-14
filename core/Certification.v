@@ -262,15 +262,6 @@ Proof.
   + apply Metamodel.beq_correct.
 Qed.
 
-(* move-me *)
-Theorem tr_resolve_leaf: 
-  forall (tls:list PoorTraceLink.TraceLink)  (name: string)
-    (sp: InputPiece) (x: TargetElementType),
-    resolve tls name sp = return x ->
-    In {| PoorTraceLink.source := (sp, 0, name) ; PoorTraceLink.produced := x |} tls. 
-Proof.
-  intros ; apply tr_resolveIter_leaf ; assumption.
-Qed.
 
 
 

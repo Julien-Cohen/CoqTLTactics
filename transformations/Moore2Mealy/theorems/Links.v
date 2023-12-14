@@ -7,6 +7,9 @@ Require Moore2Mealy.MealyWF.
 Require Moore2Mealy.theorems.Elements.
 Require Moore2Mealy.theorems.TraceUtils.
 
+From usertools 
+  Require ResolveTools. (* Other usertools come from Require Elements *)
+
 Import OptionUtils List.
 Import String. (* for notation *)
 Import Model.
@@ -256,7 +259,7 @@ Proof.
     destruct t0 ; [ PropUtils.inj IN_L | discriminate IN_L].
 
     (* Exploit resolve *)
-    apply Certification.tr_resolve_leaf in R. 
+    apply ResolveTools.tr_resolve_leaf in R. 
     
     apply Moore.getTransition_source_inv in GS. 
     
@@ -327,7 +330,7 @@ Proof.
 
   
   (* Exploit resolve *)
-  apply Certification.tr_resolve_leaf in R.
+  apply ResolveTools.tr_resolve_leaf in R.
   
   apply Moore.getTransition_target_inv in EQ.
   

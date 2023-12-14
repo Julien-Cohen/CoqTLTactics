@@ -5,21 +5,23 @@ Require Import Coq.Arith.Gt.
 Require Import Coq.Arith.EqNat.
 Require Import List.
 
-Require Import core.utils.Utils.
-Require Import core.Semantics.
-Require Import core.Certification.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
-
-Require Import transformations.Class2Relational_noid.Class2Relational.
-Require Import transformations.Class2Relational_noid.ClassMetamodel.
-Require Import transformations.Class2Relational_noid.RelationalMetamodel.
+From core 
+  Require Import 
+  utils.Utils Semantics modeling.ModelingMetamodel Model.
 
 From transformations.Class2Relational_noid 
-  Require ClassModelProperties RelationalModelProperties.
+  Require Import 
+  Class2Relational
+  ClassMetamodel
+  RelationalMetamodel.
 
 From transformations.Class2Relational_noid 
-  Require C2RTactics TraceUtils Elements.
+  Require 
+  ClassModelProperties RelationalModelProperties 
+  C2RTactics TraceUtils Elements.
+
+From usertools
+  Require ResolveTools.    
 
 Import Glue.
 
@@ -86,7 +88,7 @@ Proof.
 
   (* Exploit Resolve. *)
   rename EQ into R.
-  apply Certification.tr_resolve_leaf in R.
+  apply ResolveTools.tr_resolve_leaf in R.
   
   apply TraceLink.in_drop_inv in R ;
   destruct R as (? & R) ; simpl in R.

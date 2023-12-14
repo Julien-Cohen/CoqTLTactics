@@ -34,17 +34,6 @@ Definition resolveAll (tr: Trace) (name: string)
 
 End Resolve.
 
-(** * Some tactics *)
-
-(* Tactics need to be outside the section to be visible *)
-
-(* Deprecated : see Certification.tr_resolve_leaf instead. *)
-Ltac inv_resolve H :=
-  match type of H with
-  | resolve _ _ _  = Some _ =>
-      unfold resolve in H ; 
-      OptionUtils.monadInvN resolveIter H
-  end.
 
 
 
