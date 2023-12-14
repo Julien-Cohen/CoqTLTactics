@@ -7,6 +7,20 @@ Import String Bool core.utils.Utils core.Model core.Syntax TransformationConfigu
 Import Semantics TraceLink.
 
 
+#[global]
+Hint Unfold 
+  Semantics.traceTrOnPiece 
+  Semantics.traceRuleOnPiece 
+  Semantics.traceIterationOnPiece 
+  Semantics.traceElementOnPiece 
+  Semantics.produced_elements 
+  : trace.
+
+#[global]
+Hint Unfold 
+  Semantics.execute 
+  Semantics.compute_trace 
+  Semantics.produced_elements : semantics.
 
 
 

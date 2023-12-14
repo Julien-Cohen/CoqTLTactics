@@ -10,7 +10,9 @@ Import Model Semantics.
 From usertools 
   Require 
    ConcreteExpressionTools 
-   SemanticsTools.
+   SemanticsTools
+   SyntaxTools
+   ConcreteSyntaxTools.
 
 (** BW tactics for the user. The important tactics are the last three ones : one pivot tactics, one for elements that rely on the pivot, and one for links that also rely on the pivot tactic. *)
 
@@ -42,8 +44,7 @@ Ltac In_outputPattern_inv_tac H :=
                       
     | In ?opu (Syntax.r_outputPattern (Syntax.buildRule _ _ _ _)) =>
         autounfold with 
-         ConcreteRule_accessors ConcreteOutputPatternUnit_accessors parse in H ;
-        unfold Syntax.r_outputPattern in H ; 
+         ConcreteRule_accessors ConcreteOutputPatternUnit_accessors parse rule_accessors in H ;
         unfold List.map in H ;
         progress repeat unfold_In_cons H ;
         first [PropUtils.inj H | discriminate H (* useful ? *) ] (*subst opu*)            
@@ -59,8 +60,7 @@ Ltac In_evalIterator_inv_tac H :=
 
     | In ?I (seq _ (UserExpressions.evalIterator (Syntax.buildRule _ _ _ _ ) _ _)) => 
       unfold UserExpressions.evalIterator in H ; 
-      unfold Syntax.r_iterator in H ; 
-      unfold ConcreteSyntax.r_iter in H ;
+      autounfold with ConcreteRule_accessors rule_accessors in H ;
       simpl seq in H ;
       repeat unfold_In_cons H ;
       try (is_var I ; subst I)
@@ -75,9 +75,7 @@ Ltac evalGuard_inv_tac H :=
 
       | UserExpressions.evalGuard (Syntax.buildRule _ _ _ _) _ _ = true => 
           unfold UserExpressions.evalGuard in H ; 
-          unfold Syntax.r_guard in H ; 
-          unfold ConcreteSyntax.r_guard in H ; 
-          unfold ConcreteSyntax.r_InKinds in H ; 
+          autounfold with ConcreteRule_accessors rule_accessors in H ; 
           ConcreteExpressionTools.inv_makeGuard H      
     end.
 
@@ -96,12 +94,18 @@ Ltac exploit_In_apply_link H :=
 
       repeat 
         match type of H with 
-        | In _ (_ ++ _) => apply in_app_or in H ; destruct H as [H | H] 
-        | In _ (OptionListUtils.optionListToList (Some _)) => rewrite OptionListUtils.optionListToList_Some in H
-        | In _ nil => solve[inversion H]
+        | In _ (_ ++ _) =>
+            apply in_app_or in H ; 
+            destruct H as [H | H] 
+                            
+        | In _ (OptionListUtils.optionListToList (Some _)) =>
+            rewrite OptionListUtils.optionListToList_Some in H
+        | In _ nil => 
+            solve[inversion H]
+                 
         | In _ (OptionListUtils.optionListToList _) => 
-            
-            apply OptionListUtils.in_optionListToList in H ; destruct H as (l & H & IN)
+            apply OptionListUtils.in_optionListToList in H ;
+            destruct H as (l & H & IN)
         end  ;
       
       ConcreteExpressionTools.inv_makeLink H ;

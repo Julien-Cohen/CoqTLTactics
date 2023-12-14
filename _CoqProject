@@ -41,6 +41,8 @@ core/modeling/Parser.v
 core/modeling/ModelingSemantics.v
 
 usertools/ConcreteExpressionTools.v
+usertools/SyntaxTools.v
+usertools/ConcreteSyntaxTools.v
 usertools/SemanticsTools.v
 usertools/TacticsBW.v
 usertools/TacticsFW.v
