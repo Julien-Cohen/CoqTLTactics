@@ -32,7 +32,7 @@ Lemma in_allTuples_incl {tc:TransformationConfiguration} tr sm :
       (incl t (modelElements sm) /\ length t <= arity tr).
 Proof.
   unfold allTuples.
-  setoid_rewrite  <- tuples_up_to_n_incl_length.
+  setoid_rewrite  <- TupleUtils.tuples_up_to_n_incl_length.
   tauto.
 Qed.
 

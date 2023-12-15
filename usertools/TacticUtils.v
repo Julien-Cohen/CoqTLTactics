@@ -1,25 +1,25 @@
 From core 
-       Require Import Semantics TransformationConfiguration.
+       Require Import 
+       Semantics TransformationConfiguration.
 
 From core.utils 
-  Require Import Utils.
+  Require Import
+  Utils.
 
 From core.modeling 
-  Require Import ConcreteSyntax ModelingSemantics ModelingMetamodel ConcreteExpressions Parser ModelingTransformationConfiguration.
-
-Require Certification.
+  Require Import
+  ConcreteSyntax ModelingSemantics ModelingMetamodel ConcreteExpressions Parser ModelingTransformationConfiguration.
 
 Import Metamodel Model.
 
-From usertools Require Import SyntaxTools ConcreteSyntaxTools.
+From usertools 
+  Require Import SyntaxTools ConcreteSyntaxTools.
 
 
 
-(** *** Utilities on help the resolution of In/lists *)
+(** * Utilities for the resolution of In/lists *)
 
-(** When we know which rule is the one we search, the following tactics help us to say it. 
-
-In particular in the case we have an existential variable in the goal, as in [In ?r (Syntax.rules Class2Relational)]
+(** When we know which rule is the one we search, the following tactics help us to say it, in particular in the case we have an existential variable in the goal, as in [In ?r (Syntax.rules Class2Relational)]
 (after use of [in_compute_trace_inv]).
 
 *)

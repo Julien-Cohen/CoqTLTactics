@@ -39,7 +39,7 @@ Proof.
   TacticsFW.transform_element_fw_tac.
 Qed.
 
-(* Coming from previous work *)
+(* Without new tactics *)
 Lemma transform_attribute_fw_no_tactic : 
   forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
@@ -50,10 +50,15 @@ Lemma transform_attribute_fw_no_tactic :
 Proof.
     intros.
     rewrite H.
-    apply <- Certification.tr_execute_in_elements.
+    unfold execute ; simpl.
+    unfold compute_trace.
+    unfold produced_elements ; rewrite map_flat_map.
+    apply in_flat_map.
     exists ([AttributeElement {| Attribute_id := id; Attribute_derived := false; Attribute_name := name |}]).
     split.
-    + apply Certification.allTuples_incl_length.
+    + unfold allTuples.
+      rewrite  <- TupleUtils.tuples_up_to_n_incl_length.
+      split.
       * unfold incl.
         intros.
         apply in_inv in H1.

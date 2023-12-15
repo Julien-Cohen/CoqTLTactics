@@ -108,7 +108,7 @@ Proof.
 
 Qed.
 
-(* FW with the old tactics *)
+(* FW with the simple tactic *)
 Lemma state_element_fw  
   (s:Moore.State_t)
   (IN : List.In (Moore.State s) (Model.modelElements m)) :
@@ -123,7 +123,7 @@ Qed.
 
 Import List.
 
-(* FW without tactics *)
+(* FW without new tactics *)
 Lemma state_element_fw_no_tactic rm s
   (H: rm = Semantics.execute Moore2Mealy m) 
   (IN: List.In (Moore.State s) (Model.modelElements m) ) :
@@ -135,7 +135,8 @@ Proof.
   apply List.in_flat_map.
   exists ( (Moore.State s) :: nil ).
   split.
-  + apply Certification.allTuples_incl_length.
+  + unfold Semantics.allTuples.
+    rewrite  <- TupleUtils.tuples_up_to_n_incl_length. split.
     * apply ListUtils.incl_singleton. exact IN. 
     * simpl. auto.
   + simpl. left. reflexivity.
