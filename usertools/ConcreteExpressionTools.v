@@ -1,6 +1,7 @@
 (** Tools to deal with [ConcreteExpression] constructions. Concrete expressions are built from user defined rules at parsing by [makeElement], [makeGuard], [makeGuard]... *)
 
-From core Require Import ConcreteExpressions.
+From core 
+  Require Import ConcreteExpressions.
 
 Import Utils.
 

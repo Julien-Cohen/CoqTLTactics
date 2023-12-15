@@ -1,10 +1,12 @@
+(** Lemma to deal with [resolve]. *)
+
 From core 
   Require Certification.
 
 Import 
   NotationUtils String TransformationConfiguration Resolve.
 
-Theorem tr_resolve_leaf {tc : TransformationConfiguration}: 
+Corollary tr_resolve_leaf {tc : TransformationConfiguration}: 
   forall (tls:list PoorTraceLink.TraceLink)  (name: string)
     (sp: InputPiece) (x: TargetElementType),
     resolve tls name sp = return x ->

@@ -1,10 +1,7 @@
 Require Import core.Semantics.
-Import Metamodel Model.
 
-Import NotationUtils.
-Import List.
-
-Import core.TransformationConfiguration.
+Import 
+  Metamodel Model NotationUtils List core.TransformationConfiguration.
 
 From usertools 
   Require SemanticsTools ChoiceTools Backtracking.
@@ -12,8 +9,7 @@ From usertools
 (** * FW Tactics on traces *)
 
 (** ** Tactics that fully unfold [In _ compute_trace _ _] and solve easy goals. *) 
-
- Ltac in_compute_trace_inv_singleton_fw r_num pat_num :=
+Ltac in_compute_trace_inv_singleton_fw r_num pat_num :=
   match goal with 
   | [ |- List.In _ (compute_trace ?T _)] => 
       apply <- SemanticsTools.in_compute_trace_inv ; 
@@ -50,7 +46,7 @@ From usertools
       try reflexivity (* solve "simple" evalGuard & make_element goals *)
   end.
 
-(* Variant for pair patterns *)
+(** Variant for pair patterns *)
 Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
   match goal with 
   | [ |- List.In _ (compute_trace ?T _)] => 
@@ -90,7 +86,7 @@ Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
   end.
 
 
-(* Variant that tries to guess the rule and the pattern *)
+(** Variant that tries to guess the rule and the pattern *)
 Ltac in_compute_trace_inv_singleton_fw_auto := 
   apply <- SemanticsTools.in_compute_trace_inv ;
   split ; 
@@ -180,7 +176,7 @@ Ltac transform_link_fw_tac_singleton r_num pat_num i :=
         parse ConcreteOutputPatternUnit_accessors opu_accessors 
   end.
 
-(* Variant where the first rule that don't lead to an error is selected instead of relying on an user hint. *)
+(** Variant where the first rule that don't lead to an error is selected instead of relying on an user hint. *)
 Ltac transform_link_fw_tac_singleton_auto i :=
   match goal with
     [ |- In _ (execute _ _).(modelLinks) ] =>

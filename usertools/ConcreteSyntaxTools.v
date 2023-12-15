@@ -1,8 +1,6 @@
-(** Some tactics to unfold accessors of ConcreteSyntax types. *)
+(** Some hints to unfold accessors of ConcreteSyntax types. *)
 
 Require Import ConcreteSyntax.
-
-
 
 #[global]
 Hint Unfold 

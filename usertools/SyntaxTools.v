@@ -1,5 +1,7 @@
 (** Some tactics to unfold accessors *)
-From core Require Import Syntax.
+
+From core 
+  Require Import Syntax.
 
 
 #[global]

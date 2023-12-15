@@ -2,9 +2,7 @@
 
 Require Semantics.
 
-Import String Bool core.utils.Utils core.Model core.Syntax TransformationConfiguration.
-
-Import Semantics TraceLink.
+Import String Bool utils.Utils Model Syntax TransformationConfiguration Semantics TraceLink.
 
 
 #[global]
@@ -92,7 +90,6 @@ Proof.
   unfold traceElementOnPiece.
 
   setoid_rewrite in_allTuples_incl.
-
 
   split.
   +  intros (?&(?&?)&?&(?&?)&?&?& [? e ?] &?& T).
