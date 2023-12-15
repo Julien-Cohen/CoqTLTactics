@@ -228,7 +228,7 @@ Proof.
   
   apply List.in_map_iff.
   setoid_rewrite List.in_flat_map.
-  eexists ; split ; [ | eexists ; split ; [ TacticUtils.first_in_list | ]].
+  eexists ; split ; [ | eexists ; split ; [ ChoiceTools.first_in_list | ]].
 
 
   2:{

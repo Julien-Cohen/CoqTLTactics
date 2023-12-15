@@ -48,7 +48,8 @@ usertools/ResolveTools.v
 usertools/TacticsBW.v
 usertools/TacticsFW.v
 usertools/Glue.v
-usertools/TacticUtils.v
+usertools/ChoiceTools.v
+usertools/Backtracking.v
 
 
 # Engine variants

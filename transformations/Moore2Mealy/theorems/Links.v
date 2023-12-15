@@ -100,7 +100,7 @@ Proof.
 
     apply in_flat_map.
     eexists ; split.
-    { (* first link pattern *) TacticUtils.first_in_list. }
+    { (* first link pattern *) ChoiceTools.first_in_list. }
     {
       unfold ConcreteSyntax.o_OutRefKind, ConcreteSyntax.o_outpat.
 
@@ -180,7 +180,7 @@ Proof.
     eexists ; split ; [ reflexivity| ].
     apply in_flat_map.
     eexists ; split.
-    { (* second link pattern *) TacticUtils.second_in_list. }
+    { (* second link pattern *) ChoiceTools.second_in_list. }
     {
       unfold TraceLink.getSourcePiece, 
         TraceLink.getIteration, 
