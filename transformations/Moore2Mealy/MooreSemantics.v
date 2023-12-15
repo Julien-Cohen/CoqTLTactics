@@ -1,14 +1,20 @@
-Require Import String.
-Require Import List.
+(** Semantics of Moore machines. *)
 
-Require Import transformations.Moore2Mealy.Moore.
-Require Import core.Model.
-Require Import core.utils.Utils.
+Require Import String List.
+
+From transformations.Moore2Mealy 
+  Require Import Moore.
+
+From core 
+  Require Import Model utils.Utils.
 
 Import Id Glue.
 
+(** * Definitions *)
+
 Definition initialState (m: M) : option State_t :=
     find_lift (get_E_data State_K) (fun s => NodeId_beq (Id "S0") s.(State_id)) m.(modelElements).
+
 
 Definition State_outTransitions (m: M) (s: State_t) : list Transition_t :=
     filter_lift 
@@ -20,14 +26,17 @@ Definition State_outTransitions (m: M) (s: State_t) : list Transition_t :=
          end)
       m.(Model.modelElements).
 
+
 Definition State_acceptTransition (m: M) (s: State_t) (i: string) : option Transition_t :=
     find (fun t => eqb i t.(Transition_input)) (State_outTransitions m s).
+
 
 Definition search (m: M) (current: State_t) i :=
   match State_acceptTransition m current i with
     | Some t =>  getTransition_target m t
     | None => None
   end.
+
 
 Fixpoint executeFromState (m: M) (current: State_t) (remainingInput: list string) : option (list string) :=
   match remainingInput with 
@@ -42,6 +51,7 @@ Fixpoint executeFromState (m: M) (current: State_t) (remainingInput: list string
        end
    | nil => Some nil 
   end.
+
 
 Definition execute (m: M) (input: list string) : option (list string) :=
     match initialState m with 
@@ -68,7 +78,7 @@ Definition execute (m: M) (input: list string) : option (list string) :=
 (*                execute                              *)
 
 
-(** Some tactics *)
+(** * Lemmas and tactics *)
 
 Lemma State_out_transitions_inv m s t :
   List.In t (State_outTransitions m s) ->
@@ -158,7 +168,7 @@ Proof.
 Qed.
 
 
-(** Some tests *)
+(** * Some tests *)
 
 Require Import transformations.Moore2Mealy.tests.sampleMoore.
 

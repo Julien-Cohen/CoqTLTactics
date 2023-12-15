@@ -1,12 +1,13 @@
-Require Moore2Mealy.Moore2Mealy.
-Require Moore2Mealy.theorems.Elements.
-Require Moore2Mealy.theorems.WFStable.
+From transformations.Moore2Mealy
+       Require Moore2Mealy theorems.Elements theorems.WFStable.
+
 
 Section Foo.
 
 Variable (m:Moore.M).
   
 Hypothesis WF_U : MooreWF.state_id_uniqueness m.
+
 
 Lemma initial_state_preserved_fw2 : 
       forall s,
@@ -25,6 +26,7 @@ Proof.
   apply MealyWF.in_find ; [ apply MealyWF.always_state_id_uniqueness | | reflexivity ].
   apply Elements.state_element_fw.  exact IN.
 Qed.
+
 
 Lemma initial_state_preserved_fw3 : 
   MooreSemantics.initialState m = None ->
@@ -50,6 +52,7 @@ Proof.
   unfold Moore.State_id in *.
   exact H1.
 Qed.
+
 
 Lemma initial_state_preserved : 
   MealySemantics.initialState (Semantics.execute Moore2Mealy.Moore2Mealy m) = option_map Moore2Mealy.convert_state (MooreSemantics.initialState m).

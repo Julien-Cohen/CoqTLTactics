@@ -1,12 +1,8 @@
-Require Moore2Mealy.MooreSemantics.
-Require Moore2Mealy.MealySemantics.
-Require Moore2Mealy.Moore2Mealy.
-Require Moore2Mealy.MooreWF.
-Require Moore2Mealy.MealyWF.
-Require Moore2Mealy.theorems.Elements.
-Require Moore2Mealy.theorems.Links.
+From transformations.Moore2Mealy
+  Require MooreSemantics MealySemantics Moore2Mealy MooreWF MealyWF Elements Links.
 
-Import String.
+Import String Model Semantics.
+
 
 Lemma state_id_uniqueness_preserved_fw : forall m,
     MooreWF.state_id_uniqueness m -> 
@@ -15,7 +11,7 @@ Proof.
   intros ; apply MealyWF.always_state_id_uniqueness.
 Qed.
 
-Import Model Semantics.
+
 
 Lemma transition_source_uniqueness_stable :
   forall m,
@@ -40,6 +36,7 @@ Proof.
   reflexivity.
 Qed.
 
+
 Lemma transition_target_uniqueness_stable :
   forall m,
     MooreWF.WF_transition_target_uniqueness m -> 
@@ -62,8 +59,10 @@ Proof.
   reflexivity.
 Qed.
 
+
 #[global]
 Hint Resolve transition_source_uniqueness_stable transition_target_uniqueness_stable : wf.
+
 
 Lemma transition_target_glue_r_exists_stable m :
   Moore.WF_transition_target_glue_r_exists m ->
@@ -84,6 +83,7 @@ Proof.
   rewrite C in IN_MOORE.
   exact IN_MOORE.
 Qed.
+
 
 Lemma transition_source_glue_r_exists_stable m :
   Moore.WF_transition_source_exists m ->
@@ -106,6 +106,7 @@ Proof.
   rewrite C in IN_MOORE.
   exact IN_MOORE.
 Qed.
+
 
 Lemma WF_target_stable m:
   MooreWF.WF_transition_target_uniqueness m ->
@@ -136,6 +137,7 @@ Proof.
   exact IN_MEALY.
 Qed.
 
+
 #[global]
 Hint Resolve transition_target_glue_r_exists_stable transition_source_glue_r_exists_stable WF_target_stable : wf.
 
@@ -161,7 +163,6 @@ Proof.
   apply Elements.transition_element_bw in IN2.
   destruct IN1 as (mt1 & ? & ?).
   destruct IN2 as (mt2 & ? & ?).
-(*  specialize (WF_2 mt1 mt2 H H1).*)
   unfold Moore2Mealy.convert_transition in H0.
   PropUtils.destruct_match_H H0 ; [ PropUtils.inj H0 | discriminate H0 ] ; simpl in *.
   unfold Moore2Mealy.convert_transition in H2.
@@ -194,12 +195,11 @@ Proof.
   assert (mt1 = mt2).
   {
     unfold MooreWF.determinist in WF_2.
-(*    destruct mt1 ; destruct mt2.*)
 
     eapply WF_2 ; eauto ; [ | ].
 
     + apply MooreSemantics.in_State_outTransitions ; auto.
-      (* on aimerait avoir déjà GettersCommut *)
+      (* We would like to have GettersCommut. *)
       apply MooreWF.getTransition_source_some ; eauto.
       destruct mt1 ; exact IN1.
     + apply MooreSemantics.in_State_outTransitions ; auto.
@@ -210,6 +210,7 @@ Proof.
   subst mt2.
   congruence.
 Qed.
+
 
 #[global]
 Hint Resolve determinist_stable : wf.

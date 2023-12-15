@@ -1,22 +1,15 @@
-Require Moore2Mealy.MooreSemantics.
-Require Moore2Mealy.MealySemantics.
-Require Moore2Mealy.Moore2Mealy.
-Require Moore2Mealy.MooreWF.
-Require Moore2Mealy.MealyWF.
+From transformations.Moore2Mealy 
+       Require MooreSemantics MealySemantics Moore2Mealy MooreWF MealyWF.
 
-Require Moore2Mealy.theorems.Elements.
-Require Moore2Mealy.theorems.TraceUtils.
+From transformations.Moore2Mealy.theorems 
+  Require Elements TraceUtils.
 
 From usertools 
   Require ResolveTools. (* Other usertools come from Require Elements *)
 
-Import OptionUtils List.
-Import String. (* for notation *)
-Import Model.
+Import
+  OptionUtils List String (* for notation *) Model Glue Moore2Mealy.
 
-Import Glue.
-
-Import Moore2Mealy.
 
 Section Foo.
 
@@ -31,7 +24,6 @@ Hypothesis WF_T_L : Moore.WF_transition_target_glue_l_exists m.
 Hypothesis WF_T_R : Moore.WF_transition_target_glue_r_exists m.
 Hypothesis WF_TLL : MooreWF.WF_transition_target_uniqueness m.
 Hypothesis WF_SLL : MooreWF.WF_transition_source_uniqueness m.
-
 
 
 Lemma source_link_fw :
@@ -59,10 +51,10 @@ Proof.
     intro IN_TRACE.
 
 
-(* Remark : the FW tactic below works if we invert the position of IN_S and IN_T in the context, thanks to the use of multimatch in the tactic. Comment/uncomment the following line to explore this. *)
+  (* Remark : the FW tactic below works if we invert the position of IN_S and IN_T in the context, thanks to the use of multimatch in the tactic. Comment/uncomment the following line to explore this. *)
   move IN_T after IN_S.
 
-(*  TacticsFW.transform_link_fw_tac_singleton 2 1 0 ; [ | ].*) 
+  (*  TacticsFW.transform_link_fw_tac_singleton 2 1 0 ; [ | ].*) 
   TacticsFW.transform_link_fw_tac_singleton_auto 0. 
 
   { (* eval output pattern *)
@@ -73,8 +65,6 @@ Proof.
     rewrite T.
     reflexivity.
   }
-
-
 
   { (* eval output pattern link *)
     (* the output patern in this rule has two link patterns. *)
@@ -90,7 +80,6 @@ Proof.
       ConcreteSyntax.e_name,
       Syntax.opu_name.
     
-
     unfold Parser.dropToList,
       Parser.parseOutputPatternLinks, 
       Parser.parseOutputPatternLink.
@@ -122,7 +111,6 @@ Proof.
         unfold Moore.Transition_getSourceObject .
         apply (MooreWF.getTransition_source_some m  WF_SLL s1 IN_S t) in  H.  rewrite H. reflexivity.
       }
-
     }
   }
 Qed.
@@ -156,7 +144,7 @@ Proof.
 
   specialize (TraceUtils.state_in_trace m s1 IN_S) ; intro INTRACE.
 
-(*  TacticsFW.transform_link_fw_tac_singleton 2 1 0 ; [ | ].*)
+  (*  TacticsFW.transform_link_fw_tac_singleton 2 1 0 ; [ | ].*)
   TacticsFW.transform_link_fw_tac_singleton_auto  0 ; [ | ].
 
   { (* eval output pattern *)
@@ -211,6 +199,7 @@ Proof.
   }
 Qed.
 
+
 Lemma source_link_bw :
   forall t' s',
     In  
@@ -220,7 +209,6 @@ Lemma source_link_bw :
     exists s, 
       Moore2Mealy.convert_state s = s' 
       /\
-        
         In 
           (Moore.TransitionSource 
              (glue 
@@ -237,8 +225,6 @@ Proof.
 
     (* Exploit EQ0 *)
     PropUtils.inj EQ0.
-
-
 
     assert (S: SUCCESS (Moore.getTransition_source m t)).
     { apply WF_S. assumption. }
@@ -275,8 +261,8 @@ Proof.
     split ; [ | exact GS].
     PropUtils.inj E0.
     reflexivity.
-
 Qed.
+
 
 Lemma target_link_bw :
   forall t' s',
@@ -287,7 +273,6 @@ Lemma target_link_bw :
     exists s, 
       Moore2Mealy.convert_state s = s' 
       /\
-        
         In 
           (Moore.TransitionTarget 
              (glue 
@@ -302,13 +287,11 @@ Proof.
   (* Exploit EQ0 *)
   PropUtils.inj EQ0.
   
-  
   compute in t.
 
   (* Exploit EQ. *)
   unfold convert_transition in EQ. monadInv EQ.
   simpl.
-  
   
   exists s.
   
@@ -316,7 +299,6 @@ Proof.
   unfold Moore.Transition_getTargetObject in EQ1.
   rewrite EQ in EQ1.
   PropUtils.inj EQ1.
-  
   
   (* Exploit IN_L *)
   unfold ModelingSemantics.resolve in IN_L.
@@ -326,8 +308,6 @@ Proof.
   compute in IN_L. 
   
   PropUtils.destruct_match_H IN_L ; [ PropUtils.inj IN_L | discriminate IN_L].
-  
-
   
   (* Exploit resolve *)
   apply ResolveTools.tr_resolve_leaf in R.
@@ -340,5 +320,6 @@ Proof.
   destruct t as (id & i) ; simpl.
   exact EQ.
 Qed.
+
 
 End Foo.

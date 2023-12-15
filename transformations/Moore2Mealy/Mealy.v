@@ -1,18 +1,14 @@
 (** Imports Native *)
-Require Import String.
-Require Import Bool.
-Require Import List.
-Require Import PeanoNat.
-Require Import EqNat.
+Require Import 
+  String Bool List PeanoNat EqNat.
 
 (** Imports CoqTL *)
-Require Import core.utils.Utils.
-Require Import core.Metamodel.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
+From core 
+  Require Import 
+  utils.Utils Metamodel modeling.ModelingMetamodel Model.
 
-
-Require Import Moore2Mealy.Id Glue.
+Require Import 
+  Moore2Mealy.Id Glue.
 
 (** Base types for elements *)
 Record State_t := { State_id : NodeId }.

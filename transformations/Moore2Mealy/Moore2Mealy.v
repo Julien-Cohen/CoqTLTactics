@@ -1,23 +1,21 @@
-Require Import String.
-Require Import List.
-Require Import Multiset.
-Require Import ListSet.
+(** Moore to Mealy transformation. *)
 
-Require Import core.utils.Utils.
+Require Import String List.
 
-Require Import core.modeling.ConcreteSyntax.
-Require Import core.modeling.ModelingSemantics.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.modeling.ConcreteExpressions.
-Require Import core.modeling.Parser.
 
-Require Import transformations.Moore2Mealy.Moore.
-Require Import transformations.Moore2Mealy.Mealy.
+From core 
+  Require Import utils.Utils TransformationConfiguration.
 
-Require Import core.TransformationConfiguration.
-Require Import core.modeling.ModelingTransformationConfiguration.
+From core.modeling 
+  Require Import 
+  ConcreteSyntax ModelingSemantics ConcreteExpressions Parser ModelingTransformationConfiguration.
+
+From transformations.Moore2Mealy
+  Require 
+  Moore Mealy.
 
 Import Glue.
+
 
 #[export]
 Instance Moore2MealyTransformationConfiguration : TransformationConfiguration := 

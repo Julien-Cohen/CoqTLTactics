@@ -1,14 +1,10 @@
 From usertools 
        Require TacticsFW TacticsBW.
 
-Require Moore2Mealy.MooreSemantics.
-Require Moore2Mealy.MealySemantics.
-Require Import Moore2Mealy.Moore2Mealy.
-Require Moore2Mealy.MooreWF.
-Require Moore2Mealy.MealyWF.
+From transformations.Moore2Mealy 
+  Require MooreSemantics MealySemantics MooreWF MealyWF Moore2Mealy.
 
-Import OptionUtils.
-Import Strings.String. (* for notation *)
+Import Moore2Mealy OptionUtils Strings.String. (* for notation *)
 
 Section Params.
 
@@ -31,8 +27,6 @@ Proof.
   apply WF_U ; auto.
   destruct s1, s2 ; unfold convert_state in H3 ; congruence.
 Qed.
-
-
 
 
 Lemma convert_transition_injective : 
@@ -66,6 +60,7 @@ Proof.
   + discriminate.
 Qed.
 
+
 Lemma convert_transition_nec :
   forall t t',
   convert_transition m t = Some t' ->
@@ -84,19 +79,7 @@ Proof.
 Qed.
 
 
-(* Just to try *)
-Definition convert_transition' t (IN : List.In (Moore.Transition t) m.(Model.modelElements)) : Mealy.Transition_t .
-  destruct (Moore.getTransition_target m t) eqn:G.
-  + exact (Mealy.Build_Transition_t t.(Moore.Transition_id) t.(Moore.Transition_input) s.(Moore.State_output)).
-  + exfalso.
-    apply convert_transition_suff in IN.
-    unfold convert_transition in IN.
-    rewrite G in IN.
-    inversion IN.
-    discriminate H.
-Defined.
-
-(* FW with the new tactic *)
+(* FW with the [in_modelElements_singleton_fw_tac] tactic *)
 Lemma state_element_fw_alt  
   (s:Moore.State_t)
   (IN : List.In (Moore.State s) (Model.modelElements m)) :
@@ -105,10 +88,10 @@ Lemma state_element_fw_alt
     (Semantics.execute Moore2Mealy m).(Model.modelElements).
 Proof. 
   TacticsFW.in_modelElements_singleton_fw_tac 1 1 0. (* fixme : "state" instead of rule number *)
-
 Qed.
 
-(* FW with the simple tactic *)
+
+(* FW with the [transform_element_fw_tac] tactic *)
 Lemma state_element_fw  
   (s:Moore.State_t)
   (IN : List.In (Moore.State s) (Model.modelElements m)) :
@@ -121,7 +104,7 @@ Qed.
 
 
 
-Import List.
+
 
 (* FW without new tactics *)
 Lemma state_element_fw_no_tactic rm s
@@ -141,6 +124,7 @@ Proof.
     * simpl. auto.
   + simpl. left. reflexivity.
 Qed.
+
 
 Lemma state_element_bw :
   forall (s:Mealy.State_t),
@@ -166,7 +150,7 @@ Proof.
 Qed.
 
 
-(* FW with new tactic *)
+(* FW with [in_modelElements_singleton_fw_tac] tactic *)
 Lemma transition_element_fw_alt: 
   forall (t:Moore.Transition_t),
     List.In (Moore.Transition t) (Model.modelElements m) ->
@@ -198,7 +182,7 @@ Proof.
     rewrite C. reflexivity.
 Qed.
 
-(* FW with old tactic *)
+(* FW with [transform_element_fw_tac] tactic *)
 Lemma transition_element_fw : 
   forall (t:Moore.Transition_t),
     List.In (Moore.Transition t) (Model.modelElements m) ->

@@ -1,12 +1,11 @@
-Require Moore2Mealy.MooreSemantics.
-Require Moore2Mealy.MealySemantics.
-Require Moore2Mealy.Moore2Mealy.
-Require Moore2Mealy.MooreWF.
-Require Moore2Mealy.MealyWF.
-Require Moore2Mealy.theorems.Elements.
-Require Moore2Mealy.theorems.WFStable.
+From transformations.Moore2Mealy
+  Require MooreSemantics MealySemantics Moore2Mealy MooreWF MealyWF. 
+
+From transformations.Moore2Mealy.theorems 
+  Require Import Elements WFStable.
 
 Import String.
+
 
 Section Foo.
 
@@ -21,6 +20,7 @@ Hypothesis WF_4 : MooreWF.WF_transition_target_uniqueness m.
 Hypothesis WF_5 : Moore.WF_transition_target_glue_l_exists m.
 Hypothesis WF_6 : Moore.WF_transition_target_glue_r_exists m.
 Hypothesis WF_7 : MooreWF.state_id_uniqueness m.
+
 
 Lemma getTransition_source_commut_fw t :
   forall s t',
@@ -58,36 +58,35 @@ Proof.
 
   specialize (Mealy.getTransition_source_inv _ _ _ G) ; intro H1.
 
-(* on a déduit que t' est bien dans le modèle transformé m'. *)
+  (* on a déduit que t' est bien dans le modèle transformé m'. *)
 
   unfold Moore.WF_transition_source_glue_l_exists in WF_2.
   cbv zeta in H1.
 
-(*  specialize (WF_2 _ H1).*)
+  (*  specialize (WF_2 _ H1).*)
 
-(*  Soit appeler une tactique BW, soit s'appuyer sur Elements et Links. *)
+  (*  Soit appeler une tactique BW, soit s'appuyer sur Elements et Links. *)
 
-(* Ici on veut un Link/BW *)
+  (* Ici on veut un Link/BW *)
   apply Links.source_link_bw in H1 ; [ | exact WF_S].
 
-(* Si convert_state est injective, alors le s0 qui existe est égal à s. *)
+  (* Si convert_state est injective, alors le s0 qui existe est égal à s. *)
 
   destruct H1 as (s'&E&IN).
   exists s'.
   split.
   + destruct s ; destruct s' ; PropUtils.inj E. reflexivity.
-  +
+  + unfold Moore.getTransition_source, 
+      Moore.getTransition_sourceOnLinks.
     
-    unfold Moore.getTransition_source.
-    unfold Moore.getTransition_sourceOnLinks.
-    
-    match type of IN with List.In (Moore.TransitionSource ?g) _ =>
-                            remember g as g0
+    match type of IN with 
+      List.In (Moore.TransitionSource ?g) _ =>
+        remember g as g0
     end.
+    
     apply OptionUtils.option_map_some. exists g0 ; split ; [ | subst ; reflexivity ].
 
-    apply OptionListUtils.in_find_lift with (e:=Moore.TransitionSource g0) ; [ | reflexivity | subst ; simpl  |  exact IN]
-    .
+    apply OptionListUtils.in_find_lift with (e:=Moore.TransitionSource g0) ; [ | reflexivity | subst ; simpl  |  exact IN].
     shelve.
     destruct t.
     
@@ -116,7 +115,6 @@ Proof.
     destruct l2 ; [ PropUtils.inj G2 |  discriminate ]. 
 
     apply WF_1 ; auto.
-
 Qed.
 
 
@@ -175,8 +173,6 @@ Proof.
         subst t'.
     reflexivity.
   }
-
-
 Qed.
 
 
