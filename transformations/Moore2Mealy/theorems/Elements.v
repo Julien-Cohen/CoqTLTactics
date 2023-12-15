@@ -133,7 +133,7 @@ Proof.
   autounfold with semantics.
   rewrite ListUtils.map_flat_map.
   apply List.in_flat_map.
-  exists ( (Moore.State s) :: nil ).
+  eexists. (*exists ( (Moore.State s) :: nil ).*)
   split.
   + unfold Semantics.allTuples.
     rewrite  <- TupleUtils.tuples_up_to_n_incl_length. split.
