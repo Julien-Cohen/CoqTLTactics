@@ -1,6 +1,6 @@
 # Tactics for CoqTL
 
-We provide here some support (essentially tactics) for user who have built a model transformation with CoqTL and who want to prove some properties on that transformation.
+We provide here some support (essentially tactics) for users who have built a model transformation with CoqTL and who want to prove some properties on that transformation.
 
 ## CoqTL
 
@@ -9,15 +9,15 @@ CoqTL is an internal language in Coq, for writing rule-based model- and graph- t
 ## Organization of the repository 
 
 * `core/` - The CoqTL transformation engine and language (modified).
-  * `properties/` - Properties still proven on the modified core engine. 
+  * `properties/` - Properties (proven) that still hold on the modified core engine. 
 * `usertools/` - Support for user proofs (lemmas and tactics, main contribution).
 * `transformations/` - Sample CoqTL transformations and user proofs.
   * `Moore2Mealy/` - Moore / Mealy metamodels and transformation.
     * `theorems/` - Structural properties on the transformation, and proof of preservation of the semantics.
   * `Moore2MealyALT/` - A simpler version of Moore and Mealy metamodels, which results in simpler proofs (without use of links). 
   * `Class2Relational/` - Class / Relational metamodels and transformation.
-    * `theorems/` - Structural properties proved on this transformation.
-  * `Class2RelationalTUPLES` - variation of Class to Relational, with more complex patterns in rules.
+    * `theorems/` - Structural properties proven on this transformation.
+  * `Class2Relational_TUPLES` - variation of Class to Relational, with more complex patterns in rules.
 * `libs/` - an importer that translates ECore metamodels into Coq. (The sources of the importer are in the [coqtl-model-import](https://github.com/atlanmod/coqtl-model-import) repository.)
 
 
@@ -25,30 +25,30 @@ CoqTL is an internal language in Coq, for writing rule-based model- and graph- t
 
 CoqTL requires a working installation of [Coq](https://coq.inria.fr/) (`coqc`) and Make (`make` and `coq_makefile`). It is tested under Coq 8.17.0 and 8.18.0.
 
-To init CoqTL project (generate the Makefile):
+To init the Makefile:
 ```
-cd coqTL
-./init.sh
+cd coqTLTactics
+sh init.sh
 ```
 ## Usage
-* Run `make proofs` to run the proofs of properties on the two main example transformations (Moore2Mealy and Class2Relational), and their dependancies (in particular, the definition of the transformation engine).
-* Run `make tests` to run the two main example transformations on examples of models and see the output. 
+* Run `make proofs` to run the proofs of properties on the two main examples of transformations (Moore2Mealy and Class2Relational), and their dependancies (in particular, the definition of the transformation engine).
+* Run `make tests` to run the two main examples of transformations on examples of models and see the output. 
 * Run `make` to build all the proofs, including proofs that are not in the previous targets.
 * This builds :
   * Definitions for the transformation language and the transformation engine (adapted from previous work).
   * The lemmas (with their proofs) and tactics we provide for user support (this contribution).
   * Several definitions of metamodels.
   * Several definitions of transformations.
-  * Several properties (with their proofs) of those transformations, some structural and some semantic properties.
+  * Several properties (with their proofs) of those transformations, some structural and some semantics.
   * Several examples of models that conform to the given metamodels. 
   * Several examples of application of the transformations run by the engine on those models.
   * Several properties (with their proofs) of the transformation engine, such as additivity which still hold after refactoring of the the engine (adapted from previous work).
 * Run `make html` to build a navigable HTML version of the source code. HTML code is generated in the `html` directory.
 * Each build takes less than a minute on a machine with 4 cores (make -j 4), less than 3 minutes in a vritual machine with 1 core.
-* To run proofs interactively, open the file you want in your IDE (works with `coqide` without any additional configuration, also works with Emacs/ProofGeneral and VSCode/VsCoq).
+* To run proofs interactively, open the file you want in your IDE (works with `coqide` without any additional configuration, also works with Emacs/ProofGeneral and VSCode/VsCoq if installed).
 
 Try your own transformations: 
-* If you have an ECore file mymetamodel.ecore you want to translate into a CoqTL metamodel, run `make mymetamodel.v` . The generated coq file conforms to the Metametamodel on which CoqTL rely. (That generator is not a contribution of this work.) 
+* If you have an ECore file mymetamodel.ecore and you want to translate it into a CoqTL metamodel, run `make mymetamodel.v` . The generated coq file conforms to the Metametamodel on which CoqTL rely. (That generator is a proof of concept, not a contribution of this work, it still contains some bugs.) 
 * To explore the construction of a model transformation, add your files in the `_CoqProject` file and run `./init.sh`, then `make`.
     
 ## Contributors and Previous Publications
