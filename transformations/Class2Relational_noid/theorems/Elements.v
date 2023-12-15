@@ -57,7 +57,8 @@ Proof.
 
     exists ([AttributeElement {| Attribute_derived := false; Attribute_name := name |}]).
     split.
-    + apply Certification.allTuples_incl_length.
+    + unfold allTuples.
+        rewrite  <- TupleUtils.tuples_up_to_n_incl_length. split. 
       * unfold incl.
         intros.
         apply in_inv in H.
