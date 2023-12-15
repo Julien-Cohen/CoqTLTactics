@@ -1,7 +1,6 @@
 (** Generic type for Links *)
 
 Record Glue A B := { src : A ; trg : B}.
-Scheme Equality for Glue. (* Never used ? *)
 
 Arguments src {A} {B}.
 Arguments trg {A} {B}.

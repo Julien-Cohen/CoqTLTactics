@@ -1,12 +1,10 @@
-Require Moore2Mealy.MooreSemantics.
-Require Moore2Mealy.MealySemantics.
-Require Moore2Mealy.Moore2Mealy.
-Require Moore2Mealy.MooreWF.
-Require Moore2Mealy.MealyWF.
-Require Moore2Mealy.theorems.Elements.
-Require Moore2Mealy.theorems.WFStable.
-Require Moore2Mealy.theorems.InitStable.
-Require Moore2Mealy.theorems.GettersCommut.
+(** Intermediate result for proof of preservation of semantics for the CoqTL Moore to Mealy transformation. *) 
+
+From transformations.Moore2Mealy
+  Require MooreSemantics MealySemantics Moore2Mealy MooreWF MealyWF.
+
+From transformations.Moore2Mealy.theorems 
+  Require Elements WFStable InitStable GettersCommut.
 
 Import String OptionUtils.
 

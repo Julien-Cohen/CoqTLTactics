@@ -151,7 +151,7 @@ Proof.
     destruct G1 as (G11 & G12).
     unfold ModelingSemantics.resolve.
     rewrite G11.
-    TacticUtils.first_in_list.
+    ChoiceTools.first_in_list.
 Qed.
 
      

@@ -1,3 +1,5 @@
+(** For reference only, no CoqTL inside. *)
+
 (*
  * In this file, I try a different fix for moore semantics.
  * Changes: 
@@ -6,7 +8,7 @@
  * - change semantics of moore machine according to wiki,
      i.e. output current node, then take inputs
  * - reformulate compilation correctness theorem
- * - some naming convension in this file
+ * - some naming conventions in this file
      1) surfix xM for mealy machine
      2) mkX for constructors
      3) use ' symbol to represent a tailing list

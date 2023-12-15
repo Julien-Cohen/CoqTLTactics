@@ -1,19 +1,15 @@
 Require Import core.Semantics.
-Import Metamodel Model.
 
-Import NotationUtils.
-Import List.
-
-Import core.TransformationConfiguration.
+Import 
+  Metamodel Model NotationUtils List core.TransformationConfiguration.
 
 From usertools 
-  Require SemanticsTools TacticUtils.
+  Require SemanticsTools ChoiceTools Backtracking.
 
 (** * FW Tactics on traces *)
 
 (** ** Tactics that fully unfold [In _ compute_trace _ _] and solve easy goals. *) 
-
- Ltac in_compute_trace_inv_singleton_fw r_num pat_num :=
+Ltac in_compute_trace_inv_singleton_fw r_num pat_num :=
   match goal with 
   | [ |- List.In _ (compute_trace ?T _)] => 
       apply <- SemanticsTools.in_compute_trace_inv ; 
@@ -28,17 +24,17 @@ From usertools
       (* Begin with goals that do not need backtracking. *)
       
       (* Fix the rule under concern following user hint *)
-      only 3 : solve [TacticUtils.rule_number r_num] (* no backtrack needed *) ;
+      only 3 : solve [ChoiceTools.rule_number r_num] (* no backtrack needed *) ;
 
       (* Fix the output pattern in the rule following user hint *)
-      only 5 : solve [TacticUtils.pattern_number pat_num] ;
+      only 5 : solve [ChoiceTools.pattern_number pat_num] ;
 
       (* Fix the source piece using the context (singleton version) *)
       only 1 : apply ListUtils.incl_singleton ;
-      only 1 : TacticUtils.multi_eassumption (* backtrack point *); 
+      only 1 : Backtracking.multi_eassumption (* backtrack point *); 
 
       (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
-      only 2 : (* guard *) TacticUtils.fail_on_type_mismatch ; 
+      only 2 : (* guard *) Backtracking.fail_on_type_mismatch ; 
 
       (* Solve remaining simple goals : arity and iteration-counter *)
       only 1 : solve [simpl ; auto] ; 
@@ -50,7 +46,7 @@ From usertools
       try reflexivity (* solve "simple" evalGuard & make_element goals *)
   end.
 
-(* Variant for pair patterns *)
+(** Variant for pair patterns *)
 Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
   match goal with 
   | [ |- List.In _ (compute_trace ?T _)] => 
@@ -66,18 +62,18 @@ Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
       (* Begin with goals that do not need backtracking. *)
       
       (* Fix the rule under concern following user hint *)
-      only 3 : solve [TacticUtils.rule_number r_num] ;
+      only 3 : solve [ChoiceTools.rule_number r_num] ;
       
       (* Fix the output pattern in the rule following user hint *)
-      only 5 : solve [TacticUtils.pattern_number pat_num] ;
+      only 5 : solve [ChoiceTools.pattern_number pat_num] ;
       
       (* Fix the source piece using the context (pair version) *)
       only 1 : (apply ListUtils.incl_pair ; split)  ;
-      only 1 : TacticUtils.multi_eassumption (* backtrack point *);
-      only 1 : TacticUtils.multi_eassumption (* backtrack point *); 
+      only 1 : Backtracking.multi_eassumption (* backtrack point *);
+      only 1 : Backtracking.multi_eassumption (* backtrack point *); 
       
       (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
-      only 2 : TacticUtils.fail_on_type_mismatch ;
+      only 2 : Backtracking.fail_on_type_mismatch ;
       
       (* Solve remaining simple goals : arity and iteration-counter *)
       only 1 : solve [compute ; auto] ;
@@ -90,7 +86,7 @@ Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
   end.
 
 
-(* Variant that tries to guess the rule and the pattern *)
+(** Variant that tries to guess the rule and the pattern *)
 Ltac in_compute_trace_inv_singleton_fw_auto := 
   apply <- SemanticsTools.in_compute_trace_inv ;
   split ; 
@@ -103,17 +99,17 @@ Ltac in_compute_trace_inv_singleton_fw_auto :=
   
   
   (* Fix the rule under concern (try and backtrack) *)
-  only 3: (TacticUtils.first_rule + TacticUtils.second_rule) ;
+  only 3: (ChoiceTools.first_rule + ChoiceTools.second_rule) ;
   
   (* Fix the output pattern in the rule (try and backtrack) *)
-  only 5 : (TacticUtils.first_in_list + TacticUtils.second_in_list) ;
+  only 5 : (ChoiceTools.first_in_list + ChoiceTools.second_in_list) ;
   
   (* Fix the source piece using the context (singleton version) *)
   only 1 : apply ListUtils.incl_singleton ;
-  only 1 : TacticUtils.multi_eassumption (* backtrack point *); 
+  only 1 : Backtracking.multi_eassumption (* backtrack point *); 
  
   (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
-  only 2 : TacticUtils.fail_on_type_mismatch ;
+  only 2 : Backtracking.fail_on_type_mismatch ;
 
   (* Solve remaining simple goals : arity and iteration-counter *)
   only 1 : solve [simpl; auto] ;
@@ -180,7 +176,7 @@ Ltac transform_link_fw_tac_singleton r_num pat_num i :=
         parse ConcreteOutputPatternUnit_accessors opu_accessors 
   end.
 
-(* Variant where the first rule that don't lead to an error is selected instead of relying on an user hint. *)
+(** Variant where the first rule that don't lead to an error is selected instead of relying on an user hint. *)
 Ltac transform_link_fw_tac_singleton_auto i :=
   match goal with
     [ |- In _ (execute _ _).(modelLinks) ] =>
@@ -195,7 +191,7 @@ Ltac transform_link_fw_tac_singleton_auto i :=
   
       (* Fail if one of the goal reduces to False 
          (trigger backtracking)                   *)
-      TacticUtils.fail_on_False ;   
+      Backtracking.fail_on_False ;   
   
       autounfold with 
         parse ConcreteOutputPatternUnit_accessors opu_accessors         

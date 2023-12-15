@@ -1,7 +1,9 @@
 
-Require Import Moore2Mealy.Mealy Moore2Mealy.MealySemantics. 
-Import String.
-Import Id Glue.
+From transformations.Moore2Mealy 
+  Require Import Mealy MealySemantics. 
+
+Import String Id Glue.
+
 
 Definition state_id_uniqueness (m:M) := 
   forall e1 e2,
@@ -59,7 +61,6 @@ Proof.
 Qed.
 
 
-
 (** A transition starts at only one state. *)
 Definition WF_transition_source_uniqueness (m:Mealy.M) : Prop :=
       forall lk1 lk2,
@@ -97,7 +98,6 @@ Proof.
   2:{ subst lk ; reflexivity. }
   subst lk.
   eapply OptionListUtils.in_find_lift.
-
   {
     intro ; intros.
     apply internal_Transition_t_dec_bl in H3.
@@ -111,10 +111,10 @@ Proof.
     instantiate (1:=TransitionSource {| src := t; trg := s |}). 
     reflexivity.
   }        
-
   { apply internal_Transition_t_dec_lb. reflexivity. }
   { assumption. }
 Qed.
+
 
 Lemma getTransition_target_some (m:Mealy.M):
   WF_transition_target_uniqueness m ->
@@ -148,7 +148,6 @@ Proof.
   { instantiate (1:=TransitionTarget {| src := t; trg := s |}). 
     reflexivity.
   }        
-
   { apply internal_Transition_t_dec_lb. reflexivity. }
   { assumption. }
 Qed.
@@ -164,7 +163,7 @@ Definition determinist m :=
       t1 = t2.
 
 
-Lemma truc m :
+Lemma wf_discr m :
   determinist m ->
   WF_transition_source_glue_r_exists m ->
   forall s i,
@@ -208,7 +207,7 @@ Proof.
   intros.
   unfold State_acceptTransition.
   apply ListUtils.in_find.
-  { apply truc ; assumption. }
+  { apply wf_discr ; assumption. }
   { apply String.eqb_eq. auto. }
   { assumption. }
 Qed.

@@ -35,10 +35,10 @@ Proof.
     subst rm.
     TacticsFW.transform_element_fw_tac.
     destruct a ; simpl in H1 ; subst.
-    TacticUtils.first_in_list.
+    ChoiceTools.first_in_list.
 Qed.
 
-(* From previous work *)
+(* Without new tactics *)
 Theorem Attribute_name_preservation_no_tactics:
     forall (rm : RelationalModel) (cm: ClassModel),
         (* transformation *)
@@ -58,7 +58,8 @@ Proof.
       apply <- tr_execute_in_elements.
       exists ([AttributeElement a]).
       split.
-      + apply allTuples_incl_length.
+      + unfold allTuples.
+        rewrite  <- TupleUtils.tuples_up_to_n_incl_length. split.
         * unfold incl.
           intros.
           apply in_inv in H2.

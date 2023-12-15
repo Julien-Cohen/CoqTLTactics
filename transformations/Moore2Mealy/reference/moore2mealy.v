@@ -1,9 +1,4 @@
-(*
- * - change the definitions of moore and mealy machine for proofs
- * - write moore2mealy model transformation use a single function
- * - prove its correctness
- *)
-
+(** For reference. A proof of correctness of a Moore to Mealy transformation that does not involve CoqTL. *)
 
 Require Import List.
 Require Import Coq.Arith.EqNat.

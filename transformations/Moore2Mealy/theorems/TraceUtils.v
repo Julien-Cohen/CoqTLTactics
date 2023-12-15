@@ -1,14 +1,11 @@
-Require Moore2Mealy.theorems.Elements.
+Require 
+  Moore2Mealy.theorems.Elements.
 
-Import List Model String.
-Import NotationUtils Semantics.
-Import PoorTraceLink.
-
-Import Moore2Mealy.
+Import 
+  List Model String NotationUtils Semantics PoorTraceLink Moore2Mealy  NotationUtils Semantics.
 
 (** Utilities on traces built by the Moore2Mealy transformation.
     In particular, all the results on [resolve], which appears in the code of the M2M transformation, rely on traces. *)
-
 
 
 (** We can statically know what each State will yield in the trace: *)
@@ -29,13 +26,8 @@ Qed.
 
 
 (** Discrminating predicate to switch between [List.In] and [List.find]. 
-
 We need to deal with List.find because it is used in the definition of Resolve.
 *)
-
-Import NotationUtils.
-Import Semantics.
-
 
 Lemma discr m:
   forall s : list Moore.Element * nat * string,
@@ -77,7 +69,6 @@ Lemma in_find m :
             produced := Mealy.State (Moore2Mealy.convert_state c)
           |}.
 Proof.
-
   intros c H.
   apply ListUtils.in_find.
   { apply discr. }
@@ -87,13 +78,11 @@ Proof.
     simpl.    
     rewrite Metamodel.beq_refl ; reflexivity.
   }
-
   { exact H. }
-
 Qed.            
 
 
-(* Resolve is a lookup in the trace. Resolve is called from the user defined transformation. *)
+(** Resolve is a lookup in the trace. Resolve is called from the user defined transformation. *)
 
 Local Lemma in_trace_resolve m s : 
   In {| 
@@ -114,16 +103,10 @@ Proof.
 Qed.
 
 
-
-
-
 Lemma in_model_resolve s (m : Moore.M) :
-  
   In (Moore.State s) m.(modelElements) -> 
-  
   Resolve.resolve (TraceLink.drop (compute_trace Moore2Mealy m)) "s" [Moore.State s]  =  
-    Some (Mealy.State (Moore2Mealy.convert_state s)) 
-  .
+    Some (Mealy.State (Moore2Mealy.convert_state s)).
 Proof.
   intro H.
   unfold Resolve.resolve.
