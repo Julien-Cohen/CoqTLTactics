@@ -81,7 +81,21 @@ Ltac evalGuard_inv_tac H :=
 
 
 
+(* Application of SemanticsTools.in_modelLinks_inv leaves an hypothesis [In l
+            (apply_link_pattern (compute_trace tr sm) sm
+               {|
+                 TraceLink.source := (s, i, n);
+                 TraceLink.produced := res;
+                 TraceLink.linkPattern := lp
+               |})] 
 
+This apply_link_pattern is the code that builds a new link, based on the user code [lp],  the computed trace, the source model, the source piece (pattern instance) and the  produced element). 
+
+               This tactic unfolds all the engine mechanisms in the hypothesis until we can see the result of the application of the given [lp] user function.
+               
+               This tactics leaves the hypothesis for further manipulation after that. (In the general case, we do not know the form of the user code)
+
+*)
 Ltac exploit_In_apply_link H :=
   match type of H with 
     In _ (Semantics.apply_link_pattern (Semantics.compute_trace _ _) _ _) =>
@@ -224,3 +238,4 @@ Ltac exploit_link_in_result IN :=
       (* 3: exploit link creation code *)
       exploit_In_apply_link IN_L
   end.
+
