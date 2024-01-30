@@ -9,17 +9,16 @@ From usertools
 (** * FW Tactics on traces *)
 
 (** ** Tactics that fully unfold [In _ compute_trace _ _] and solve easy goals. *) 
+
+(** This version, for rules with singleton patterns, takes as parameter the index of the rule and the index of the output pattern in that rule. *)
 Ltac in_compute_trace_inv_singleton_fw r_num pat_num :=
   match goal with 
   | [ |- List.In _ (compute_trace ?T _)] => 
-      apply <- SemanticsTools.in_compute_trace_inv ; 
-      split ; 
-      [ | split ;
-          [ | eexists ; split ; 
-              [ | split ; 
-                  [ | split ;
-                      [ | eexists ; split 
-                          ; [ | ]]]]]] ; 
+     
+      SemanticsTools.in_compute_trace_inv_tac ;
+
+      (* 7 goals *)
+      [ | | | | | | ] ;
       
       (* Begin with goals that do not need backtracking. *)
       
@@ -30,34 +29,145 @@ Ltac in_compute_trace_inv_singleton_fw r_num pat_num :=
       only 5 : solve [ChoiceTools.pattern_number pat_num] ;
 
       (* Fix the source piece using the context (singleton version) *)
-      only 1 : apply ListUtils.incl_singleton ;
-      only 1 : Backtracking.multi_eassumption (* backtrack point *); 
+      only 1 : 
+        (apply ListUtils.incl_singleton ;
+         Backtracking.multi_eassumption (* backtrack point *)) ; 
+
 
       (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
       only 2 : (* guard *) Backtracking.fail_on_type_mismatch ; 
 
       (* Solve remaining simple goals : arity and iteration-counter *)
-      only 1 : solve [simpl ; auto] ; 
-      only 2 : solve [simpl ; auto] ;
+      only 1 : reflexivity ; 
+      only 2 : solve [simpl ; auto (* left ; reflexivity *) ] ;
 
-      (* The two remaining goal rely on user expressions and can be arbitrary difficult to prove *)
+      (* The two remaining goals rely on user expressions and can be arbitrary difficult to prove *)
       only 1 : (* guard *) simpl ;
       only 2 : (* make_element *) simpl ;
       try reflexivity (* solve "simple" evalGuard & make_element goals *)
+  end. (* problem : does not always choose the correct assumption *)
+
+(* The choice of the correct assumption is an additional choice, after the choice of the correct rule and of the correct out-patter of the rule (and the choice of the iteration counter). Can we set this choice as a parameter of the tactic, and after that add a tactic that searches for the correct parameter ? *)
+
+(*Ltac in_compute_trace_inv_singleton_fw_solve_2 r_num pat_num :=
+  match goal with 
+  | [ |- List.In _ (compute_trace ?T _)] => 
+     
+      SemanticsTools.in_compute_trace_inv_tac_2 ;
+
+      (* 7 goals *)
+      [ | | | | | | ]  ;
+      
+      (* Begin with goals that do not need backtracking. *)
+      
+      (* Fix the rule under concern following user hint *)
+      only 1 : solve [ChoiceTools.rule_number r_num] (* no backtrack needed *) ;
+
+      (* Fix the output pattern in the rule following user hint *)
+      only 1 : solve [ChoiceTools.pattern_number pat_num] ;
+
+      (* Fix the source piece using the context (singleton version) *)
+      only 1 : 
+        (apply ListUtils.incl_singleton ;
+         Backtracking.multi_eassumption (* backtrack point *)) ; 
+
+
+      (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
+      only 1 : (* guard *) (Backtracking.fail_on_type_mismatch ; reflexivity) ;
+      
+
+      (* Solve remaining simple goals : arity and iteration-counter *)
+      only 1 : reflexivity (* arity *) ; 
+      only 1 : solve [simpl ; auto (* left ; reflexivity *) ] ;
+(*
+      (* The two remaining goals rely on user expressions and can be arbitrary difficult to prove *)
+      only 1 : (* guard *) simpl ;*)
+      only 1 : (* make_element *) 
+       reflexivity (* solve "simple" evalGuard & make_element goals *)
+  end. *)
+
+(* Tactic with reordered subgoals so that the numbering is not necessary*)
+Ltac in_compute_trace_inv_singleton_fw_solve_reordered r_num pat_num :=
+  match goal with 
+  | [ |- List.In _ (compute_trace ?T _)] => 
+     
+      SemanticsTools.in_compute_trace_inv_tac_reordered ;
+
+      (* 7 goals *)
+      [ | | | | | | ]  ;
+      
+      (* Begin with goals that do not need backtracking. *)
+      
+      (* Fix the rule under concern following user hint *)
+      [ solve [ChoiceTools.rule_number r_num] (* no backtrack needed *) 
+
+      (* Fix the output pattern in the rule following user hint *)
+      | solve [ChoiceTools.pattern_number pat_num] 
+
+      (* Fix the source piece using the context (singleton version) *)
+      | apply ListUtils.incl_singleton ;
+         Backtracking.multi_eassumption (* backtrack point *) 
+
+
+      (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
+      | (* guard *) reflexivity 
+      
+
+      | reflexivity (* arity *)  
+      | solve [simpl ; auto ] (* iteration-counter *) 
+        
+      | reflexivity (* make_element *)
+] 
+  end. 
+
+
+
+Ltac in_compute_trace_inv_singleton_fw_solve r_num pat_num :=
+  match goal with 
+  | [ |- List.In _ (compute_trace ?T _)] => 
+     
+      SemanticsTools.in_compute_trace_inv_tac ;
+
+      (* 7 goals *)
+      [ | | | | | | ] ;
+      
+      (* Begin with goals that do not need backtracking. *)
+      
+      (* Fix the rule under concern following user hint *)
+      only 3 : solve [ChoiceTools.rule_number r_num] (* no backtrack needed *) ;
+
+      (* Fix the output pattern in the rule following user hint *)
+      only 5 : solve [ChoiceTools.pattern_number pat_num] ;
+
+      (* Fix the source piece using the context (singleton version) *)
+      only 1 : 
+        ( apply ListUtils.incl_singleton ;
+          Backtracking.multi_eassumption (* backtrack point *) ) ; 
+
+      (* FIXME : set a unit test that need backtracking here. *)
+
+      (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
+      only 2 : (* guard *) Backtracking.fail_on_type_mismatch ; 
+
+      (* Solve remaining simple goals : arity and iteration-counter *)
+      only 1 : reflexivity ; 
+      only 2 : solve [simpl ; auto] ;
+
+      (* The two remaining goals rely on user expressions and can be arbitrary difficult to prove *)
+      only 1 : (* guard *) simpl ;
+      only 2 : (* make_element *) simpl ;
+      reflexivity (* solve evalGuard & make_element goals *)
   end.
 
 (** Variant for pair patterns *)
 Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
   match goal with 
   | [ |- List.In _ (compute_trace ?T _)] => 
-      apply <- SemanticsTools.in_compute_trace_inv ; 
-      split ; 
-      [ | split ; 
-          [ | eexists ; split ; 
-              [ | split ; 
-                  [ | split ; 
-                      [ | eexists ; split ; 
-                          [ | ]]]]]] ;
+      
+      SemanticsTools.in_compute_trace_inv_tac ;
+
+      (* 7 goals *)
+      [ | | | | | | ] ;
       
       (* Begin with goals that do not need backtracking. *)
       
@@ -68,18 +178,19 @@ Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
       only 5 : solve [ChoiceTools.pattern_number pat_num] ;
       
       (* Fix the source piece using the context (pair version) *)
-      only 1 : (apply ListUtils.incl_pair ; split)  ;
-      only 1 : Backtracking.multi_eassumption (* backtrack point *);
-      only 1 : Backtracking.multi_eassumption (* backtrack point *); 
+      only 1 : 
+        ( apply ListUtils.incl_pair ; split ;
+          Backtracking.multi_eassumption (* two backtrack points *) ) ;
+
       
       (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
       only 2 : Backtracking.fail_on_type_mismatch ;
       
       (* Solve remaining simple goals : arity and iteration-counter *)
-      only 1 : solve [compute ; auto] ;
+      only 1 : reflexivity ;
       only 2 : solve [compute ; auto] ;
       
-      (* The two remaining goal rely on user expressions and can be arbitrary difficult to prove *)
+      (* The two remaining goals rely on user expressions and can be arbitrary difficult to prove *)
       only 1 : simpl ;
       only 2 : simpl ;
       try reflexivity
@@ -88,15 +199,10 @@ Ltac in_compute_trace_inv_pair_fw r_num pat_num :=
 
 (** Variant that tries to guess the rule and the pattern *)
 Ltac in_compute_trace_inv_singleton_fw_auto := 
-  apply <- SemanticsTools.in_compute_trace_inv ;
-  split ; 
-  [ (*1*) | split ; 
-    [ (* 2 *) |  eexists ; split ; 
-       [ (* 3 *) | split ;
-         [(* 4 *) | split ;
-           [ (* 5 *) |  eexists ; split ; 
-              [ (*6*) | (*7*)] ]]] ] ] ;
-  
+  SemanticsTools.in_compute_trace_inv_tac ;
+
+  (* 7 goals *)
+  [ | | | | | | ] ;
   
   (* Fix the rule under concern (try and backtrack) *)
   only 3: (ChoiceTools.first_rule + ChoiceTools.second_rule) ;
@@ -105,17 +211,18 @@ Ltac in_compute_trace_inv_singleton_fw_auto :=
   only 5 : (ChoiceTools.first_in_list + ChoiceTools.second_in_list) ;
   
   (* Fix the source piece using the context (singleton version) *)
-  only 1 : apply ListUtils.incl_singleton ;
-  only 1 : Backtracking.multi_eassumption (* backtrack point *); 
+  only 1 : 
+    ( apply ListUtils.incl_singleton ;
+      Backtracking.multi_eassumption (* backtrack point *) ); 
  
   (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
   only 2 : Backtracking.fail_on_type_mismatch ;
 
   (* Solve remaining simple goals : arity and iteration-counter *)
-  only 1 : solve [simpl; auto] ;
+  only 1 : reflexivity ;
   only 2 : solve [simpl; auto] ;  
 
-  (* The two remaining goal rely on user expressions and can be arbitrary difficult to prove *)
+  (* The two remaining goals rely on user expressions and can be arbitrary difficult to prove *)
   only 1 : simpl ;
   only 2 : simpl ;
   try reflexivity.

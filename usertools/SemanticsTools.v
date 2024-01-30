@@ -86,7 +86,7 @@ Proof.
   setoid_rewrite in_flat_map. (* traceRuleOnPiece *)
   setoid_rewrite in_flat_map. (* traceIterationOnPiece *)
   setoid_rewrite filter_In.   (* matchingRules *)
-  setoid_rewrite  in_optionToList.
+  setoid_rewrite in_optionToList.
   unfold traceElementOnPiece.
 
   setoid_rewrite in_allTuples_incl.
@@ -110,6 +110,78 @@ Proof.
 Qed.    
 
 
+(** Apply the lemma above and split the resulting conjunction into 7 sub-goals *)
+Ltac in_compute_trace_inv_tac :=
+
+  (* pre-condition *)
+  match goal with 
+  | [ |- List.In _ (compute_trace ?T _)] =>
+
+      (* Action 1 *)
+      apply <- SemanticsTools.in_compute_trace_inv ; 
+      
+      (* Action 2 : split the conjunction *)
+      split ; [ 
+      | split ; [ 
+        | eexists ; split ; [ 
+          | split ; [ 
+            | split ; [ 
+              | eexists ; split ; [ | ]]]]]] ;
+      
+      (* Post-condition : 7 goals *)
+      [ | | | | | | ]
+  end.
+    
+(** Variant of the previous lemma with reordered terms in the conjuntion. This should be easier to use in tactics (solving terms from left to right instantiates evars in a convenient way to enable backtracking). *)
+Lemma in_compute_trace_inv_reordered {tc : TransformationConfiguration} tr sm :
+  forall s i n res l,
+  In 
+    {| source := (s, i, n); produced := res ; linkPattern := l |}
+    (compute_trace tr sm) 
+  <-> 
+    exists r : Rule,
+      In r tr.(rules)
+                
+      /\ exists opu_el,
+        In {| opu_name := n ; opu_element := opu_el ; opu_link := l |} r.(r_outputPattern)
+        /\ incl s (modelElements sm) 
+        /\ UserExpressions.evalGuard r sm s = true 
+        /\ length s <= tr.(arity)
+        /\ In i (seq 0 (UserExpressions.evalIterator r sm s))        
+        /\  opu_el i sm s = Some res.
+Proof.
+  intros .
+  split ; intro H.
+  + apply in_compute_trace_inv in H.
+    destruct H as (?&?&?&?&?&?&?&?&?).
+    eauto 10.
+  + apply in_compute_trace_inv.
+    destruct H as (?&?&?&?&?&?&?&?&?).
+    eauto 10.
+Qed.
+
+
+Ltac in_compute_trace_inv_tac_reordered :=
+
+  (* pre-condition *)
+  match goal with 
+  | [ |- List.In _ (compute_trace ?T _)] =>
+
+      (* Action 1 *)
+      apply <- SemanticsTools.in_compute_trace_inv_reordered ; 
+      
+      (* Action 2 : split the conjunction *)
+      eexists ; split ; [ 
+      | eexists ; split ; [ 
+        | split ; [ 
+          | split ; [ 
+            | split ; [ 
+              | split ; [ | ]]]]]] ;
+      
+      (* Post-condition : 7 goals *)
+      [ | | | | | | ]
+  end.
+ 
 (** * On [modelElements] *)
 
 Lemma in_modelElements_inv {tc:TransformationConfiguration} tr sm :

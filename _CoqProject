@@ -3,6 +3,7 @@ INSTALLDEFAULTROOT = .
 -R core core
 -R transformations transformations
 -R usertools usertools
+-R TacticUnitTest TacticUnitTest
 
 core/utils/CpdtTactics.v
 core/utils/NotationUtils.v
@@ -52,17 +53,11 @@ usertools/ChoiceTools.v
 usertools/Backtracking.v
 
 
-# Engine variants
+# Unit Tests 
 
-#core/modeling/twophases/TwoPhaseEngine.v
-#core/modeling/twophases/TwoPhaseSemantics.v
-#core/modeling/twophases/TwoPhaseCertification.v
-
-#core/modeling/iteratetraces/IterateTracesSemantics.v
-#core/modeling/iteratetraces/IterateTracesCertification.v
-
-#core/modeling/byrule/ByRuleSemantics.v
-#core/modeling/byrule/Certification_ByRuleSemantics.v\
+TacticUnitTest/BasicMetamodel.v
+TacticUnitTest/IdTransformation.v
+TacticUnitTest/TacticTest.v
 
 # User transformations
 
