@@ -36,7 +36,7 @@ Proof.
   eexists.
   
   split.
-  + TacticsFW.in_modelElements_pair_fw_tac 2 1 0.
+  + TacticsFW.in_modelElements_pair_fw_tac 2 1 0 H0 H1.
     unfold ConcreteExpressions.makeGuard.
     unfold ConcreteExpressions.wrap.
     
@@ -46,5 +46,5 @@ Proof.
     rewrite H3.
     simpl.
     apply internal_Class_t_dec_lb ; auto.
-  +reflexivity.
+  + reflexivity.
 Qed.

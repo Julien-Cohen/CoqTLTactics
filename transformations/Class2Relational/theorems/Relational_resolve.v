@@ -132,7 +132,7 @@ Proof.
   exists{| Table_id := r.(Class_id); Table_name := r.(Class_name) |}.
 
 (* Alternative *)
-  TacticsFW.transform_link_fw_tac_singleton 2 1 0 ; []. 
+  TacticsFW.transform_link_fw_tac_singleton 2 1 0 IN_ELTS0; []. 
 (*  TacticsFW.transform_link_fw_tac_singleton_auto 0 ; []. *)
 
     simpl. 

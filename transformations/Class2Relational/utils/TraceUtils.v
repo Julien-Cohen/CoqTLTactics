@@ -50,7 +50,7 @@ Proof.
 
   eexists.
   simpl. 
-  TacticsFW.in_compute_trace_inv_singleton_fw 1 1.
+  TacticsFW.in_compute_trace_inv_singleton_fw 1 1 IN1.
 Qed.
 
 

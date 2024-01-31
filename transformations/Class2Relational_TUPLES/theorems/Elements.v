@@ -35,7 +35,7 @@ Proof.
   intros cm rm H ; subst.
   intros i n i2 n2 H1 H2 H3.
 
-  TacticsFW.in_modelElements_pair_fw_tac 2 1 0 ; [].
+  TacticsFW.in_modelElements_pair_fw_tac 2 1 0 H1 H2 ; [].
 
   (* complex guard *) 
   unfold ConcreteExpressions.makeGuard.

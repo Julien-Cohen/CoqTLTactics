@@ -109,30 +109,7 @@ Proof.
     reflexivity.
 Qed.    
 
-
-(** Apply the lemma above and split the resulting conjunction into 7 sub-goals *)
-Ltac in_compute_trace_inv_tac :=
-
-  (* pre-condition *)
-  match goal with 
-  | [ |- List.In _ (compute_trace ?T _)] =>
-
-      (* Action 1 *)
-      apply <- SemanticsTools.in_compute_trace_inv ; 
-      
-      (* Action 2 : split the conjunction *)
-      split ; [ 
-      | split ; [ 
-        | eexists ; split ; [ 
-          | split ; [ 
-            | split ; [ 
-              | eexists ; split ; [ | ]]]]]] ;
-      
-      (* Post-condition : 7 goals *)
-      [ | | | | | | ]
-  end.
-    
-(** Variant of the previous lemma with reordered terms in the conjuntion. This should be easier to use in tactics (solving terms from left to right instantiates evars in a convenient way to enable backtracking). *)
+(** Variant of the previous lemma with reordered terms in the conjuntion. This should be easier to use in tactics (solving terms from left to right instantiates evars in a convenient way ; for instance, if s is an evar, instanciating the rule helps to fix the type of s, to that there is a smaller choice to instanciate s). *)
 Lemma in_compute_trace_inv_reordered {tc : TransformationConfiguration} tr sm :
   forall s i n res l,
   In 
@@ -161,7 +138,8 @@ Proof.
 Qed.
 
 
-Ltac in_compute_trace_inv_tac_reordered :=
+(** Apply the lemma above and split the resulting conjunction into 7 sub-goals *)
+Ltac in_compute_trace_inv_tac :=
 
   (* pre-condition *)
   match goal with 

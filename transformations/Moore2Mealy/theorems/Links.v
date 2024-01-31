@@ -51,11 +51,8 @@ Proof.
     intro IN_TRACE.
 
 
-  (* Remark : the FW tactic below works if we invert the position of IN_S and IN_T in the context, thanks to the use of multimatch in the tactic. Comment/uncomment the following line to explore this. *)
-  move IN_T after IN_S.
 
-  (*  TacticsFW.transform_link_fw_tac_singleton 2 1 0 ; [ | ].*) 
-  TacticsFW.transform_link_fw_tac_singleton_auto 0. 
+    TacticsFW.transform_link_fw_tac_singleton 2 1 0 IN_T ; [ | ]. 
 
   { (* eval output pattern *)
     simpl. 
@@ -144,8 +141,8 @@ Proof.
 
   specialize (TraceUtils.state_in_trace m s1 IN_S) ; intro INTRACE.
 
-  (*  TacticsFW.transform_link_fw_tac_singleton 2 1 0 ; [ | ].*)
-  TacticsFW.transform_link_fw_tac_singleton_auto  0 ; [ | ].
+  TacticsFW.transform_link_fw_tac_singleton 2 1 0 IN_T ; [ | ].
+
 
   { (* eval output pattern *)
     simpl.
