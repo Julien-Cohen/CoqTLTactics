@@ -49,44 +49,8 @@ Ltac in_compute_trace_inv_singleton_fw r_num pat_num :=
 
 (* The choice of the correct assumption is an additional choice, after the choice of the correct rule and of the correct out-patter of the rule (and the choice of the iteration counter). Can we set this choice as a parameter of the tactic, and after that add a tactic that searches for the correct parameter ? *)
 
-(*Ltac in_compute_trace_inv_singleton_fw_solve_2 r_num pat_num :=
-  match goal with 
-  | [ |- List.In _ (compute_trace ?T _)] => 
-     
-      SemanticsTools.in_compute_trace_inv_tac_2 ;
 
-      (* 7 goals *)
-      [ | | | | | | ]  ;
-      
-      (* Begin with goals that do not need backtracking. *)
-      
-      (* Fix the rule under concern following user hint *)
-      only 1 : solve [ChoiceTools.rule_number r_num] (* no backtrack needed *) ;
-
-      (* Fix the output pattern in the rule following user hint *)
-      only 1 : solve [ChoiceTools.pattern_number pat_num] ;
-
-      (* Fix the source piece using the context (singleton version) *)
-      only 1 : 
-        (apply ListUtils.incl_singleton ;
-         Backtracking.multi_eassumption (* backtrack point *)) ; 
-
-
-      (* Check that the instantiation made at the previous step is type-safe, otherwise backtrack. *)
-      only 1 : (* guard *) (Backtracking.fail_on_type_mismatch ; reflexivity) ;
-      
-
-      (* Solve remaining simple goals : arity and iteration-counter *)
-      only 1 : reflexivity (* arity *) ; 
-      only 1 : solve [simpl ; auto (* left ; reflexivity *) ] ;
-(*
-      (* The two remaining goals rely on user expressions and can be arbitrary difficult to prove *)
-      only 1 : (* guard *) simpl ;*)
-      only 1 : (* make_element *) 
-       reflexivity (* solve "simple" evalGuard & make_element goals *)
-  end. *)
-
-(* Tactic with reordered subgoals so that the numbering is not necessary*)
+(* Tactic with reordered subgoals so that the numbering is not necessary. *)
 Ltac in_compute_trace_inv_singleton_fw_solve_reordered r_num pat_num :=
   match goal with 
   | [ |- List.In _ (compute_trace ?T _)] => 
@@ -332,6 +296,9 @@ Qed.
 Ltac transform_element_fw_tac :=
   match goal with
     [ |- In _ (execute ?T _).(modelElements) ] =>
-      eapply (transform_element_fw T) ; [ solve [simpl ; auto ] | try eassumption | try (solve [simpl;auto])]
+      eapply (transform_element_fw T) ; 
+      [ solve [ simpl ; auto ] 
+      | (*try*) eassumption 
+      | try (solve [simpl;auto])]
   end.
 
