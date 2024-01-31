@@ -17,9 +17,10 @@ Ltac test_failure :=
   idtac " ".
 
 
-(** Tactic under test : [TacticsFW.in_compute_trace_inv_singleton_fw] *)
+
 
 (* Test 1. *)
+(* Tactic under test : [TacticsFW.in_compute_trace_inv_singleton_fw] *)
 Goal 
   forall (m : BasicMetamodel.M)
          (s : BasicMetamodel.Node_t)
@@ -38,7 +39,7 @@ Proof.
 
   intros. eexists.
 
-(* Success of the tactid expected *)
+(* Success of the tactic expected *)
   Succeed (first [
       solve [TacticsFW.in_compute_trace_inv_singleton_fw 1 1] ; 
       test_success
@@ -72,8 +73,9 @@ Proof.
 
 Abort.
 
-
-
+(* Test 2 *)
+(* Tactic under test : TacticsFW.in_modelElements_singleton_fw_tac *)
+(* Test case : choise between two assumptions *)
 Goal
 forall 
   (cm : BasicMetamodel.M)
@@ -92,7 +94,7 @@ Proof.
 
   intros.
 
-  (* Success of the tactid expected *)
+  (* Success of the tactic expected *)
   Succeed (first [
       solve [TacticsFW.in_modelElements_singleton_fw_tac 1 1 0] ; 
       test_success
@@ -118,18 +120,20 @@ Proof.
 
   intros.
 
-  (* Success of the tactid expected *)
+  (* Success of the tactic expected *)
   Succeed (first [
       solve [TacticsFW.in_modelElements_singleton_fw_tac 1 1 0] ; 
       test_success
     | test_failure]).
 
+(* failure here -> FIXME *)
+
 Abort.
 
 
 
-(* Test case : Choose between two assumptions. *)
-
+(* Test 3. *)
+(* Tactic under test : TacticsFW.in_compute_trace_inv_singleton_fw *)
 Goal 
   forall 
     (cm : M)
@@ -153,7 +157,7 @@ Proof.
   
   eexists ; eexists ; eexists. 
 
-  (* Success of the tactid expected *)
+  (* Success of the tactic expected *)
   Succeed (first [
       solve [TacticsFW.in_compute_trace_inv_singleton_fw 1 1] ; 
       test_success
@@ -183,7 +187,7 @@ Proof.
 
       eexists ; eexists ; eexists. 
 
-  (* Success of the tactid expected *)
+  (* Success of the tactic expected *)
   
       TacticsFW.in_compute_trace_inv_singleton_fw 1 1 .
 
@@ -194,11 +198,12 @@ Proof.
 
       first [reflexivity ; test_success | test_failure].
 
-      (* this failure is solved with the adapted tactic [TacticsFW.in_compute_trace_inv_singleton_fw_solve], see below. *)
 Abort.
 
 
-(* Test the re-ordered tactic (second solving tactic). *)
+
+(* Test 4 *)
+(* Tactic under test : TacticsFW.in_compute_trace_inv_singleton_fw_solve_reordered *)
 
 Goal forall (cm : M)
   (H1 : In (Node {| Node_id := 2 |}) (modelElements cm))
@@ -222,7 +227,7 @@ Proof.
 
       eexists ; eexists ; eexists. 
 
-  (* Success of the tactid expected *)
+  (* Success of the tactic expected *)
   Succeed (first [
       solve [TacticsFW.in_compute_trace_inv_singleton_fw_solve_reordered 1 1] ; 
       test_success
@@ -244,7 +249,6 @@ Proof.
 Abort.
 
 
-(* re-ordered lemma/tactic *)
 Goal forall (cm : M)
   (H1 : In (Node {| Node_id := 1 |}) (modelElements cm))
   (H2 : In (Node {| Node_id := 2 |}) (modelElements cm)),
@@ -268,7 +272,7 @@ Proof.
       eexists ; eexists ; eexists. 
 
 
-  (* Success of the tactid expected *)
+  (* Success of the tactic expected *)
   Succeed (first [
       solve [TacticsFW.in_compute_trace_inv_singleton_fw_solve_reordered 1 1] ; 
       test_success
@@ -283,6 +287,9 @@ Proof.
       
 Abort.
 
+
+(* Test 5 *)
+(* Tactic under test : TacticsFW.in_compute_trace_inv_singleton_fw_solve_reordered *)
  (* Test case : there are links in the rule + local guard *)
 Goal forall (cm : M)
   (H1 : In (Arrow {| Arrow_id := 2 |}) (modelElements cm))
@@ -306,7 +313,7 @@ Proof.
 
   eexists ; eexists ; eexists. 
 
-  (* Success of the tactid expected *)
+  (* Success of the tactic expected *)
   Succeed (first [
       solve [TacticsFW.in_compute_trace_inv_singleton_fw_solve_reordered 2 1] ; 
       test_success
@@ -343,7 +350,7 @@ Proof.
 
       eexists ; eexists ; eexists. 
 
-  (* Success of the tactid expected *)
+  (* Success of the tactic expected *)
   Succeed (first [
       solve [TacticsFW.in_compute_trace_inv_singleton_fw_solve_reordered 2 1] ; 
       test_success
@@ -359,7 +366,9 @@ Proof.
 Abort.
 
 
-(* Test case : Choose between two assumptions. (solving tactic) *)
+(* Test 6 *)
+(* Tactic under test : TacticsFW.in_compute_trace_inv_singleton_fw_solve *)
+(* Test case : Choose between two assumptions. *)
 
 Goal 
   forall 
@@ -384,7 +393,7 @@ Proof.
 
       eexists ; eexists ; eexists. 
 
-  (* Success of the tactid expected *)
+  (* Success of the tactic expected *)
   Succeed (first [
       solve [TacticsFW.in_compute_trace_inv_singleton_fw_solve 1 1] ; 
       test_success
@@ -415,7 +424,7 @@ Proof.
 
       eexists ; eexists ; eexists. 
 
-  (* Success of the tactid expected *)
+  (* Success of the tactic expected *)
   Succeed (first [
       solve [TacticsFW.in_compute_trace_inv_singleton_fw_solve 1 1] ; 
       test_success
