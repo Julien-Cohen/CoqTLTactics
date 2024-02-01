@@ -57,7 +57,7 @@ usertools/Backtracking.v
 
 TacticUnitTest/BasicMetamodel.v
 TacticUnitTest/IdTransformation.v
-TacticUnitTest/TacticTest.v
+TacticUnitTest/TestTacticsFW.v
 
 # User transformations
 
