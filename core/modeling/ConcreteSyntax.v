@@ -64,10 +64,12 @@ Record ConcreteRule  :=
       r_outpat : list (ConcreteOutputPatternUnit r_InKinds)
     }.
 
-Inductive ConcreteTransformation : Type :=
-  transformation :
-    list ConcreteRule
-    -> ConcreteTransformation.
+Record ConcreteTransformation : Type :=
+  transformation
+  {
+    concreteRules : list ConcreteRule
+  }.
+
 
 (** ** Accessors **)
 
@@ -76,12 +78,9 @@ Definition ConcreteRule_findConcreteOutputPatternUnit (r: ConcreteRule) (name: s
   find (fun(o:ConcreteOutputPatternUnit r.(r_InKinds) ) => beq_string name o.(e_name))
         r.(r_outpat).
 
-Definition ConcreteTransformation_getConcreteRules (x : ConcreteTransformation) : list ConcreteRule :=
-  match x with transformation y => y end.
 
 End ConcreteSyntax.
 
-Arguments transformation {_ _}.
 Arguments Build_ConcreteRule {_ _}.
 Arguments elem {_ _}.
 Arguments link {_ _}.

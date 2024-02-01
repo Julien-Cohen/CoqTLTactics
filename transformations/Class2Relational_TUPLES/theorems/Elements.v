@@ -88,7 +88,7 @@ Proof.
                      List.nth_error
                      Syntax.rules
                      List.map
-                     ConcreteSyntax.ConcreteTransformation_getConcreteRules] 
+                     ConcreteSyntax.concreteRules] 
           in (List.nth_error Class2Relational_TUPLES.(Syntax.rules) 1 (* second rule *)) 
     with 
     | Some ?r => remember r as R ; exists R
