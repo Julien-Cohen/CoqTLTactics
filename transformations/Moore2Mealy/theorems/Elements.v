@@ -87,7 +87,7 @@ Lemma state_element_fw_alt
     (Mealy.State (convert_state s))  
     (Semantics.execute Moore2Mealy m).(Model.modelElements).
 Proof. 
-  TacticsFW.in_modelElements_singleton_fw_tac "state"%string 1 0 IN ; (* fixme : "state" instead of rule number *)
+  TacticsFW.in_modelElements_singleton_fw_tac "state"%string 1 0 IN ; 
   reflexivity. 
 Qed.
 
