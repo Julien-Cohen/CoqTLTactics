@@ -21,6 +21,7 @@ Ltac test_failure :=
 
 (* Test 1. *)
 (* Tactic under test : [TacticsFW.in_compute_trace_inv_singleton_fw] *)
+(* Test case : no guard, and the right-hand side of the rule is local *)
 Goal 
   forall (m : BasicMetamodel.M)
          (s : BasicMetamodel.Node_t)
@@ -41,11 +42,12 @@ Proof.
 
 (* Success of the tactic expected *)
   Succeed (first [
-      solve [TacticsFW.in_compute_trace_inv_singleton_fw 1 1 IN1] ; 
+      solve [TacticsFW.in_compute_trace_inv_singleton_fw 1 1 IN1 ;
+             reflexivity ] ; 
       test_success
     | test_failure]).
 
-(* Failure of the tactic expected *)
+(* Failure of the tactic expected with incorrect parameters *)
  Succeed first [
       TacticsFW.in_compute_trace_inv_singleton_fw 2 1 IN1 ; 
       test_failure 
@@ -104,11 +106,11 @@ Proof.
 
   (* Success of the tactic expected *)
   Succeed (first [
-      solve [TacticsFW.in_compute_trace_inv_singleton_fw 1 1 H2] ; 
+      solve [TacticsFW.in_compute_trace_inv_singleton_fw 1 1 H2 ; reflexivity] ; 
       test_success
     | test_failure]).
 
-  (* Failure of the tactic expected *)
+  (* Failure of the tactic expected with incorrect parameters *)
   Succeed (first [
       solve [TacticsFW.in_compute_trace_inv_singleton_fw 1 1 H1] ; 
       test_failure
@@ -139,7 +141,7 @@ Proof.
 
   (* Success of the tactic expected *)
   Succeed (first [
-      solve [TacticsFW.in_modelElements_singleton_fw_tac 1 1 0 H2] ; 
+      solve [TacticsFW.in_modelElements_singleton_fw_tac 1 1 0 H2 ; reflexivity ] ; 
       test_success
     | test_failure]).
 

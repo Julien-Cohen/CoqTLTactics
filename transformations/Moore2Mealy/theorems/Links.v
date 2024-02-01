@@ -52,7 +52,8 @@ Proof.
 
 
 
-    TacticsFW.transform_link_fw_tac_singleton 2 1 0 IN_T ; [ | ]. 
+  TacticsFW.transform_link_fw_tac_singleton 2 1 0 IN_T ;
+    try reflexivity ; [ | ]. 
 
   { (* eval output pattern *)
     simpl. 
@@ -141,7 +142,7 @@ Proof.
 
   specialize (TraceUtils.state_in_trace m s1 IN_S) ; intro INTRACE.
 
-  TacticsFW.transform_link_fw_tac_singleton 2 1 0 IN_T ; [ | ].
+  TacticsFW.transform_link_fw_tac_singleton 2 1 0 IN_T ; try reflexivity ; [ | ].
 
 
   { (* eval output pattern *)

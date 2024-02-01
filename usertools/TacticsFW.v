@@ -12,49 +12,69 @@ From usertools
 
 (** This version, for rules with singleton patterns, takes as parameter the index of the rule, the index of the output pattern in that rule, and the source element hypothesis. *)
 Ltac in_compute_trace_inv_singleton_fw r_num pat_num H :=
-  match goal with 
-  | [ |- List.In _ (compute_trace ?T _)] => 
-     
-      SemanticsTools.in_compute_trace_inv_tac ;
 
-      (* 7 goals *)
-      [ | | | | | | ] ;
+  (* Precondition on H. *)
+  match type of H with 
+    List.In _ ?M.(modelElements) =>
       
+      (* Precondition on the goal. *)
+      match goal with 
+      | [ |- List.In _ (compute_trace ?T M)] => 
+          
+          
+          SemanticsTools.in_compute_trace_inv_tac ;
 
-      [ (* Fix the rule under concern following user hint *)
-        solve [ChoiceTools.rule_number r_num] 
+          (* 7 goals *)
+          [ | | | | | | ] ;
+
+
+          [ (* Fix the rule under concern following user hint *)
+            solve [ChoiceTools.rule_number r_num] 
+                  
+          | (* Fix the output pattern in the rule following user hint *)
+            solve [ChoiceTools.pattern_number pat_num] 
+                  
+          | (* Fix the source piece (singleton) *)
+            apply ListUtils.incl_singleton ; exact H 
+                                                   
+          | (* The guard goal may rely on user expressions and can be arbitrary difficult to prove *)
+            simpl
               
-      | (* Fix the output pattern in the rule following user hint *)
-        solve [ChoiceTools.pattern_number pat_num] 
+          | (* arity *) 
+            reflexivity 
               
-      | (* Fix the source piece (singleton) *)
-        apply ListUtils.incl_singleton ; exact H 
+          | (* iteration counter *)
+            solve [simpl ; auto ] 
+                  
+                  
+                  
+          | (* The make_element goal rely on user expressions and can be arbitrary difficult to prove *) 
+            simpl 
 
-      | (* The guard goal may rely on user expressions and can be arbitrary difficult to prove *)
-        simpl
+          ] 
+      end
+  end ;
 
-      | (* arity *) 
-        reflexivity 
-
-      | (* iteration counter *)
-        solve [simpl ; auto ] 
-
-      
-
-      | (* The make_element goal rely on user expressions and can be arbitrary difficult to prove *) 
-        simpl 
-      ] ;
-
-      try reflexivity (* solve "simple" evalGuard & make_element goals *)
-  end. 
+  (* Post-condition *)
+  [ | ] (* the guard and the makeElement goals remain. *). 
 
 
 
 
 (** Variant for pair patterns *)
 Ltac in_compute_trace_inv_pair_fw r_num pat_num H1 H2 :=
-  match goal with 
-  | [ |- List.In _ (compute_trace ?T _)] => 
+
+  (* Precondition on H1. *)
+  match type of H1 with 
+    List.In _ ?M.(modelElements) =>
+
+      (* Precondition on H2. *)
+      match type of H2 with 
+        List.In _ M.(modelElements) =>
+
+      (* Precondition on the goal. *)
+      match goal with 
+      | [ |- List.In _ (compute_trace ?T M)] => 
       
       SemanticsTools.in_compute_trace_inv_tac ;
 
@@ -81,11 +101,13 @@ Ltac in_compute_trace_inv_pair_fw r_num pat_num H1 H2 :=
 
       | (* The make_element goal rely on user expressions and can be arbitrary difficult to prove *)      
         simpl 
-      ] ;
-      
-      try reflexivity (* solve "simple" evalGuard & make_element goals *)
+      ]
+  
+      end end end  ;
 
-  end.
+  (* Post-condition *)
+  [ | ] (* the guard and the makeElement goals remain. *)
+.
 
 
 
@@ -96,37 +118,61 @@ Ltac in_compute_trace_inv_pair_fw r_num pat_num H1 H2 :=
 (** *** On elements (singletons, then pairs) *)
 
 Ltac in_modelElements_singleton_fw_tac r_num pat_num i H :=
-  match goal with 
-    [ |- List.In _ (execute ?T _).(modelElements) ] =>
 
-      apply <- SemanticsTools.in_modelElements_inv ; 
+      (* Precondition on H. *)
+      match type of H with 
+        List.In _ ?M.(modelElements) =>
+          
+          (* Precondition on the goal *)
+          match goal with 
+            [ |- List.In _ (execute ?T M).(modelElements) ] =>
 
-      eexists ; exists i ; eexists ; eexists ; 
-
-      in_compute_trace_inv_singleton_fw r_num pat_num H ;
-
-      try reflexivity
-  end.
+              apply <- SemanticsTools.in_modelElements_inv ; 
+              
+              eexists ; exists i ; eexists ; eexists ; 
+              
+              in_compute_trace_inv_singleton_fw r_num pat_num H
+          end
+      end  ;
+            
+      (* Post-condition. *)
+      [ | ] .
 
 
 Ltac in_modelElements_pair_fw_tac r_num pat_num i H1 H2 :=
-  match goal with 
-    [ |- In _ (execute _ _).(modelElements) ] =>
+  (* Precondition on H1. *)
+  match type of H1 with 
+    List.In _ ?M.(modelElements) =>
+
+      (* Precondition on H2. *)
+      match type of H2 with 
+        List.In _ M.(modelElements) =>
+
+          match goal with 
+    [ |- In _ (execute _ M).(modelElements) ] =>
 
       apply <- SemanticsTools.in_modelElements_inv ; 
 
       eexists ; exists i ; eexists ; eexists ; 
 
-      in_compute_trace_inv_pair_fw r_num pat_num H1 H2 ;
+      in_compute_trace_inv_pair_fw r_num pat_num H1 H2
 
-      try reflexivity 
-  end.
-
-(** *** On links (singleton), two versions *)
+    end end end ;
+  
+  (* Post-condition *)
+  [ | ].
+ 
+(** *** On links (singleton) *)
 
 Ltac transform_link_fw_tac_singleton r_num pat_num i H :=
+
+  (* Precondition on H. *)
+  match type of H with 
+    List.In _ ?M.(modelElements) =>
+
+  (* Precondition on the goal. *)
   match goal with
-    [ |- In _ (execute _ _).(modelLinks) ] =>
+    [ |- In _ (execute _ M).(modelLinks) ] =>
 
       apply <- SemanticsTools.in_modelLinks_inv ; 
       
@@ -137,8 +183,12 @@ Ltac transform_link_fw_tac_singleton r_num pat_num i H :=
       [ in_compute_trace_inv_singleton_fw r_num pat_num H | ] ;
       
       autounfold with 
-        parse ConcreteOutputPatternUnit_accessors opu_accessors 
-  end.
+        parse ConcreteOutputPatternUnit_accessors opu_accessors
+
+  end end  ;
+
+  (* Post-condition *)
+  [ | | ].
 
 
 (** * Simple tactics (for simple situations) *)
@@ -167,7 +217,7 @@ Ltac transform_element_fw_tac :=
     [ |- In _ (execute ?T _).(modelElements) ] =>
       eapply (transform_element_fw T) ; 
       [ solve [ simpl ; auto ] 
-      | (*try*) eassumption 
+      | eassumption 
       | try (solve [simpl;auto])]
   end.
 

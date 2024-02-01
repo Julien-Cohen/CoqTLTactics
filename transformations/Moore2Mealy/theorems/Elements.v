@@ -87,7 +87,8 @@ Lemma state_element_fw_alt
     (Mealy.State (convert_state s))  
     (Semantics.execute Moore2Mealy m).(Model.modelElements).
 Proof. 
-  TacticsFW.in_modelElements_singleton_fw_tac 1 1 0 IN. (* fixme : "state" instead of rule number *)
+  TacticsFW.in_modelElements_singleton_fw_tac 1 1 0 IN ; (* fixme : "state" instead of rule number *)
+  reflexivity. 
 Qed.
 
 
@@ -173,7 +174,8 @@ Proof.
   eexists ; split ; [ reflexivity| ].
 
 
-  TacticsFW.in_modelElements_singleton_fw_tac 2 1 0 IN; [].
+  TacticsFW.in_modelElements_singleton_fw_tac 2 1 0 IN ;
+  try reflexivity ; [].
   (* Here we would like to "compute", but this does not work because the value of this computation relies on the value of [m], which is unknown here ; we have to [rewrite C] to get rid of the value of [m]. *)
   simpl.
 
