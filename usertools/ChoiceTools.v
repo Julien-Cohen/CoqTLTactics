@@ -54,6 +54,21 @@ Ltac second_rule :=
       second_in_list
   end.
 
+(* in rest *)
+Lemma In_rest {A} :
+      forall (e:A) s,
+      (exists a r, s = a :: r /\ In e r) -> In e s.
+Proof.
+  intros e s (?&?&?&?). subst s. 
+  apply in_cons. assumption.
+Qed.
+
+Ltac other_in_list :=
+  match goal with 
+    [ |- In _ _ ] =>
+      apply In_rest ; eexists ; eexists ; split ; [reflexivity | ]
+  end.
+
 
 (** Switch/case on positions in lists. *)
 
@@ -69,4 +84,24 @@ Ltac pattern_number n :=
   | 2 => second_in_list 
   end.
 
+
+(** On rule names *)
+
+Local Ltac aux n :=
+  match goal with 
+    [ |- List.In _ (?e::?r)] => 
+      match eval cbv in (String.eqb e.(Syntax.r_name) n) with 
+      | true =>  ChoiceTools.first_in_list
+      | false =>  ChoiceTools.other_in_list ; aux n
+      end 
+  | [ |- List.In _ List.nil ] =>  exfalso 
+  end.
+
+Ltac rule_named n := 
+  match goal with 
+    [ |- In _ ?s] => 
+      match eval cbv in s with 
+      | ?v => replace s with v ; [ | reflexivity ] ; aux n
+      end 
+  end.
 
