@@ -94,7 +94,7 @@ Local Ltac aux n :=
       | true =>  ChoiceTools.first_in_list
       | false =>  ChoiceTools.other_in_list ; aux n
       end 
-  | [ |- List.In _ List.nil ] =>  exfalso 
+  | [ |- List.In _ List.nil ] =>  idtac "No such rule found." ; exfalso 
   end.
 
 Ltac rule_named n := 

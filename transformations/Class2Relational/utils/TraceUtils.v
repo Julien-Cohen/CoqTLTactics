@@ -50,7 +50,7 @@ Proof.
 
   eexists.
   simpl. 
-  TacticsFW.in_compute_trace_inv_singleton_fw 1 1 IN1 ; reflexivity.
+  TacticsFW.in_compute_trace_inv_singleton_fw "Class2Table"%string 1 IN1 ; reflexivity.
 Qed.
 
 

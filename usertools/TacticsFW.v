@@ -11,7 +11,7 @@ From usertools
 (** ** Tactics that fully unfold [In _ compute_trace _ _] and solve easy goals. *) 
 
 (** This version, for rules with singleton patterns, takes as parameter the index of the rule, the index of the output pattern in that rule, and the source element hypothesis. *)
-Ltac in_compute_trace_inv_singleton_fw r_num pat_num H :=
+Ltac in_compute_trace_inv_singleton_fw r_name pat_num H :=
 
   (* Precondition on H. *)
   match type of H with 
@@ -29,7 +29,7 @@ Ltac in_compute_trace_inv_singleton_fw r_num pat_num H :=
 
 
           [ (* Fix the rule under concern following user hint *)
-            solve [ChoiceTools.rule_number r_num] 
+            solve [ChoiceTools.rule_named r_name] 
                   
           | (* Fix the output pattern in the rule following user hint *)
             solve [ChoiceTools.pattern_number pat_num] 
@@ -62,7 +62,7 @@ Ltac in_compute_trace_inv_singleton_fw r_num pat_num H :=
 
 
 (** Variant for pair patterns *)
-Ltac in_compute_trace_inv_pair_fw r_num pat_num H1 H2 :=
+Ltac in_compute_trace_inv_pair_fw r_name pat_num H1 H2 :=
 
   (* Precondition on H1. *)
   match type of H1 with 
@@ -82,7 +82,7 @@ Ltac in_compute_trace_inv_pair_fw r_num pat_num H1 H2 :=
       [ | | | | | | ] ;
 
       [ (* Fix the rule under concern following user hint *)
-        solve [ChoiceTools.rule_number r_num] 
+        solve [ChoiceTools.rule_named r_name] 
       
       | (* Fix the output pattern in the rule following user hint *) 
         solve [ChoiceTools.pattern_number pat_num] 
@@ -117,7 +117,7 @@ Ltac in_compute_trace_inv_pair_fw r_num pat_num H1 H2 :=
 
 (** *** On elements (singletons, then pairs) *)
 
-Ltac in_modelElements_singleton_fw_tac r_num pat_num i H :=
+Ltac in_modelElements_singleton_fw_tac r_name pat_num i H :=
 
       (* Precondition on H. *)
       match type of H with 
@@ -131,7 +131,7 @@ Ltac in_modelElements_singleton_fw_tac r_num pat_num i H :=
               
               eexists ; exists i ; eexists ; eexists ; 
               
-              in_compute_trace_inv_singleton_fw r_num pat_num H
+              in_compute_trace_inv_singleton_fw r_name pat_num H
           end
       end  ;
             
@@ -139,7 +139,7 @@ Ltac in_modelElements_singleton_fw_tac r_num pat_num i H :=
       [ | ] .
 
 
-Ltac in_modelElements_pair_fw_tac r_num pat_num i H1 H2 :=
+Ltac in_modelElements_pair_fw_tac r_named pat_num i H1 H2 :=
   (* Precondition on H1. *)
   match type of H1 with 
     List.In _ ?M.(modelElements) =>
@@ -155,7 +155,7 @@ Ltac in_modelElements_pair_fw_tac r_num pat_num i H1 H2 :=
 
       eexists ; exists i ; eexists ; eexists ; 
 
-      in_compute_trace_inv_pair_fw r_num pat_num H1 H2
+      in_compute_trace_inv_pair_fw r_named pat_num H1 H2
 
     end end end ;
   
@@ -164,7 +164,7 @@ Ltac in_modelElements_pair_fw_tac r_num pat_num i H1 H2 :=
  
 (** *** On links (singleton) *)
 
-Ltac transform_link_fw_tac_singleton r_num pat_num i H :=
+Ltac transform_link_fw_tac_singleton r_name pat_num i H :=
 
   (* Precondition on H. *)
   match type of H with 
@@ -180,7 +180,7 @@ Ltac transform_link_fw_tac_singleton r_num pat_num i H :=
 
       split ; 
       
-      [ in_compute_trace_inv_singleton_fw r_num pat_num H | ] ;
+      [ in_compute_trace_inv_singleton_fw r_name pat_num H | ] ;
       
       autounfold with 
         parse ConcreteOutputPatternUnit_accessors opu_accessors
