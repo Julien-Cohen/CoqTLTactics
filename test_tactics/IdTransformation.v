@@ -18,12 +18,12 @@ Import Glue.
 
 
 #[export]
-Instance IdTransformationConfiguration : TransformationConfiguration := 
+Instance Id_TransformationConfiguration : TransformationConfiguration := 
   Build_TransformationConfiguration BasicMetamodel.MM BasicMetamodel.MM.
 
 #[export]  
-Instance Moore2MealyModelingTransformationConfiguration : ModelingTransformationConfiguration IdTransformationConfiguration :=
- Build_ModelingTransformationConfiguration IdTransformationConfiguration BasicMetamodel.MMM BasicMetamodel.MMM.
+Instance Id_ModelingTransformationConfiguration : ModelingTransformationConfiguration Id_TransformationConfiguration :=
+ Build_ModelingTransformationConfiguration Id_TransformationConfiguration BasicMetamodel.MMM BasicMetamodel.MMM.
 
 Open Scope coqtl.
 
@@ -51,17 +51,17 @@ Definition T' :=
            fun _ m t => return t  
           
         LINK ::: Arrow_source_K 
-           fun tls _ m moore_tr mealy_tr =>
-             t_source <- Arrow_getSourceObject moore_tr m ;
+           fun tls _ m a b =>
+             t_source <- Arrow_getSourceObject a m ;
              res <- resolve tls "s" Node_K (singleton t_source) ;
-             do_glue mealy_tr with res 
+             do_glue b with res 
            ;
 
         LINK ::: Arrow_target_K 
-           fun tls _ m moore_tr mealy_tr =>
-             t_target <- Arrow_getTargetObject moore_tr m ;
+           fun tls _ m a b =>
+             t_target <- Arrow_getTargetObject a m ;
              res <- resolve tls "s" Node_K (singleton t_target) ;
-             do_glue mealy_tr with res 
+             do_glue b with res 
           
       ]
 ].
