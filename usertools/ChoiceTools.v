@@ -1,5 +1,5 @@
 From core 
-  Require Syntax.
+  Require Syntax Parser.
 
 From core.utils 
   Require Import NotationUtils.
@@ -98,10 +98,13 @@ Local Ltac aux n :=
   end.
 
 Ltac rule_named n := 
-  match goal with 
-    [ |- In _ ?s] => 
-      match eval cbv in s with 
-      | ?v => replace s with v ; [ | reflexivity ] ; aux n
-      end 
+  match goal with
+    
+  | [ |- In _ (Syntax.rules (Parser.parse ?t)) ] => 
+      unfold Parser.parse, Syntax.rules, t, ConcreteSyntax.concreteRules, map, Parser.parseRule, ConcreteSyntax.r_name ; 
+      aux n
+
+  | [ |- In _ (Syntax.rules (?t)) ] => unfold t ; rule_named n
+
   end.
 
