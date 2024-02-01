@@ -10,7 +10,7 @@ From core.modeling
   Require Import 
   ConcreteSyntax ModelingSemantics ConcreteExpressions Parser ModelingTransformationConfiguration.
 
-From TacticUnitTest
+From test_tactics
   Require 
   BasicMetamodel .
 
