@@ -20,20 +20,11 @@ Local Notation TargetLKind := tmmm.(LKind).
 (** ** Syntax (computed types) **)
 
 
-
-Definition outputPatternLink (skinds : list SourceEKind) (tkind: TargetEKind)  (tref: TargetLKind):=
-  denoteSignature skinds ((denoteEDatatype tkind) -> option (denoteLDatatype tref)).
-
-
-
-
-
-
 Record ConcreteOutputPatternLink (InKinds: list SourceEKind) (OutKind:TargetEKind) : Type :=
   link 
     {
       o_OutRefKind: TargetLKind ;
-      o_outpat : Trace -> nat -> SourceModel -> (outputPatternLink InKinds OutKind o_OutRefKind)
+      o_outpat : Trace -> nat -> SourceModel -> (denoteSignature InKinds ((denoteEDatatype OutKind) -> option (denoteLDatatype o_OutRefKind)))
     }.
 
 Global Arguments o_OutRefKind {_ _}.
