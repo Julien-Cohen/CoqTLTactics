@@ -152,8 +152,13 @@ Lemma transform_class_fw :
     In (TableElement {| table_id := id; table_name := name |}) (rm.(modelElements)). 
 Proof.
   intros cm rm H ; subst.
-  intros i n H.
-  TacticsFW.transform_element_fw_tac.  
+  intros i n H.  
+
+  (* Simple resolution (not the general case) *)
+  Succeed solve [TacticsFW.transform_element_fw_tac].
+
+  (* More general resolution *)
+  TacticsFW.in_modelElements_singleton_fw_tac "Class2Table" "tab" 0 H ; reflexivity. 
 Qed.
 
 

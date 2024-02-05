@@ -121,8 +121,15 @@ Lemma state_element_fw :
     List.In (Moore.StateElement s) (Model.modelElements m) ->
     List.In (Mealy.StateElement (convert_state s))  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
 Proof.
-  intros s IN.
-  TacticsFW.transform_element_fw_tac.
+  intros s IN. 
+
+  (* Simple resolution (not the general case) *)
+  Succeed solve [TacticsFW.transform_element_fw_tac].
+
+  (* More general resolution *)
+  TacticsFW.in_modelElements_singleton_fw_tac "state" "s" 0 IN ; 
+  reflexivity. 
+
 Qed.
 
 Lemma state_element_bw :

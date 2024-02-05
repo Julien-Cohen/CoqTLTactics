@@ -80,30 +80,22 @@ Proof.
 Qed.
 
 
-(* FW with the [in_modelElements_singleton_fw_tac] tactic *)
-Lemma state_element_fw_alt  
-  (s:Moore.State_t)
-  (IN : List.In (Moore.State s) (Model.modelElements m)) :
-  List.In 
-    (Mealy.State (convert_state s))  
-    (Semantics.execute Moore2Mealy m).(Model.modelElements).
-Proof. 
-  TacticsFW.in_modelElements_singleton_fw_tac "state" "s" 0 IN ; 
-  reflexivity. 
-Qed.
-
-
-(* FW with the [transform_element_fw_tac] tactic *)
+(* FW *)
 Lemma state_element_fw  
   (s:Moore.State_t)
   (IN : List.In (Moore.State s) (Model.modelElements m)) :
   List.In 
     (Mealy.State (convert_state s))  
     (Semantics.execute Moore2Mealy m).(Model.modelElements).
-Proof.
-  TacticsFW.transform_element_fw_tac. 
-Qed.
+Proof. 
+  
+  (* Simple resolution (not the general case) *)
+  Succeed solve [TacticsFW.transform_element_fw_tac].
 
+  (* More general resolution *)
+  TacticsFW.in_modelElements_singleton_fw_tac "state" "s" 0 IN ; 
+  reflexivity. 
+Qed.
 
 
 
@@ -153,7 +145,7 @@ Qed.
 
 
 (* FW with [in_modelElements_singleton_fw_tac] tactic *)
-Lemma transition_element_fw_alt: 
+Lemma transition_element_fw: 
   forall (t:Moore.Transition_t),
     List.In (Moore.Transition t) (Model.modelElements m) ->
     exists t', 
@@ -186,7 +178,7 @@ Proof.
 Qed.
 
 (* FW with [transform_element_fw_tac] tactic *)
-Lemma transition_element_fw : 
+Lemma transition_element_fw_alt : 
   forall (t:Moore.Transition_t),
     List.In (Moore.Transition t) (Model.modelElements m) ->
     exists t', 

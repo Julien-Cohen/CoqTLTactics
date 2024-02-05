@@ -41,7 +41,7 @@ Ltac in_compute_trace_inv_singleton_fw r_name pat_name H :=
             simpl
               
           | (* arity *) 
-            reflexivity 
+            solve [simpl ; auto] 
               
           | (* iteration counter *)
             solve [simpl ; auto ] 
@@ -194,7 +194,7 @@ Ltac transform_link_fw_tac_singleton r_name pat_name i H :=
 (** A simple FW tactic for elements (lemma + tactic) (only
     singleton patterns).  The drawback of this lemma/tactic
     is that when the traceTrOnPiece premise is not solved by
-    auto, it leaves the user with a painful subgoal. *)
+    auto, it leaves the user with a painful subgoal on traces. *)
 Lemma transform_element_fw {tc} (t:Syntax.Transformation (tc:=tc)) cm e te  :
   0 < Syntax.arity t ->
   In e cm.(modelElements) ->
