@@ -9,8 +9,7 @@ Import
 Import BasicMetamodel.
 Import NotationUtils.
 
-
-
+Open Scope string_scope. 
 
 (* Test 1. *)
 (* Tactic under test : rule_named *)
@@ -21,7 +20,7 @@ Goal
          (IN1 : In (Node s) (modelElements m)),
   exists r,
 
-    List.In r T.(Syntax.rules) /\ r.(Syntax.r_name) = "state"%string. 
+    List.In r T.(Syntax.rules) /\ r.(Syntax.r_name) = "state". 
 Proof.
   idtac "Testing ChoiceTools.rule_named".
   idtac "Test case : a rule with the corresponding name is/is not in the transformation.".
@@ -31,19 +30,19 @@ Proof.
   
 (* Success of the tactic expected *)
   Succeed (first [
-      solve [split ; [ChoiceTools.rule_named "state"%string | reflexivity]] ; 
+      solve [split ; [ChoiceTools.rule_named "state" | reflexivity]] ; 
       test_success
     | test_failure]).
 
 (* Failure of the tactic expected with incorrect parameters *)
  Succeed first [ 
-     split ; [ChoiceTools.rule_named "transition"%string | reflexivity] ; 
+     split ; [ChoiceTools.rule_named "transition" | reflexivity] ; 
       test_failure 
     | test_success].
 
 (* Failure of the tactic expected with incorrect parameters *)
  Succeed first [ 
-     split ; [ChoiceTools.rule_named "other"%string | reflexivity] ; 
+     split ; [ChoiceTools.rule_named "other" | reflexivity] ; 
       test_failure 
     | test_success].
 

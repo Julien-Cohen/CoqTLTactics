@@ -12,6 +12,7 @@ From usertools
   Require TacticsFW TacticsBW.
 
 Import String OptionUtils.
+Open Scope string_scope.
 
 Section Foo.
 
@@ -163,7 +164,7 @@ Proof.
 
   + unfold convert_transition.
     rewrite G. reflexivity.
-  + TacticsFW.in_modelElements_singleton_fw_tac "transition"%string "t"%string 0 IN ; try reflexivity ; [].
+  + TacticsFW.in_modelElements_singleton_fw_tac "transition" "t" 0 IN ; try reflexivity ; [].
   (* Here we would like to "compute", but this does not work because the value of this computation relies on the value of [m], which is unknown here ; we have to [rewrite G] to get rid of the value of [m]. *)
   simpl.
   unfold ConcreteExpressions.makeElement ; simpl.

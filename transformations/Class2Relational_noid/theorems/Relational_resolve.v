@@ -4,6 +4,7 @@ Require Import Arith.
 Require Import Coq.Arith.Gt.
 Require Import Coq.Arith.EqNat.
 Require Import List.
+Open Scope string_scope.
 
 From core 
   Require Import 
@@ -138,7 +139,7 @@ Proof.
 
   exists{| Table_name := r.(Class_name) |}.
 
-  TacticsFW.transform_link_fw_tac_singleton "Attribute2Column"%string "col"%string 0 IN_ELTS0 ; 
+  TacticsFW.transform_link_fw_tac_singleton "Attribute2Column" "col" 0 IN_ELTS0 ; 
   try reflexivity ; []. 
 
 

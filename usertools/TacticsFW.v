@@ -115,7 +115,7 @@ Ltac in_compute_trace_inv_pair_fw r_name pat_name H1 H2 :=
 
 (** *** On elements (singletons, then pairs) *)
 
-Ltac in_modelElements_singleton_fw_tac r_name pat_num i H :=
+Ltac in_modelElements_singleton_fw_tac r_name pat_name i H :=
 
       (* Precondition on H. *)
       match type of H with 
@@ -129,7 +129,7 @@ Ltac in_modelElements_singleton_fw_tac r_name pat_num i H :=
               
               eexists ; exists i ; eexists ; eexists ; 
               
-              in_compute_trace_inv_singleton_fw r_name pat_num H
+              in_compute_trace_inv_singleton_fw r_name pat_name H
           end
       end  ;
             
@@ -137,7 +137,7 @@ Ltac in_modelElements_singleton_fw_tac r_name pat_num i H :=
       [ | ] .
 
 
-Ltac in_modelElements_pair_fw_tac r_named pat_num i H1 H2 :=
+Ltac in_modelElements_pair_fw_tac r_named pat_name i H1 H2 :=
   (* Precondition on H1. *)
   match type of H1 with 
     List.In _ ?M.(modelElements) =>
@@ -153,7 +153,7 @@ Ltac in_modelElements_pair_fw_tac r_named pat_num i H1 H2 :=
 
       eexists ; exists i ; eexists ; eexists ; 
 
-      in_compute_trace_inv_pair_fw r_named pat_num H1 H2
+      in_compute_trace_inv_pair_fw r_named pat_name H1 H2
 
     end end end ;
   
@@ -162,7 +162,7 @@ Ltac in_modelElements_pair_fw_tac r_named pat_num i H1 H2 :=
  
 (** *** On links (singleton) *)
 
-Ltac transform_link_fw_tac_singleton r_name pat_num i H :=
+Ltac transform_link_fw_tac_singleton r_name pat_name i H :=
 
   (* Precondition on H. *)
   match type of H with 
@@ -178,7 +178,7 @@ Ltac transform_link_fw_tac_singleton r_name pat_num i H :=
 
       split ; 
       
-      [ in_compute_trace_inv_singleton_fw r_name pat_num H | ] ;
+      [ in_compute_trace_inv_singleton_fw r_name pat_name H | ] ;
       
       autounfold with 
         parse ConcreteOutputPatternUnit_accessors opu_accessors

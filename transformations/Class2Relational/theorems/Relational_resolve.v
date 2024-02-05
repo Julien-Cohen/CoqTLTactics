@@ -5,6 +5,8 @@ Require Import Coq.Arith.Gt.
 Require Import Coq.Arith.EqNat.
 Require Import List.
 
+Open Scope string_scope.
+
 From core 
   Require Import 
   utils.Utils Semantics modeling.ModelingMetamodel Model.
@@ -132,7 +134,7 @@ Proof.
   exists{| Table_id := r.(Class_id); Table_name := r.(Class_name) |}.
 
 
- TacticsFW.transform_link_fw_tac_singleton "Attribute2Column"%string "col"%string 0 IN_ELTS0 ; 
+ TacticsFW.transform_link_fw_tac_singleton "Attribute2Column" "col" 0 IN_ELTS0 ; 
   try reflexivity ; []. 
 
 

@@ -5,6 +5,7 @@ From transformations.Moore2Mealy
   Require MooreSemantics MealySemantics MooreWF MealyWF Moore2Mealy.
 
 Import Moore2Mealy OptionUtils Strings.String. (* for notation *)
+Open Scope string_scope.
 
 Section Params.
 
@@ -87,7 +88,7 @@ Lemma state_element_fw_alt
     (Mealy.State (convert_state s))  
     (Semantics.execute Moore2Mealy m).(Model.modelElements).
 Proof. 
-  TacticsFW.in_modelElements_singleton_fw_tac "state"%string "s"%string 0 IN ; 
+  TacticsFW.in_modelElements_singleton_fw_tac "state" "s" 0 IN ; 
   reflexivity. 
 Qed.
 
@@ -174,7 +175,7 @@ Proof.
   eexists ; split ; [ reflexivity| ].
 
 
-  TacticsFW.in_modelElements_singleton_fw_tac "transition"%string "t"%string 0 IN ;
+  TacticsFW.in_modelElements_singleton_fw_tac "transition" "t" 0 IN ;
   try reflexivity ; [].
   (* Here we would like to "compute", but this does not work because the value of this computation relies on the value of [m], which is unknown here ; we have to [rewrite C] to get rid of the value of [m]. *)
   simpl.
