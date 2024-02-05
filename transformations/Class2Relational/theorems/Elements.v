@@ -36,6 +36,7 @@ Lemma transform_attribute_fw :
 Proof.
   intros cm rm H ; subst.
   intros i n H.
+(*Set Ltac Debug. Set Ltac Batch Debug.*)
   TacticsFW.transform_element_fw_tac.
 Qed.
 

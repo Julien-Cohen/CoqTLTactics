@@ -11,7 +11,7 @@ From usertools
 (** ** Tactics that fully unfold [In _ compute_trace _ _] and solve easy goals. *) 
 
 (** This version, for rules with singleton patterns, takes as parameter the index of the rule, the index of the output pattern in that rule, and the source element hypothesis. *)
-Ltac in_compute_trace_inv_singleton_fw r_name pat_num H :=
+Ltac in_compute_trace_inv_singleton_fw r_name pat_name H :=
 
   (* Precondition on H. *)
   match type of H with 
@@ -32,7 +32,7 @@ Ltac in_compute_trace_inv_singleton_fw r_name pat_num H :=
             solve [ChoiceTools.rule_named r_name] 
                   
           | (* Fix the output pattern in the rule following user hint *)
-            solve [ChoiceTools.pattern_number pat_num] 
+            solve [ChoiceTools.pattern_named pat_name] 
                   
           | (* Fix the source piece (singleton) *)
             apply ListUtils.incl_singleton ; exact H 
@@ -46,9 +46,7 @@ Ltac in_compute_trace_inv_singleton_fw r_name pat_num H :=
           | (* iteration counter *)
             solve [simpl ; auto ] 
                   
-                  
-                  
-          | (* The make_element goal rely on user expressions and can be arbitrary difficult to prove *) 
+          | (* The make_element goal relies on user expressions and can be arbitrary difficult to prove *) 
             simpl 
 
           ] 
@@ -62,7 +60,7 @@ Ltac in_compute_trace_inv_singleton_fw r_name pat_num H :=
 
 
 (** Variant for pair patterns *)
-Ltac in_compute_trace_inv_pair_fw r_name pat_num H1 H2 :=
+Ltac in_compute_trace_inv_pair_fw r_name pat_name H1 H2 :=
 
   (* Precondition on H1. *)
   match type of H1 with 
@@ -85,7 +83,7 @@ Ltac in_compute_trace_inv_pair_fw r_name pat_num H1 H2 :=
         solve [ChoiceTools.rule_named r_name] 
       
       | (* Fix the output pattern in the rule following user hint *) 
-        solve [ChoiceTools.pattern_number pat_num] 
+        solve [ChoiceTools.pattern_named pat_name] 
 
       | (* Fix the source piece (pair) *) 
         apply ListUtils.incl_pair ; split ; [ exact H1 | exact H2 ] 

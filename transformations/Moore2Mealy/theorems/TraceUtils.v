@@ -21,7 +21,7 @@ Proof.
   apply TraceLink.in_drop_inv.
   eexists.
   simpl. 
-  TacticsFW.in_compute_trace_inv_singleton_fw "state"%string 1 IN1 ; reflexivity.
+  TacticsFW.in_compute_trace_inv_singleton_fw "state"%string "s"%string IN1 ; reflexivity.
 Qed.
 
 

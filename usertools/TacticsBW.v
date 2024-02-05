@@ -20,8 +20,12 @@ From usertools
 (** * Auxiliary BW tactics *)
 
 Ltac In_rules_inv_tac H :=
+
+  (* Precondition *)
   match type of H with 
     | In ?R (Syntax.rules _) =>
+
+        (* Actions *)
         simpl Syntax.rules in H ;
         progress repeat ListUtils.unfold_In_cons H ; (* generate one goal for each rule to consider *)
         subst R
@@ -29,8 +33,12 @@ Ltac In_rules_inv_tac H :=
 
 
 Ltac makeElement_inv_tac H :=
+
+  (* Precondition *)
   match type of H with 
   | ConcreteExpressions.makeElement _ _ _ _ _ _ = Some _ => 
+
+      (* Actions *)
       simpl in H ;
       ConcreteExpressionTools.inv_makeElement H
   end.
@@ -81,27 +89,37 @@ Ltac evalGuard_inv_tac H :=
 
 
 
-(* Application of SemanticsTools.in_modelLinks_inv leaves an hypothesis [In l
-            (apply_link_pattern (compute_trace tr sm) sm
-               {|
-                 TraceLink.source := (s, i, n);
-                 TraceLink.produced := res;
-                 TraceLink.linkPattern := lp
-               |})] 
+(* Explanation of the tactics below.
+   Application of SemanticsTools.in_modelLinks_inv leaves an hypothesis with the following shape :
+   [In l
+     (apply_link_pattern 
+       (compute_trace tr sm) 
+       sm
+       {|
+         TraceLink.source := (s, i, n);
+         TraceLink.produced := res;
+         TraceLink.linkPattern := lp
+       |}
+      )
+   ]   
 
-This apply_link_pattern is the code that builds a new link, based on the user code [lp],  the computed trace, the source model, the source piece (pattern instance) and the  produced element). 
+The function [apply_link_pattern] there is the code that builds a new link, based on the user code [lp],  the computed trace, the source model, the source piece (pattern instance) and the  produced element). 
 
-               This tactic unfolds all the engine mechanisms in the hypothesis until we can see the result of the application of the given [lp] user function.
-               
-               This tactics leaves the hypothesis for further manipulation after that. (In the general case, we do not know the form of the user code)
+The tactic below unfolds all the engine mechanisms in the hypothesis until we can see the result of the application of the given [lp] user function. 
+This tactics leaves the hypothesis for further manipulation after that. (In the general case, we do not know the form of the user code.)
 
 *)
 Ltac exploit_In_apply_link H :=
+
+  (* Precondition *)
   match type of H with 
     In _ (Semantics.apply_link_pattern (Semantics.compute_trace _ _) _ _) =>
+      
+      (* local names *)
       let IN := fresh "IN" in
       let l := fresh "l" in
 
+      (* Actions *)
       unfold Semantics.apply_link_pattern in H ;
       autounfold with tracelink parse in H ;
       unfold Parser.dropToList in H ;
@@ -133,6 +151,7 @@ Ltac exploit_In_apply_link H :=
       try PropUtils.inj IN
   end.
     
+
 Ltac destruct_source H :=
   match type of H with
   | In {| PoorTraceLink.source := (_,_,_) |} _ => idtac
@@ -147,8 +166,12 @@ Ltac destruct_source H :=
 
 (** Pivot tactic on traces *)
 Ltac exploit_in_trace H :=
+
+  (* Precondition *)
   match type of H with 
-   | In ?A (compute_trace _ _) => 
+   | In ?A (compute_trace _ _) =>
+
+       (* local names *)
       let r := fresh "r" in
       let opu := fresh "opu" in
       let IN_ELTS := fresh "IN_ELTS" in
@@ -158,6 +181,7 @@ Ltac exploit_in_trace H :=
       let IN_OUTPAT := fresh "IN_OUTPAT" in
       let EV := fresh "EV" in
 
+      
       try destruct_source H ; 
   
       (* 1: inversion *)
@@ -193,7 +217,7 @@ Ltac exploit_in_trace H :=
                   they can be switched  (except 4.b.2 
                   that must occur after 4.b.1)           *)
 
-                         
+  (* Precondition (second case) *) 
   | In _ (TraceLink.drop (compute_trace _ _)) => 
       (* When poor traces are concerned, 
          we lift them to rich traces and try again *)
@@ -204,7 +228,8 @@ Ltac exploit_in_trace H :=
   end.
 
 
-(** Two tactics for user that rely on the pivot tactic. *)
+(** Two tactics for user, for elements and for links, 
+    that rely on the pivot tactic. *)
 
 Ltac exploit_element_in_result IN :=
   match type of IN with 

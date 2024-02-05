@@ -36,7 +36,7 @@ Proof.
   eexists.
   
   split.
-  + TacticsFW.in_modelElements_pair_fw_tac "Attribute2Column"%string 1 0 H0 H1 ; try reflexivity ; [].
+  + TacticsFW.in_modelElements_pair_fw_tac "Attribute2Column"%string "col"%string 0 H0 H1 ; try reflexivity ; [].
     unfold ConcreteExpressions.makeGuard.
     unfold ConcreteExpressions.wrap.
     

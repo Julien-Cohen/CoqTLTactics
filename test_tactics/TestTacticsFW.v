@@ -24,7 +24,7 @@ Goal
          (s : BasicMetamodel.Node_t)
          (IN1 : In (Node s) (modelElements m)),
   exists p, 
-     @In (@TraceLink.TraceLink IdTransformation.IdTransformationConfiguration)
+     @In (@TraceLink.TraceLink IdTransformation.Id_TransformationConfiguration)
       {|
         TraceLink.source := ([Node s], 0, "s"%string);
         TraceLink.produced := Node s;
@@ -39,34 +39,34 @@ Proof.
 
 (* Success of the tactic expected *)
   Succeed (first [
-      solve [TacticsFW.in_compute_trace_inv_singleton_fw "state"%string 1 IN1 ;
+      solve [TacticsFW.in_compute_trace_inv_singleton_fw "state"%string "s"%string IN1 ;
              reflexivity ] ; 
       test_success
     | test_failure]).
 
 (* Failure of the tactic expected with incorrect parameters *)
  Succeed first [
-      TacticsFW.in_compute_trace_inv_singleton_fw "transition"%string 1 IN1 ; 
+      TacticsFW.in_compute_trace_inv_singleton_fw "transition"%string "s"%string IN1 ; 
       test_failure 
     | test_success].
 
  Succeed first [
-      TacticsFW.in_compute_trace_inv_singleton_fw "state"%string 2 IN1 ; 
+      TacticsFW.in_compute_trace_inv_singleton_fw "state"%string "t"%string IN1 ; 
       test_failure 
     | test_success].
 
  Succeed first [
-      TacticsFW.in_compute_trace_inv_singleton_fw "_"%string 0 IN1 ; 
+      TacticsFW.in_compute_trace_inv_singleton_fw "_"%string "_"%string IN1 ; 
       test_failure 
     | test_success].
  
  Succeed first [
-      TacticsFW.in_compute_trace_inv_singleton_fw "_"%string 1 IN1 ; 
+      TacticsFW.in_compute_trace_inv_singleton_fw "_"%string "s"%string IN1 ; 
       test_failure 
     | test_success].
 
  Succeed first [
-      TacticsFW.in_compute_trace_inv_singleton_fw "state"%string 0 IN1 ; 
+      TacticsFW.in_compute_trace_inv_singleton_fw "state"%string "_"%string IN1 ; 
       test_failure 
     | test_success].
 
@@ -103,13 +103,13 @@ Proof.
 
   (* Success of the tactic expected *)
   Succeed (first [
-      solve [TacticsFW.in_compute_trace_inv_singleton_fw "state"%string 1 H2 ; reflexivity] ; 
+      solve [TacticsFW.in_compute_trace_inv_singleton_fw "state"%string "s"%string H2 ; reflexivity] ; 
       test_success
     | test_failure]).
 
   (* Failure of the tactic expected with incorrect parameters *)
   Succeed (first [
-      solve [TacticsFW.in_compute_trace_inv_singleton_fw "state"%string 1 H1] ; 
+      solve [TacticsFW.in_compute_trace_inv_singleton_fw "state"%string "s"%string H1] ; 
       test_failure
     | test_success]).
 
@@ -138,14 +138,14 @@ Proof.
 
   (* Success of the tactic expected *)
   Succeed (first [
-      solve [TacticsFW.in_modelElements_singleton_fw_tac "state"%string 1 0 H2 ; reflexivity ] ; 
+      solve [TacticsFW.in_modelElements_singleton_fw_tac "state"%string "s"%string 0 H2 ; reflexivity ] ; 
       test_success
     | test_failure]).
 
   (* Failure of the tactic expected *)
   Succeed (
       tryif
-        TacticsFW.in_modelElements_singleton_fw_tac "state"%string 1 0 H1 ; reflexivity
+        TacticsFW.in_modelElements_singleton_fw_tac "state"%string "s"%string 0 H1 ; reflexivity
       then test_failure
       else test_success ).
   
@@ -182,20 +182,15 @@ Proof.
 
 
   (* Success of the tactic expected *)
-  Succeed (first [
-      solve [TacticsFW.in_modelElements_singleton_fw_tac "transition"%string 1 0 H ; reflexivity ] ; (* second rule, first pattern, it-count=0 *)
-      test_success
-    | test_failure]).
-
   Succeed (
       tryif
-        solve [TacticsFW.in_modelElements_singleton_fw_tac "transition"%string 1 0 H ; reflexivity ]  (* second rule, first pattern, it-count=0 *)
+        solve [TacticsFW.in_modelElements_singleton_fw_tac "transition"%string "t"%string 0 H ; reflexivity ]  (* second rule, first pattern, it-count=0 *)
       then test_success
       else test_failure).
   
   (* Failure of the tactic expected *)
   Succeed (
-      tryif solve [TacticsFW.in_modelElements_singleton_fw_tac "transition"%string 2 0 H ; reflexivity]  (* second rule, second pattern, it-count=0 *)
+      tryif solve [TacticsFW.in_modelElements_singleton_fw_tac "transition"%string "back_t"%string 0 H ; reflexivity]  (* second rule, second pattern, it-count=0 *)
       then test_failure
       else test_success).
 
@@ -222,14 +217,14 @@ Proof.
 
   (* Success of the tactic expected *)
   Succeed (first [
-      solve [TacticsFW.in_modelElements_singleton_fw_tac "transition"%string 2 0 H ; reflexivity ] ;  (* second rule, second pattern, it-count = 0 *)
+      solve [TacticsFW.in_modelElements_singleton_fw_tac "transition"%string "back_t"%string 0 H ; reflexivity ] ;  (* second rule, second pattern, it-count = 0 *)
       test_success
     | test_failure]).
 
   (* Failure of the tactic expected *)
   Succeed (
       tryif
-        solve [TacticsFW.in_modelElements_singleton_fw_tac "transition"%string 1 0 H ; reflexivity ] 
+        solve [TacticsFW.in_modelElements_singleton_fw_tac "transition"%string "t"%string 0 H ; reflexivity ] 
       then test_failure
       else test_success).
 

@@ -71,6 +71,7 @@ Ltac other_in_list :=
 
 
 (** Switch/case on positions in lists. *)
+(** Deprecated : use names instead of positions *)
 
 Ltac rule_number n := 
   match n with 
@@ -108,3 +109,20 @@ Ltac rule_named n :=
 
   end.
 
+(** On pattern names *)
+ Ltac pn_aux n :=
+  match goal with 
+    [ |- List.In _ (?e::?r)] => 
+      match eval cbv in (String.eqb e.(Syntax.opu_name) n) with 
+      | true =>  ChoiceTools.first_in_list
+      | false =>  ChoiceTools.other_in_list ; pn_aux n
+      end 
+  | [ |- List.In _ List.nil ] =>  idtac "No such rule found." ; exfalso 
+  end.
+
+Ltac pattern_named n := 
+  match goal with
+      | [ |- In _ ?r.(Syntax.r_outputPattern) ] => 
+          unfold Syntax.r_outputPattern, ConcreteSyntax.r_InKinds, ConcreteSyntax.r_outpat, map, Parser.parseOutputPatternUnit, ConcreteSyntax.e_name ;
+          pn_aux n
+  end.
