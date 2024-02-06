@@ -97,8 +97,32 @@ Proof.
   reflexivity. 
 Qed.
 
-
-
+Lemma state_element_fw_unfolded  
+  (s:Moore.State_t)
+  (IN : List.In (Moore.State s) (Model.modelElements m)) :
+  List.In 
+    (Mealy.State (convert_state s))  
+    (Semantics.execute Moore2Mealy m).(Model.modelElements).
+Proof. 
+  apply <- SemanticsTools.in_modelElements_inv.
+  eexists. exists 0. eexists. eexists.
+  apply <- SemanticsTools.in_compute_trace_inv_reordered.
+  eexists.
+  split.
+  - (*1*) solve [ChoiceTools.rule_named "state"].
+  - eexists. split. 
+    + (*2*) solve [ChoiceTools.pattern_named "s"].
+    + split.
+      * (*3*) apply ListUtils.incl_singleton.
+        exact IN.
+      * split. 
+        -- (*4*) simpl. reflexivity. (*simple enough for reflexivity*)
+        -- split.
+           ++ (*5*) solve [simpl ; auto]. 
+           ++ split.
+             ** solve [simpl ; auto ].
+             ** simpl. reflexivity. (*simple enough for reflexivity*)
+Qed.
 
 (* FW without new tactics *)
 Lemma state_element_fw_no_tactic rm s
