@@ -97,6 +97,8 @@ Proof.
   reflexivity. 
 Qed.
 
+Import Syntax. (* for notations *)
+
 Lemma state_element_fw_unfolded  
   (s:Moore.State_t)
   (IN : List.In (Moore.State s) (Model.modelElements m)) :
@@ -116,12 +118,12 @@ Proof.
       * (*3*) apply ListUtils.incl_singleton.
         exact IN.
       * split. 
-        -- (*4*) simpl. reflexivity. (*simple enough for reflexivity*)
+        -- (*4*) reflexivity. (* simple enough for reflexivity *)
         -- split.
            ++ (*5*) solve [simpl ; auto]. 
            ++ split.
-             ** solve [simpl ; auto ].
-             ** simpl. reflexivity. (*simple enough for reflexivity*)
+             ** (* 6 *) solve [simpl ; auto ].
+             ** (* 7 *) reflexivity. (* simple enough for reflexivity *)
 Qed.
 
 (* FW without new tactics *)

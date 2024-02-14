@@ -10,6 +10,14 @@ Require Export core.PoorTraceLink.
       In this section, we introduce _one possible_ abstract syntax of the CoqTL transformation engine.  
       ---- *)
 
+
+Notation element_producer := 
+  (nat -> SourceModel -> InputPiece -> option TargetElementType).
+
+Notation link_producer := 
+  (PoorTraceLink.Trace -> nat -> SourceModel -> InputPiece -> TargetElementType -> list TargetLinkType).
+
+
 Section Syntax.
 
 Context {tc: TransformationConfiguration}.
@@ -22,16 +30,9 @@ Context {tc: TransformationConfiguration}.
 
 Record OutputPatternUnit : Type :=
   buildOutputPatternUnit {
-
-    opu_name : 
-      string ; 
-
-    opu_element :
-      nat -> SourceModel -> InputPiece -> option TargetElementType ; 
-
-    opu_link :
-      PoorTraceLink.Trace -> nat -> SourceModel -> InputPiece -> TargetElementType -> list TargetLinkType
-
+      opu_name : string ; 
+      opu_element : element_producer ; 
+      opu_link : link_producer
 }.
 
 
