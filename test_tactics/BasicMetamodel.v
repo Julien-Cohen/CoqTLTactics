@@ -100,7 +100,7 @@ Definition MM : Metamodel :=
 
 
 #[export]
-Instance MooreElementDenotation : Denotation Element ElementKind :=
+Instance ElementDenotation : Denotation Element ElementKind :=
 {
   denoteDatatype := getTypeByEKind ;
   unbox := get_E_data ;
@@ -109,7 +109,7 @@ Instance MooreElementDenotation : Denotation Element ElementKind :=
 
 
 #[export]
-Instance MooreLinkDenotation : Denotation Link LinkKind :=
+Instance LinkDenotation : Denotation Link LinkKind :=
 {
   denoteDatatype := getTypeByLKind ;
   unbox := get_L_data ;
@@ -120,8 +120,8 @@ Instance MooreLinkDenotation : Denotation Link LinkKind :=
 #[export]
 Instance MMM : ModelingMetamodel MM :=
 {
-  elements := MooreElementDenotation ;
-  links := MooreLinkDenotation ;
+  elements := ElementDenotation ;
+  links := LinkDenotation ;
 }.
 
 

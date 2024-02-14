@@ -7,30 +7,30 @@ Require TacticsFW.
 Import 
   List Model String NotationUtils Semantics PoorTraceLink  NotationUtils Semantics.
 
-Require Import BasicMetamodel.
-
 Open Scope string_scope.
 
+From test_tactics
+  Require BasicMetamodel IdTransformation DoubleTransformation.
 
 
+Section Test1.
 
-(** Test 1. *)
 (** Tactic under test : [TacticsFW.in_compute_trace_inv_singleton_fw] *)
 (** Test case : no guard, and the right-hand side of the rule is local *)
 
-Require Import (* fixme : retirer l'Import *) IdTransformation.
+Import BasicMetamodel IdTransformation.
 
 Goal 
-  forall (m : BasicMetamodel.M)
-         (s : BasicMetamodel.Node_t)
+  forall (m : M)
+         (s : Node_t)
          (IN1 : In (Node s) (modelElements m)),
   exists p, 
-     @In (@TraceLink.TraceLink IdTransformation.Id_TransformationConfiguration)
+     @In (@TraceLink.TraceLink Id_TransformationConfiguration)
       {|
         TraceLink.source := ([Node s], 0, "s");
         TraceLink.produced := Node s;
         TraceLink.linkPattern := p
-      |} (compute_trace IdTransformation.T m)
+      |} (compute_trace T m)
 .
 Proof.
   idtac "Testing TacticsFW.in_compute_trace_inv_singleton_fw".
@@ -41,9 +41,8 @@ Proof.
 (* Success of the tactic expected *)
   Succeed
     tryif  
-      solve [
-          TacticsFW.in_compute_trace_inv_singleton_fw "state" "s" IN1 ;
-          reflexivity ]  
+      TacticsFW.in_compute_trace_inv_singleton_fw "state" "s" IN1 ;
+      reflexivity   
     then test_success
     else test_failure.
 
@@ -80,9 +79,15 @@ Proof.
 
 Abort.
 
+End Test1. 
 
-(** Test 2. *)
+
+Section Test2.
+
 (** Tactic under test : TacticsFW.in_compute_trace_inv_singleton_fw *)
+
+Import BasicMetamodel IdTransformation.
+
 Goal 
   forall 
     (cm : M)
@@ -90,7 +95,7 @@ Goal
     (H2 : In (Node {| Node_id := 2 |}) (modelElements cm)),
     
   exists
-    (s : list TransformationConfiguration.SourceElementType) 
+    (s : list Element) 
     (n : string) 
     lp,
     In
@@ -109,35 +114,39 @@ Proof.
   (* Success of the tactic expected *)
   Succeed 
     tryif 
-      solve [TacticsFW.in_compute_trace_inv_singleton_fw "state" "s" H2 ; reflexivity]  
+      TacticsFW.in_compute_trace_inv_singleton_fw "state" "s" H2 ;
+      reflexivity  
     then test_success
     else test_failure.
 
   (* Failure of the tactic expected with incorrect parameters *)
-  Succeed 
+  Succeed
     tryif 
-      solve [TacticsFW.in_compute_trace_inv_singleton_fw "state" "s" H1] 
+      TacticsFW.in_compute_trace_inv_singleton_fw "state" "s" H1 ;
+      reflexivity  (* the tactic works but an incorrect hypothesis was selected, so that the goal cannot be solved anymore *)
     then test_failure
     else test_success.
 
 Abort.
 
+End Test2.
 
-(** Test 3 *)
+
+Section Test3.
+
 (** Tactic under test : TacticsFW.in_modelElements_singleton_fw_tac *)
 (** Test case : choice between two assumptions *)
+
+Import BasicMetamodel IdTransformation.
+
 Goal
 forall 
-  (cm : BasicMetamodel.M)
+  (cm : M)
   
-  (H1 : In
-          (BasicMetamodel.Node {| Node_id := 1 |})
-          (modelElements cm))
-  (H2 : In (BasicMetamodel.Node {| Node_id := 2 |})
-         (modelElements cm)),
+  (H1 : In (Node {| Node_id := 1 |}) (modelElements cm))
+  (H2 : In (Node {| Node_id := 2 |}) (modelElements cm)),
 
-  In (BasicMetamodel.Node {| Node_id := 2 |})
-    (modelElements (execute T cm)).
+  In (Node {| Node_id := 2 |}) (modelElements (execute T cm)).
 Proof.
   idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
   idtac "Test case : choice between two assumptions.".
@@ -147,70 +156,78 @@ Proof.
   (* Success of the tactic expected *)
   Succeed 
     tryif
-      solve [TacticsFW.in_modelElements_singleton_fw_tac "state" "s" 0 H2 ; reflexivity ]  
+      TacticsFW.in_modelElements_singleton_fw_tac "state" "s" 0 H2 ;
+      reflexivity   
     then test_success
     else test_failure.
 
   (* Failure of the tactic expected *)
   Succeed 
     tryif
-      TacticsFW.in_modelElements_singleton_fw_tac "state" "s" 0 H1 ; reflexivity
+      TacticsFW.in_modelElements_singleton_fw_tac "state" "s" 0 H1 ;
+      reflexivity
     then test_failure
     else test_success.
 
 Abort.
 
+End Test3.
 
-(** Test 4 *)
+
+Section Test4.
+
 (** Tactic under test : TacticsFW.in_modelElements_singleton_fw_tac *)
 (** Test case : rules with several output patterns *)
 
-Require DoubleTransformation.
+Import  BasicMetamodel DoubleTransformation.
 
 Goal
 forall 
-  (cm : BasicMetamodel.M)
+  (cm : M)
   
-  (H : In
-          (BasicMetamodel.Arrow {| Arrow_id := 1 |})
-          (modelElements cm)),
+  (H : In (Arrow {| Arrow_id := 1 |}) (modelElements cm)),
 
-  In (BasicMetamodel.Arrow {| Arrow_id := 1 |}) (* same id *)
-    (modelElements (execute DoubleTransformation.T cm)).
+  In (Arrow {| Arrow_id := 1 |}) (modelElements (execute T cm)).
 Proof.
   idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
   idtac "Test case : rules with several output patterns (first pattern).".
 
   intros.
 
-
   (* Success of the tactic expected *)
   Succeed 
     tryif
-      solve [TacticsFW.in_modelElements_singleton_fw_tac "transition" "t" 0 H ; reflexivity ]  (* second rule, first pattern, it-count=0 *)
+      TacticsFW.in_modelElements_singleton_fw_tac "transition" "t" 0 H ; (* second rule, first pattern, it-count=0 *)
+      reflexivity   
     then test_success
     else test_failure.
   
   (* Failure of the tactic expected *)
   Succeed 
     tryif 
-      solve [TacticsFW.in_modelElements_singleton_fw_tac "transition" "back_t" 0 H ; reflexivity]  (* second rule, second pattern, it-count=0 *)
+      TacticsFW.in_modelElements_singleton_fw_tac "transition" "back_t" 0 H ; (* second rule, second pattern, it-count=0 *)
+      reflexivity  
     then test_failure
     else test_success.
 
 Abort.
 
+End Test4.
+
+
+Section Test5.
+
+Import BasicMetamodel DoubleTransformation.
 
 Goal
 forall 
-  (cm : BasicMetamodel.M)
+  (cm : M)
   
-  (H : In
-          (BasicMetamodel.Arrow {| Arrow_id := 1 |})
-          (modelElements cm)),
+  (H : In (Arrow {| Arrow_id := 1 |}) (modelElements cm)),
 
-  In (BasicMetamodel.Arrow {| Arrow_id := 2 |}) (* id incremented *)
-    (modelElements (execute DoubleTransformation.T cm)).
+  In 
+    (Arrow {| Arrow_id := 2 |}) (* id incremented *)
+    (modelElements (execute T cm)).
 Proof.
   idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
   idtac "Test case : rules with several output patterns (second pattern).".
@@ -220,19 +237,22 @@ Proof.
   (* Success of the tactic expected *)
   Succeed 
     tryif
-      solve [TacticsFW.in_modelElements_singleton_fw_tac "transition" "back_t" 0 H ; reflexivity ] (* second rule, second pattern, it-count = 0 *)
+      TacticsFW.in_modelElements_singleton_fw_tac "transition" "back_t" 0 H ; (* second rule, second pattern, it-count = 0 *)
+      reflexivity 
     then test_success
     else test_failure.
 
   (* Failure of the tactic expected *)
   Succeed 
     tryif
-      TacticsFW.in_modelElements_singleton_fw_tac "transition" "t" 0 H ; reflexivity (* failure comes frome reflexivity, not from the tactic *)
+      TacticsFW.in_modelElements_singleton_fw_tac "transition" "t" 0 H ; (* failure comes frome reflexivity, not from the tactic *)
+      reflexivity 
     then test_failure
     else test_success.
 
 Abort.
 
+End Test5.
 
 (** FIXME : Not tested : iteration-count > 0 *) 
 
