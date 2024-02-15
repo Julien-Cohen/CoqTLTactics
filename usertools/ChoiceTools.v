@@ -93,7 +93,7 @@ Local Ltac aux p :=
       | true =>  ChoiceTools.first_in_list
       | false =>  ChoiceTools.other_in_list ; aux p
       end 
-  | [ |- List.In _ List.nil ] =>  idtac "No such element found." ; exfalso 
+  | [ |- List.In _ List.nil ] => exfalso 
   end.
 
 (** On rule names *)

@@ -4,7 +4,12 @@ Import
   Metamodel Model NotationUtils List core.TransformationConfiguration.
 
 From usertools 
-  Require SemanticsTools ChoiceTools (*Backtracking*).
+  Require 
+  SemanticsTools 
+  ChoiceTools 
+  ConcreteExpressionTools 
+  SyntaxTools
+  ConcreteSyntaxTools.
 
 (** * FW Tactics on traces *)
 

@@ -1,5 +1,7 @@
 (** Utilities for tactics that need backtracking *)
 
+(** DEPRECATED *)
+
 From core 
   Require Import Model.
 
