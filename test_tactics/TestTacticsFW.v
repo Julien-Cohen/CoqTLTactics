@@ -12,6 +12,10 @@ Open Scope string_scope.
 From test_tactics
   Require BasicMetamodel IdTransformation DoubleTransformation.
 
+Require Class2Relational.Class2Relational.
+
+
+(** Tests for tactics on elements. *)
 
 Section Test1.
 
@@ -259,3 +263,61 @@ End Test5.
 (** FIXME : Not tested : guards that depend on the model *)
 
 (** FIXME : Not tested : pair patterns *)
+
+
+
+(** Tests for tactics on links. *)
+ 
+Section TestLink1.
+
+Import Glue ClassMetamodel RelationalMetamodel Class2Relational.
+
+Goal forall
+ (cm : ClassModel)
+  (i : nat)(i' : nat)
+  (n : string)(n' : string)
+  
+  (IN : 
+    In (AttributeElement 
+          {| 
+            Attribute_id := i ;
+            Attribute_derived := false ;
+            Attribute_name := n
+          |})
+      (modelElements cm)),
+    
+    In
+      (Column_referenceLink
+         (glue {| Column_id := i ; Column_name := n |} 
+           with {| Table_id := i'; Table_name := n' |}))
+    (modelLinks (execute Class2Relational cm)).
+Proof.
+  idtac "Testing TacticsFW.transform_link_fw_tac_singleton".
+  idtac "Test case : ".
+
+  intros. 
+
+  tryif
+    TacticsFW.transform_link_fw_tac_singleton "Attribute2Column" "col" 0 IN ;
+    [ (* guard *) reflexivity 
+    | (* make_element *) reflexivity  
+    |  ] ;
+
+    (* The execution of the tactic must succeed, and the resulting goal must have the following shape. *)
+
+    match goal with 
+     | [ |- In 
+             (Column_referenceLink _) 
+             (apply_link_pattern (compute_trace Class2Relational cm) cm _) ] => 
+        idtac 
+          
+     | [ |- _] => fail 
+    end
+  then test_success
+  else test_failure.
+
+
+Abort.
+
+
+End TestLink1.
