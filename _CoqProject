@@ -60,6 +60,7 @@ test_tactics/BasicMetamodel.v
 test_tactics/IdTransformation.v
 test_tactics/DoubleTransformation.v
 test_tactics/TestChoiceTools.v
+test_tactics/TestConcreteExpressionTools.v
 test_tactics/TestTacticsFW.v
 test_tactics/TestTacticsBW.v
 
