@@ -24,10 +24,12 @@ Section Test1.
 
 Import BasicMetamodel IdTransformation.
 
+Context 
+  (m : M) 
+    (s : Node_t) 
+    (IN1 : In (Node s) (modelElements m)).
+
 Goal 
-  forall (m : M)
-         (s : Node_t)
-         (IN1 : In (Node s) (modelElements m)),
   exists p, 
      @In (@TraceLink.TraceLink Id_TransformationConfiguration)
       {|
@@ -40,7 +42,7 @@ Proof.
   idtac "Testing TacticsFW.in_compute_trace_inv_singleton_fw".
   idtac "Test case : the convenient assumption is in the context.".
 
-  intros. eexists.
+  eexists.
 
 (* Success of the tactic expected *)
   Succeed
@@ -92,12 +94,12 @@ Section Test2.
 
 Import BasicMetamodel IdTransformation.
 
-Goal 
-  forall 
+Context
     (cm : M)
     (H1 : In (Node {| Node_id := 1 |}) (modelElements cm))
-    (H2 : In (Node {| Node_id := 2 |}) (modelElements cm)),
-    
+    (H2 : In (Node {| Node_id := 2 |}) (modelElements cm)).
+
+Goal    
   exists
     (s : list Element) 
     (n : string) 
@@ -143,19 +145,16 @@ Section Test3.
 
 Import BasicMetamodel IdTransformation.
 
-Goal
-forall 
+Context 
   (cm : M)
-  
-  (H1 : In (Node {| Node_id := 1 |}) (modelElements cm))
-  (H2 : In (Node {| Node_id := 2 |}) (modelElements cm)),
+    (H1 : In (Node {| Node_id := 1 |}) (modelElements cm))
+    (H2 : In (Node {| Node_id := 2 |}) (modelElements cm)).
 
+Goal
   In (Node {| Node_id := 2 |}) (modelElements (execute T cm)).
 Proof.
   idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
   idtac "Test case : choice between two assumptions.".
-
-  intros.
 
   (* Success of the tactic expected *)
   Succeed 
@@ -185,18 +184,16 @@ Section Test4.
 
 Import  BasicMetamodel DoubleTransformation.
 
-Goal
-forall 
+Context
   (cm : M)
-  
-  (H : In (Arrow {| Arrow_id := 1 |}) (modelElements cm)),
+    (H : In (Arrow {| Arrow_id := 1 |}) (modelElements cm)).
 
+Goal
   In (Arrow {| Arrow_id := 1 |}) (modelElements (execute T cm)).
+
 Proof.
   idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
   idtac "Test case : rules with several output patterns (first pattern).".
-
-  intros.
 
   (* Success of the tactic expected *)
   Succeed 
@@ -223,20 +220,17 @@ Section Test5.
 
 Import BasicMetamodel DoubleTransformation.
 
-Goal
-forall 
+Context
   (cm : M)
-  
-  (H : In (Arrow {| Arrow_id := 1 |}) (modelElements cm)),
+    (H : In (Arrow {| Arrow_id := 1 |}) (modelElements cm)).
 
+Goal
   In 
     (Arrow {| Arrow_id := 2 |}) (* id incremented *)
     (modelElements (execute T cm)).
 Proof.
   idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
   idtac "Test case : rules with several output patterns (second pattern).".
-
-  intros.
 
   (* Success of the tactic expected *)
   Succeed 
@@ -272,7 +266,7 @@ Section TestLink1.
 
 Import Glue ClassMetamodel RelationalMetamodel Class2Relational.
 
-Goal forall
+Context
  (cm : ClassModel)
   (i : nat)(i' : nat)
   (n : string)(n' : string)
@@ -284,18 +278,17 @@ Goal forall
             Attribute_derived := false ;
             Attribute_name := n
           |})
-      (modelElements cm)),
-    
+      (modelElements cm)).
+
+Goal    
     In
       (Column_referenceLink
          (glue {| Column_id := i ; Column_name := n |} 
            with {| Table_id := i'; Table_name := n' |}))
     (modelLinks (execute Class2Relational cm)).
-Proof.
+Proof. 
   idtac "Testing TacticsFW.transform_link_fw_tac_singleton".
   idtac "Test case : ".
-
-  intros. 
 
   tryif
     TacticsFW.transform_link_fw_tac_singleton "Attribute2Column" "col" 0 IN ;
