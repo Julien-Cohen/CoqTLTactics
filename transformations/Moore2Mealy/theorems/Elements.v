@@ -97,26 +97,72 @@ Proof.
   reflexivity. 
 Qed.
 
-Import Syntax. (* for notations *)
+Import Semantics Syntax List Model UserExpressions. (* for notations *)
+
+Lemma in_modelElements_inv_m2m :
+  forall (sm:Moore.M) e s n lp, 
+    In 
+      {| 
+        TraceLink.source := (s, 0, n);
+        TraceLink.produced := e ;
+        TraceLink.linkPattern := lp 
+      |} 
+      (compute_trace Moore2Mealy sm) ->
+    In e (execute Moore2Mealy sm).(modelElements) .
+Proof.
+  setoid_rewrite in_map_iff.
+  intros.
+  repeat first [eexists | split | eassumption].
+  reflexivity.
+Qed.
+
+Lemma in_compute_trace_inv_m2m (sm:Moore.M) :
+  forall s n res l r opu_el,
+      In r Moore2Mealy.(rules) ->
+      In {| 
+          opu_name := n ;
+          opu_element := opu_el ;
+          opu_link := l
+        |}
+        r.(r_outputPattern) ->
+       incl s (modelElements sm) ->
+       evalGuard r sm s = true ->
+       length s = 1 ->
+       In 0 (seq 0 (evalIterator r sm s)) ->       
+       opu_el 0 sm s = Some res ->
+       In 
+         {| 
+           TraceLink.source := (s, 0, n); 
+           TraceLink.produced := res ; 
+           TraceLink.linkPattern := l 
+         |}
+         (compute_trace Moore2Mealy sm). 
+
+Proof. 
+  intros.
+  apply <- SemanticsTools.in_compute_trace_inv. 
+  repeat first [ split | eexists | eauto] ;
+  simpl.
+  + apply PeanoNat.Nat.eq_le_incl ; auto.
+Qed.
+
 
 Lemma state_element_fw_unfolded  
-  (s:Moore.State_t)
-  (IN : List.In (Moore.State s) (Model.modelElements m)) :
-  List.In 
+  (s:Moore.State_t) (sm:Moore.M)
+  (IN : In (Moore.State s) sm.(modelElements)) :
+  In 
     (Mealy.State (convert_state s))  
-    (Semantics.execute Moore2Mealy m).(Model.modelElements).
+    (execute Moore2Mealy sm).(modelElements).
 Proof. 
-  apply <- SemanticsTools.in_modelElements_inv.
-  eexists. exists 0. eexists. eexists.
-  eapply SemanticsTools.in_compute_trace_inv_left.
-  - (*1*) solve [ChoiceTools.rule_named "state"].
-  - (*2*) solve [ChoiceTools.pattern_named "s"].
-  - (*3*) apply ListUtils.incl_singleton.
-    exact IN.
-  - (*4*) reflexivity. (* simple enough for reflexivity *)
-  - (*5*) solve [simpl ; auto]. 
-  - (* 6 *) solve [simpl ; auto ].
-  - (* 7 *) reflexivity. (* simple enough for reflexivity *)
+  eapply in_modelElements_inv_m2m.
+  eapply in_compute_trace_inv_m2m.
+  - (*1*) ChoiceTools.rule_named "state".
+  - (*2*) ChoiceTools.pattern_named "s".
+  - (*3*) apply ListUtils.incl_singleton; exact IN.
+  - (*4*) reflexivity. 
+  - (*5*) simpl ; auto. 
+  - (*6*) simpl ; auto.
+  - (*7*) reflexivity. 
 Qed.
 
 (* FW without new tactics *)

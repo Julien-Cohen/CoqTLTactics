@@ -48,7 +48,7 @@ Definition Moore2Mealy :=
 
 ## Installation
 
-CoqTL requires a working installation of [Coq](https://coq.inria.fr/) (`coqc` and `coq_makefile` in the path). It is tested under Coq 8.17.0 and 8.18.0.
+CoqTL requires a working installation of [Coq](https://coq.inria.fr/) (`coqc` and `coq_makefile` in the path). It is tested under Coq 8.19.0.
 
 To install CoqTL:
 ```
