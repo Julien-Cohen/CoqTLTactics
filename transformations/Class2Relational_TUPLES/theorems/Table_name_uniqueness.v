@@ -5,7 +5,7 @@
       have unique name.
  **)
 
-Require Import Coq.Arith.Gt.
+
 Require Import Coq.Arith.EqNat.
 Require Import List.
 Require Import String.

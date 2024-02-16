@@ -5,7 +5,7 @@
  **)
 
 Require Import Coq.Logic.Eqdep_dec.
-Require Import Coq.Arith.Gt.
+
 Require Import Coq.Arith.EqNat.
 Require Import List.
 Require Import String.

@@ -3,6 +3,7 @@ Require Import String.
 Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.TransformationConfiguration.
+Require Import PeanoNat.
 
 (** * Syntax
 
@@ -62,7 +63,7 @@ Proof.
   simpl.
   unfold getSourcePiece, getIteration, getName ; simpl.
   rewrite list_beq_refl ; [ | ].
-  + rewrite NPeano.Nat.eqb_refl.
+  + rewrite PeanoNat.Nat.eqb_refl.
     rewrite String.eqb_refl. 
     reflexivity.
   + intro. 
@@ -79,7 +80,7 @@ Proof.
   simpl. destruct source0 ; simpl in *.
   BoolUtils.destruct_conjunctions.
   destruct p ; simpl in *.
-  apply EqNat.beq_nat_true_stt in H1 ; subst .
+  apply PeanoNat.Nat.eqb_eq in H1 ; subst .
   apply String.eqb_eq in H0 ; subst.
   apply list_beq_correct in H ; subst.
   + reflexivity.

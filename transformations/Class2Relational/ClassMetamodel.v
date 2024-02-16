@@ -2,7 +2,7 @@
 Require Import String.
 Require Import Bool.
 Require Import List.
-Require Import PeanoNat.
+Require Import Nat.
 Require Import EqNat.
 
 (** Imports CoqTL *)

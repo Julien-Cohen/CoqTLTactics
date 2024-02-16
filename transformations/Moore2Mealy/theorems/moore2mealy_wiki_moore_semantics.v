@@ -207,7 +207,7 @@ Proof.
   intros p q0 I.
   destruct I as [ | S_I] ; simpl eval.
   - auto.
-  - apply Arith_prebase.gt_Sn_O_stt.
+  - apply Arith_base.gt_Sn_O_stt.
 Qed.
 
 (* Theorem: the output length of mealy machine 
@@ -234,7 +234,7 @@ Proof.
         rewrite PeanoNat.Nat.sub_1_r in IHI.
         rewrite <- IHI.
         rewrite PeanoNat.Nat.succ_pred_pos.
-        rewrite Arith_prebase.minus_n_O_stt.
+        rewrite Arith_base.minus_n_O_stt.
         reflexivity.
         apply moore_output_length.
       * symmetry. apply compile_correct_ca2. assumption.
@@ -279,7 +279,7 @@ Proof.
         rewrite s_of_P in hL.
         simpl in hL.
         remember {| id := id0; output := output0 |} as nd.
-        apply Arith_prebase.lt_S_n_stt in hL.
+        apply Arith_base.lt_S_n_stt in hL.
         specialize (IHI nd n hL).
         assumption.
     + (* input pair is not matched by moore machine *)
