@@ -110,31 +110,23 @@ Proof.
 Qed.    
 
 (** Variant of the previous lemma with reordered terms in the conjuntion. This should be easier to use in tactics (solving terms from left to right instantiates evars in a convenient way ; for instance, if s is an evar, instanciating the rule helps to fix the type of s, to that there is a smaller choice to instanciate s). *)
-Lemma in_compute_trace_inv_reordered {tc : TransformationConfiguration} tr sm :
-  forall s i n res l,
-  In 
-    {| source := (s, i, n); produced := res ; linkPattern := l |}
-    (compute_trace tr sm) 
-  <-> 
-    exists r : Rule,
-      In r tr.(rules)
-                
-      /\ exists opu_el,
-        In {| opu_name := n ; opu_element := opu_el ; opu_link := l |} r.(r_outputPattern)
-        /\ incl s (modelElements sm) 
-        /\ UserExpressions.evalGuard r sm s = true 
-        /\ length s <= tr.(arity)
-        /\ In i (seq 0 (UserExpressions.evalIterator r sm s))        
-        /\  opu_el i sm s = Some res.
-Proof.
+Lemma in_compute_trace_inv_left (tc : TransformationConfiguration) (tr: @Transformation tc) sm :
+  forall s i n res l r opu_el,
+      In r tr.(rules) ->
+      In {| opu_name := n ; opu_element := opu_el ; opu_link := l |} r.(r_outputPattern) ->
+       incl s (modelElements sm) ->
+       UserExpressions.evalGuard r sm s = true ->
+       length s <= tr.(arity) ->
+       In i (seq 0 (UserExpressions.evalIterator r sm s)) ->        
+       opu_el i sm s = Some res ->
+       In 
+         {| source := (s, i, n); produced := res ; linkPattern := l |}
+         (compute_trace tr sm). 
+
+Proof. 
   intros .
-  split ; intro H.
-  + apply in_compute_trace_inv in H.
-    destruct H as (?&?&?&?&?&?&?&?&?).
-    eauto 10.
-  + apply in_compute_trace_inv.
-    destruct H as (?&?&?&?&?&?&?&?&?).
-    eauto 10.
+  apply in_compute_trace_inv.
+  eauto 10.
 Qed.
 
 
@@ -145,16 +137,10 @@ Ltac in_compute_trace_inv_tac :=
   match goal with 
   | [ |- List.In _ (compute_trace ?T _)] =>
 
-      (* Action 1 *)
-      apply <- SemanticsTools.in_compute_trace_inv_reordered ; 
+      (* Action *)
+      eapply SemanticsTools.in_compute_trace_inv_left ; 
       
-      (* Action 2 : split the conjunction *)
-      eexists ; split ; [ 
-      | eexists ; split ; [ 
-        | split ; [ 
-          | split ; [ 
-            | split ; [ 
-              | split ; [ | ]]]]]] ;
+      
       
       (* Post-condition : 7 goals *)
       [ | | | | | | ]

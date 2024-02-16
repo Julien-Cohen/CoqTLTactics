@@ -108,22 +108,15 @@ Lemma state_element_fw_unfolded
 Proof. 
   apply <- SemanticsTools.in_modelElements_inv.
   eexists. exists 0. eexists. eexists.
-  apply <- SemanticsTools.in_compute_trace_inv_reordered.
-  eexists.
-  split.
+  eapply SemanticsTools.in_compute_trace_inv_left.
   - (*1*) solve [ChoiceTools.rule_named "state"].
-  - eexists. split. 
-    + (*2*) solve [ChoiceTools.pattern_named "s"].
-    + split.
-      * (*3*) apply ListUtils.incl_singleton.
-        exact IN.
-      * split. 
-        -- (*4*) reflexivity. (* simple enough for reflexivity *)
-        -- split.
-           ++ (*5*) solve [simpl ; auto]. 
-           ++ split.
-             ** (* 6 *) solve [simpl ; auto ].
-             ** (* 7 *) reflexivity. (* simple enough for reflexivity *)
+  - (*2*) solve [ChoiceTools.pattern_named "s"].
+  - (*3*) apply ListUtils.incl_singleton.
+    exact IN.
+  - (*4*) reflexivity. (* simple enough for reflexivity *)
+  - (*5*) solve [simpl ; auto]. 
+  - (* 6 *) solve [simpl ; auto ].
+  - (* 7 *) reflexivity. (* simple enough for reflexivity *)
 Qed.
 
 (* FW without new tactics *)

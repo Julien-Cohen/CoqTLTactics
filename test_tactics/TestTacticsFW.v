@@ -5,7 +5,7 @@ Require TacticsFW.
 
 
 Import 
-  List Model String NotationUtils Semantics PoorTraceLink  NotationUtils Semantics.
+  List Model String NotationUtils Semantics PoorTraceLink  NotationUtils.
 
 Open Scope string_scope.
 
