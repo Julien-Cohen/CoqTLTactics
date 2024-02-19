@@ -238,13 +238,14 @@ Ltac exploit_element_in_result IN :=
       let i := fresh "i" in
       let n := fresh "n" in
       let p := fresh "p" in
+      let IN_EXPL := fresh "IN_EXPL" in
       
       (* 1: make the trace appear *)
       apply -> SemanticsTools.in_modelElements_inv in IN ;
-      destruct IN as (s & i & n & p & IN) ;
+      destruct IN as (s & i & n & p & IN_EXPL) ;
       
       (* 2: exploit the trace *)
-      exploit_in_trace IN
+      exploit_in_trace IN_EXPL
   end.
 
 
@@ -252,13 +253,14 @@ Ltac exploit_link_in_result IN :=
   match type of IN with 
   | In _ (execute _ _).(modelLinks) =>
       let IN_L := fresh "IN_L" in
+      let IN_EXPL := fresh "IN_EXPL" in
   
       (* 1: make the trace appear *)
       apply -> SemanticsTools.in_modelLinks_inv in IN ;
-      destruct IN as (? & ? & ? & ? & ? & IN & IN_L) ;
+      destruct IN as (? & ? & ? & ? & ? & IN_EXPL & IN_L) ;
       
       (* 2: exploit the trace *)
-      exploit_in_trace IN ;
+      exploit_in_trace IN_EXPL ;
       
       (* 3: exploit link creation code *)
       exploit_In_apply_link IN_L

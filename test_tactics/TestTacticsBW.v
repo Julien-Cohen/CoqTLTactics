@@ -7,12 +7,48 @@ Import
 
 Open Scope string_scope.
 
-Require Class2Relational.Class2Relational.
+Require BasicMetamodel IdTransformation Class2Relational.Class2Relational.
 
 
 (** Tests for tactics on elements. *)
 
-Section Test1.
+Section TestElement1.
+
+(* Tactic under test : [TacticsBW.exploit_element_in_result] *)
+(* Test case : *)
+
+  Import BasicMetamodel IdTransformation.
+
+Context 
+    (cm : M) (i : nat).
+  
+Context (H : In 
+                  (Node {| Node_id := i |})
+                  (modelElements (execute T cm))).
+
+  Goal   False.  
+       
+  
+  Proof.
+    idtac "Testing TacticsBW.exploit_element_in_result".
+    idtac "Test case : ".
+
+
+  tryif
+    TacticsBW.exploit_element_in_result H 
+  then
+   match goal with 
+    | [ _ : In (Node {| Node_id := i |}) (modelElements cm) |- _ ] => test_success  
+    | _ => test_failure
+    end 
+  
+  else test_failure.
+    
+  Abort.
+  
+End TestElement1.
+
+Section TestElement2.
 
 (* Tactic under test : [TacticsBW.exploit_element_in_result] *)
 (* Test case : *)
@@ -20,16 +56,19 @@ Section Test1.
   Import ClassMetamodel RelationalMetamodel Class2Relational.
 
   Context 
-    (cm : ClassModel) (i : nat) (n : string).
+    (cm : ClassModel) 
+    (i : nat) 
+    (n : string)
   
-  Goal
-    forall (H : In 
+    (H : In 
                   (TableElement 
                      {|
                        Table_id := i;
                        Table_name := n 
                      |})
-                  (modelElements (execute Class2Relational cm))),
+                  (modelElements (execute Class2Relational cm))).
+
+  Goal
     exists c, 
       In (ClassElement c) (modelElements cm) 
       /\ c.(Class_id) = i 
@@ -39,22 +78,59 @@ Section Test1.
     idtac "Testing TacticsBW.exploit_element_in_result".
     idtac "Test case : ".
 
-    intros.    
-
     tryif 
       TacticsBW.exploit_element_in_result H ; [] ;
-      solve [eauto]
+      eexists ; split ; [ | split ; [ | ]] ; 
+      [ eassumption | reflexivity | reflexivity ]  
     then test_success
     else test_failure.
     
   Abort.
   
-End Test1.
+End TestElement2.
+
+
+Section TestElement2ALT.
+
+(* Tactic under test : [TacticsBW.exploit_element_in_result] *)
+(* Test case : *)
+
+  Import ClassMetamodel RelationalMetamodel Class2Relational.
+
+  Context 
+    (cm : ClassModel) 
+    (i : nat) 
+    (n : string)
+ 
+    (H : In 
+           (TableElement {| Table_id := i; Table_name := n |})
+           (modelElements (execute Class2Relational cm))).
+
+  Goal False.
+  
+  Proof.
+    idtac "Testing TacticsBW.exploit_element_in_result".
+    idtac "Test case : The generated hypothesis contains all the information on the source element.".
+
+  tryif
+    TacticsBW.exploit_element_in_result H 
+  then
+   match goal with 
+    | [ _ : In (ClassElement {| Class_id := i ; Class_name := n|}) (modelElements cm) |- _ ] => 
+          test_success  
+    | _ => test_failure
+    end 
+  
+  else test_failure.
+      
+  Abort.
+  
+End TestElement2ALT.
+
+
 
 
 (** Tests for tactics on links. *)
-
-
 
 Section TestLink1.
 
@@ -65,12 +141,13 @@ Section TestLink1.
   Import Glue.
   
   Context
-    (cm : ClassModel) (c : Column_t) (tb : Table_t).
+    (cm : ClassModel) 
+    (c : Column_t) 
+    (tb : Table_t)
+    (R_IN1 : In (Column_referenceLink (glue c with tb))
+                 (modelLinks (execute Class2Relational cm))).
 
-Goal forall
-      (R_IN1 : In (Column_referenceLink (glue c with tb))
-                 (modelLinks (execute Class2Relational cm))),
-
+  Goal 
      (* We expect to find the following in the hypothesis *)
     exists t e, 
       In (AttributeElement t) (modelElements cm) 
@@ -84,9 +161,7 @@ Goal forall
   Proof.
     idtac "Testing TacticsBW.exploit_link_in_result".
     idtac "Test case : ".
-
-    intros. 
-    
+  
 
     tryif 
       TacticsBW.exploit_link_in_result R_IN1 ; [] ;
