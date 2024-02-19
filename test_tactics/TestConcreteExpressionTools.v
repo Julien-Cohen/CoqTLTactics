@@ -19,7 +19,7 @@ Section TestOther1.
   
   Context 
     (cm : ClassModel) 
-      (t : Attribute_t)
+      (a : Attribute_t)
 
       (l : list RelationalMetamodel.Link)
 
@@ -34,24 +34,41 @@ Section TestOther1.
                 ModelingSemantics.resolve thisModule "tab" Table_K
                   (ListUtils.singleton a_type); do_glue c with res)
              (TraceLink.drop (Semantics.compute_trace Class2Relational cm)) 0 cm
-             [AttributeElement t]
+             [AttributeElement a]
              (ColumnElement
                 {|
-                  Column_id := Attribute_id t;
-                  Column_name := Attribute_name t
+                  Column_id := Attribute_id a;
+                  Column_name := Attribute_name a
                 |}) = return l).
   
-  Goal False.
+  Goal 
+    exists a_type, 
+      getAttribute_typeElement a cm = return a_type  
+      /\ exists res,
+        ModelingSemantics.resolve
+          (TraceLink.drop (compute_trace Class2Relational cm)) "tab"
+          Table_K (ListUtils.singleton a_type) = return res
+        /\      l = [Column_referenceLink
+                       (glue {|
+                            Column_id := Attribute_id a;
+                            Column_name := Attribute_name a
+                          |} with res)]
+  .
   
   Proof. 
     idtac "Testing ConcreteExpressionTools.inv_makeLink.".
     idtac "Test case : ".
-    
+
     tryif 
-      ConcreteExpressionTools.inv_makeLink H
+      ConcreteExpressionTools.inv_makeLink H ;
+      unfold get_E_data in EQ ;
+    injection EQ ; clear EQ ; intro EQ ; subst ;
+      eexists ;
+      split ; [ | eexists ; split] ; [ reflexivity | eassumption | reflexivity ]
+      
     then test_success
     else test_failure.
-    
+
   Abort.  
   
 End TestOther1.
