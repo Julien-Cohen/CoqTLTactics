@@ -24,33 +24,76 @@ Section Test1.
 
 Import BasicMetamodel IdTransformation.
 
+(* Preparation of data. *)
+
+(* The transformation. *)
+Definition T := IdTransformation.T.
+
+(* The link_producer in the "state" rule of the transformation. *)
+Definition T_state_link_producer:Syntax.link_producer.
+  remember T.(Syntax.rules) as r.
+  destruct r eqn:? ; [discriminate | ].
+  destruct r0 eqn:?.
+  destruct r_outputPattern eqn:? ; [ discriminate | ].
+  destruct o eqn:?.
+  exact opu_link.
+Defined.
+
+(* Preparation of the goal *)
 Context 
   (m : M) 
-    (s : Node_t) 
-    (IN1 : In (Node s) (modelElements m)).
+  (s : Node_t) 
+  (IN1 : In (Node s) (modelElements m)).
 
 Goal 
-  exists p, 
      @In (@TraceLink.TraceLink Id_TransformationConfiguration)
       {|
         TraceLink.source := ([Node s], 0, "s");
         TraceLink.produced := Node s;
-        TraceLink.linkPattern := p
+        TraceLink.linkPattern := T_state_link_producer
       |} (compute_trace T m)
 .
 Proof.
   idtac "Testing TacticsFW.in_compute_trace_inv_singleton_fw".
-  idtac "Test case : the convenient assumption is in the context.".
+  idtac "Test case : the convenient assumption is in the context and convenient parameters are given to the tactic.".
 
-  eexists.
+  (* Execution of the tactic.*)
 
-(* Success of the tactic expected *)
   Succeed
-    tryif  
+    tryif
       TacticsFW.in_compute_trace_inv_singleton_fw "state" "s" IN1 ;
-      reflexivity   
+
+      (* Oracle *)
+
+      (* 1) the tactic should not fail *)
+
+      (* 2) The tactic should leave 2 subgoals *)
+      [ | ] ;
+
+      (* 3) The first subgoal must have a given shape. *)
+      only 1:
+        match goal with 
+        | [ |- ConcreteExpressions.makeEmptyGuard [Node_K] m [Node s] = true ] => 
+            idtac
+        | _ =>
+            fail
+        end ;
+      
+      (* 4) The second subgoal must have a given shape. *)
+      only 2 : 
+        match goal with
+        | [ |- ConcreteExpressions.makeElement [Node_K] Node_K _ 0 m [Node s] = return Node s ] =>
+            idtac 
+        | _ =>
+            fail 
+        end
+          
+        
     then test_success
     else test_failure.
+  
+  
+  idtac "Test case : the convenient assumption is in the context but incorrect parameters are given to the tactic.".
 
 (* Failure of the tactic expected with incorrect parameters *)
  Succeed 
