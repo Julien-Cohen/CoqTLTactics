@@ -180,7 +180,7 @@ Proof.
 
   C2RTactics.exploit_guard MATCH_GUARD.
 
-  destruct t1 ; simpl in *. subst derived. 
+  destruct e ; simpl in *. subst derived. 
   assumption.
 Qed.
 
@@ -200,6 +200,6 @@ Proof.
   TacticsBW.exploit_element_in_result H ; []. 
 
   
-  destruct t0 ; assumption.
+  destruct e ; assumption.
 
 Qed.

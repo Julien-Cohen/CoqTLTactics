@@ -20,9 +20,9 @@ Section TestElement1.
   Import BasicMetamodel IdTransformation.
 
 Context 
-    (cm : M) (i : nat).
-  
-Context (H : In 
+    (cm : M) 
+    (i : nat)
+    (H : In 
                   (Node {| Node_id := i |})
                   (modelElements (execute T cm))).
 
@@ -32,7 +32,6 @@ Context (H : In
   Proof.
     idtac "Testing TacticsBW.exploit_element_in_result".
     idtac "Test case : ".
-
 
   tryif
     TacticsBW.exploit_element_in_result H 
@@ -47,6 +46,7 @@ Context (H : In
   Abort.
   
 End TestElement1.
+
 
 Section TestElement2.
 
@@ -126,8 +126,6 @@ Section TestElement2ALT.
   Abort.
   
 End TestElement2ALT.
-
-
 
 
 (** Tests for tactics on links. *)

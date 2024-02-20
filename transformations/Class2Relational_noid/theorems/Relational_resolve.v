@@ -78,7 +78,7 @@ Proof.
 
   (* Exploit MATCH_GUARD *)
   C2RTactics.negb_inv MATCH_GUARD.
-  destruct t ; simpl in MATCH_GUARD ; subst Attribute_derived.
+  destruct e0 ; simpl in MATCH_GUARD ; subst Attribute_derived.
 
   (* Exploit IN_L *)
   (* IN_L contains the code of the link-pattern in the rule. *)
@@ -119,7 +119,7 @@ Proof.
 
 
   TacticsBW.exploit_element_in_result IN_COL (* or apply Elements.transform_attribute_bw (moins puissant car on perd l'info sur la garde) *) ; [].
-  compute in t0.
+  compute in e.
 
   C2RTactics.negb_inv MATCH_GUARD.
   
@@ -127,7 +127,7 @@ Proof.
   destruct PRE as (c & G1).
 
   
-  destruct t0.  
+  destruct e.  
   unfold C2RTactics.convert_attribute.
   simpl (ClassMetamodel.Attribute_name _) in *. 
    simpl ClassMetamodel.Attribute_derived in *. (* derived a = false *)

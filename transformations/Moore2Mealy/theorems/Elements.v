@@ -204,7 +204,7 @@ Lemma transition_element_bw :
 Proof.
   intros t H.
   TacticsBW.exploit_element_in_result H.
-  exists t1.
+  exists e.
   split ; auto. 
 Qed.
 

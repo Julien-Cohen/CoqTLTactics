@@ -114,7 +114,7 @@ Proof.
 
   C2RTactics.negb_inv MATCH_GUARD.
 
-  destruct t0 ; simpl in *. subst Attribute_derived. 
+  destruct e ; simpl in *. subst Attribute_derived. 
   assumption.
   
 Qed.
@@ -134,6 +134,6 @@ Proof.
 
   TacticsBW.exploit_element_in_result H ; [].
 
-  destruct t0 ; assumption.
+  destruct e ; assumption.
 
 Qed.

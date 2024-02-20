@@ -224,7 +224,7 @@ Proof.
     (* Exploit EQ0 *)
     PropUtils.inj EQ0.
 
-    assert (S: SUCCESS (Moore.getTransition_source m t)).
+    assert (S: SUCCESS (Moore.getTransition_source m e0)).
     { apply WF_S. assumption. }
     destruct S as ( s1 & GS ).
 
@@ -240,19 +240,19 @@ Proof.
     rename EQ0 into R.    
     compute in IN_L.
     
-    destruct t0 ; [ PropUtils.inj IN_L | discriminate IN_L].
+    destruct t ; [ PropUtils.inj IN_L | discriminate IN_L].
 
     (* Exploit resolve *)
     apply ResolveTools.tr_resolve_leaf in R. 
     
     apply Moore.getTransition_source_inv in GS. 
     
-    compute in t.
+    compute in e0.
     
     unfold convert_transition in EQ.
     monadInv EQ.
 
-    destruct t as (id & i) ; simpl in *.
+    destruct e0 as (id & i) ; simpl in *.
 
     TacticsBW.exploit_in_trace R.
     
@@ -285,7 +285,7 @@ Proof.
   (* Exploit EQ0 *)
   PropUtils.inj EQ0.
   
-  compute in t.
+  compute in e0.
 
   (* Exploit EQ. *)
   unfold convert_transition in EQ. monadInv EQ.
@@ -315,7 +315,8 @@ Proof.
   TacticsBW.exploit_in_trace R ; [].
   PropUtils.inj E0.
   split ; [ reflexivity | ].
-  destruct t as (id & i) ; simpl.
+  destruct e0.
+  destruct t0 as (id & i) ; simpl.
   exact EQ.
 Qed.
 

@@ -9,7 +9,8 @@ Open Scope string_scope.
 
 Require Class2Relational.Class2Relational.
 
-Section TestOther1.
+
+Section TestInvMakeLink.
 
 (* Tactic under test : [ConcreteExpressionTools.inv_makeLink] *)
 (* Test case : *)
@@ -19,11 +20,11 @@ Section TestOther1.
   
   Context 
     (cm : ClassModel) 
-      (a : Attribute_t)
+    (a : Attribute_t)
 
-      (l : list RelationalMetamodel.Link)
+    (l : list RelationalMetamodel.Link)
 
-      (H : ConcreteExpressions.makeLink [Attribute_K] Column_K
+    (H : ConcreteExpressions.makeLink [Attribute_K] Column_K
              Column_reference_K
              (fun (thisModule : Trace) (_ : nat)
                   (m : TransformationConfiguration.SourceModel)
@@ -33,7 +34,9 @@ Section TestOther1.
               res <-
                 ModelingSemantics.resolve thisModule "tab" Table_K
                   (ListUtils.singleton a_type); do_glue c with res)
-             (TraceLink.drop (Semantics.compute_trace Class2Relational cm)) 0 cm
+             (TraceLink.drop (Semantics.compute_trace Class2Relational cm)) 
+             0 
+             cm
              [AttributeElement a]
              (ColumnElement
                 {|
@@ -71,4 +74,94 @@ Section TestOther1.
 
   Abort.  
   
-End TestOther1.
+End TestInvMakeLink.
+
+Section TestInvMakeLink2.
+
+(* Tactic under test : [ConcreteExpressionTools.inv_makeLink] *)
+(* Test case : *)
+
+  Import ClassMetamodel RelationalMetamodel Class2Relational.
+  Import Glue.
+  
+  Context 
+    (cm : ClassModel) 
+    (a : Attribute_t)
+  
+    (l : list RelationalMetamodel.Link)
+    (lk: RelationalMetamodel.Column_reference_glue)
+    (tr:Trace)  
+
+    (H : ConcreteExpressions.makeLink 
+          [Attribute_K] 
+          Column_K
+          Column_reference_K
+          (fun (thisModule : Trace) (_ : nat)
+                  (m : TransformationConfiguration.SourceModel)
+                  (_ : Attribute_t)
+                  (c : Column_t) => return lk  
+            )
+          tr  
+          0
+          cm
+          [AttributeElement a]
+          (ColumnElement
+                {|
+                  Column_id := Attribute_id a;
+                  Column_name := Attribute_name a
+                |}
+          )
+        = return l).
+  
+  Goal 
+   l=[Column_referenceLink lk].
+
+  
+  Proof. 
+    idtac "Testing ConcreteExpressionTools.inv_makeLink.".
+    idtac "Test case : ".
+
+  tryif
+    ConcreteExpressionTools.inv_makeLink H ; reflexivity
+  then test_success
+  else test_failure. 
+
+  Abort.  
+  
+End TestInvMakeLink2.
+
+
+Section TestWrapInv.
+
+(* Tactic under test : [ConcreteExpressionTools.wrap_inv] *)
+(* Test case : *)
+
+  Import ClassMetamodel RelationalMetamodel Class2Relational.
+  Import Glue.
+
+Context
+ (cm : ClassModel)
+ (i : nat)
+ (n : string)
+ (t : Class_t)
+ (IN_ELTS : incl [ClassElement t] (modelElements cm))
+ (H : ConcreteExpressions.wrap [Class_K]
+       (fun c : Class_t =>
+        return {| Table_id := Class_id c; Table_name := Class_name c |})
+       [ClassElement t] =
+     return (return {| Table_id := i; Table_name := n |})).
+
+Goal False. 
+
+Proof.
+    idtac "Testing ConcreteExpressionTools.wrap_inv.".
+    idtac "Test case : ".
+
+ tryif
+   ConcreteExpressionTools.wrap_inv H
+ then test_success
+ else test_failure.  
+
+Abort.
+
+End TestWrapInv.

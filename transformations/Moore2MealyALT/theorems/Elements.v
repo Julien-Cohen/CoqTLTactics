@@ -152,7 +152,7 @@ Proof.
   TacticsBW.exploit_element_in_result H.
   PropUtils.destruct_match_H EQ ; [ | discriminate ].
   PropUtils.inj EQ.
-  exists t1.
+  exists e.
   unfold convert_transition ; rewrite Heqo.
   auto.
 Qed.

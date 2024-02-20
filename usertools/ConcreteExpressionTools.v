@@ -106,30 +106,36 @@ Qed.
 Ltac wrap_inv H :=
    match type of H with
    | ConcreteExpressions.wrap (cons _ _) _ (cons _ _) = Some  _ =>
-       let e := fresh "e" in
-       let sp := fresh "sp" in 
-       let t:= fresh "t" in 
-       let T_e := fresh "T_e" in
        apply wrap_inv_cons_cons in H ;
-       destruct H as (t & T_e & H) ; 
-       exploit_toEData T_e 
-   | ConcreteExpressions.wrap (cons _ _) _ ?SP = Some  _ =>
-       let e := fresh "e" in
-       let sp := fresh "sp" in 
-       let t:= fresh "t" in 
-       let E := fresh "E" in
+
+       let e:= fresh "e" in 
        let T_e := fresh "T_e" in
+       let TMP := fresh "TMP" in 
+        (* Hypothesis that are introduced by Context are not erased by destruct.
+           TMP is a bypass for this case. *)
+        destruct H as (e & T_e & TMP) ; try clear H ; rename TMP into H ; 
+        exploit_toEData T_e 
+
+   | ConcreteExpressions.wrap (cons _ _) _ ?SP = Some  _ =>
+       
        apply wrap_inv_cons in H ;
-       destruct H as (e & sp & t & E & T_e & H) ; 
-       exploit_toEData T_e ;
-       try subst SP  
+        let e := fresh "e" in
+        let sp := fresh "sp" in 
+        let t:= fresh "t" in 
+        let E := fresh "E" in
+        let T_e := fresh "T_e" in
+        let TMP := fresh "TMP" in 
+         destruct H as (e & sp & t & E & T_e & TMP) ; try clear H ; rename TMP into H ;
+        exploit_toEData T_e ;
+        try subst SP  
+
    | ConcreteExpressions.wrap nil _ nil = Some ?V =>
        apply wrap_inv_nil_nil in H ;
        try first [subst V | inj H | dummy_inv H ]
    | ConcreteExpressions.wrap nil _ ?SP = Some ?V =>
-       let E := fresh "E" in 
        apply wrap_inv_nil in H ;
-       destruct H as [H E];
+        let E := fresh "E" in 
+        destruct H as [H E] (* and *) ; 
        try subst SP ;
        try first [subst V | inj H | dummy_inv H ]
    end.
