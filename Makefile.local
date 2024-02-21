@@ -30,8 +30,19 @@ PAIRPROOFS= transformations/Class2Relational_TUPLES/theorems/Attribute_name_pres
 	    transformations/Class2Relational_TUPLES/theorems/Relational_name_definedness_spec.vo\
 	    transformations/Class2Relational_TUPLES/theorems/Table_name_uniqueness.vo
 
+TACTICTESTS= test_tactics/TestTacticsBW.vo\
+	     test_tactics/TestTacticsFW.vo\
+	     test_tactics/TestUtils.vo\
+	     test_tactics/TestChoiceTools.vo\
+	     test_tactics/TestConcreteExpressionTools.vo
+
 
 proofs: $(M2MPROOFS) $(C2RPROOFS) $(PAIRPROOFS)
 
-tests: $(M2MTESTS) $(C2RTESTS)
+clean_tests:
+	rm -f $(M2MTESTS) $(C2RTESTS) $(TACTICTESTS)
+
+transformation_tests: $(M2MTESTS) $(C2RTESTS) 
+
+tactic_tests: $(TACTICTESTS)
 

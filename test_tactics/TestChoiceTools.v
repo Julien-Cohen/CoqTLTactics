@@ -22,29 +22,34 @@ Goal
 
     List.In r T.(Syntax.rules) /\ r.(Syntax.r_name) = "state". 
 Proof.
-  idtac "Testing ChoiceTools.rule_named".
-  idtac "Test case : a rule with the corresponding name is/is not in the transformation.".
-
   intros. eexists.
+
+  tested_tactic "ChoiceTools.rule_named".
+  test_case "A rule with the corresponding name is/is not in the transformation.".
 
   
 (* Success of the tactic expected *)
-  Succeed (first [
-      solve [split ; [ChoiceTools.rule_named "state" | reflexivity]] ; 
-      test_success
-    | test_failure]).
+  Succeed 
+    tryif
+      solve [split ; [ChoiceTools.rule_named "state" | reflexivity]]  
+    then test_success
+    else test_failure.
+
+  test_case "A rule with the corresponding name is/is not in the transformation (with incorrect parameters).".
 
 (* Failure of the tactic expected with incorrect parameters *)
- Succeed first [ 
-     split ; [ChoiceTools.rule_named "transition" | reflexivity] ; 
-      test_failure 
-    | test_success].
-
+ Succeed 
+   tryif 
+     split ; [ChoiceTools.rule_named "transition" | reflexivity ]  
+   then test_failure 
+   else test_success.
+ 
 (* Failure of the tactic expected with incorrect parameters *)
- Succeed first [ 
-     split ; [ChoiceTools.rule_named "other" | reflexivity] ; 
-      test_failure 
-    | test_success].
+ Succeed 
+   tryif
+     split ; [ChoiceTools.rule_named "other" | reflexivity]
+   then test_failure 
+   else test_success.
 
 Abort.
 

@@ -54,8 +54,8 @@ Goal
       |} 
       (compute_trace T m).
 Proof.
-  idtac "Testing TacticsFW.in_compute_trace_inv_singleton_fw".
-  idtac "Test case : the convenient assumption is in the context and convenient parameters are given to the tactic.".
+  tested_tactic "TacticsFW.in_compute_trace_inv_singleton_fw".
+  test_case "The convenient assumption is in the context and convenient parameters are given to the tactic.".
 
   (* Execution of the tactic.*)
 
@@ -93,7 +93,7 @@ Proof.
     else test_failure.
   
   
-  idtac "Test case : the convenient assumption is in the context but incorrect parameters are given to the tactic.".
+  test_case "The convenient assumption is in the context but incorrect parameters are given to the tactic.".
 
 (* Failure of the tactic expected with incorrect parameters *)
  Succeed 
@@ -155,8 +155,8 @@ Goal
       |} (compute_trace T cm)
 .
 Proof.
-  idtac "Testing TacticsFW.in_compute_trace_inv_singleton_fw".
-  idtac "Test case : choice between two assumptions (with correct parameters).".
+  tested_tactic "TacticsFW.in_compute_trace_inv_singleton_fw".
+  test_case "Choice between two assumptions (with correct parameters).".
   
   eexists ; eexists ; eexists. 
 
@@ -168,7 +168,7 @@ Proof.
     then test_success
     else test_failure.
 
-  idtac "Test case : choice between two assumptions (with incorrect parameters).".
+  test_case "Choice between two assumptions (with incorrect parameters).".
 
   (* Failure of the tactic expected with incorrect parameters *)
   Succeed
@@ -199,8 +199,8 @@ Goal
   In (Node {| Node_id := 2 |}) (modelElements (execute T cm)).
 
 Proof.
-  idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
-  idtac "Test case : choice between two assumptions (with correct parameters).".
+  tested_tactic "TacticsFW.in_modelElements_singleton_fw_tac".
+  test_case "Choice between two assumptions (with correct parameters).".
 
   (* Success of the tactic expected *)
   Succeed 
@@ -210,7 +210,7 @@ Proof.
     then test_success
     else test_failure.
  
-  idtac "Test case : choice between two assumptions (with incorrect parameters).".
+  test_case "Choice between two assumptions (with incorrect parameters).".
 
   (* Failure of the tactic expected *)
   Succeed 
@@ -240,8 +240,8 @@ Section Test4.
     In (Arrow {| Arrow_id := 1 |}) (modelElements (execute T cm)).
   
   Proof.
-    idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
-    idtac "Test case : rules with several output patterns (first pattern, correct parameters).".
+    tested_tactic "TacticsFW.in_modelElements_singleton_fw_tac".
+    test_case "Rules with several output patterns (first pattern, correct parameters).".
     
     (* Success of the tactic expected *)
     Succeed 
@@ -251,7 +251,7 @@ Section Test4.
       then test_success
       else test_failure.
 
-     idtac "Test case : rules with several output patterns (first pattern, incorrect parameters).".
+     test_case "Rules with several output patterns (first pattern, incorrect parameters).".
    
     (* Failure of the tactic expected *)
     Succeed 
@@ -279,8 +279,8 @@ Goal
     (Arrow {| Arrow_id := 2 |}) (* id incremented *)
     (modelElements (execute T cm)).
 Proof.
-  idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
-  idtac "Test case : rules with several output patterns (second pattern, correct parameters).".
+  tested_tactic "TacticsFW.in_modelElements_singleton_fw_tac".
+  test_case "Rules with several output patterns (second pattern, correct parameters).".
 
   (* Success of the tactic expected *)
   Succeed 
@@ -290,7 +290,7 @@ Proof.
     then test_success
     else test_failure.
 
-  idtac "Test case : rules with several output patterns (second pattern, incorrect parameters).".
+  test_case "Rules with several output patterns (second pattern, incorrect parameters).".
 
   (* Failure of the tactic expected *)
   Succeed 
@@ -339,8 +339,8 @@ Goal
            with {| Table_id := i'; Table_name := n' |}))
     (modelLinks (execute Class2Relational cm)).
 Proof. 
-  idtac "Testing TacticsFW.transform_link_fw_tac_singleton".
-  idtac "Test case : ".
+  tested_tactic "TacticsFW.transform_link_fw_tac_singleton".
+  test_case "Typical use.".
 
   tryif
     TacticsFW.transform_link_fw_tac_singleton "Attribute2Column" "col" 0 IN ;

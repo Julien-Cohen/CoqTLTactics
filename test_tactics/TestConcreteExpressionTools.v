@@ -59,8 +59,8 @@ Section TestInvMakeLink.
   .
   
   Proof. 
-    idtac "Testing ConcreteExpressionTools.inv_makeLink.".
-    idtac "Test case : ".
+    tested_tactic "ConcreteExpressionTools.inv_makeLink.".
+    test_case "Typical use (Class2Relational).".
 
     tryif 
       ConcreteExpressionTools.inv_makeLink H ;
@@ -76,10 +76,10 @@ Section TestInvMakeLink.
   
 End TestInvMakeLink.
 
+
 Section TestInvMakeLink2.
 
 (* Tactic under test : [ConcreteExpressionTools.inv_makeLink] *)
-(* Test case : *)
 
   Import ClassMetamodel RelationalMetamodel Class2Relational.
   Import Glue.
@@ -96,11 +96,7 @@ Section TestInvMakeLink2.
           [Attribute_K] 
           Column_K
           Column_reference_K
-          (fun (thisModule : Trace) (_ : nat)
-                  (m : TransformationConfiguration.SourceModel)
-                  (_ : Attribute_t)
-                  (c : Column_t) => return lk  
-            )
+          (fun _ _ _ _ _ => return lk)
           tr  
           0
           cm
@@ -118,8 +114,8 @@ Section TestInvMakeLink2.
 
   
   Proof. 
-    idtac "Testing ConcreteExpressionTools.inv_makeLink.".
-    idtac "Test case : ".
+    tested_tactic "ConcreteExpressionTools.inv_makeLink.".
+    test_case "Typical use (Identity transformation).".
 
   tryif
     ConcreteExpressionTools.inv_makeLink H ; reflexivity
@@ -134,7 +130,6 @@ End TestInvMakeLink2.
 Section TestWrapInv.
 
 (* Tactic under test : [ConcreteExpressionTools.wrap_inv] *)
-(* Test case : *)
 
   Import ClassMetamodel RelationalMetamodel Class2Relational.
   Import Glue.
@@ -154,8 +149,8 @@ Context
 Goal False. 
 
 Proof.
-    idtac "Testing ConcreteExpressionTools.wrap_inv.".
-    idtac "Test case : ".
+    tested_tactic "ConcreteExpressionTools.wrap_inv.".
+    test_case "Typical use.".
 
  tryif
    ConcreteExpressionTools.wrap_inv H

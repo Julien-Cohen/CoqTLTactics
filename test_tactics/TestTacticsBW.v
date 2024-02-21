@@ -31,8 +31,8 @@ Section TestElement1.
   Goal  False.  
          
   Proof.
-    idtac "Testing TacticsBW.exploit_element_in_result".
-    idtac "Test case : ".
+    tested_tactic "TacticsBW.exploit_element_in_result".
+    test_case "Typical use.".
 
     (* Execution of the tactic. *)
 
@@ -89,8 +89,8 @@ Section TestElement2.
       /\ c.(Class_name) = n.
   
   Proof.
-    idtac "Testing TacticsBW.exploit_element_in_result".
-    idtac "Test case : ".
+    tested_tactic "TacticsBW.exploit_element_in_result".
+    test_case "Typical use.".
 
     tryif 
       TacticsBW.exploit_element_in_result H ; [] ;
@@ -123,8 +123,8 @@ Section TestElement2ALT.
   Goal False.
   
   Proof.
-    idtac "Testing TacticsBW.exploit_element_in_result".
-    idtac "Test case : The generated hypothesis contains all the information on the source element.".
+    tested_tactic "TacticsBW.exploit_element_in_result".
+    test_case "The generated hypothesis contains all the information on the source element.".
 
   tryif
     TacticsBW.exploit_element_in_result H 
@@ -171,8 +171,8 @@ Section TestLink1.
         c = {| Column_id := t.(Attribute_id) ; Column_name := t.(Attribute_name) |}.
   
   Proof.
-    idtac "Testing TacticsBW.exploit_link_in_result".
-    idtac "Test case : ".
+    tested_tactic "TacticsBW.exploit_link_in_result".
+    test_case "Typical use.".
   
 
     tryif 
