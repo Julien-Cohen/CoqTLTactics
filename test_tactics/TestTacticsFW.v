@@ -46,13 +46,13 @@ Context
   (IN1 : In (Node s) (modelElements m)).
 
 Goal 
-     @In (@TraceLink.TraceLink Id_TransformationConfiguration)
+     In
       {|
         TraceLink.source := ([Node s], 0, "s");
         TraceLink.produced := Node s;
         TraceLink.linkPattern := T_state_link_producer
-      |} (compute_trace T m)
-.
+      |} 
+      (compute_trace T m).
 Proof.
   idtac "Testing TacticsFW.in_compute_trace_inv_singleton_fw".
   idtac "Test case : the convenient assumption is in the context and convenient parameters are given to the tactic.".
@@ -156,7 +156,7 @@ Goal
 .
 Proof.
   idtac "Testing TacticsFW.in_compute_trace_inv_singleton_fw".
-  idtac "Test case : choice between two assumptions.".
+  idtac "Test case : choice between two assumptions (with correct parameters).".
   
   eexists ; eexists ; eexists. 
 
@@ -167,6 +167,8 @@ Proof.
       reflexivity  
     then test_success
     else test_failure.
+
+  idtac "Test case : choice between two assumptions (with incorrect parameters).".
 
   (* Failure of the tactic expected with incorrect parameters *)
   Succeed
@@ -190,14 +192,15 @@ Import BasicMetamodel IdTransformation.
 
 Context 
   (cm : M)
-    (H1 : In (Node {| Node_id := 1 |}) (modelElements cm))
-    (H2 : In (Node {| Node_id := 2 |}) (modelElements cm)).
+  (H1 : In (Node {| Node_id := 1 |}) (modelElements cm))
+  (H2 : In (Node {| Node_id := 2 |}) (modelElements cm)).
 
 Goal
   In (Node {| Node_id := 2 |}) (modelElements (execute T cm)).
+
 Proof.
   idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
-  idtac "Test case : choice between two assumptions.".
+  idtac "Test case : choice between two assumptions (with correct parameters).".
 
   (* Success of the tactic expected *)
   Succeed 
@@ -206,6 +209,8 @@ Proof.
       reflexivity   
     then test_success
     else test_failure.
+ 
+  idtac "Test case : choice between two assumptions (with incorrect parameters).".
 
   (* Failure of the tactic expected *)
   Succeed 
@@ -225,36 +230,38 @@ Section Test4.
 (** Tactic under test : TacticsFW.in_modelElements_singleton_fw_tac *)
 (** Test case : rules with several output patterns *)
 
-Import  BasicMetamodel DoubleTransformation.
+  Import  BasicMetamodel DoubleTransformation.
 
-Context
-  (cm : M)
+  Context
+    (cm : M)
     (H : In (Arrow {| Arrow_id := 1 |}) (modelElements cm)).
 
-Goal
-  In (Arrow {| Arrow_id := 1 |}) (modelElements (execute T cm)).
-
-Proof.
-  idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
-  idtac "Test case : rules with several output patterns (first pattern).".
-
-  (* Success of the tactic expected *)
-  Succeed 
-    tryif
-      TacticsFW.in_modelElements_singleton_fw_tac "transition" "t" 0 H ; (* second rule, first pattern, it-count=0 *)
-      reflexivity   
-    then test_success
-    else test_failure.
+  Goal
+    In (Arrow {| Arrow_id := 1 |}) (modelElements (execute T cm)).
   
-  (* Failure of the tactic expected *)
-  Succeed 
-    tryif 
-      TacticsFW.in_modelElements_singleton_fw_tac "transition" "back_t" 0 H ; (* second rule, second pattern, it-count=0 *)
-      reflexivity  
-    then test_failure
-    else test_success.
+  Proof.
+    idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
+    idtac "Test case : rules with several output patterns (first pattern, correct parameters).".
+    
+    (* Success of the tactic expected *)
+    Succeed 
+      tryif
+        TacticsFW.in_modelElements_singleton_fw_tac "transition" "t" 0 H ; (* second rule, first pattern, it-count=0 *)
+        reflexivity   
+      then test_success
+      else test_failure.
 
-Abort.
+     idtac "Test case : rules with several output patterns (first pattern, incorrect parameters).".
+   
+    (* Failure of the tactic expected *)
+    Succeed 
+      tryif 
+        TacticsFW.in_modelElements_singleton_fw_tac "transition" "back_t" 0 H ; (* second rule, second pattern, it-count=0 *)
+      reflexivity  
+      then test_failure
+      else test_success.
+    
+  Abort.
 
 End Test4.
 
@@ -273,7 +280,7 @@ Goal
     (modelElements (execute T cm)).
 Proof.
   idtac "Testing TacticsFW.in_modelElements_singleton_fw_tac".
-  idtac "Test case : rules with several output patterns (second pattern).".
+  idtac "Test case : rules with several output patterns (second pattern, correct parameters).".
 
   (* Success of the tactic expected *)
   Succeed 
@@ -282,6 +289,8 @@ Proof.
       reflexivity 
     then test_success
     else test_failure.
+
+  idtac "Test case : rules with several output patterns (second pattern, incorrect parameters).".
 
   (* Failure of the tactic expected *)
   Succeed 
@@ -335,20 +344,41 @@ Proof.
 
   tryif
     TacticsFW.transform_link_fw_tac_singleton "Attribute2Column" "col" 0 IN ;
-    [ (* guard *) reflexivity 
-    | (* make_element *) reflexivity  
-    |  ] ;
 
-    (* The execution of the tactic must succeed, and the resulting goal must have the following shape. *)
+    (* Oracle. *)
+    
+    (* 1) The tactic should no fail. *)
 
-    match goal with 
-     | [ |- In 
-             (Column_referenceLink _) 
-             (apply_link_pattern (compute_trace Class2Relational cm) cm _) ] => 
-        idtac 
-          
-     | [ |- _] => fail 
-    end
+    (* 2) There should be 3 subgoals. *)
+
+    [ | | ] ;
+    
+     (* 3) The first goal must be a makeGuard. *)
+    only 1 :  
+      match goal with 
+      | [ |- ConcreteExpressions.makeGuard _ _ _ _ = true] => idtac 
+      | _ => fail 
+      end ;
+    
+    (* 4) The second subgoal should be a makeElement. *) 
+    only 2 :
+      match goal with 
+      | [ |- ConcreteExpressions.makeElement _ _ _ _ _ _ = Some _] => idtac
+      | _ => fail 
+      end   ;
+    
+    
+    (* 5) The third goal must have the following shape. *)
+    only 3 :
+      match goal with 
+      | [ |- In 
+               (Column_referenceLink _) 
+               (apply_link_pattern (compute_trace Class2Relational cm) cm _) ] => 
+          idtac 
+            
+      | [ |- _] => fail 
+      end    
+
   then test_success
   else test_failure.
 

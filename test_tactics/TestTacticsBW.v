@@ -19,26 +19,40 @@ Section TestElement1.
 
   Import BasicMetamodel IdTransformation.
 
-Context 
+  (* Preparation of the goal *)
+
+  Context 
     (cm : M) 
     (i : nat)
     (H : In 
-                  (Node {| Node_id := i |})
-                  (modelElements (execute T cm))).
+           (Node {| Node_id := i |})
+           (modelElements (execute T cm))).
 
-  Goal   False.  
-       
-  
+  Goal  False.  
+         
   Proof.
     idtac "Testing TacticsBW.exploit_element_in_result".
     idtac "Test case : ".
 
+    (* Execution of the tactic. *)
+
   tryif
     TacticsBW.exploit_element_in_result H 
+
+
+   (* Oracle *)
+
   then
+
+    (* 1) The tactic does not fail *)
+
+    (* 2) There is an hypothsis in the context with a given shape. *)
+
    match goal with 
-    | [ _ : In (Node {| Node_id := i |}) (modelElements cm) |- _ ] => test_success  
-    | _ => test_failure
+    | [ _ : In (Node {| Node_id := i |}) (modelElements cm) |- _ ] => 
+        test_success  
+    | _ => 
+        test_failure
     end 
   
   else test_failure.
