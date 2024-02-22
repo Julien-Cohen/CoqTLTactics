@@ -73,30 +73,36 @@ Ltac in_compute_trace_inv_pair_fw r_name pat_name H1 H2 :=
     pat_name 
     ltac:(ListUtils.solve_incl_pair H1 H2).
 
+(** Instance for triple patterns *)
+Ltac in_compute_trace_inv_triple_fw r_name pat_name H1 H2 H3 :=
+  in_compute_trace_inv_any_fw 
+    r_name 
+    pat_name 
+    ltac:(ListUtils.solve_incl_triple H1 H2 H3).
+
 
 
 
 (** * FW tactics on Elements and Links *)
 
-(** *** On elements (singletons, then pairs) *)
+(** *** On elements (singletons, then pairs and triples) *)
 
 Ltac in_modelElements_singleton_fw_tac r_name pat_name i H :=
 
       (* Precondition on H. *)
       match type of H with 
-        List.In _ ?M.(modelElements) =>
-          
+      | List.In _ ?M.(modelElements) => 
           (* Precondition on the goal *)
           match goal with 
-            [ |- List.In _ (execute ?T M).(modelElements) ] =>
-
-              apply <- SemanticsTools.in_modelElements_inv ; 
-              
-              eexists ; exists i ; eexists ; eexists ; 
-              
-              in_compute_trace_inv_singleton_fw r_name pat_name H
+            [ |- List.In _ (execute ?T M).(modelElements) ] => idtac
           end
-      end  ;
+      end ;
+      
+      apply <- SemanticsTools.in_modelElements_inv ; 
+      
+      eexists ; exists i ; eexists ; eexists ; 
+      
+      in_compute_trace_inv_singleton_fw r_name pat_name H ;
             
       (* Post-condition. *)
       [ | ] .
@@ -106,25 +112,53 @@ Ltac in_modelElements_pair_fw_tac r_named pat_name i H1 H2 :=
   (* Precondition on H1. *)
   match type of H1 with 
     List.In _ ?M.(modelElements) =>
-
+      
       (* Precondition on H2. *)
       match type of H2 with 
         List.In _ M.(modelElements) =>
-
+          
           (* Precondition on the goal. *)
           match goal with 
-            [ |- In _ (execute _ M).(modelElements) ] =>
-              
-              apply <- SemanticsTools.in_modelElements_inv ; 
-              
-              eexists ; exists i ; eexists ; eexists ; 
-              
-              in_compute_trace_inv_pair_fw r_named pat_name H1 H2
-                                           
-          end 
+          | [ |- In _ (execute _ M).(modelElements) ] => idtac
+          end
       end
   end ;
+  apply <- SemanticsTools.in_modelElements_inv ; 
   
+  eexists ; exists i ; eexists ; eexists ; 
+  
+  in_compute_trace_inv_pair_fw r_named pat_name H1 H2 ;
+                               
+                               
+  (* Post-condition *)
+  [ | ].
+
+ Ltac in_modelElements_triple_fw_tac r_named pat_name i H1 H2 H3 :=
+  (* Precondition on H1. *)
+  match type of H1 with 
+    List.In _ ?M.(modelElements) =>
+      
+      (* Precondition on H2. *)
+      match type of H2 with 
+        List.In _ M.(modelElements) =>
+      (* Precondition on H3. *)
+          match type of H3 with 
+            List.In _ M.(modelElements) =>
+              
+              (* Precondition on the goal. *)
+              match goal with 
+              | [ |- In _ (execute _ M).(modelElements) ] => idtac
+              end
+          end
+      end 
+  end;
+  apply <- SemanticsTools.in_modelElements_inv ; 
+  
+  eexists ; exists i ; eexists ; eexists ; 
+  
+  in_compute_trace_inv_triple_fw r_named pat_name H1 H2 H3;
+                               
+                               
   (* Post-condition *)
   [ | ].
  
@@ -136,28 +170,30 @@ Ltac transform_link_fw_tac_singleton r_name pat_name i H :=
   match type of H with 
     List.In _ ?M.(modelElements) =>
 
-  (* Precondition on the goal. *)
-  match goal with
-    [ |- In _ (execute _ M).(modelLinks) ] =>
-
-      apply <- SemanticsTools.in_modelLinks_inv ; 
-      
-      eexists ; exists i ; eexists ; eexists ; eexists ; 
-
-      split ; 
-      
-      [ in_compute_trace_inv_singleton_fw r_name pat_name H | ] ;
-      
-      autounfold with 
-        parse ConcreteOutputPatternUnit_accessors opu_accessors
-
-  end end  ;
-
+      (* Precondition on the goal. *)
+      match goal with
+        [ |- In _ (execute _ M).(modelLinks) ] => idtac
+      end 
+  end  ;
+  
+  apply <- SemanticsTools.in_modelLinks_inv ; 
+  
+  eexists ; exists i ; eexists ; eexists ; eexists ; 
+  
+  split ; 
+  
+  [ in_compute_trace_inv_singleton_fw r_name pat_name H | ] ;
+  
+  autounfold with 
+    parse ConcreteOutputPatternUnit_accessors opu_accessors ;
+  
+  
   (* Post-condition *)
   [ | | ].
 
 
 (** * Simple tactics (for simple situations) *)
+(** Deprecated *)
 
 (** A simple FW tactic for elements (lemma + tactic) (only
     singleton patterns).  The drawback of this lemma/tactic

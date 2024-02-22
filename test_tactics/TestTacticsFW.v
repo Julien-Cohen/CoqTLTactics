@@ -10,7 +10,7 @@ Import
 Open Scope string_scope.
 
 From test_tactics
-  Require IdTransformation DoubleTransformation.
+  Require IdTransformation DoubleTransformation TriplePatternTransformation.
 
 Require Class2Relational.Class2Relational.
 Require Class2Relational_TUPLES.Class2Relational_TUPLES.
@@ -196,6 +196,52 @@ Abort.
 End TestTrace2.
 
 
+Section TestTrace3Triple.
+
+(** Tactic under test : TacticsFW.in_compute_trace_inv_triple_fw *)
+
+Import BasicMetamodel TriplePatternTransformation.
+
+Context
+    (cm : M)
+    (H1 : In (Node {| Node_id := 1 |}) (modelElements cm))
+    (H2 : In (Node {| Node_id := 2 |}) (modelElements cm))
+    (H3 : In (Node {| Node_id := 3 |}) (modelElements cm)).
+
+Goal    
+  exists
+    (s : list Element) 
+    (n : string) 
+    lp,
+    In
+      {|
+        TraceLink.source := (s, 0, n);
+        TraceLink.produced := Node {| Node_id := 2 |};
+        TraceLink.linkPattern := lp
+      |} (compute_trace Triple_T cm)
+.
+Proof.
+  tested_tactic "TacticsFW.in_compute_trace_inv_triple_fw".
+  test_case "-".
+  
+  eexists ; eexists ; eexists. 
+
+
+  (* Success of the tactic expected *)
+  Succeed 
+    tryif 
+      TacticsFW.in_compute_trace_inv_triple_fw "state" "s" H1 H2 H3   
+    then test_success
+    else test_failure.
+
+  Validate Proof.
+  Guarded.
+
+Abort.
+
+End TestTrace3Triple.
+
+
 Section TestElements1.
 
 (** Tactic under test : TacticsFW.in_modelElements_singleton_fw_tac *)
@@ -291,7 +337,7 @@ Import BasicMetamodel DoubleTransformation.
 
 Context
   (cm : M)
-    (H : In (Arrow {| Arrow_id := 1 |}) (modelElements cm)).
+  (H : In (Arrow {| Arrow_id := 1 |}) (modelElements cm)).
 
 Goal
   In 
@@ -329,7 +375,6 @@ End TestElements3.
 
 
 Section TestElements4Pair.
-
 
 (** Tactic under test : TacticsFW.in_modelElements_pair_fw_tac *)
 Ltac tac := TacticsFW.in_modelElements_pair_fw_tac.
@@ -402,9 +447,73 @@ Proof.
   Guarded.
 Abort.
 
-
-
 End TestElements4Pair. 
+
+
+Section TestElements5Triple.
+
+(** Tactic under test : TacticsFW.in_modelElements_triple_fw_tac *)
+Ltac tac := TacticsFW.in_modelElements_triple_fw_tac.
+
+(** Test case : no guard, and the right-hand side of the rule is local *)
+
+Import TriplePatternTransformation.
+Import BasicMetamodel.
+
+Context 
+  (cm : M)
+  (i : nat)
+  (n : string)
+  (i2 : nat)
+  (i3 : nat)
+  (n2 : string)
+  (H1 : In (Node {| Node_id := i ; |}) (modelElements cm))
+  (H2 : In (Node {| Node_id := i2; |}) (modelElements cm))
+  (H3 : In (Node {| Node_id := i3; |}) (modelElements cm)).
+
+Goal
+  In 
+    (Node {| Node_id := 1;  |})
+    (modelElements (execute Triple_T cm)).
+
+Proof.
+  tested_tactic "TacticsFW.in_modelElements_triple_fw_tac".
+  test_case "Typical use".
+
+  (* Success of the tactic expected *)
+  Succeed 
+    tryif
+      
+      (* Execution of the tactic. *)
+
+      tac "state" "s" 0 H1 H2 H2;
+
+      (* Oracle *)
+      (* 1) the tactic should not fail *)
+
+      (* 2) The tactic should leave 2 subgoals *)
+      [ | ] ;
+
+      (* 3) The first subgoal must have a given shape. *)
+      only 1 : 
+        match goal with 
+          [ |- ConcreteExpressions.makeEmptyGuard _ _ _  = true ] => idtac
+        end  ;
+
+      (* 4) The second subgoal must have a given shape.*)
+      only 2 :
+         match goal with 
+          [ |- ConcreteExpressions.makeElement _ _ _ _ _ _ = Some _ ] => idtac
+        end 
+    then test_success
+    else test_failure.
+ 
+  Validate Proof.
+  Guarded.
+Abort.
+
+End TestElements5Triple. 
+
 
 
 

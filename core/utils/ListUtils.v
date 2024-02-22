@@ -320,6 +320,19 @@ Qed.
 Ltac solve_incl_pair H1 H2 := 
   apply ListUtils.incl_pair ; split ; [ exact H1 | exact H2 ].
 
+Lemma incl_triple :
+  forall {T} (a b c :T) d, (List.In a d /\ List.In b d /\ List.In c d) <-> incl (a::b::c::nil) d.
+Proof.
+  intros ; split. 
+  + intros (H1 & H2 & H3). 
+    repeat apply incl_cons ; auto. 
+    apply incl_nil_l.
+  + intro H. repeat explicit_incl H. auto.
+Qed.
+
+Ltac solve_incl_triple H1 H2 H3 := 
+  apply ListUtils.incl_triple ; split ; [ exact H1 | split ; [exact H2 | exact H3] ].
+
 
 Set Implicit Arguments.
 Scheme Equality for list.
