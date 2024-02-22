@@ -46,3 +46,10 @@ transformation_tests: $(M2MTESTS) $(C2RTESTS)
 
 tactic_tests: $(TACTICTESTS)
 
+metrics:
+	@echo "Metrics for the provided lammas and tactics:"
+	@coqwc usertools/*.v
+	@echo "Metrics for Moore2Mealy:"
+	@coqwc transformations/Moore2Mealy/*.v transformations/Moore2Mealy/*/*.v
+	@echo "Metrics for Class2Relational:"
+	@coqwc transformations/Class2Relational/*.v transformations/Class2Relational/*/*.v
