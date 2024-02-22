@@ -44,8 +44,8 @@ sh init.sh
   * Several examples of application of the transformations run by the engine on those models.
   * Several properties (with their proofs) of the transformation engine, such as additivity which still hold after refactoring of the the engine (adapted from previous work).
 * Run `make html` to build a navigable HTML version of the source code. HTML code is generated in the `html` directory.
-* Each build takes less than a minute on a machine with 4 cores (make -j 4), less than 3 minutes in a vritual machine with 1 core.
-* To run proofs interactively, open the file you want in your IDE (works with `coqide` without any additional configuration, also works with Emacs/ProofGeneral and VSCode/VsCoq if installed).
+* Each build takes less than a minute on a machine with 4 cores (make -j 4), less than 3 minutes in a virtual machine with 1 core.
+* To run proofs interactively, open the file you want in your IDE (works with `coqide`, Emacs/ProofGeneral, VSCode/VsCoq).
 
 Try your own transformations: 
 * If you have an ECore file mymetamodel.ecore and you want to translate it into a CoqTL metamodel, run `make mymetamodel.v` . The generated coq file conforms to the Metametamodel on which CoqTL rely. (That generator is a proof of concept, not a contribution of this work, it still contains some bugs.) 
