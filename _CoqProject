@@ -50,7 +50,6 @@ usertools/TacticsBW.v
 usertools/TacticsFW.v
 usertools/Glue.v
 usertools/ChoiceTools.v
-usertools/Backtracking.v
 
 
 # Unit Tests 
