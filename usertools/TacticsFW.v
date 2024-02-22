@@ -15,18 +15,14 @@ From usertools
 
 (** ** Tactics that fully unfold [In _ compute_trace _ _] and solve easy goals. *) 
 
-(** This version, for rules with singleton patterns, takes as parameter the index of the rule, the index of the output pattern in that rule, and the source element hypothesis. *)
-Ltac in_compute_trace_inv_singleton_fw r_name pat_name H :=
+(** Takes as parameter the index of the rule, the index of the output pattern in that rule, and a tactics that refers to the source element hypotheses. *)
 
-  (* Precondition on H. *)
-  match type of H with 
-    List.In _ ?M.(modelElements) =>
+Ltac in_compute_trace_inv_any_fw r_name pat_name incl_tac :=
       
       (* Precondition on the goal. *)
       match goal with 
-      | [ |- List.In _ (compute_trace ?T M)] => 
-          
-          
+      | [ |- List.In _ (compute_trace ?T _)] => 
+                    
           SemanticsTools.in_compute_trace_inv_tac ;
 
           (* 7 goals *)
@@ -39,8 +35,8 @@ Ltac in_compute_trace_inv_singleton_fw r_name pat_name H :=
           | (* Fix the output pattern in the rule following user hint *)
             solve [ChoiceTools.pattern_named pat_name] 
                   
-          | (* Fix the source piece (singleton) *)
-            apply ListUtils.incl_singleton ; exact H 
+          | (* Fix the source piece (any size) *)
+            incl_tac
                                                    
           | (* The guard goal may rely on user expressions and can be arbitrary difficult to prove *)
             simpl
@@ -55,63 +51,27 @@ Ltac in_compute_trace_inv_singleton_fw r_name pat_name H :=
             simpl 
 
           ] 
-      end
-  end ;
+
+      end ;
 
   (* Post-condition *)
   [ | ] (* the guard and the makeElement goals remain. *). 
 
 
 
+(** Instance for singleton patterns. *)
+Ltac in_compute_trace_inv_singleton_fw r_name pat_name H :=
+  in_compute_trace_inv_any_fw 
+    r_name 
+    pat_name 
+    ltac:(ListUtils.solve_incl_singleton H).
 
-(** Variant for pair patterns *)
+(** Instance for pair patterns *)
 Ltac in_compute_trace_inv_pair_fw r_name pat_name H1 H2 :=
-
-  (* Precondition on H1. *)
-  match type of H1 with 
-    List.In _ ?M.(modelElements) =>
-
-      (* Precondition on H2. *)
-      match type of H2 with 
-        List.In _ M.(modelElements) =>
-
-      (* Precondition on the goal. *)
-      match goal with 
-      | [ |- List.In _ (compute_trace ?T M)] => 
-      
-      SemanticsTools.in_compute_trace_inv_tac ;
-
-      (* 7 goals *)
-      [ | | | | | | ] ;
-
-      [ (* Fix the rule under concern following user hint *)
-        solve [ChoiceTools.rule_named r_name] 
-      
-      | (* Fix the output pattern in the rule following user hint *) 
-        solve [ChoiceTools.pattern_named pat_name] 
-
-      | (* Fix the source piece (pair) *) 
-        apply ListUtils.incl_pair ; split ; [ exact H1 | exact H2 ] 
-      
-      | (* The guard goal may rely on user expressions and can be arbitrary difficult to prove *)  
-        simpl
-
-      | (* arity *)
-        reflexivity 
-      
-      | (* iteration counter *)
-        solve [simpl ; auto ] 
-
-      | (* The make_element goal rely on user expressions and can be arbitrary difficult to prove *)      
-        simpl 
-      ]
-  
-      end end end  ;
-
-  (* Post-condition *)
-  [ | ] (* the guard and the makeElement goals remain. *)
-.
-
+  in_compute_trace_inv_any_fw 
+    r_name 
+    pat_name 
+    ltac:(ListUtils.solve_incl_pair H1 H2).
 
 
 
@@ -151,16 +111,19 @@ Ltac in_modelElements_pair_fw_tac r_named pat_name i H1 H2 :=
       match type of H2 with 
         List.In _ M.(modelElements) =>
 
+          (* Precondition on the goal. *)
           match goal with 
-    [ |- In _ (execute _ M).(modelElements) ] =>
-
-      apply <- SemanticsTools.in_modelElements_inv ; 
-
-      eexists ; exists i ; eexists ; eexists ; 
-
-      in_compute_trace_inv_pair_fw r_named pat_name H1 H2
-
-    end end end ;
+            [ |- In _ (execute _ M).(modelElements) ] =>
+              
+              apply <- SemanticsTools.in_modelElements_inv ; 
+              
+              eexists ; exists i ; eexists ; eexists ; 
+              
+              in_compute_trace_inv_pair_fw r_named pat_name H1 H2
+                                           
+          end 
+      end
+  end ;
   
   (* Post-condition *)
   [ | ].

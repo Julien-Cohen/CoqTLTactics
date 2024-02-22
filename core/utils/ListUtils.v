@@ -287,6 +287,10 @@ Proof.
   + incl_inv H. exact H. 
 Qed.
 
+Ltac solve_incl_singleton H := 
+  apply ListUtils.incl_singleton ; exact H.
+
+
 Lemma in_singleton A (a:A) b : a = b <-> In a (b::nil).
   split. 
   + intro ; subst. apply in_eq.
@@ -312,6 +316,9 @@ Proof.
     apply incl_nil_l.
   + intro H. repeat explicit_incl H. auto.
 Qed.
+
+Ltac solve_incl_pair H1 H2 := 
+  apply ListUtils.incl_pair ; split ; [ exact H1 | exact H2 ].
 
 
 Set Implicit Arguments.
