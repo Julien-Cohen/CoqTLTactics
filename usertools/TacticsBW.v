@@ -134,7 +134,7 @@ Ltac destruct_source H :=
 (** Pivot tactic on traces *)
 Ltac exploit_in_trace H :=
   match type of H with 
-   | In ?A (compute_trace _ _) => 
+   | In _ (compute_trace _ _) => 
       let r := fresh "r" in
       let opu := fresh "opu" in
       let IN_ELTS := fresh "IN_ELTS" in
