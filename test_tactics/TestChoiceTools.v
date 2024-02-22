@@ -20,7 +20,7 @@ Goal
          (IN1 : In (Node s) (modelElements m)),
   exists r,
 
-    List.In r T.(Syntax.rules) /\ r.(Syntax.r_name) = "state". 
+    List.In r Id_T.(Syntax.rules) /\ r.(Syntax.r_name) = "state". 
 Proof.
   intros. eexists.
 

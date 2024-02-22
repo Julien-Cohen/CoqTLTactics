@@ -66,7 +66,7 @@ Definition T' :=
       ]
 ].
 
-Definition T := parse T'.
+Definition Id_T := parse T'.
 
 Close Scope coqtl.
 

@@ -26,7 +26,7 @@ Section TestElement1.
     (i : nat)
     (H : In 
            (Node {| Node_id := i |})
-           (modelElements (execute T cm))).
+           (modelElements (execute Id_T cm))).
 
   Goal  False.  
          

@@ -10,34 +10,41 @@ Import
 Open Scope string_scope.
 
 From test_tactics
-  Require BasicMetamodel IdTransformation DoubleTransformation.
+  Require IdTransformation DoubleTransformation.
 
 Require Class2Relational.Class2Relational.
+Require Class2Relational_TUPLES.Class2Relational_TUPLES.
 
 
-(** Tests for tactics on elements. *)
-
-Section Test1.
-
-(** Tactic under test : [TacticsFW.in_compute_trace_inv_singleton_fw] *)
-(** Test case : no guard, and the right-hand side of the rule is local *)
+Section PreliminaryDefinitions.
+(** Preparation of some data. *)
 
 Import BasicMetamodel IdTransformation.
 
-(* Preparation of data. *)
-
-(* The transformation. *)
-Definition T := IdTransformation.T.
-
-(* The link_producer in the "state" rule of the transformation. *)
+(** The link_producer in the "state" rule of the transformation. *)
 Definition T_state_link_producer:Syntax.link_producer.
-  remember T.(Syntax.rules) as r.
+  remember Id_T.(Syntax.rules) as r.
   destruct r eqn:? ; [discriminate | ].
   destruct r0 eqn:?.
   destruct r_outputPattern eqn:? ; [ discriminate | ].
   destruct o eqn:?.
   exact opu_link.
 Defined.
+
+End PreliminaryDefinitions.
+
+
+
+(** Tests for tactics on elements. *)
+
+Section TestTrace1.
+
+(** Tactic under test : [TacticsFW.in_compute_trace_inv_singleton_fw] *)
+(** Test case : no guard, and the right-hand side of the rule is local *)
+
+Import BasicMetamodel IdTransformation.
+
+
 
 (* Preparation of the goal *)
 Context 
@@ -52,10 +59,10 @@ Goal
         TraceLink.produced := Node s;
         TraceLink.linkPattern := T_state_link_producer
       |} 
-      (compute_trace T m).
+      (compute_trace Id_T m).
 Proof.
   tested_tactic "TacticsFW.in_compute_trace_inv_singleton_fw".
-  test_case "The convenient assumption is in the context and convenient parameters are given to the tactic.".
+  test_case "The convenient assumption is in the context and convenient parameters are given to the tactic".
 
   (* Execution of the tactic.*)
 
@@ -93,7 +100,7 @@ Proof.
     else test_failure.
   
   
-  test_case "The convenient assumption is in the context but incorrect parameters are given to the tactic.".
+  test_case "The convenient assumption is in the context but incorrect parameters are given to the tactic".
 
 (* Failure of the tactic expected with incorrect parameters *)
  Succeed 
@@ -126,12 +133,15 @@ Proof.
    then test_failure 
    else test_success.
 
+  Validate Proof.
+  Guarded.
+
 Abort.
 
-End Test1. 
+End TestTrace1. 
 
 
-Section Test2.
+Section TestTrace2.
 
 (** Tactic under test : TacticsFW.in_compute_trace_inv_singleton_fw *)
 
@@ -152,11 +162,11 @@ Goal
         TraceLink.source := (s, 0, n);
         TraceLink.produced := Node {| Node_id := 2 |};
         TraceLink.linkPattern := lp
-      |} (compute_trace T cm)
+      |} (compute_trace Id_T cm)
 .
 Proof.
   tested_tactic "TacticsFW.in_compute_trace_inv_singleton_fw".
-  test_case "Choice between two assumptions (with correct parameters).".
+  test_case "Choice between two assumptions (with correct parameters)".
   
   eexists ; eexists ; eexists. 
 
@@ -168,7 +178,7 @@ Proof.
     then test_success
     else test_failure.
 
-  test_case "Choice between two assumptions (with incorrect parameters).".
+  test_case "Choice between two assumptions (with incorrect parameters)".
 
   (* Failure of the tactic expected with incorrect parameters *)
   Succeed
@@ -178,12 +188,15 @@ Proof.
     then test_failure
     else test_success.
 
+  Validate Proof.
+  Guarded.
+
 Abort.
 
-End Test2.
+End TestTrace2.
 
 
-Section Test3.
+Section TestElements1.
 
 (** Tactic under test : TacticsFW.in_modelElements_singleton_fw_tac *)
 (** Test case : choice between two assumptions *)
@@ -196,11 +209,11 @@ Context
   (H2 : In (Node {| Node_id := 2 |}) (modelElements cm)).
 
 Goal
-  In (Node {| Node_id := 2 |}) (modelElements (execute T cm)).
+  In (Node {| Node_id := 2 |}) (modelElements (execute Id_T cm)).
 
 Proof.
   tested_tactic "TacticsFW.in_modelElements_singleton_fw_tac".
-  test_case "Choice between two assumptions (with correct parameters).".
+  test_case "Choice between two assumptions (with correct parameters)".
 
   (* Success of the tactic expected *)
   Succeed 
@@ -210,7 +223,7 @@ Proof.
     then test_success
     else test_failure.
  
-  test_case "Choice between two assumptions (with incorrect parameters).".
+  test_case "Choice between two assumptions (with incorrect parameters)".
 
   (* Failure of the tactic expected *)
   Succeed 
@@ -220,12 +233,15 @@ Proof.
     then test_failure
     else test_success.
 
+  Validate Proof.
+  Guarded.
+
 Abort.
 
-End Test3.
+End TestElements1.
 
 
-Section Test4.
+Section TestElements2.
 
 (** Tactic under test : TacticsFW.in_modelElements_singleton_fw_tac *)
 (** Test case : rules with several output patterns *)
@@ -241,7 +257,7 @@ Section Test4.
   
   Proof.
     tested_tactic "TacticsFW.in_modelElements_singleton_fw_tac".
-    test_case "Rules with several output patterns (first pattern, correct parameters).".
+    test_case "Rules with several output patterns (first pattern, correct parameters)".
     
     (* Success of the tactic expected *)
     Succeed 
@@ -251,7 +267,7 @@ Section Test4.
       then test_success
       else test_failure.
 
-     test_case "Rules with several output patterns (first pattern, incorrect parameters).".
+     test_case "Rules with several output patterns (first pattern, incorrect parameters)".
    
     (* Failure of the tactic expected *)
     Succeed 
@@ -260,13 +276,16 @@ Section Test4.
       reflexivity  
       then test_failure
       else test_success.
+
+  Validate Proof.
+  Guarded.
     
-  Abort.
+Abort.
 
-End Test4.
+End TestElements2.
 
 
-Section Test5.
+Section TestElements3.
 
 Import BasicMetamodel DoubleTransformation.
 
@@ -280,7 +299,7 @@ Goal
     (modelElements (execute T cm)).
 Proof.
   tested_tactic "TacticsFW.in_modelElements_singleton_fw_tac".
-  test_case "Rules with several output patterns (second pattern, correct parameters).".
+  test_case "Rules with several output patterns (second pattern, correct parameters)".
 
   (* Success of the tactic expected *)
   Succeed 
@@ -290,7 +309,7 @@ Proof.
     then test_success
     else test_failure.
 
-  test_case "Rules with several output patterns (second pattern, incorrect parameters).".
+  test_case "Rules with several output patterns (second pattern, incorrect parameters)".
 
   (* Failure of the tactic expected *)
   Succeed 
@@ -300,15 +319,92 @@ Proof.
     then test_failure
     else test_success.
 
+  Validate Proof.
+  Guarded.
+
 Abort.
 
-End Test5.
+End TestElements3.
 
-(** FIXME : Not tested : iteration-count > 0 *) 
 
-(** FIXME : Not tested : guards that depend on the model *)
 
-(** FIXME : Not tested : pair patterns *)
+Section TestElements4Pair.
+
+
+(** Tactic under test : TacticsFW.in_modelElements_pair_fw_tac *)
+Ltac tac := TacticsFW.in_modelElements_pair_fw_tac.
+
+(** Test case : no guard, and the right-hand side of the rule is local *)
+
+Import Class2Relational_TUPLES.
+Import Class2Relational_TUPLES.ClassMetamodel.
+Import Class2Relational_TUPLES.RelationalMetamodel.
+
+Context 
+  (cm : ClassModel)
+  (i : nat)
+  (n : string)
+  (i2 : nat)
+  (n2 : string)
+  (H1 : In
+         (AttributeElement
+            {| attr_id := i; derived := false; attr_name := n |})
+         (modelElements cm))
+  (H2 : In (ClassElement {| class_id := i2; class_name := n2 |})
+         (modelElements cm)).
+
+Goal
+  In (ColumnElement {| column_id := i; column_name := n |})
+    (modelElements (execute Class2Relational_TUPLES cm)).
+
+Proof.
+  tested_tactic "TacticsFW.in_modelElements_pair_fw_tac".
+  test_case "Typical use".
+
+  (* Success of the tactic expected *)
+  Succeed 
+    tryif
+      
+      (* Execution of the tactic. *)
+
+      tac "Attribute2Column" "col" 0 H1 H2 ;
+
+      (* Oracle *)
+      (* 1) the tactic should not fail *)
+
+      (* 2) The tactic should leave 2 subgoals *)
+      [ | ] ;
+
+      (* 3) The first subgoal must have a given shape. *)
+      only 1 : 
+        match goal with 
+          [ |- ConcreteExpressions.makeGuard _ _ _ _ = true ] => idtac
+        end  ;
+
+      (* 4) The second subgoal must have a given shape.*)
+      only 2 :
+         match goal with 
+          [ |- ConcreteExpressions.makeElement _ _ _ _ _ _ = Some _ ] => idtac
+        end  
+    then test_success
+    else test_failure.
+ 
+  test_case "Incorrect parameters".
+
+  (* Failure of the tactic expected *)
+  Succeed 
+    tryif
+      tac "Attribute2Column" "_" 0 H1 H2
+    then test_failure
+    else test_success.
+
+  Validate Proof.
+  Guarded.
+Abort.
+
+
+
+End TestElements4Pair. 
 
 
 
@@ -316,7 +412,7 @@ End Test5.
  
 Section TestLink1.
 
-Import Glue ClassMetamodel RelationalMetamodel Class2Relational.
+Import Glue Class2Relational.ClassMetamodel Class2Relational.RelationalMetamodel Class2Relational.
 
 Context
  (cm : ClassModel)
@@ -382,6 +478,8 @@ Proof.
   then test_success
   else test_failure.
 
+  Validate Proof.
+  Guarded.
 
 Abort.
 
