@@ -20,20 +20,11 @@ Local Notation TargetLKind := tmmm.(LKind).
 (** ** Syntax (computed types) **)
 
 
-
-Definition outputPatternLink (skinds : list SourceEKind) (tkind: TargetEKind)  (tref: TargetLKind):=
-  denoteSignature skinds ((denoteEDatatype tkind) -> option (denoteLDatatype tref)).
-
-
-
-
-
-
 Record ConcreteOutputPatternLink (InKinds: list SourceEKind) (OutKind:TargetEKind) : Type :=
   link 
     {
       o_OutRefKind: TargetLKind ;
-      o_outpat : Trace -> nat -> SourceModel -> (outputPatternLink InKinds OutKind o_OutRefKind)
+      o_outpat : Trace -> nat -> SourceModel -> (denoteSignature InKinds ((denoteEDatatype OutKind) -> option (denoteLDatatype o_OutRefKind)))
     }.
 
 Global Arguments o_OutRefKind {_ _}.
@@ -64,10 +55,12 @@ Record ConcreteRule  :=
       r_outpat : list (ConcreteOutputPatternUnit r_InKinds)
     }.
 
-Inductive ConcreteTransformation : Type :=
-  transformation :
-    list ConcreteRule
-    -> ConcreteTransformation.
+Record ConcreteTransformation : Type :=
+  transformation
+  {
+    concreteRules : list ConcreteRule
+  }.
+
 
 (** ** Accessors **)
 
@@ -76,12 +69,9 @@ Definition ConcreteRule_findConcreteOutputPatternUnit (r: ConcreteRule) (name: s
   find (fun(o:ConcreteOutputPatternUnit r.(r_InKinds) ) => beq_string name o.(e_name))
         r.(r_outpat).
 
-Definition ConcreteTransformation_getConcreteRules (x : ConcreteTransformation) : list ConcreteRule :=
-  match x with transformation y => y end.
 
 End ConcreteSyntax.
 
-Arguments transformation {_ _}.
 Arguments Build_ConcreteRule {_ _}.
 Arguments elem {_ _}.
 Arguments link {_ _}.

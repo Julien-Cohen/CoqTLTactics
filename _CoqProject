@@ -5,6 +5,7 @@ INSTALLDEFAULTROOT = .
 -R core core
 -R transformations transformations
 -R usertools usertools
+-R test_tactics test_tactics
 
 # Utils
 
@@ -58,7 +59,7 @@ usertools/TacticsBW.v
 usertools/TacticsFW.v
 usertools/Glue.v
 usertools/ChoiceTools.v
-usertools/Backtracking.v
+
 
 
 # Theorems on engine
@@ -101,6 +102,19 @@ core/properties/Adaptation.v
 core/EngineProofs.v
 core/SyntaxCertification.v
 core/Certification.v
+
+
+# Unit Tests 
+
+test_tactics/TestUtils.v
+test_tactics/BasicMetamodel.v
+test_tactics/IdTransformation.v
+test_tactics/DoubleTransformation.v
+test_tactics/TriplePatternTransformation.v
+test_tactics/TestChoiceTools.v
+test_tactics/TestConcreteExpressionTools.v
+test_tactics/TestTacticsFW.v
+test_tactics/TestTacticsBW.v
 
 
 # User transformations

@@ -1,5 +1,6 @@
 Require Import String.
 Require Import List.
+Open Scope string_scope.
 
 Require Import core.utils.Utils.
 Require Import core.Semantics.
@@ -35,7 +36,8 @@ Proof.
   intros cm rm H ; subst.
   intros i n i2 n2 H1 H2 H3.
 
-  TacticsFW.in_modelElements_pair_fw_tac 2 1 0 ; [].
+  TacticsFW.in_modelElements_pair_fw_tac "Attribute2Column" "col" 0 H1 H2 ;
+  try reflexivity ; [].
 
   (* complex guard *) 
   unfold ConcreteExpressions.makeGuard.
@@ -87,7 +89,7 @@ Proof.
                      List.nth_error
                      Syntax.rules
                      List.map
-                     ConcreteSyntax.ConcreteTransformation_getConcreteRules] 
+                     ConcreteSyntax.concreteRules] 
           in (List.nth_error Class2Relational_TUPLES.(Syntax.rules) 1 (* second rule *)) 
     with 
     | Some ?r => remember r as R ; exists R
@@ -150,8 +152,13 @@ Lemma transform_class_fw :
     In (TableElement {| table_id := id; table_name := name |}) (rm.(modelElements)). 
 Proof.
   intros cm rm H ; subst.
-  intros i n H.
-  TacticsFW.transform_element_fw_tac.  
+  intros i n H.  
+
+  (* Simple resolution (not the general case) *)
+  Succeed solve [TacticsFW.transform_element_fw_tac].
+
+  (* More general resolution *)
+  TacticsFW.in_modelElements_singleton_fw_tac "Class2Table" "tab" 0 H ; reflexivity. 
 Qed.
 
 
@@ -173,7 +180,7 @@ Proof.
 
   C2RTactics.exploit_guard MATCH_GUARD.
 
-  destruct t1 ; simpl in *. subst derived. 
+  destruct e ; simpl in *. subst derived. 
   assumption.
 Qed.
 
@@ -193,6 +200,6 @@ Proof.
   TacticsBW.exploit_element_in_result H ; []. 
 
   
-  destruct t0 ; assumption.
+  destruct e ; assumption.
 
 Qed.

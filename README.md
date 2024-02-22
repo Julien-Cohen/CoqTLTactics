@@ -1,6 +1,8 @@
 # Tactics for CoqTL
 
+
 We provide here some support (essentially tactics) for users who have built a model transformation with CoqTL and who want to prove some properties on that transformation.
+
 
 ## CoqTL
 
@@ -23,7 +25,7 @@ CoqTL is an internal language in Coq, for writing rule-based model- and graph- t
 
 ## Installation
 
-CoqTL requires a working installation of [Coq](https://coq.inria.fr/) (`coqc`) and Make (`make` and `coq_makefile`). It is tested under Coq 8.17.0 and 8.18.0.
+CoqTL requires a working installation of [Coq](https://coq.inria.fr/) (`coqc`) and Make (`make` and `coq_makefile`). It is tested under Coq 8.19.0.
 
 To init the Makefile:
 ```

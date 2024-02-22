@@ -6,6 +6,8 @@ Def: all non-derived attributes in the source model will create
 
 Require Import String.
 Require Import Lia.
+Open Scope string_scope.
+
 Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.Semantics.
@@ -33,9 +35,13 @@ Proof.
     exists (Build_Column_t (Attribute_id a) (Attribute_name a)).
     split ; [ | reflexivity].
     subst rm.
-    TacticsFW.transform_element_fw_tac.
     destruct a ; simpl in H1 ; subst.
-    ChoiceTools.first_in_list.
+
+    (* Simple resolution (not the general case) *)
+    Succeed solve [TacticsFW.transform_element_fw_tac].
+
+    (* More general resolution *)
+    TacticsFW.in_modelElements_singleton_fw_tac "Attribute2Column" "col" 0 H0 ; reflexivity. 
 Qed.
 
 (* Without new tactics *)

@@ -86,7 +86,7 @@ Proof.
   setoid_rewrite in_flat_map. (* traceRuleOnPiece *)
   setoid_rewrite in_flat_map. (* traceIterationOnPiece *)
   setoid_rewrite filter_In.   (* matchingRules *)
-  setoid_rewrite  in_optionToList.
+  setoid_rewrite in_optionToList.
   unfold traceElementOnPiece.
 
   setoid_rewrite in_allTuples_incl.
@@ -109,7 +109,43 @@ Proof.
     reflexivity.
 Qed.    
 
+(** Variant of the previous lemma with reordered terms in the conjuntion. This should be easier to use in tactics (solving terms from left to right instantiates evars in a convenient way ; for instance, if s is an evar, instanciating the rule helps to fix the type of s, to that there is a smaller choice to instanciate s). *)
+Lemma in_compute_trace_inv_left (tc : TransformationConfiguration) (tr: @Transformation tc) sm :
+  forall s i n res l r opu_el,
+      In r tr.(rules) ->
+      In {| opu_name := n ; opu_element := opu_el ; opu_link := l |} r.(r_outputPattern) ->
+       incl s (modelElements sm) ->
+       UserExpressions.evalGuard r sm s = true ->
+       length s <= tr.(arity) ->
+       In i (seq 0 (UserExpressions.evalIterator r sm s)) ->        
+       opu_el i sm s = Some res ->
+       In 
+         {| source := (s, i, n); produced := res ; linkPattern := l |}
+         (compute_trace tr sm). 
 
+Proof. 
+  intros .
+  apply in_compute_trace_inv.
+  eauto 10.
+Qed.
+
+
+(** Apply the lemma above and split the resulting conjunction into 7 sub-goals *)
+Ltac in_compute_trace_inv_tac :=
+
+  (* pre-condition *)
+  match goal with 
+  | [ |- List.In _ (compute_trace ?T _)] =>
+
+      (* Action *)
+      eapply SemanticsTools.in_compute_trace_inv_left ; 
+      
+      
+      
+      (* Post-condition : 7 goals *)
+      [ | | | | | | ]
+  end.
+ 
 (** * On [modelElements] *)
 
 Lemma in_modelElements_inv {tc:TransformationConfiguration} tr sm :

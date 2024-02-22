@@ -1,5 +1,5 @@
 Require Import String.
-Require Import Coq.Numbers.Natural.Peano.NPeano.
+Require Import Nat.
 Require Import Coq.Strings.Ascii.
 
 Definition natToDigit (n : nat) : ascii :=

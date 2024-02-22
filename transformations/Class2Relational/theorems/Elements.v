@@ -1,5 +1,6 @@
 Require Import String.
 Require Import List.
+Open Scope string_scope.
 
 Require Import core.utils.Utils.
 Require Import core.Semantics.
@@ -36,7 +37,14 @@ Lemma transform_attribute_fw :
 Proof.
   intros cm rm H ; subst.
   intros i n H.
-  TacticsFW.transform_element_fw_tac.
+(*Set Ltac Debug. Set Ltac Batch Debug.*)
+
+  (* Simple resolution (not the general case) *)
+  Succeed solve [TacticsFW.transform_element_fw_tac].
+
+  (* More general resolution *)
+  TacticsFW.in_modelElements_singleton_fw_tac "Attribute2Column" "col" 0 H ; reflexivity. 
+
 Qed.
 
 (* Without new tactics *)
@@ -80,8 +88,13 @@ Lemma transform_class_fw :
     In (TableElement {| Table_id := id; Table_name := name |}) (rm.(modelElements)). 
 Proof.
   intros cm rm H ; subst.
-  intros i n H.
-  TacticsFW.transform_element_fw_tac.  
+  intros i n H. 
+
+  (* Simple resolution (not the general case) *)
+  Succeed solve [TacticsFW.transform_element_fw_tac].
+
+  (* More general resolution *)
+  TacticsFW.in_modelElements_singleton_fw_tac "Class2Table" "tab" 0 H ; reflexivity. 
 Qed.
 
 
@@ -104,7 +117,7 @@ Proof.
 
   C2RTactics.negb_inv MATCH_GUARD.
 
-  destruct t0 ; simpl in *. subst Attribute_derived. 
+  destruct e ; simpl in *. subst Attribute_derived. 
   assumption.
   
 Qed.
@@ -124,6 +137,6 @@ Proof.
 
   TacticsBW.exploit_element_in_result H ; [].
 
-  destruct t0 ; assumption.
+  destruct e ; assumption.
 
 Qed.

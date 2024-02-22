@@ -39,12 +39,12 @@ Proof.
 
   {
     apply INC in IN_ELTS0.
-    destruct t0.
+    destruct e.
     eapply Elements.transform_class_fw ; eauto.
   }
   {
     C2RTactics.negb_inv MATCH_GUARD.
-    destruct t0 ; simpl in MATCH_GUARD. 
+    destruct e ; simpl in MATCH_GUARD. 
     subst Attribute_derived.
     apply INC in IN_ELTS0.
     eapply Elements.transform_attribute_fw ; eauto.

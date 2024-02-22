@@ -56,8 +56,8 @@ Definition parseRule(cr: ConcreteRule) : Rule :=
 
 Definition parse(ct: ConcreteTransformation) : Transformation :=
   buildTransformation 
-    (max (map (length (A:=SourceEKind)) (map r_InKinds (ConcreteTransformation_getConcreteRules ct))))
-    (map parseRule (ConcreteTransformation_getConcreteRules ct)).
+    (max (map (length (A:=SourceEKind)) (map r_InKinds ct.(concreteRules))))
+    (map parseRule ct.(concreteRules)).
 
 End Parser.
 

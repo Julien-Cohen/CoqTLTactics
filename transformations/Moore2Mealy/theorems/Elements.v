@@ -5,6 +5,7 @@ From transformations.Moore2Mealy
   Require MooreSemantics MealySemantics MooreWF MealyWF Moore2Mealy.
 
 Import Moore2Mealy OptionUtils Strings.String. (* for notation *)
+Open Scope string_scope.
 
 Section Params.
 
@@ -79,32 +80,90 @@ Proof.
 Qed.
 
 
-(* FW with the [in_modelElements_singleton_fw_tac] tactic *)
-Lemma state_element_fw_alt  
-  (s:Moore.State_t)
-  (IN : List.In (Moore.State s) (Model.modelElements m)) :
-  List.In 
-    (Mealy.State (convert_state s))  
-    (Semantics.execute Moore2Mealy m).(Model.modelElements).
-Proof. 
-  TacticsFW.in_modelElements_singleton_fw_tac 1 1 0. (* fixme : "state" instead of rule number *)
-Qed.
-
-
-(* FW with the [transform_element_fw_tac] tactic *)
+(* FW *)
 Lemma state_element_fw  
   (s:Moore.State_t)
   (IN : List.In (Moore.State s) (Model.modelElements m)) :
   List.In 
     (Mealy.State (convert_state s))  
     (Semantics.execute Moore2Mealy m).(Model.modelElements).
+Proof. 
+  
+  (* Simple resolution (not the general case) *)
+  Succeed solve [TacticsFW.transform_element_fw_tac].
+
+  (* More general resolution *)
+  TacticsFW.in_modelElements_singleton_fw_tac "state" "s" 0 IN ; 
+  reflexivity. 
+Qed.
+
+Import Semantics Syntax List Model UserExpressions. (* for notations *)
+
+Lemma in_modelElements_inv_m2m :
+  forall (sm:Moore.M) e s n lp, 
+    In 
+      {| 
+        TraceLink.source := (s, 0, n);
+        TraceLink.produced := e ;
+        TraceLink.linkPattern := lp 
+      |} 
+      (compute_trace Moore2Mealy sm) ->
+    In e (execute Moore2Mealy sm).(modelElements) .
 Proof.
-  TacticsFW.transform_element_fw_tac. 
+  setoid_rewrite in_map_iff.
+  intros.
+  repeat first [eexists | split | eassumption].
+  reflexivity.
+Qed.
+
+Lemma in_compute_trace_inv_m2m (sm:Moore.M) :
+  forall s n res l r opu_el,
+      In r Moore2Mealy.(rules) ->
+      In {| 
+          opu_name := n ;
+          opu_element := opu_el ;
+          opu_link := l
+        |}
+        r.(r_outputPattern) ->
+       incl s (modelElements sm) ->
+       evalGuard r sm s = true ->
+       length s = 1 ->
+       In 0 (seq 0 (evalIterator r sm s)) ->       
+       opu_el 0 sm s = Some res ->
+       In 
+         {| 
+           TraceLink.source := (s, 0, n); 
+           TraceLink.produced := res ; 
+           TraceLink.linkPattern := l 
+         |}
+         (compute_trace Moore2Mealy sm). 
+
+Proof. 
+  intros.
+  apply <- SemanticsTools.in_compute_trace_inv. 
+  repeat first [ split | eexists | eauto] ;
+  simpl.
+  + apply PeanoNat.Nat.eq_le_incl ; auto.
 Qed.
 
 
-
-
+Lemma state_element_fw_unfolded  
+  (s:Moore.State_t) (sm:Moore.M)
+  (IN : In (Moore.State s) sm.(modelElements)) :
+  In 
+    (Mealy.State (convert_state s))  
+    (execute Moore2Mealy sm).(modelElements).
+Proof. 
+  eapply in_modelElements_inv_m2m.
+  eapply in_compute_trace_inv_m2m.
+  - (*1*) ChoiceTools.rule_named "state".
+  - (*2*) ChoiceTools.pattern_named "s".
+  - (*3*) apply ListUtils.incl_singleton; exact IN.
+  - (*4*) reflexivity. 
+  - (*5*) simpl ; auto. 
+  - (*6*) simpl ; auto.
+  - (*7*) reflexivity. 
+Qed.
 
 (* FW without new tactics *)
 Lemma state_element_fw_no_tactic rm s
@@ -145,13 +204,13 @@ Lemma transition_element_bw :
 Proof.
   intros t H.
   TacticsBW.exploit_element_in_result H.
-  exists t1.
+  exists e.
   split ; auto. 
 Qed.
 
 
 (* FW with [in_modelElements_singleton_fw_tac] tactic *)
-Lemma transition_element_fw_alt: 
+Lemma transition_element_fw: 
   forall (t:Moore.Transition_t),
     List.In (Moore.Transition t) (Model.modelElements m) ->
     exists t', 
@@ -173,7 +232,8 @@ Proof.
   eexists ; split ; [ reflexivity| ].
 
 
-  TacticsFW.in_modelElements_singleton_fw_tac 2 1 0 ; [].
+  TacticsFW.in_modelElements_singleton_fw_tac "transition" "t" 0 IN ;
+  try reflexivity ; [].
   (* Here we would like to "compute", but this does not work because the value of this computation relies on the value of [m], which is unknown here ; we have to [rewrite C] to get rid of the value of [m]. *)
   simpl.
 
@@ -183,7 +243,7 @@ Proof.
 Qed.
 
 (* FW with [transform_element_fw_tac] tactic *)
-Lemma transition_element_fw : 
+Lemma transition_element_fw_alt : 
   forall (t:Moore.Transition_t),
     List.In (Moore.Transition t) (Model.modelElements m) ->
     exists t', 

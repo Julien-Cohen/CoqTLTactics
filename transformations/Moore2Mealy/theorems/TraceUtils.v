@@ -4,6 +4,8 @@ Require
 Import 
   List Model String NotationUtils Semantics PoorTraceLink Moore2Mealy  NotationUtils Semantics.
 
+Open Scope string_scope.
+
 (** Utilities on traces built by the Moore2Mealy transformation.
     In particular, all the results on [resolve], which appears in the code of the M2M transformation, rely on traces. *)
 
@@ -12,7 +14,7 @@ Import
 Lemma state_in_trace (m:Moore.M) (s:Moore.State_t) : 
   In (Moore.State s) m.(modelElements) ->
   In {| 
-       source := ((Moore.State s) :: nil, 0, "s"%string)  ;
+       source := ((Moore.State s) :: nil, 0, "s")  ;
        produced := (Mealy.State (Moore2Mealy.convert_state s))
     |}
     (TraceLink.drop (Semantics.compute_trace Moore2Mealy m)).
@@ -21,7 +23,7 @@ Proof.
   apply TraceLink.in_drop_inv.
   eexists.
   simpl. 
-  TacticsFW.in_compute_trace_inv_singleton_fw 1 1.
+  TacticsFW.in_compute_trace_inv_singleton_fw "state" "s" IN1 ; reflexivity.
 Qed.
 
 
@@ -57,15 +59,15 @@ Qed.
 Lemma in_find m : 
   forall c,
     In {|
-         source := ([Moore.State c], 0, "s"%string) ;
+         source := ([Moore.State c], 0, "s") ;
          produced := Mealy.State (Moore2Mealy.convert_state c)
       |} 
       (TraceLink.drop (compute_trace Moore2Mealy m)) ->
 
-      find (source_compare ([Moore.State c], 0, "s"%string)) (TraceLink.drop (compute_trace Moore2Mealy m)) = 
+      find (source_compare ([Moore.State c], 0, "s")) (TraceLink.drop (compute_trace Moore2Mealy m)) = 
         Some 
           {|
-            source := ([Moore.State c], 0, "s"%string) ;
+            source := ([Moore.State c], 0, "s") ;
             produced := Mealy.State (Moore2Mealy.convert_state c)
           |}.
 Proof.
@@ -86,7 +88,7 @@ Qed.
 
 Local Lemma in_trace_resolve m s : 
   In {| 
-       source := ([Moore.State s], 0, "s"%string) ;
+       source := ([Moore.State s], 0, "s") ;
        produced := Mealy.State (Moore2Mealy.convert_state s)
     |} 
     (TraceLink.drop (compute_trace Moore2Mealy m)) ->

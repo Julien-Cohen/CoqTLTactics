@@ -12,6 +12,7 @@ From usertools
   Require TacticsFW TacticsBW.
 
 Import String OptionUtils.
+Open Scope string_scope.
 
 Section Foo.
 
@@ -120,8 +121,15 @@ Lemma state_element_fw :
     List.In (Moore.StateElement s) (Model.modelElements m) ->
     List.In (Mealy.StateElement (convert_state s))  (Semantics.execute  Moore2Mealy.Moore2Mealy m).(Model.modelElements).
 Proof.
-  intros s IN.
-  TacticsFW.transform_element_fw_tac.
+  intros s IN. 
+
+  (* Simple resolution (not the general case) *)
+  Succeed solve [TacticsFW.transform_element_fw_tac].
+
+  (* More general resolution *)
+  TacticsFW.in_modelElements_singleton_fw_tac "state" "s" 0 IN ; 
+  reflexivity. 
+
 Qed.
 
 Lemma state_element_bw :
@@ -144,7 +152,7 @@ Proof.
   TacticsBW.exploit_element_in_result H.
   PropUtils.destruct_match_H EQ ; [ | discriminate ].
   PropUtils.inj EQ.
-  exists t1.
+  exists e.
   unfold convert_transition ; rewrite Heqo.
   auto.
 Qed.
@@ -163,7 +171,7 @@ Proof.
 
   + unfold convert_transition.
     rewrite G. reflexivity.
-  + TacticsFW.in_modelElements_singleton_fw_tac 2 1 0 ; [].
+  + TacticsFW.in_modelElements_singleton_fw_tac "transition" "t" 0 IN ; try reflexivity ; [].
   (* Here we would like to "compute", but this does not work because the value of this computation relies on the value of [m], which is unknown here ; we have to [rewrite G] to get rid of the value of [m]. *)
   simpl.
   unfold ConcreteExpressions.makeElement ; simpl.

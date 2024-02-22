@@ -10,6 +10,7 @@ Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.Semantics.
 Require Import core.Certification.
+Open Scope string_scope.
 
 Require Import transformations.Class2Relational_TUPLES.Class2Relational_TUPLES.
 Require Import transformations.Class2Relational_TUPLES.ClassMetamodel.
@@ -36,7 +37,7 @@ Proof.
   eexists.
   
   split.
-  + TacticsFW.in_modelElements_pair_fw_tac 2 1 0.
+  + TacticsFW.in_modelElements_pair_fw_tac "Attribute2Column" "col" 0 H0 H1 ; try reflexivity ; [].
     unfold ConcreteExpressions.makeGuard.
     unfold ConcreteExpressions.wrap.
     
@@ -46,5 +47,5 @@ Proof.
     rewrite H3.
     simpl.
     apply internal_Class_t_dec_lb ; auto.
-  +reflexivity.
+  + reflexivity.
 Qed.

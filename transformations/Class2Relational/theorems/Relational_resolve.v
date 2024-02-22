@@ -1,9 +1,11 @@
 Require Import String.
 Require Import Coq.Logic.Eqdep_dec.
 Require Import Arith.
-Require Import Coq.Arith.Gt.
+
 Require Import Coq.Arith.EqNat.
 Require Import List.
+
+Open Scope string_scope.
 
 From core 
   Require Import 
@@ -72,7 +74,7 @@ Proof.
 
   (* Exploit MATCH_GUARD *)
   C2RTactics.negb_inv MATCH_GUARD.
-  destruct t ; simpl in MATCH_GUARD ; subst Attribute_derived.
+  destruct e0 ; simpl in MATCH_GUARD ; subst Attribute_derived.
 
   (* Exploit Resolve / IN_L *)
   (* IN_L contains the code of the link-pattern in the rule. *)
@@ -110,7 +112,7 @@ Proof.
 
 
   TacticsBW.exploit_element_in_result IN_COL (* or apply Elements.transform_attribute_bw (moins puissant car on perd l'info sur la garde) *) ; [].
-  compute in t0.
+  compute in e.
 
   C2RTactics.negb_inv MATCH_GUARD.
   
@@ -118,7 +120,7 @@ Proof.
   destruct PRE as (c & G1).
 
   
-  destruct t0.  
+  destruct e.  
   unfold C2RTactics.convert_attribute.
   simpl (ClassMetamodel.Attribute_id _)  in *.
   simpl (ClassMetamodel.Attribute_name _) in *. 
@@ -131,9 +133,10 @@ Proof.
 
   exists{| Table_id := r.(Class_id); Table_name := r.(Class_name) |}.
 
-(* Alternative *)
-  TacticsFW.transform_link_fw_tac_singleton 2 1 0 ; []. 
-(*  TacticsFW.transform_link_fw_tac_singleton_auto 0 ; []. *)
+
+ TacticsFW.transform_link_fw_tac_singleton "Attribute2Column" "col" 0 IN_ELTS0 ; 
+  try reflexivity ; []. 
+
 
     simpl. 
     unfold Parser.dropToList ; simpl.

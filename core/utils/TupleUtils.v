@@ -126,7 +126,7 @@ Lemma tuples_of_length_n_nil :
     gt n 0 -> (tuples_of_length_n (nil : list T) n) = nil.
 Proof.
   induction n.
-  - simpl. intros. apply Arith_prebase.gt_irrefl_stt in H. contradiction H.
+  - simpl. intros. apply Arith_base.gt_irrefl_stt in H. contradiction H.
   - simpl. reflexivity.
 Qed.
 
@@ -262,7 +262,7 @@ Proof.
           right.
           split.
           apply incl_cons ; assumption.
-          apply Arith_prebase.lt_le_S_stt.
+          apply Arith_base.lt_le_S_stt.
           apply PeanoNat.Nat.le_neq.
           split ; assumption.
         }
