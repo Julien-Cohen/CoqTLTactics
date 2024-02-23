@@ -45,7 +45,7 @@ Proof.
   unfold UserExpressions.evalOutputPatternUnit.
   unfold UserExpressions.evalIterator.
   simpl.
-  repeat rewrite <- app_nil_end.
+  repeat rewrite app_nil_r.
   rewrite map_flat_map.
   apply (H sm) in H0.
   destruct (f sm) eqn:E. simpl.
@@ -63,7 +63,7 @@ Proof.
       (* The two are equals because of the projection [produced]. *)
       simpl nth_error.
       apply map_ext ; intro x.
-      repeat rewrite <- app_nil_end.
+      repeat rewrite app_nil_r.
       repeat rewrite <- optionToList_map.
       f_equal.
       repeat rewrite OptionUtils.option_map_bind.
@@ -73,7 +73,7 @@ Proof.
     * crush. 
     * clear H0.
       simpl. 
-      rewrite app_nil_end.
+      rewrite <- app_nil_r.
       f_equal ; [ rewrite E ; auto | ]. 
       apply in_flat_map_nil.
       intros.
