@@ -110,7 +110,7 @@ Proof.
 Qed.    
 
 (** Variant of the previous lemma with reordered terms in the conjuntion. This should be easier to use in tactics (solving terms from left to right instantiates evars in a convenient way ; for instance, if s is an evar, instanciating the rule helps to fix the type of s, to that there is a smaller choice to instanciate s). *)
-Lemma in_compute_trace_inv_left (tc : TransformationConfiguration) (tr: @Transformation tc) sm :
+Corollary in_compute_trace_inv_left (tc : TransformationConfiguration) (tr: @Transformation tc) sm :
   forall s i n res l r opu_el,
       In r tr.(rules) ->
       In {| opu_name := n ; opu_element := opu_el ; opu_link := l |} r.(r_outputPattern) ->
@@ -145,7 +145,28 @@ Ltac in_compute_trace_inv_tac :=
       (* Post-condition : 7 goals *)
       [ | | | | | | ]
   end.
- 
+
+(* Instance from left to right. *)
+ Corollary in_compute_trace_inv_right (tc : TransformationConfiguration) (tr: @Transformation tc) sm :
+  forall s i n res l,
+  In 
+    {| source := (s, i, n); produced := res ; linkPattern := l |}
+    (compute_trace tr sm) 
+  -> 
+      incl s (modelElements sm) 
+      /\ length s <= tr.(arity)
+      /\ exists r : Rule,
+        In r tr.(rules)
+        /\ UserExpressions.evalGuard r sm s = true 
+        /\ In i (seq 0 (UserExpressions.evalIterator r sm s))
+        /\ exists opu_el,
+           In {| opu_name := n ; opu_element := opu_el ; opu_link := l |} r.(r_outputPattern) 
+            /\  opu_el i sm s = Some res.
+ Proof.
+   intro.
+   apply in_compute_trace_inv.
+Qed.
+
 (** * On [modelElements] *)
 
 Lemma in_modelElements_inv {tc:TransformationConfiguration} tr sm :

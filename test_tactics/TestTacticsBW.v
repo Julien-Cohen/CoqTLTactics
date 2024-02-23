@@ -10,6 +10,63 @@ Open Scope string_scope.
 Require BasicMetamodel IdTransformation Class2Relational.Class2Relational.
 
 
+(** Tests for tactics on traces. *)
+
+Section TestTrace1.
+
+(* Tactic under test : [TacticsBW.exploit_in_trace] *)
+(* Test case : *)
+
+  Import BasicMetamodel IdTransformation.
+
+  (* Preparation of the goal *)
+
+  Context 
+    (cm : M)
+    (i : nat)
+    (s : list Element)
+    (it : nat)
+    (n : string)
+    (p : Syntax.link_producer)
+    (H : In
+           {|
+             TraceLink.source := (s, it, n);
+             TraceLink.produced := Node {| Node_id := i |};
+             TraceLink.linkPattern := p
+           |} (compute_trace Id_T cm)).
+  Goal  False.  
+         
+  Proof. 
+    tested_tactic "TacticsBW.exploit_in_trace".
+    test_case "Typical use.".
+
+    (* Execution of the tactic. *)
+
+    tryif
+      TacticsBW.exploit_in_trace H 
+                                 
+      (* Oracle *)
+                                 
+    then
+      
+      (* 1) The tactic does not fail *)
+      
+      (* 2) There is an hypothsis in the context with a given shape. *)
+      
+      match goal with 
+      | [ _ : In (Node {| Node_id := i |}) (modelElements cm) |- _ ] => 
+          test_success  
+      | _ => 
+          test_failure
+      end 
+        
+    else test_failure.
+    
+  Abort.
+  
+End TestTrace1.
+
+
 (** Tests for tactics on elements. *)
 
 Section TestElement1.
