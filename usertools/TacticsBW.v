@@ -169,7 +169,6 @@ Ltac exploit_in_trace H :=
 
   (* Precondition *)
   match type of H with 
-
    | In _ (compute_trace _ _) => 
 
        (* local names *)
@@ -186,13 +185,14 @@ Ltac exploit_in_trace H :=
       try destruct_source H ; 
   
       (* 1: inversion *)
-      apply -> SemanticsTools.in_compute_trace_inv in H ;
+      apply  SemanticsTools.in_compute_trace_inv_right in H ;
       autounfold with tracelink in H ;
       destruct H 
         as (IN_ELTS & _ & r & IN_RULE & MATCH_GUARD 
             & IN_IT & opu & IN_OUTPAT & EV); 
       (* The _ because there is no information here *)
-  
+      try clear H ;
+
       (* 2: case analysis on the rules 
             in the transformation *)
       In_rules_inv_tac IN_RULE (* One sub-goal per rule *) ;

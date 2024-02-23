@@ -49,7 +49,7 @@ Proof.
   subst.
   f_equal.
   
-  TacticsBW.exploit_in_trace IN1; 
+  TacticsBW.exploit_in_trace IN1 ; 
   TacticsBW.exploit_in_trace IN2 ; auto. 
 
   PropUtils.unif EQ EQ0 ; reflexivity.
