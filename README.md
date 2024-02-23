@@ -36,20 +36,23 @@ sh init.sh
 ## Usage
 * Run `make proofs` to run the proofs of properties with our tactics on the two main examples of transformations (Moore2Mealy and Class2Relational), and their dependancies (in particular, the definition of the transformation engine).
 * Run `make tactic_tests` to run some unit tests. 
+
+Alternatively :
 * Run `make transformation_tests` to run the two main examples of transformations on examples of models and see the output. 
-* Run `make` to build all the proofs, including proofs that are not in the previous targets.
-* This builds :
+* Run `make` to build all the proofs, including proofs that are not in the previous targets. This builds :
   * Definitions for the transformation language and the transformation engine (adapted from previous work).
   * The lemmas (with their proofs) and tactics we provide for user support (this contribution).
   * Several definitions of metamodels.
   * Several definitions of transformations.
-  * Several properties (with their proofs) of those transformations, some structural and some semantics.
+  * Several properties (with their proofs) of those transformations, some structural and some semantic.
   * Several examples of models that conform to the given metamodels. 
   * Several examples of application of the transformations run by the engine on those models.
-  * Several properties (with their proofs) of the transformation engine, such as additivity which still hold after refactoring of the the engine (adapted from previous work).
+  * Several properties (with their proofs) of the transformation engine (adapted from previous work).
 * Run `make html` to build a navigable HTML version of the source code. HTML code is generated in the `html` directory.
-* Each build takes less than a minute on a machine with 4 cores (make -j 4), less than 3 minutes in a virtual machine with 1 core.
 * To run proofs interactively, open the file you want in your IDE (works with `coqide`, Emacs/ProofGeneral, and VSCode/VsCoq).
+* Run `make metrics` to display the number of LOC in the main developments.
+
+Full build build takes less than a minute on a machine with 4 cores (make -j 4), less than 3 minutes in a virtual machine with 1 core.
 
 Try your own transformations: 
 * To explore the construction of a model transformation, add your files in the `_CoqProject` file and run `./init.sh`, then `make`.
