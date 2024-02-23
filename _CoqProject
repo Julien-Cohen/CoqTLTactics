@@ -135,8 +135,10 @@ transformations/Moore2MealyALT/MooreWF.v
 transformations/Moore2MealyALT/MealySemantics.v
 transformations/Moore2MealyALT/MealyWF.v
 
-
-
+### prop - mono
+core/properties/monotonicity/Moore2Mealy_monotonicity_witness.v
+core/properties/monotonicity/sampleMoore_monotonicity.v
+core/properties/monotonicity/Monotonicity.v
 
 
 
