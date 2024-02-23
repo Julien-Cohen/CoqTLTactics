@@ -100,7 +100,6 @@ transformations/Class2Relational_noid/Class2Relational.v
 transformations/Class2Relational_noid/tests/PersonModel.v
 transformations/Class2Relational_noid/tests/PersonTest.v
 
-
 transformations/Class2Relational_TUPLES/ClassMetamodel.v
 transformations/Class2Relational_TUPLES/RelationalMetamodel.v
 transformations/Class2Relational_TUPLES/tests/PersonModel.v
@@ -113,29 +112,6 @@ transformations/Class2Relational_tactic_test/RelationalMetamodel.v
 transformations/Class2Relational_tactic_test/tests/PersonModel.v
 transformations/Class2Relational_tactic_test/tests/PersonTest.v
 transformations/Class2Relational_tactic_test/Class2Relational_tactic_test.v
-
-
-transformations/TT2BDD/TT.v
-transformations/TT2BDD/BDD.v
-transformations/TT2BDD/TT2BDDAbstract.v
-transformations/TT2BDD/tests/TTModel.v
-transformations/TT2BDD/tests/TT2BDD_TTModel.v
-
-transformations/RSS2ATOM/RSS.v
-transformations/RSS2ATOM/ATOM.v
-transformations/RSS2ATOM/ATOMFlattened.v
-
-transformations/DBLP/DBLP.v
-transformations/IMDB/MOVIES.v
-transformations/HSM2FSM/HSM.v
-
-transformations/Families2Persons/Families.v
-transformations/Families2Persons/Persons.v
-transformations/Families2Persons/Families2Persons.v
-transformations/Families2Persons/tests/sampleFamilies.v
-transformations/Families2Persons/tests/sampleFamiliesTest.v
-
-
 
 transformations/Moore2Mealy/Id.v
 transformations/Moore2Mealy/Moore.v
@@ -201,8 +177,6 @@ transformations/Class2Relational_TUPLES/theorems/Relational_name_definedness_spe
 
 transformations/Class2Relational_tactic_test/theorems/Column_name_uniqueness.v
 transformations/Class2Relational_tactic_test/theorems/Table_name_uniqueness.v
-
-transformations/Families2Persons/theorems/sampleTheorems.v
 
 transformations/Moore2MealyALT/theorems/Elements.v
 transformations/Moore2MealyALT/theorems/WFStable.v
