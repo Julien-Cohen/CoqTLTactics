@@ -37,7 +37,7 @@ sh init.sh
 ```
 ## Usage
 * Run `make proofs` to run the proofs of properties with our tactics on the two main examples of transformations (Moore2Mealy and Class2Relational), and their dependancies (in particular, the definition of the transformation engine).
-* Run `make tactic_tests` to run some unit tests. 
+* Run `make tactic_tests` to run some unit tests. To run again the tests : `make clean_tests ; make tactic_tests` .
 
 Alternatively :
 * Run `make transformation_tests` to run the two main examples of transformations on examples of models and see the output. 
