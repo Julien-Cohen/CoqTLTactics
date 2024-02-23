@@ -20,8 +20,6 @@ CoqTL is an internal language in Coq, for writing rule-based model- and graph- t
     * `theorems/` - Structural properties proven on this transformation.
   * `Class2Relational_TUPLES` - variation of Class to Relational, with more complex patterns in rules.
 
-* `libs/` - an importer that translates ECore metamodels into Coq. (The sources of the importer are in the [coqtl-model-import](https://github.com/atlanmod/coqtl-model-import) repository.)
-
 
 ## Installation
 
@@ -51,7 +49,6 @@ sh init.sh
 * To run proofs interactively, open the file you want in your IDE (works with `coqide`, Emacs/ProofGeneral, and VSCode/VsCoq).
 
 Try your own transformations: 
-* If you have an ECore file mymetamodel.ecore and you want to translate it into a CoqTL metamodel, run `make mymetamodel.v` . The generated coq file conforms to the Metametamodel on which CoqTL rely. (That generator is a proof of concept, not a contribution of this work, it still contains some bugs.) 
 * To explore the construction of a model transformation, add your files in the `_CoqProject` file and run `./init.sh`, then `make`.
     
 ## Contributors and Previous Publications
@@ -65,7 +62,7 @@ The contributors of this work are **Julien Cohen** (Nantes Université, LS2N), *
 
 ## Questions and discussion
 
-If you experience issues installing or using the provided tools, you can submit an issue on [github](https://github.com/atlanmod/coqtl/issues) or contact us at:
+If you experience issues installing or using the provided tools, you can contact us at:
 
 * Massimo Tisi: massimo.tisi@imt-atlantique.fr
 * Julien Cohen: Julien.Cohen@univ-nantes.fr
