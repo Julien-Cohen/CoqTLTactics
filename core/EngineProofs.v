@@ -60,7 +60,7 @@ Proof.
   + destruct (evalGuard a sm1 sp) eqn: ca.
       ++    simpl in H.
             destruct H.
-         -- rewrite <- app_nil_end in H. 
+         -- rewrite app_nil_r in H. 
             unfold traceRuleOnPiece in H.
             rewrite map_flat_map in H.
             apply in_flat_map in H. destruct H as (x, (H,H0)).
