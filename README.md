@@ -11,6 +11,9 @@ CoqTL is an internal language in Coq, for writing rule-based model- and graph- t
 * `core/` - The CoqTL transformation engine and language (modified).
 
 * `usertools/` - Support for user proofs (lemmas and tactics, main contribution).
+  * `TacticsFW` and `TacticsBW` : contain the tactics for the user.
+  * Other files contain lemmas and tactics used to build the user tactics.
+
 
 * `transformations/` - Sample CoqTL transformations and user proofs.
   * `Moore2Mealy/` - Moore / Mealy metamodels and transformation.
@@ -18,7 +21,7 @@ CoqTL is an internal language in Coq, for writing rule-based model- and graph- t
   * `Moore2MealyALT/` - A simpler version of Moore and Mealy metamodels, which results in simpler proofs (without use of links). 
   * `Class2Relational/` - Class / Relational metamodels and transformation.
     * `theorems/` - Structural properties proven on this transformation.
-  * `Class2Relational_TUPLES` - variation of Class to Relational, with more complex patterns in rules.
+  * `Class2Relational_noid`, `Class2Relational_TUPLES` and `Class2Relation_tactic_test`- variations of Class to Relational, with different patterns in rules.
 
 
 ## Installation
