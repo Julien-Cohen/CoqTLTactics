@@ -67,6 +67,61 @@ Section TestTrace1.
 End TestTrace1.
 
 
+Section TestTrace2.
+
+(* Tactic under test : [TacticsBW.exploit_in_trace] *)
+(* Test case : *)
+
+  Import ClassMetamodel RelationalMetamodel Class2Relational.
+
+  Context 
+    (cm : ClassModel)
+    (i : nat)
+    (cn : string)
+    (s : list ClassMetamodel.Element)
+    (it : nat)
+    (pn : string)
+    (p : Syntax.link_producer)
+    (H : In
+                 {|
+                   TraceLink.source := (s, it, pn);
+                   TraceLink.produced :=
+                     TableElement {| Table_id := i; Table_name := cn |};
+                   TraceLink.linkPattern := p
+                 |} (compute_trace Class2Relational cm)) .
+  
+  Goal  exists c, 
+   In (ClassElement c) (modelElements cm) 
+   /\ c.(Class_id) = i 
+   /\ c.(Class_name) = cn.
+  
+  Proof.
+    tested_tactic "TacticsBW.exploit_in_trace".
+    test_case "The generated hypothesis contains all the information on the source element.".
+
+    Succeed
+      tryif
+        TacticsBW.exploit_in_trace H 
+      then tryif
+          solve [eauto]
+        then test_success
+        else test_failure
+      else test_failure.
+
+(** Remark : below is a suggestion of improvement. *)     
+Succeed
+  exfalso ;
+  TacticsBW.exploit_in_trace H ;
+    match goal with 
+    | [ _ : In (ClassElement {| Class_id := i ; Class_name := cn|}) (modelElements cm) |- _ ] => idtac "Ideal result." 
+    | _ => idtac "Possible improvement : The expected result is not an explicit hypothesis."
+    end.
+      
+  Abort.
+  
+End TestTrace2.
+
+
 (** Tests for tactics on elements. *)
 
 Section TestElement1.
@@ -150,53 +205,17 @@ Section TestElement2.
     test_case "Typical use.".
 
     tryif 
-      TacticsBW.exploit_element_in_result H ; [] ;
-      eexists ; split ; [ | split ; [ | ]] ; 
-      [ eassumption | reflexivity | reflexivity ]  
+      TacticsBW.exploit_element_in_result H ; solve [eauto]
     then test_success
     else test_failure.
+
+(** Remark: the improvement suggested in TestTrace2 would result in an improvement here. *)
     
   Abort.
-  
+
 End TestElement2.
 
 
-Section TestElement2ALT.
-
-(* Tactic under test : [TacticsBW.exploit_element_in_result] *)
-(* Test case : *)
-
-  Import ClassMetamodel RelationalMetamodel Class2Relational.
-
-  Context 
-    (cm : ClassModel) 
-    (i : nat) 
-    (n : string)
- 
-    (H : In 
-           (TableElement {| Table_id := i; Table_name := n |})
-           (modelElements (execute Class2Relational cm))).
-
-  Goal False.
-  
-  Proof.
-    tested_tactic "TacticsBW.exploit_element_in_result".
-    test_case "The generated hypothesis contains all the information on the source element.".
-
-  tryif
-    TacticsBW.exploit_element_in_result H 
-  then
-   match goal with 
-    | [ _ : In (ClassElement {| Class_id := i ; Class_name := n|}) (modelElements cm) |- _ ] => 
-          test_success  
-    | _ => test_failure
-    end 
-  
-  else test_failure.
-      
-  Abort.
-  
-End TestElement2ALT.
 
 
 (** Tests for tactics on links. *)

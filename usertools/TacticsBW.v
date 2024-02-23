@@ -244,6 +244,7 @@ Ltac exploit_element_in_result IN :=
       (* 1: make the trace appear *)
       apply -> SemanticsTools.in_modelElements_inv in IN ;
       destruct IN as (s & i & n & p & IN_EXPL) ;
+      try clear IN ;
       
       (* 2: exploit the trace *)
       exploit_in_trace IN_EXPL
