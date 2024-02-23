@@ -33,27 +33,17 @@ Instance Id_MTC :
 Open Scope coqtl.
 
 
+(** 
+    Example of transformation with two out-patterns in the same rule. 
 
-
-
-(** Exemple de transformation avec deux out-pattern dans une règle. 
-
-On va prendre un graphe et dupliquer las arcs, en mettant un arc dans le sens original et un arc dans le sens contraire pour chaque arc rencontré.
-
-On voudrait une petite variation sur la transformation identité déjà implémentée, mais la syntaxe concrète ne prend pas en charge deux out-patterns dans les règles pour le moment.
-
-Du coup je fais un copié-collé de la valeur de la transformation (issue du Print ci-dessous) que je modifie. 
-
+    The transformation takes a graph and duplicates the edges, except that a duplicated edge is the opposite as the inital one. 
+        
+     Ideally, it would be a small variation on the identity tansformation, but double output-patterns are not supported by the notation shortcuts for concrete syntax of CoqTL, so we use the Coq data-type instead.
+ 
  *)
 
 
 Import ModelingMetamodel.
-
-
-(*Require IdTransformation.
-Print IdTransformation.T'.*)
-
-
 
 Definition T' := 
   {|

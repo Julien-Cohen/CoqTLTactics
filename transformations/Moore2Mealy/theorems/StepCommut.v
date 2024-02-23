@@ -23,8 +23,8 @@ Hypothesis WF_5 : Moore.WF_transition_target_glue_l_exists m.
 Hypothesis WF_6 : Moore.WF_transition_target_glue_r_exists m.
 Hypothesis WF_7 : MooreWF.state_id_uniqueness m.
 
-(** [State_outTransitions] *)
 
+(** [State_outTransitions] *)
 
 Lemma in_outTransitions_commut_fw t s t' :
   List.In t (MooreSemantics.State_outTransitions m s) ->
@@ -79,6 +79,7 @@ Proof.
     apply Moore.internal_State_t_dec_lb.
     reflexivity.
 Qed.
+
 
 Lemma in_outTransitions_commut_bw_2 s' t' :
   List.In t' 
@@ -139,6 +140,7 @@ Proof.
   unfold Moore2Mealy.convert_transition. rewrite H4. reflexivity.
 Qed.
 
+
 Lemma State_acceptTransition_commut_bw :
   forall s' i t',
     MealySemantics.State_acceptTransition (Semantics.execute Moore2Mealy.Moore2Mealy m) s' i = Some t' ->
@@ -167,6 +169,7 @@ Proof.
     reflexivity.
   }
 Qed.
+
 
 (** [ search] *)
 
@@ -227,7 +230,7 @@ Proof.
 
   destruct H7 as (?&?&s2&?&?).
 
-(*  destruct (GettersCommut.getTransition_target_commut_bw _ WF_T _ _ H7 H1) as (?&?&s2&?&?).*)
+
   replace x with t in *.
   2:{ eapply Elements.convert_transition_injective ; eauto. }
   clear H8. (* duplicate *)
