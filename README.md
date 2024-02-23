@@ -11,8 +11,10 @@ CoqTL is an internal language in Coq, for writing rule-based model- and graph- t
 * `core/` - The CoqTL transformation engine and language (modified).
 
 * `usertools/` - Support for user proofs (lemmas and tactics, main contribution).
-  * `TacticsFW` and `TacticsBW` : contain the tactics for the user.
-  * Other files contain lemmas and tactics used to build the user tactics.
+  * `TacticsFW.v`   contains the following user tactics : `in_modelElements_singleton_fw_tac`, `transform_link_fw_tac_singleton` and `in_compute_trace_inv_singleton_fw`, and similar for other arities (pair, triple).
+
+  * `TacticsBW.v`  contains the following user tactics : `exploit_element_in_result`, `exploit_link_in_result` and `exploit_in_trace`.
+  * Other files contain lemmas and tactics used to build those user tactics.
 
 
 * `transformations/` - Sample CoqTL transformations and user proofs.
