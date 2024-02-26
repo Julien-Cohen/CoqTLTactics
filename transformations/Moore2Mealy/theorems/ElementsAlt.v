@@ -124,9 +124,9 @@ Qed.
 Ltac in_modelElements_singleton_fw_tac r_name pat_name i H
   :=
   match type of H with
-  | List.In _ ?M.(Model.modelElements) =>
+  | List.In _ ?M.(modelElements) =>
       match goal with
-      | |- List.In _ (Semantics.execute ?T M).(Model.modelElements)
+      | |- List.In _ (execute ?T M).(modelElements)
         => idtac
       end
   end; 
@@ -145,7 +145,7 @@ Ltac in_modelElements_singleton_fw_tac r_name pat_name i H
   | (* Fix the output pattern in the rule following user hint *)
     solve [ChoiceTools.pattern_named pat_name] 
           
-  | (* Fix the source piece (any size) *)
+  | (* Fix the source piece *)
     ListUtils.solve_incl_singleton H
                                    
   | (* The guard goal may rely on user expressions and can be arbitrary difficult to prove *)
@@ -162,12 +162,12 @@ Ltac in_modelElements_singleton_fw_tac r_name pat_name i H
       
   ] .
 
-Lemma state_element_fw_alt3  
+Theorem state_element_fw_alt3  
   (sm:Moore.M) (s:Moore.State_t)
-  (IN : List.In (Moore.State s) (Model.modelElements sm)) :
+  (IN : List.In (Moore.State s) sm.(modelElements)) :
   List.In 
     (Mealy.State (convert_state s))  
-    (Semantics.execute Moore2Mealy sm).(Model.modelElements).
+    (execute Moore2Mealy sm).(modelElements).
 Proof. 
   
   in_modelElements_singleton_fw_tac "state" "s" 0 IN ; 
