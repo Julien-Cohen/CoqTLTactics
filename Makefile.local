@@ -53,3 +53,12 @@ metrics:
 	@coqwc transformations/Moore2Mealy/*.v transformations/Moore2Mealy/*/*.v
 	@echo "Metrics for Class2Relational:"
 	@coqwc transformations/Class2Relational/*.v transformations/Class2Relational/*/*.v
+
+grep_tactics:
+	find transformations -name "*.v" -exec grep in_compute_trace_inv_singleton_fw \{\} \; -print
+	find transformations -name "*.v" -exec grep transform_link_fw_tac_singleton \{\} \; -print
+	find transformations -name "*.v" -exec grep in_modelElements_singleton_fw_tac \{\} \; -print
+	find transformations/Class2Relational -name "*.v" -exec grep exploit_in_trace \{\} \; -print
+	find transformations -name "*.v" -exec grep exploit_link_in_result \{\} \; -print
+	find transformations -name "*.v" -exec grep exploit_element_in_result \{\} \; -print
+

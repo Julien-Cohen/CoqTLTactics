@@ -31,7 +31,7 @@ Require Import transformations.Class2Relational.RelationalMetamodel.
 From transformations.Class2Relational 
   Require C2RTactics.
 
-Theorem Relational_name_definedness_alt_proof (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : RelationalModel) :
+Theorem Relational_name_definedness (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : RelationalModel) :
   (* transformation *) 
      rm = execute Class2Relational cm ->
   (* precondition *)   
