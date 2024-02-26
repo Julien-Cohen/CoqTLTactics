@@ -89,102 +89,13 @@ Lemma state_element_fw
     (Semantics.execute Moore2Mealy m).(Model.modelElements).
 Proof. 
   
-  (* Simple resolution (not the general case) *)
-  Succeed solve [TacticsFW.transform_element_fw_tac].
-
-  (* More general resolution *)
   TacticsFW.in_modelElements_singleton_fw_tac "state" "s" 0 IN ; 
   reflexivity. 
 Qed.
 
 Import Semantics Syntax List Model UserExpressions. (* for notations *)
 
-Lemma in_modelElements_inv_m2m :
-  forall (sm:Moore.M) e s n lp, 
-    In 
-      {| 
-        TraceLink.source := (s, 0, n);
-        TraceLink.produced := e ;
-        TraceLink.linkPattern := lp 
-      |} 
-      (compute_trace Moore2Mealy sm) ->
-    In e (execute Moore2Mealy sm).(modelElements) .
-Proof.
-  setoid_rewrite in_map_iff.
-  intros.
-  repeat first [eexists | split | eassumption].
-  reflexivity.
-Qed.
-
-Lemma in_compute_trace_inv_m2m (sm:Moore.M) :
-  forall s n res l r opu_el,
-      In r Moore2Mealy.(rules) ->
-      In {| 
-          opu_name := n ;
-          opu_element := opu_el ;
-          opu_link := l
-        |}
-        r.(r_outputPattern) ->
-       incl s (modelElements sm) ->
-       evalGuard r sm s = true ->
-       length s = 1 ->
-       In 0 (seq 0 (evalIterator r sm s)) ->       
-       opu_el 0 sm s = Some res ->
-       In 
-         {| 
-           TraceLink.source := (s, 0, n); 
-           TraceLink.produced := res ; 
-           TraceLink.linkPattern := l 
-         |}
-         (compute_trace Moore2Mealy sm). 
-
-Proof. 
-  intros.
-  apply <- SemanticsTools.in_compute_trace_inv. 
-  repeat first [ split | eexists | eauto] ;
-  simpl.
-  + apply PeanoNat.Nat.eq_le_incl ; auto.
-Qed.
-
-
-Lemma state_element_fw_unfolded  
-  (s:Moore.State_t) (sm:Moore.M)
-  (IN : In (Moore.State s) sm.(modelElements)) :
-  In 
-    (Mealy.State (convert_state s))  
-    (execute Moore2Mealy sm).(modelElements).
-Proof. 
-  eapply in_modelElements_inv_m2m.
-  eapply in_compute_trace_inv_m2m.
-  - (*1*) ChoiceTools.rule_named "state".
-  - (*2*) ChoiceTools.pattern_named "s".
-  - (*3*) apply ListUtils.incl_singleton; exact IN.
-  - (*4*) reflexivity. 
-  - (*5*) simpl ; auto. 
-  - (*6*) simpl ; auto.
-  - (*7*) reflexivity. 
-Qed.
-
-(* FW without new tactics *)
-Lemma state_element_fw_no_tactic rm s
-  (H: rm = Semantics.execute Moore2Mealy m) 
-  (IN: List.In (Moore.State s) (Model.modelElements m) ) :
-  List.In (Mealy.State (convert_state s))  rm.(Model.modelElements).
-Proof.
-  subst rm.
-  autounfold with semantics.
-  rewrite ListUtils.map_flat_map.
-  apply List.in_flat_map.
-  eexists. (*exists ( (Moore.State s) :: nil ).*)
-  split.
-  + unfold Semantics.allTuples.
-    rewrite  <- TupleUtils.tuples_up_to_n_incl_length. split.
-    * apply ListUtils.incl_singleton. exact IN. 
-    * simpl. auto.
-  + simpl. left. reflexivity.
-Qed.
-
-
+(* BW *)
 Lemma state_element_bw :
   forall (s:Mealy.State_t),
     List.In (Mealy.State s) (Model.modelElements (Semantics.execute Moore2Mealy m)) ->
