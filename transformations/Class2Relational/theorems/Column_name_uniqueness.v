@@ -25,7 +25,7 @@ From transformations.Class2Relational
   Require C2RTactics Elements.
 
 
-Theorem Column_name_uniqueness_third_proof:
+Theorem Column_name_uniqueness:
 forall (cm : ClassModel) (rm : RelationalModel), 
     (* transformation *)
     rm = execute Class2Relational cm ->

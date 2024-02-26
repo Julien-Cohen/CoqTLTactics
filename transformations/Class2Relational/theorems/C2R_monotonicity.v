@@ -1,4 +1,5 @@
 Require Import String.
+Open Scope string_scope.
 
 Require Import core.utils.Utils.
 Require Import core.Syntax.
@@ -20,7 +21,7 @@ From transformations.Class2Relational
 From transformations.Class2Relational.theorems
   Require Elements.
 
-Theorem All_classes_instantiate_impl :
+Theorem c2r_monotonicity :
   Monotonicity Class2Relational.
 Proof.
   (* In this proof I use the same script an in other proofs, but I need to use some lemmas, that I don't need in the two first proofs. Why ? *)
@@ -40,14 +41,14 @@ Proof.
   {
     apply INC in IN_ELTS0.
     destruct e.
-    eapply Elements.transform_class_fw ; eauto.
+    TacticsFW.in_modelElements_singleton_fw_tac "Class2Table" "tab" 0 IN_ELTS0 ; reflexivity.
   }
   {
     C2RTactics.negb_inv MATCH_GUARD.
     destruct e ; simpl in MATCH_GUARD. 
     subst Attribute_derived.
     apply INC in IN_ELTS0.
-    eapply Elements.transform_attribute_fw ; eauto.
+    TacticsFW.in_modelElements_singleton_fw_tac "Attribute2Column" "col" 0 IN_ELTS0 ; reflexivity.
   }    
 Qed.
 

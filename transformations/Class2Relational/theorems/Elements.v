@@ -47,37 +47,6 @@ Proof.
 
 Qed.
 
-(* Without new tactics *)
-Lemma transform_attribute_fw_no_tactic : 
-  forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational cm ->
-  (* precondition *)  forall id name,
-    In (AttributeElement {| Attribute_id:= id ; Attribute_derived := false ; Attribute_name := name|}) cm.(modelElements) ->
-  (* postcondition *) 
-    In (ColumnElement {| Column_id := id; Column_name := name |}) (rm.(modelElements)). 
-Proof.
-    intros.
-    rewrite H.
-    unfold execute ; simpl.
-    unfold compute_trace.
-    unfold produced_elements ; rewrite map_flat_map.
-    apply in_flat_map.
-    exists ([AttributeElement {| Attribute_id := id; Attribute_derived := false; Attribute_name := name |}]).
-    split.
-    + unfold allTuples.
-      rewrite  <- TupleUtils.tuples_up_to_n_incl_length.
-      split.
-      * unfold incl.
-        intros.
-        apply in_inv in H1.
-        destruct H1.
-        -- rewrite <- H1. assumption.
-        -- contradiction H1.
-      * unfold Syntax.arity. simpl. auto.
-    + simpl.
-      left.
-      reflexivity.
-Qed.
 
 Lemma transform_class_fw : 
   forall (cm : ClassModel) (rm : RelationalModel), 
