@@ -144,6 +144,8 @@ transformations/Moore2Mealy/theorems/GettersCommut.v
 transformations/Moore2Mealy/theorems/StepCommut.v
 transformations/Moore2Mealy/theorems/SemanticsPreservation.v
 
+transformations/Moore2Mealy/theorems/ElementsAlt.v
+
 transformations/Moore2MealyALT/Id.v
 transformations/Moore2MealyALT/Moore.v
 transformations/Moore2MealyALT/Mealy.v
