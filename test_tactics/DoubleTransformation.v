@@ -1,4 +1,4 @@
-(** Graph Identity transformation. *)
+
 
 Require Import String List.
 

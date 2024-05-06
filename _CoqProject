@@ -74,6 +74,8 @@ test_tactics/BasicMetamodel.v
 test_tactics/IdTransformation.v
 test_tactics/DoubleTransformation.v
 test_tactics/TriplePatternTransformation.v
+test_tactics/QuadPatternTransformation.v
+test_tactics/QuintPatternTransformation.v
 test_tactics/TestChoiceTools.v
 test_tactics/TestConcreteExpressionTools.v
 test_tactics/TestTacticsFW.v

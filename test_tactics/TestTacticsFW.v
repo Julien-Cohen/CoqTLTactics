@@ -10,7 +10,12 @@ Import
 Open Scope string_scope.
 
 From test_tactics
-  Require IdTransformation DoubleTransformation TriplePatternTransformation.
+  Require 
+    IdTransformation 
+    DoubleTransformation 
+    TriplePatternTransformation  
+    QuadPatternTransformation 
+    QuintPatternTransformation.
 
 Require Class2Relational.Class2Relational.
 Require Class2Relational_TUPLES.Class2Relational_TUPLES.
@@ -513,6 +518,140 @@ Proof.
 Abort.
 
 End TestElements5Triple. 
+
+Section TestElements6Quad.
+
+(** Tactic under test : *)
+Ltac tac := TacticsFW.in_modelElements_4_fw_tac.
+
+(** Test case : no guard, and the right-hand side of the rule is local *)
+
+Import QuadPatternTransformation.
+Import BasicMetamodel.
+
+Context 
+  (cm : M)
+  (i : nat)
+  (n : string)
+  (i2 : nat)
+  (i3 : nat)
+  (i4 : nat)
+  (n2 : string)
+  (H1 : In (Node {| Node_id := i ; |}) (modelElements cm))
+  (H2 : In (Node {| Node_id := i2; |}) (modelElements cm))
+  (H3 : In (Node {| Node_id := i3; |}) (modelElements cm))
+  (H4 : In (Node {| Node_id := i4; |}) (modelElements cm)).
+
+Goal
+  In 
+    (Node {| Node_id := 1;  |})
+    (modelElements (execute Quad_T cm)).
+
+Proof.
+  tested_tactic "TacticsFW.in_modelElements_4_fw_tac".
+  test_case "Typical use".
+
+  (* Success of the tactic expected *)
+  Succeed 
+    tryif
+      
+      (* Execution of the tactic. *)
+
+      tac "state" "s" 0 H1 H2 H2 H4 ;
+
+      (* Oracle *)
+      (* 1) the tactic should not fail *)
+
+      (* 2) The tactic should leave 2 subgoals *)
+      [ | ] ;
+
+      (* 3) The first subgoal must have a given shape. *)
+      only 1 : 
+        match goal with 
+          [ |- ConcreteExpressions.makeEmptyGuard _ _ _  = true ] => idtac
+        end  ;
+
+      (* 4) The second subgoal must have a given shape.*)
+      only 2 :
+         match goal with 
+          [ |- ConcreteExpressions.makeElement _ _ _ _ _ _ = Some _ ] => idtac
+        end 
+    then test_success
+    else test_failure.
+ 
+  Validate Proof.
+  Guarded.
+Abort.
+
+End TestElements6Quad. 
+
+Section TestElements7Quint.
+
+(** Tactic under test : *)
+Ltac tac := TacticsFW.in_modelElements_5_fw_tac.
+
+(** Test case : no guard, and the right-hand side of the rule is local *)
+
+Import QuintPatternTransformation.
+Import BasicMetamodel.
+
+Context 
+  (cm : M)
+  (i : nat)
+  (n : string)
+  (i2 : nat)
+  (i3 : nat)
+  (i4 : nat)
+  (i5 : nat)
+  (n2 : string)
+  (H1 : In (Node {| Node_id := i ; |}) (modelElements cm))
+  (H2 : In (Node {| Node_id := i2; |}) (modelElements cm))
+  (H3 : In (Node {| Node_id := i3; |}) (modelElements cm))
+  (H4 : In (Node {| Node_id := i4; |}) (modelElements cm))
+  (H5 : In (Node {| Node_id := i5; |}) (modelElements cm)).
+
+Goal
+  In 
+    (Node {| Node_id := 1;  |})
+    (modelElements (execute Quint_T cm)).
+
+Proof.
+  tested_tactic "TacticsFW.in_modelElements_5_fw_tac".
+  test_case "Typical use".
+
+  (* Success of the tactic expected *)
+  Succeed 
+    tryif
+      
+      (* Execution of the tactic. *)
+
+      tac "state" "s" 0 H1 H2 H2 H4 H5 ;
+
+      (* Oracle *)
+      (* 1) the tactic should not fail *)
+
+      (* 2) The tactic should leave 2 subgoals *)
+      [ | ] ;
+
+      (* 3) The first subgoal must have a given shape. *)
+      only 1 : 
+        match goal with 
+          [ |- ConcreteExpressions.makeEmptyGuard _ _ _  = true ] => idtac
+        end  ;
+
+      (* 4) The second subgoal must have a given shape.*)
+      only 2 :
+         match goal with 
+          [ |- ConcreteExpressions.makeElement _ _ _ _ _ _ = Some _ ] => idtac
+        end 
+    then test_success
+    else test_failure.
+ 
+  Validate Proof.
+  Guarded.
+Abort.
+
+End TestElements7Quint. 
 
 
 

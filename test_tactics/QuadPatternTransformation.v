@@ -30,18 +30,18 @@ Open Scope coqtl.
 
 Import BasicMetamodel. 
 
-(* This is a transformation with a pattern of size 3. *)
+(* This is a transformation with a pattern of size 4. *)
 Definition T' :=
     transformation
     [
       rule "state"
-      from [Node_K ; Node_K ; Node_K ]
+      from [Node_K ; Node_K ; Node_K ; Node_K]
       to [
         ELEM "s" ::: Node_K  
-           fun _ _ _ _ _ =>  return {| Node_id := 1 |} 
+           fun _ _ _ _ _ _ =>  return {| Node_id := 1 |} 
       ]].
 
-Definition Triple_T := parse T'.
+Definition Quad_T := parse T'.
 
 Close Scope coqtl.
 
