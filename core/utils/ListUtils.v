@@ -318,7 +318,8 @@ Proof.
 Qed.
 
 Ltac solve_incl_pair H1 H2 := 
-  apply ListUtils.incl_pair ; split ; [ exact H1 | exact H2 ].
+  apply incl_pair ; split ; [ exact H1 | exact H2 ].
+
 
 Lemma incl_triple :
   forall {T} (a b c :T) d, (List.In a d /\ List.In b d /\ List.In c d) <-> incl (a::b::c::nil) d.
@@ -332,6 +333,32 @@ Qed.
 
 Ltac solve_incl_triple H1 H2 H3 := 
   apply ListUtils.incl_triple ; split ; [ exact H1 | split ; [exact H2 | exact H3] ].
+
+Lemma incl_4 :
+  forall {T} (a b c d:T) s, (List.In a s /\ List.In b s /\ List.In c s /\ List.In d s) <-> incl (a::b::c::d::nil) s.
+Proof.
+  intros ; split. 
+  + intros (H1 & H2 & H3 & H4). 
+    repeat apply incl_cons ; auto. 
+    apply incl_nil_l.
+  + intro H. repeat explicit_incl H. auto.
+Qed.
+
+Ltac solve_incl_4 H1 H2 H3 H4:= 
+  apply incl_4 ; split ; [ exact H1 | split ; [exact H2 | split ; [ exact H3 | exact H4]] ].
+
+Lemma incl_5 :
+  forall {T} (a b c d e:T) s, (List.In a s /\ List.In b s /\ List.In c s /\ List.In d s /\ List.In e s) <-> incl (a::b::c::d::e::nil) s.
+Proof.
+  intros ; split. 
+  + intros (H1 & H2 & H3 & H4 & H5). 
+    repeat apply incl_cons ; auto. 
+    apply incl_nil_l.
+  + intro H. repeat explicit_incl H. auto.
+Qed.
+
+Ltac solve_incl_5 H1 H2 H3 H4 H5 := 
+  apply incl_5 ; split ; [ exact H1 | split ; [exact H2 | split ; [ exact H3 | split ; [exact H4 | exact H5]]] ].
 
 
 Set Implicit Arguments.

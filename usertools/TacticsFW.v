@@ -59,27 +59,40 @@ Ltac in_compute_trace_inv_any_fw r_name pat_name incl_tac :=
 
 
 
-(** Instance for singleton patterns. *)
+(** Instance for singleton patterns (patterns of size 1) *)
 Ltac in_compute_trace_inv_singleton_fw r_name pat_name H :=
   in_compute_trace_inv_any_fw 
     r_name 
     pat_name 
     ltac:(ListUtils.solve_incl_singleton H).
 
-(** Instance for pair patterns *)
+(** Instance for pair patterns (patterns of size 2) *)
 Ltac in_compute_trace_inv_pair_fw r_name pat_name H1 H2 :=
   in_compute_trace_inv_any_fw 
     r_name 
     pat_name 
     ltac:(ListUtils.solve_incl_pair H1 H2).
 
-(** Instance for triple patterns *)
+(** Instance for triple patterns (patterns of size 3) *)
 Ltac in_compute_trace_inv_triple_fw r_name pat_name H1 H2 H3 :=
   in_compute_trace_inv_any_fw 
     r_name 
     pat_name 
     ltac:(ListUtils.solve_incl_triple H1 H2 H3).
 
+(** Instance for patterns of size 4 *)
+Ltac in_compute_trace_inv_4_fw r_name pat_name H1 H2 H3 H4 :=
+  in_compute_trace_inv_any_fw 
+    r_name 
+    pat_name 
+    ltac:(ListUtils.solve_incl_4 H1 H2 H3 H4).
+
+(** Instance for patterns of size 5 *)
+Ltac in_compute_trace_inv_5_fw r_name pat_name H1 H2 H3 H4 H5 :=
+  in_compute_trace_inv_any_fw 
+    r_name 
+    pat_name 
+    ltac:(ListUtils.solve_incl_5 H1 H2 H3 H4 H5).
 
 
 
@@ -162,6 +175,85 @@ Ltac in_modelElements_pair_fw_tac r_named pat_name i H1 H2 :=
   (* Post-condition *)
   [ | ].
  
+
+Ltac in_modelElements_4_fw_tac r_named pat_name i H1 H2 H3 H4 :=
+  (* Precondition on H1. *)
+  match type of H1 with 
+    List.In _ ?M.(modelElements) =>
+      
+      (* Precondition on H2. *)
+      match type of H2 with 
+        List.In _ M.(modelElements) =>
+
+          (* Precondition on H3. *)
+          match type of H3 with 
+            List.In _ M.(modelElements) =>
+
+             (* Precondition on H4. *)
+             match type of H4 with 
+               List.In _ M.(modelElements) =>
+              
+                (* Precondition on the goal. *)
+                match goal with 
+                | [ |- In _ (execute _ M).(modelElements) ] => idtac
+                end
+             end 
+          end
+      end 
+  end;
+
+  apply <- SemanticsTools.in_modelElements_inv ; 
+  
+  eexists ; exists i ; eexists ; eexists ; 
+  
+  in_compute_trace_inv_4_fw r_named pat_name H1 H2 H3 H4 ;
+                               
+                               
+  (* Post-condition *)
+  [ | ].
+ 
+Ltac in_modelElements_5_fw_tac r_named pat_name i H1 H2 H3 H4 H5 :=
+  (* Precondition on H1. *)
+  match type of H1 with 
+    List.In _ ?M.(modelElements) =>
+      
+      (* Precondition on H2. *)
+      match type of H2 with 
+        List.In _ M.(modelElements) =>
+
+          (* Precondition on H3. *)
+          match type of H3 with 
+            List.In _ M.(modelElements) =>
+
+             (* Precondition on H4. *)
+             match type of H4 with 
+               List.In _ M.(modelElements) =>
+              
+               (* Precondition on H5. *)
+               match type of H5 with 
+                 List.In _ M.(modelElements) =>
+              
+                  (* Precondition on the goal. *)
+                  match goal with 
+                  | [ |- In _ (execute _ M).(modelElements) ] => idtac
+                  end
+              end
+             end 
+          end
+      end 
+  end;
+
+  apply <- SemanticsTools.in_modelElements_inv ; 
+  
+  eexists ; exists i ; eexists ; eexists ; 
+  
+  in_compute_trace_inv_5_fw r_named pat_name H1 H2 H3 H4 H5 ;
+                               
+                               
+  (* Post-condition *)
+  [ | ].
+ 
+
 (** *** On links (singleton) *)
 
 Ltac transform_link_fw_tac_singleton r_name pat_name i H :=
