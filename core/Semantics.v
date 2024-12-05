@@ -187,6 +187,20 @@ Inductive traceTrOnPiece_rel (tr: Transformation) (sm : SourceModel) (sp: InputP
     matchingRule tr sm sp r ->
       traceTrOnPiece_rel tr sm sp tl.
 
+Lemma p6 : forall tr sm sp tlk,
+  traceTrOnPiece_rel tr sm sp tlk <-> List.In tlk (traceTrOnPiece tr sm sp).
+Proof.
+  unfold traceTrOnPiece.
+  setoid_rewrite in_flat_map.
+  setoid_rewrite <- p5.
+  setoid_rewrite p2.
+  intros ; split ; intro H.
+  + inversion_clear H. eauto.
+  + destruct H as (r & H1 & H2).
+    econstructor ; eauto.
+Qed.
+
+
 (* executable *)
 Definition compute_trace (tr: Transformation) (sm : SourceModel) :  TraceLink.Trace :=
   flat_map 
