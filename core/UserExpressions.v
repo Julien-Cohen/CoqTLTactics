@@ -20,26 +20,52 @@ Context {tc: TransformationConfiguration}.
 Definition evalGuard (r : Rule) (sm: SourceModel) (sp: InputPiece) : bool :=
   r.(r_guard) sm sp.
 
-Inductive guard_ok r sm sp : Prop :=
-  | OK : r.(r_guard) sm sp = true -> guard_ok r sm sp.
+Definition guard_ok r sm sp : Prop :=
+  r.(r_guard) sm sp = true.
+
 
 Definition evalIterator (r : Rule) (sm: SourceModel) (sp: InputPiece) :
   nat :=
   match r.(r_iterator) sm sp with
   | Some n => n
-  | _ => 0
-  end.
+  | None => 0 (* Reminder : a None in the concrete syntax is transformed into a Some 1 in the abstract syntax y the parsing. *)
+              (* Here, 0 gives no iteration *) 
+ end.
 
 Inductive evalIterator_rel r sm sp : nat -> Prop :=
-  | it_some : forall n, r.(r_iterator) sm sp = Some n -> evalIterator_rel r sm sp n
-  | it_none : r.(r_iterator) sm sp = None -> evalIterator_rel r sm sp 0.
+
+  | it_some : 
+    forall n, 
+      r.(r_iterator) sm sp = Some n -> 
+      evalIterator_rel r sm sp n
+
+  | it_none : 
+      r.(r_iterator) sm sp = None -> 
+       evalIterator_rel r sm sp 0. (* 0 gives no iteration *)
+
+Lemma p1 : forall r sm sp n, 
+  evalIterator_rel r sm sp n <-> evalIterator r sm sp = n.
+Proof.
+  unfold evalIterator.
+  intros ; split ; intro H.
+  + inversion_clear H.
+    - rewrite H0 ; reflexivity.
+    - rewrite H0 ; reflexivity.
+  + destruct (r_iterator r sm sp) eqn:E ; subst ; [ constructor 1 | constructor 2] ; auto.
+Qed.
+
+Corollary c1 : forall r sm sp,
+  evalIterator_rel r sm sp (evalIterator r sm sp).
+Proof.
+  setoid_rewrite p1. auto.
+Qed.
 
 Definition evalOutputPatternUnit (o: OutputPatternUnit) (sm: SourceModel) (sp: InputPiece) (iter: nat) 
   : option TargetElementType := 
   o.(opu_element) iter sm sp.
 
-Inductive evalOutputPatternUnit_rel o sm sp it e :=
-  | ev_out_el : o.(opu_element) it sm sp = Some e -> evalOutputPatternUnit_rel o sm sp it e.
+Definition evalOutputPatternUnit_rel o sm sp it e :=
+   o.(opu_element) it sm sp = Some e.
 
 Definition evalOutputPatternLink
             (sm: SourceModel) (sp: InputPiece) (oe: TargetElementType) (iter: nat) (tra: list TraceLink)
