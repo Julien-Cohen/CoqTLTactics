@@ -212,13 +212,41 @@ Inductive in_trace (tr: Transformation) (sm : SourceModel) (tl:TraceLink) : Prop
   | r5 : forall sp,
      traceTrOnPiece_rel tr sm sp tl ->
       isTuple sm sp ->
+      List.length sp <= tr.(arity) -> (* cohérence avec le moteur de référence *)
     in_trace tr sm tl .  
 
+Lemma p7 : forall tr sm tlk, 
+  in_trace tr sm tlk <-> List.In tlk (compute_trace tr sm).
+Proof.
+  unfold compute_trace.
+  setoid_rewrite in_flat_map.
+  setoid_rewrite <- p6.
+  intros ; split ; intro H.
+  + inversion_clear H.
+    exists sp ; split ; [ | assumption].
+    unfold allTuples.
+    Search (In _ (TupleUtils.tuples_up_to_n _ _)).
+    apply TupleUtils.tuples_up_to_n_incl_length.
+    unfold isTuple in H1.
+    auto.
+  + destruct H as (ip & H1 & H2).
+    econstructor ; [ eassumption | | ].
+    - eapply p1 ; eassumption.
+    - unfold allTuples in H1.
+      Search (In _ (TupleUtils.tuples_up_to_n _ _)).
+      eapply TupleUtils.tuple_length ; eassumption.
+Qed.
 
 Definition is_trace trans sm tra : Prop :=
   forall lk, List.In lk tra <-> in_trace trans sm lk.    
 (* On aurait pu définir ensemble en compréhension. *)
 
+Lemma p8 : forall trans sm, is_trace trans sm (compute_trace trans sm).
+Proof.
+  unfold is_trace.
+  setoid_rewrite p7.
+  tauto.
+Qed.
 
 (** * Apply link part of the r.h.s of rules (uses traces) **)
 
@@ -231,17 +259,38 @@ Definition apply_link_pattern_rel tls sm lk tl : Prop :=
    List.In tl (lk.(linkPattern) (* fixme *) (drop tls) (getIteration lk) sm (getSourcePiece lk) lk.(produced)).
   
 
+Lemma p9 : forall tls sm tlk lk,
+  apply_link_pattern_rel tls sm tlk lk <-> List.In lk (apply_link_pattern tls sm tlk).
+Proof.
+  unfold apply_link_pattern.
+  unfold apply_link_pattern_rel.
+  tauto.
+Qed.
+
+
 (* executable *)
-Definition applyTrOnModel (sm : SourceModel) (tls:Trace): list TargetLinkType :=
-    flat_map (apply_link_pattern tls sm) tls. 
+Definition applyTrLkOnModel (sm : SourceModel) (tra:Trace): list TargetLinkType :=
+    flat_map (apply_link_pattern tra sm) tra. 
 
 (* predicative *)
-Inductive applyTrOnModel_rel (sm : SourceModel) (tls:Trace) (tl: TargetLinkType) : Prop :=
- | r6 : forall lk, List.In lk tls -> 
-    apply_link_pattern_rel tls sm lk tl -> 
-    applyTrOnModel_rel sm tls tl. 
+Inductive applyTrLkOnModel_rel (sm : SourceModel) (tra:Trace) (lk: TargetLinkType) : Prop :=
+ | r6 : forall tlk, 
+    List.In tlk tra -> 
+    apply_link_pattern_rel tra sm tlk lk -> 
+    applyTrLkOnModel_rel sm tra lk. 
 
-
+Lemma p10 : forall sm tra lk,
+  applyTrLkOnModel_rel sm tra lk <-> List.In lk (applyTrLkOnModel sm tra).
+Proof.
+  unfold applyTrLkOnModel.
+  setoid_rewrite in_flat_map.
+  setoid_rewrite <- p9. 
+  intros ; split ; intro H.
+  + inversion_clear H.
+    eauto.
+  + destruct H as (k & H1 & H2).
+    econstructor ; eauto.
+Qed.
 
 
 (** * Execute **)
@@ -257,7 +306,7 @@ Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   in
   {|
     modelElements := produced_elements t ;
-    modelLinks := applyTrOnModel sm t
+    modelLinks := applyTrLkOnModel sm t
   |}.
 
 
@@ -267,12 +316,44 @@ Inductive is_produced_element tr sm : TargetElementType -> Prop :=
         in_trace tr sm {| source := a; produced := b; linkPattern := c |} ->
         is_produced_element tr sm b.
 
+Lemma p11 : forall tr sm e,
+  is_produced_element tr sm e <-> In e ( (execute tr sm).(modelElements)).
+Proof.
+  unfold execute.
+  simpl modelElements.
+  unfold produced_elements.
+  Search (In _ (map _ _)).
+  setoid_rewrite in_map_iff.
+  setoid_rewrite <- p7.
+  intros ; split ; intro H.
+  + inversion_clear H.
+    eexists ; split ; [ | eassumption]. reflexivity.  
+  + destruct H as (k & H1 & H2).  
+    destruct k.
+    simpl in H1.
+    subst.
+    econstructor ; eassumption.
+Qed.
+
+
 Inductive is_produced_link tr sm (tl:TargetLinkType): Prop :=
     | r8 : forall tra, 
         is_trace tr sm tra ->
-        applyTrOnModel_rel sm tra tl->
+        applyTrLkOnModel_rel sm tra tl->
         is_produced_link tr sm tl.
 
+(*
+Lemma p12 : forall tr sm tl, 
+  is_produced_link tr sm tl <-> In tl ( (execute tr sm).(modelLinks)).
+Proof.
+  unfold execute.
+  simpl modelLinks.
+  setoid_rewrite <- p10.
+  intros ; split ; intro H.
+  + inversion_clear H.
+    
+Qed.
+*)
 
 Definition is_result tr sm tm: Prop :=
   (forall e, (List.In e tm.(modelElements) <-> is_produced_element tr sm e)) /\ 

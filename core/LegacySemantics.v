@@ -27,7 +27,7 @@ Definition applyRuleOnPiece {tc:TransformationConfiguration} (r: Rule) (tr: Tran
 Definition applyTrOnPiece {tc:TransformationConfiguration} (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetLinkType :=
   flat_map (fun r => applyRuleOnPiece r tr sm sp) (matchingRules tr sm sp).
 
-Definition applyTrOnModel_old {tc:TransformationConfiguration} (tr: Transformation) (sm : SourceModel) 
+Definition applyTrLkOnModel_old {tc:TransformationConfiguration} (tr: Transformation) (sm : SourceModel) 
   : list TargetLinkType
   :=  flat_map (applyTrOnPiece tr sm) (allTuples tr sm).
 
@@ -68,7 +68,7 @@ Proof.
 
   destruct H as (r, (opu, (H1, (H2, (H3, (H4, (H5, (H6, H7)))))))). 
   
-  unfold applyTrOnModel.  apply in_flat_map.
+  unfold applyTrLkOnModel.  apply in_flat_map.
   exists (getSourcePiece tlk).
   split ; [ assumption|  ].
   unfold applyTrOnPiece.  apply in_flat_map.
@@ -96,17 +96,17 @@ Proof.
 Qed.
 
 Lemma included_1 {tc:TransformationConfiguration} tr sm :
-  incl  (applyTrOnModel sm (compute_trace tr sm))  (applyTrOnModel_old tr sm).
+  incl  (applyTrLkOnModel sm (compute_trace tr sm))  (applyTrLkOnModel_old tr sm).
 Proof.
   intro link.
-  unfold applyTrOnModel.
+  unfold applyTrLkOnModel.
   intro H.
   apply in_flat_map in H. destruct H as (trl, (IN1, IN2)).
 
   apply (exploit_in_compute_trace) in IN1. 
    destruct IN1 as  (r, (opu, (E1, (E2, (E3, (E4, (E5, (E6, E7)))))))).
 
-  unfold applyTrOnModel.  apply in_flat_map.
+  unfold applyTrLkOnModel.  apply in_flat_map.
   exists (getSourcePiece trl).
   split ; [ assumption|  ].
   unfold applyTrOnPiece.  apply in_flat_map.
@@ -135,13 +135,13 @@ Proof.
 Qed.
 
 Lemma included_2 {tc:TransformationConfiguration} tr sm :
-  incl (applyTrOnModel_old tr sm) (applyTrOnModel sm (compute_trace tr sm)).
+  incl (applyTrLkOnModel_old tr sm) (applyTrLkOnModel sm (compute_trace tr sm)).
 Proof.
   intro link.
   intro H.
-  unfold applyTrOnModel.
+  unfold applyTrLkOnModel.
   apply in_flat_map.
-  unfold applyTrOnModel in H.
+  unfold applyTrLkOnModel in H.
   apply in_flat_map in H. destruct H as (ip, (H1,H2)).
   unfold applyTrOnPiece in H2.
   apply in_flat_map in H2. destruct H2 as (r, (H3,H4)).
@@ -168,7 +168,7 @@ Proof.
 Qed.
 
 Lemma included_3 {tc:TransformationConfiguration} tr sm :
-  forall lk, In lk (applyTrOnModel_old tr sm) <-> In lk (applyTrOnModel sm (compute_trace tr sm)).
+  forall lk, In lk (applyTrLkOnModel_old tr sm) <-> In lk (applyTrLkOnModel sm (compute_trace tr sm)).
 Proof.
   intro link.
   split.
