@@ -248,6 +248,31 @@ Proof.
   tauto.
 Qed.
 
+(* Deux traces différentes (listes) représentent le même ensemble. *)
+Remark is_trace_incl_right : forall tr sm tra1 tra2,
+  is_trace tr sm tra1 -> is_trace tr sm tra2 -> incl tra1 tra2.
+Proof.
+  unfold is_trace.
+  intros.
+  unfold incl.
+  intros.
+  apply H0.
+  apply H.
+  assumption.
+Qed.
+
+Remark is_trace_incl_eq : forall tr sm tra1 tra2,
+  is_trace tr sm tra1 -> is_trace tr sm tra2 -> (forall e, In e tra1 <-> In e tra2).
+Proof.
+  unfold is_trace.
+  intros.
+  setoid_rewrite H.
+  setoid_rewrite H0.
+  tauto.
+Qed.
+
+
+
 (** * Apply link part of the r.h.s of rules (uses traces) **)
 
 (* executable *)
@@ -255,16 +280,42 @@ Definition apply_link_pattern (tls:Trace) sm lk :list TargetLinkType :=
     lk.(linkPattern) (drop tls) (getIteration lk) sm (getSourcePiece lk) lk.(produced).
 
  (* predicative *)
-Definition apply_link_pattern_rel tls sm lk tl : Prop := 
-   List.In tl (lk.(linkPattern) (* fixme *) (drop tls) (getIteration lk) sm (getSourcePiece lk) lk.(produced)).
+Inductive apply_link_pattern_rel tr sm tlk lk : Prop := 
+   | rr : 
+    forall tra,
+    is_trace tr sm tra ->
+    List.In lk (tlk.(linkPattern) (* fixme *) (drop tra) (getIteration tlk) sm (getSourcePiece tlk) tlk.(produced)) ->
+      apply_link_pattern_rel tr sm tlk lk. 
   
+(* Ici on a besoin de LA trace et non pas d'UNE trace car pour deux traces différentes 
+   [tlk.(linkPattern) (drop tra)] pourrait donner des résultats différents car rien ne contraint les expressions
+    utilisateur.
+    Par conséquent, on ne peut pas être complètement axiomatique, on doit se reposer sur le 
+    résultat de l'application du moteur de transformation.
+  
+    Possibilité : spécifier plus précisément les propriétés d'une traces pour forcer l'unicité.
 
-Lemma p9 : forall tls sm tlk lk,
-  apply_link_pattern_rel tls sm tlk lk <-> List.In lk (apply_link_pattern tls sm tlk).
+    Autre possibilité : ne pas rechercher une équivalence entre la sémantique axiomatique 
+    et la sémantique exécutable, seulement une correction (sans complétude).
+
+    Autre possibilité : ajouter des hypothèses sur les fonctions utilisateurs permettant
+    de garantir l'équivalence.
+*) 
+
+
+
+(* Prove that the trace produced by the executable engine is correct (not equivalent) with respect
+  to the trace defined by the relational semantics. *)
+Lemma p9 : forall tr tra sm tlk lk,
+  is_trace tr sm tra ->
+  List.In lk (apply_link_pattern tra sm tlk) ->
+  apply_link_pattern_rel tr sm tlk lk.
 Proof.
   unfold apply_link_pattern.
-  unfold apply_link_pattern_rel.
-  tauto.
+  intros.
+  econstructor.
+  eassumption.
+  eassumption.
 Qed.
 
 
@@ -273,23 +324,24 @@ Definition applyTrLkOnModel (sm : SourceModel) (tra:Trace): list TargetLinkType 
     flat_map (apply_link_pattern tra sm) tra. 
 
 (* predicative *)
-Inductive applyTrLkOnModel_rel (sm : SourceModel) (tra:Trace) (lk: TargetLinkType) : Prop :=
- | r6 : forall tlk, 
+Inductive applyTrLkOnModel_rel tr (sm : SourceModel) (lk: TargetLinkType) : Prop :=
+ | r6 : forall tra tlk,
+    is_trace tr sm tra -> 
     List.In tlk tra -> 
-    apply_link_pattern_rel tra sm tlk lk -> 
-    applyTrLkOnModel_rel sm tra lk. 
+    apply_link_pattern_rel tr sm tlk lk -> 
+    applyTrLkOnModel_rel tr sm lk. 
 
-Lemma p10 : forall sm tra lk,
-  applyTrLkOnModel_rel sm tra lk <-> List.In lk (applyTrLkOnModel sm tra).
+Lemma p10 : forall tr sm tra lk,
+   is_trace tr sm tra ->
+   List.In lk (applyTrLkOnModel sm tra) ->
+  applyTrLkOnModel_rel tr sm lk.
 Proof.
   unfold applyTrLkOnModel.
   setoid_rewrite in_flat_map.
-  setoid_rewrite <- p9. 
-  intros ; split ; intro H.
-  + inversion_clear H.
-    eauto.
-  + destruct H as (k & H1 & H2).
+  intros.
+  destruct H0 as (k & H1 & H2).
     econstructor ; eauto.
+  eapply p9 ; eassumption. 
 Qed.
 
 
@@ -317,42 +369,48 @@ Inductive is_produced_element tr sm : TargetElementType -> Prop :=
         is_produced_element tr sm b.
 
 Lemma p11 : forall tr sm e,
-  is_produced_element tr sm e <-> In e ( (execute tr sm).(modelElements)).
+  In e ( (execute tr sm).(modelElements)) ->
+  is_produced_element tr sm e .
 Proof.
   unfold execute.
   simpl modelElements.
   unfold produced_elements.
+  intros.
   Search (In _ (map _ _)).
-  setoid_rewrite in_map_iff.
-  setoid_rewrite <- p7.
-  intros ; split ; intro H.
-  + inversion_clear H.
-    eexists ; split ; [ | eassumption]. reflexivity.  
-  + destruct H as (k & H1 & H2).  
-    destruct k.
-    simpl in H1.
-    subst.
-    econstructor ; eassumption.
+  setoid_rewrite in_map_iff in H.
+  destruct H as (k & H1 & H2).  
+  destruct k.
+  simpl in H1.
+  subst.
+  econstructor. apply p7. eassumption.
 Qed.
 
 
-Inductive is_produced_link tr sm (tl:TargetLinkType): Prop :=
+Inductive is_produced_link tr sm (lk:TargetLinkType): Prop :=
     | r8 : forall tra, 
         is_trace tr sm tra ->
-        applyTrLkOnModel_rel sm tra tl->
-        is_produced_link tr sm tl.
+        applyTrLkOnModel_rel tr sm lk->
+        is_produced_link tr sm lk.
 
-(*
-Lemma p12 : forall tr sm tl, 
-  is_produced_link tr sm tl <-> In tl ( (execute tr sm).(modelLinks)).
+
+Lemma p12 : forall tr sm lk,  
+  In lk ( (execute tr sm).(modelLinks)) ->
+  is_produced_link tr sm lk .
 Proof.
   unfold execute.
   simpl modelLinks.
-  setoid_rewrite <- p10.
-  intros ; split ; intro H.
-  + inversion_clear H.
-    
+  intros.
+  apply p10 with (tr:=tr) in H ; [ | apply p8].
+  econstructor.
+  eapply p8.
+  assumption.
 Qed.
+
+(* Fixme : Distinguer 
+   1) le résultat est un résultat possible et 
+   2) le résultat est inclus dans un résultat possible. 
+    Exemple: si le moteur renvoit un modèle vide, 
+     on ne veut pas que ce soit considéré comme correct. 
 *)
 
 Definition is_result tr sm tm: Prop :=
@@ -360,6 +418,13 @@ Definition is_result tr sm tm: Prop :=
   (forall lk, (List.In lk tm.(modelLinks) <-> is_produced_link tr sm lk)).
 (* On aurait pu définir un ensemble en compréhension. *)
 
+(*Lemma p13 : forall tr sm,  is_result tr sm (execute tr sm).
+Proof.
+  unfold is_result.
+  intros tr sm.
+  split.
+  +
+Qed.*)
 
 End Semantics.
 
