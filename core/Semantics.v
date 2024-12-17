@@ -300,46 +300,46 @@ Qed.
 (** * Apply link part of the r.h.s of rules (uses traces) **)
 
 (* executable *)
-Definition apply_link_pattern (tls:Trace) sm lk :list TargetLinkType := 
-    lk.(linkPattern) (drop tls) (getIteration lk) sm (getSourcePiece lk) lk.(produced).
+Definition apply_link_pattern (tra:Trace) sm lk :list TargetLinkType := 
+    lk.(linkPattern) (drop tra) (getIteration lk) sm (getSourcePiece lk) lk.(produced).
 
  (* predicative *)
-Inductive apply_link_pattern_rel (tr:Transformation) (sm:SourceModel) (tlk:TraceLink) (lk:TargetLinkType) : Prop := 
+Inductive apply_link_pattern_rel (tra:Trace) (sm:SourceModel) (tlk:TraceLink) (lk:TargetLinkType) : Prop := 
    | rr : 
-    forall tra,
-    is_trace tr sm tra ->
     List.In lk (tlk.(linkPattern) (* fixme *) (drop tra) (getIteration tlk) sm (getSourcePiece tlk) tlk.(produced)) ->
-      apply_link_pattern_rel tr sm tlk lk. 
+      apply_link_pattern_rel tra sm tlk lk. 
   
-(* Ici on a besoin de LA trace et non pas d'UNE trace car pour deux traces différentes 
+(* Dans la sémantique axiomatique il peut y avoir plusieurs traces. 
+    CErtaines relations prennent donc une trace en paramètre. Pour deux traces différentes, 
    [tlk.(linkPattern) (drop tra)] pourrait donner des résultats différents car rien ne contraint les expressions
     utilisateur.
     Par conséquent, on ne peut attendre une équivalence entre la sémantique axiomatique, et l'application du moteur de transformation.
   
-    Possibilités :
+    Possibilités pour résoudre ce problème :
       1) spécifier plus précisément les propriétés d'une traces pour forcer l'unicité.
 
       2) ne pas rechercher une équivalence entre la sémantique axiomatique 
     et la sémantique exécutable, seulement une correction (sans complétude).
 
       3) ajouter des hypothèses sur les fonctions utilisateurs permettant
-    de garantir l'équivalence.
+    de garantir l'équivalence. (resolve only)
+
+      4) implémenter les traces par des ensembles au lieu de listes.
 *) 
 
 
 
-(* The trace produced by the executable engine is correct (not equivalent) with respect
-  to the trace defined by the relational semantics. *)
-Lemma prop9 : forall tr tra sm tlk lk,
-  is_trace tr sm tra ->
-  List.In lk (apply_link_pattern tra sm tlk) ->
-  apply_link_pattern_rel tr sm tlk lk.
+(** Correct and complete. *)
+Lemma prop9 : forall tra sm tlk lk,
+  List.In lk (apply_link_pattern tra sm tlk) <->
+  apply_link_pattern_rel tra sm tlk lk.
 Proof.
   unfold apply_link_pattern.
   intros.
-  econstructor.
-  eassumption.
-  eassumption.
+  split ; intros.
+  + econstructor.
+    eassumption.
+  + inversion_clear H. assumption.
 Qed.
 
 
@@ -349,25 +349,29 @@ Definition applyTrLkOnModel (sm : SourceModel) (tra:Trace): list TargetLinkType 
     flat_map (apply_link_pattern tra sm) tra. 
 
 (* predicative *)
-Inductive applyTrLkOnModel_rel tr (sm : SourceModel) (lk: TargetLinkType) : Prop :=
- | r6 : forall tra tlk,
-    is_trace tr sm tra -> 
+Inductive applyTrLkOnModel_rel tra (sm : SourceModel) (lk: TargetLinkType) : Prop :=
+ | r6 : forall tlk,
+ (*   is_trace tr sm tra ->*) (* à quel niveau est-il le plus pertinent de forcer ceci ? *)
     List.In tlk tra -> 
-    apply_link_pattern_rel tr sm tlk lk -> 
-    applyTrLkOnModel_rel tr sm lk. 
+    apply_link_pattern_rel tra sm tlk lk -> 
+    applyTrLkOnModel_rel tra sm lk. 
 
-(** Correctness (not equivalence) *)
-Lemma prop10 : forall tr sm tra lk,
-   is_trace tr sm tra ->
-   List.In lk (applyTrLkOnModel sm tra) ->
-  applyTrLkOnModel_rel tr sm lk.
+(** Correctness & completeness. *)
+Lemma prop10 : forall sm tra lk,
+(*   is_trace tr sm tra -> *)
+   List.In lk (applyTrLkOnModel sm tra) <->
+  applyTrLkOnModel_rel tra sm lk.
 Proof.
   unfold applyTrLkOnModel.
   setoid_rewrite in_flat_map.
   intros.
-  destruct H0 as (k & H1 & H2).
+  split ; intros.
+  + destruct H as (k & H1 & H2).
     econstructor ; eauto.
-  eapply prop9 ; eassumption. 
+    eapply prop9 ; eassumption.
+  + inversion_clear H.
+    apply prop9 in H1.
+    eauto. 
 Qed.
 
 
@@ -397,9 +401,9 @@ Inductive is_produced_element (tr:Transformation) sm : TargetElementType -> Prop
         in_trace tr sm {| source := a; produced := b; linkPattern := c |} ->
         is_produced_element tr sm b.
 
-(* Correctness (not equivalence) *)
+(** Correctness & completeness *)
 Lemma prop11 : forall tr sm e,
-  In e ( (execute tr sm).(modelElements)) ->
+  In e ( (execute tr sm).(modelElements)) <->
   is_produced_element tr sm e .
 Proof.
   unfold execute.
@@ -407,34 +411,42 @@ Proof.
   unfold produced_elements.
   intros.
   Search (In _ (map _ _)).
-  setoid_rewrite in_map_iff in H.
-  destruct H as (k & H1 & H2).  
-  destruct k.
-  simpl in H1.
-  subst.
-  econstructor. apply prop7. eassumption.
+  setoid_rewrite in_map_iff.
+  split ; intro.
+  + destruct H as (k & H1 & H2).  
+    destruct k.
+    simpl in H1.
+    subst.
+    econstructor. apply prop7. eassumption.
+  + inversion_clear H.
+    apply prop7 in H0.
+    eexists ; split ; [ | exact H0] ; reflexivity.
 Qed.
 
 
 
-Inductive is_produced_link tr sm (lk:TargetLinkType): Prop :=
-    | r8 : forall tra,  (*pas sûr que [tra] doive être encapsulé ici au lieu d'être en paramètre de la relation. *)
-        is_trace tr sm tra ->
-        applyTrLkOnModel_rel tr sm lk->
-        is_produced_link tr sm lk.
+Inductive is_produced_link tra sm (lk:TargetLinkType): Prop :=
+    | r8 : (*forall tra,*)  
+        (*is_trace tr sm tra ->*)
+        applyTrLkOnModel_rel tra sm lk->
+        is_produced_link tra sm lk.
 
-(** Correctness (not equivalence) *)
+(** Correctness & completeness. *)
+
 Lemma prop12 : forall tr sm lk,  
-  In lk ( (execute tr sm).(modelLinks)) ->
-  is_produced_link tr sm lk .
+  In lk ( (execute tr sm).(modelLinks)) <->
+  is_produced_link (compute_trace tr sm) sm lk .
 Proof.
   unfold execute.
   simpl modelLinks.
   intros.
-  apply prop10 with (tr:=tr) in H ; [ | apply prop8].
-  econstructor.
-  eapply prop8.
-  assumption.
+  split; intro.
+  + apply prop10  in H. 
+    econstructor.
+    assumption.
+  + inversion_clear H.
+    apply prop10.
+    assumption.
 Qed.
 
 (* Attention : Distinguer 
@@ -450,13 +462,20 @@ Qed.
 
 Definition is_result (tr:Transformation) (sm:SourceModel) (tm:TargetModel): Prop :=
   (forall e, (List.In e tm.(modelElements) <-> is_produced_element tr sm e)) /\ 
-  (forall lk, (List.In lk tm.(modelLinks) <-> is_produced_link tr sm lk)).
+  (exists tra, is_trace tr sm tra /\ forall lk, (List.In lk tm.(modelLinks) <-> is_produced_link tra sm lk)).
 
 
 (** Correctness *)
 Lemma prop13 : forall tr sm,  is_result tr sm (execute tr sm).
 Proof.
-Abort.
+  unfold is_result.
+  split.
+  + apply prop11.
+  + exists (compute_trace tr sm).
+    split.
+    - apply prop8.
+    - apply prop12.
+Qed.
 
 
 End Semantics.
