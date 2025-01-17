@@ -5,6 +5,7 @@ Require Import core.Model.
 Require Import core.TransformationConfiguration.
 Require Import PeanoNat.
 
+
 (** * Syntax
 
       In this section, we introduce _one possible_ abstract syntax of the CoqTL transformation engine.  
@@ -87,6 +88,7 @@ Proof.
   + apply Metamodel.beq_correct. 
 Qed.
 
+Definition Trace := pool TraceLink.
 
 End TraceLink.
 
@@ -94,7 +96,7 @@ Arguments TraceLink {_}.
 
 Arguments source_compare : simpl never.
 
-Notation Trace := (list TraceLink).
+
 
 #[global]
 Hint Unfold 

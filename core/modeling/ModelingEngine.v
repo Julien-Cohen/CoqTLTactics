@@ -45,16 +45,16 @@ Local Notation TargetEKind := tmmm.(EKind).
 Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: ModelingTransformationConfiguration tc) (ts: TransformationSyntax tc)
   (t: TransformationEngine ts) :=
   {
-    resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
+    resolveAll: forall (tr: Trace) (sm: SourceModel) (name: string)
              (type: TargetEKind) (sps: list(list SourceElementType)) (iter: nat),
         option (list (denoteEDatatype type));
-    resolve: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
+    resolve: forall (tr: Trace) (sm: SourceModel) (name: string)
              (type: TargetEKind) (sp: list SourceElementType) (iter : nat), option (denoteEDatatype type);
 
     (** ** Theorems *)
 
     tr_resolveAll_in:
-    forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+    forall (tls: Trace) (sm: SourceModel) (name: string)
       (k: TargetEKind) (sps: list(list SourceElementType)) (iter: nat)
       (te: denoteEDatatype k),
       (exists tes: list (denoteEDatatype k),
@@ -64,7 +64,7 @@ Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: Model
           resolve tls sm name k sp iter = Some te);
 
     tr_resolve_leaf:
-    forall (tls:list TraceLink) (sm : SourceModel) (name: string) (k: TargetEKind)
+    forall (tls: Trace) (sm : SourceModel) (name: string) (k: TargetEKind)
       (sp: list SourceElementType) (iter: nat) (x: denoteEDatatype k),
       resolve tls sm name k sp iter = return x ->
        (exists (tl : TraceLink),

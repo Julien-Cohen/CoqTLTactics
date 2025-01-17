@@ -32,21 +32,21 @@ Definition denoteOutputList (k: TargetEKind) (f: option (list TargetElementType)
     (flat_map (fun e:TargetElementType => optionToList (toEData k e)))
     f.
 
-Definition resolveIter (tls: list TraceLink) (name: string)
+Definition resolveIter (tls: Trace) (name: string)
             (k: TargetEKind) (sp: list SourceElementType)
             (iter : nat) : option (denoteEDatatype k) :=
   denoteOutput k (Resolve.resolveIter tls name sp iter).
 
-Definition resolve (tr: list TraceLink) (name: string)
+Definition resolve (tr: Trace) (name: string)
   (k: TargetEKind) (sp: list SourceElementType) : option (denoteEDatatype k) :=
   denoteOutput k (Resolve.resolve tr name sp).
 
-Definition resolveAllIter (tr: list TraceLink) (name: string)
+Definition resolveAllIter (tr: Trace) (name: string)
   (k: TargetEKind) (sps: list(list SourceElementType)) (iter: nat)
   : option (list (denoteEDatatype k)) :=
   denoteOutputList k (Resolve.resolveAllIter tr name sps iter).
 
-Definition resolveAll (tr: list TraceLink) (name: string)
+Definition resolveAll (tr: Trace) (name: string)
   (k: TargetEKind) (sps: list(list SourceElementType)) : option (list (denoteEDatatype k)) :=
   denoteOutputList k (Resolve.resolveAll tr name sps).
 

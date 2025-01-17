@@ -1,0 +1,1 @@
+Definition pool (A:Type) := list A. 

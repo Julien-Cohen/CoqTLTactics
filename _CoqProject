@@ -22,6 +22,7 @@ core/utils/PropUtils.v
 core/utils/StringUtils.v
 core/utils/TupleUtils.v
 core/utils/OptionUtils.v
+core/utils/Pool.v
 core/utils/Utils.v
 
 

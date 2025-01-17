@@ -41,6 +41,7 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
     Rule: Type;
     OutputPatternElement: Type;
     TraceLink: Type;
+    Trace:= pool TraceLink ;
 
     (** ** Accessors *)
 
@@ -56,7 +57,7 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
 
     evalOutputPatternElementExpr: SourceModel -> InputPiece -> nat -> OutputPatternElement -> option TargetElementType;
     evalIteratorExpr: Rule -> SourceModel -> InputPiece -> nat;
-    evalOutputPatternLinkExpr: SourceModel -> InputPiece -> TargetElementType -> nat -> list TraceLink -> OutputPatternElement -> option (list TargetLinkType);
+    evalOutputPatternLinkExpr: SourceModel -> InputPiece -> TargetElementType -> nat -> Trace -> OutputPatternElement -> option (list TargetLinkType);
     evalGuardExpr: Rule->SourceModel->InputPiece-> bool;
 }.
   
@@ -90,12 +91,12 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
 
     applyElementOnPattern: OutputPatternElement -> Transformation -> SourceModel -> InputPiece -> nat -> list TargetLinkType;
     
-    trace: Transformation -> SourceModel -> list TraceLink; 
+    trace: Transformation -> SourceModel -> Trace; 
 
-    resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
+    resolveAll: forall (tr: Trace) (sm: SourceModel) (name: string)
              (sps: list(InputPiece)) (iter: nat),
         option (list TargetElementType);
-    resolve: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
+    resolve: forall (tr: Trace) (sm: SourceModel) (name: string)
              (sp: InputPiece) (iter : nat), option TargetElementType;
 
     (** ** Theorems *)
@@ -209,7 +210,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** resolve *)
 
     tr_resolveAll_in:
-    forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+    forall (tls: Trace) (sm: SourceModel) (name: string)
            (sps: list(InputPiece)) (iter: nat)
       (te: TargetElementType),
       (exists tes: list TargetElementType,
@@ -219,7 +220,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
           resolve tls sm name sp iter = Some te);
 
     tr_resolve_leaf:
-    forall (tls:list TraceLink) (sm : SourceModel) (name: string)
+    forall (tls: Trace) (sm : SourceModel) (name: string)
       (sp: InputPiece) (iter: nat) (x: TargetElementType),
       resolve tls sm name sp iter = return x ->
        (exists (tl : TraceLink),

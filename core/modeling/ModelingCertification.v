@@ -24,7 +24,7 @@ Section ModelingCertification.
 (** * Resolve *)
 
 (* Theorem tr_resolveAll_in:
-  forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+  forall (tls: Trace) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sps: list(list SourceModelElement)),
     resolveAll tls sm name type sps = resolveAllIter tls sm name type sps 0.
 Proof.
@@ -34,7 +34,7 @@ Qed. *)
 Theorem tr_resolveAllIter_in:
   forall 
      {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}
-    (tls: list TraceLink) (sm: SourceModel) (name: string)
+    (tls: Trace) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
     (te: denoteModelClass type),
     (exists tes: list (denoteModelClass type),
@@ -87,7 +87,7 @@ Proof.
 Qed.
 
 (* Theorem tr_resolve_in:
-  forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+  forall (tls: Trace) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sp: list SourceModelElement),
     resolve tls sm name type sp = resolveIter tls sm name type sp 0.
 Proof.
@@ -98,7 +98,7 @@ Qed. *)
 Theorem tr_resolveIter_leaf:
   forall 
      {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}
-    (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
+    (tls: Trace) (sm : SourceModel) (name: string) (type: TargetModelClass)
     (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
     resolveIter tls sm name type sp iter = return x ->
       (exists (tl : TraceLink),

@@ -65,11 +65,13 @@ Proof.
     intros (?&?) ; eexists ; split ; [ | eassumption] ; reflexivity. 
 Qed.
 
+Definition Trace := pool TraceLink.
+
+
 End TraceLink.
 
 Arguments TraceLink {_}.
 
-Notation Trace := (list TraceLink).
 
 Ltac lift H := 
   match type of H with

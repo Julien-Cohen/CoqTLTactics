@@ -68,7 +68,7 @@ Definition evalOutputPatternUnit_rel o sm sp it e :=
    o.(opu_element) it sm sp = Some e.
 
 Definition evalOutputPatternLink
-            (sm: SourceModel) (sp: InputPiece) (oe: TargetElementType) (iter: nat) (tra: list TraceLink)
+            (sm: SourceModel) (sp: InputPiece) (oe: TargetElementType) (iter: nat) (tra: Trace)
             (o: OutputPatternUnit)
   : list TargetLinkType :=
   o.(opu_link) tra iter sm sp oe.

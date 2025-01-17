@@ -12,3 +12,4 @@ Require Export core.utils.DatatypeUtils.
 Require Export core.utils.OptionUtils.
 Require Export core.utils.OptionListUtils.
 Require Export core.utils.CpdtTactics.
+Require Export core.utils.Pool.
