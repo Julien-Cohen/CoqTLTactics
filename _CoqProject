@@ -147,6 +147,10 @@ core/properties/monotonicity/Moore2Mealy_monotonicity_witness.v
 core/properties/monotonicity/sampleMoore_monotonicity.v
 core/properties/monotonicity/Monotonicity.v
 
+### prop - injective
+core/properties/injectivity/sampleMoore_injectivity.v
+core/properties/injectivity/Injectivity.v
+
 ### prop - confluence
 core/properties/confluence/basic/basicSyntax.v
 core/properties/confluence/basic/basicExpressions.v
@@ -158,7 +162,7 @@ core/properties/confluence/examples/moore2mealy_confluence.v
 ### prop - additivity
 core/properties/additivity/AdditivityRule.v
 
-### prop - distributiveity
+### prop - distributivity
 core/properties/distributivity/sampleMoore_distributivity.v
 core/properties/distributivity/distributivity.v
 
