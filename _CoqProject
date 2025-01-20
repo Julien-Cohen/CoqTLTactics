@@ -140,12 +140,25 @@ transformations/Moore2MealyALT/MooreWF.v
 transformations/Moore2MealyALT/MealySemantics.v
 transformations/Moore2MealyALT/MealyWF.v
 
+# Theorems on engine
+
 ### prop - mono
 core/properties/monotonicity/Moore2Mealy_monotonicity_witness.v
 core/properties/monotonicity/sampleMoore_monotonicity.v
 core/properties/monotonicity/Monotonicity.v
 
+### prop - confluence
+core/properties/confluence/basic/basicSyntax.v
+core/properties/confluence/basic/basicExpressions.v
+core/properties/confluence/basic/basicSemantics.v
+core/properties/confluence/Confluence.v
+core/properties/confluence/examples/moore2mealy_confluence.v
 
+
+### prop - additivity
+core/properties/additivity/AdditivityRule.v
+
+core/properties/Adaptation.v
 
 # User proofs
 
