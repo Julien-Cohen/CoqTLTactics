@@ -158,6 +158,10 @@ core/properties/confluence/examples/moore2mealy_confluence.v
 ### prop - additivity
 core/properties/additivity/AdditivityRule.v
 
+### prop - distributiveity
+core/properties/distributivity/sampleMoore_distributivity.v
+core/properties/distributivity/distributivity.v
+
 core/properties/Adaptation.v
 
 # User proofs
