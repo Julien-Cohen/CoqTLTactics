@@ -158,6 +158,10 @@ core/properties/confluence/basic/basicSemantics.v
 core/properties/confluence/Confluence.v
 core/properties/confluence/examples/moore2mealy_confluence.v
 
+### prop - totality
+core/properties/totality/totality.v
+
+
 ### prop - surjectivity
 core/properties/surjectivity/surjectivity.v
 
