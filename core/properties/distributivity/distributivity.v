@@ -37,13 +37,9 @@ exists (tr: Transformation) (m1 m2: SourceModel),
 Proof.
   eexists Moore2Mealy.
   eexists Moore_m1.
-  eexists Moore_m2.
-  unfold execute.
-  simpl.
-  intro.
-  unfold Model_app in H.
-  simpl in H.
-  inversion H.
+  eexists Moore_m2. 
+  compute.
+  intro ; discriminate. 
 Qed.
 
 (*Theorem ifDistrThenMon (tr: Transformation) :
