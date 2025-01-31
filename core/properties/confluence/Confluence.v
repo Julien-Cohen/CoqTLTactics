@@ -18,12 +18,12 @@ Section Confluence.
 Context (tc: TransformationConfiguration).
 
 
-Definition well_form tr :=
+Definition disjoint_rules tr : Prop :=
   forall r1 r2, 
    In r1 tr ->
    In r2 tr ->
     forall sm sp, 
-    matchRuleOnPattern r1 sm sp = true /\
+    matchRuleOnPattern r1 sm sp = true ->
     matchRuleOnPattern r2 sm sp = true ->
       r1 = r2.
 
@@ -33,8 +33,8 @@ Definition well_form tr :=
 Definition Transformation_equiv  (t1 t2: Transformation) := 
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
   set_eq (Transformation_getRules t1) (Transformation_getRules t2) /\
-  well_form (Transformation_getRules t1) /\ 
-  well_form (Transformation_getRules t2)
+  disjoint_rules (Transformation_getRules t1) /\ 
+  disjoint_rules (Transformation_getRules t2)
 .
 
 Definition TargetModel_equiv (m1 m2: TargetModel) :=
@@ -81,7 +81,7 @@ assert (find find_cond rs1 = find find_cond rs2).
   rewrite Heqfind_cond in H6.
   rewrite Heqfind_cond in H4.
   destruct H1.
-  unfold well_form in H7.
+  unfold disjoint_rules in H7.
   eapply (H7 r r0) ; crush.
   + apply List.find_some in find_ca1.
     specialize (List.find_none find_cond rs2 find_ca2).
