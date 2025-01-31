@@ -51,7 +51,7 @@ Proof.
   unfold execute ; unfold modelLinks.
   eapply RelationClasses.iff_Transitive.
   apply RelationClasses.iff_Symmetric.
-  apply LegacySemantics.included_3.
+  apply LegacySemantics.equiv.
   apply in_flat_map.
 Qed.
 

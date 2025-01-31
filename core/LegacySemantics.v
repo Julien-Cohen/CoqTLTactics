@@ -1,5 +1,5 @@
 
-Require Import Semantics.
+Require Semantics.
 Import TransformationConfiguration Syntax UserExpressions TraceLink List Utils.
 
 (** * Old Semantics for link generation *)
@@ -12,7 +12,7 @@ Definition applyUnitOnPiece {tc:TransformationConfiguration}
             (sm: SourceModel)
             (sp: InputPiece) (iter: nat) : list TargetLinkType :=
   match (evalOutputPatternUnit opu sm sp iter) with 
-  | Some l => evalOutputPatternLink sm sp l iter (drop (compute_trace tr sm)) opu
+  | Some l => evalOutputPatternLink sm sp l iter (drop (Semantics.compute_trace tr sm)) opu
   | None => nil
   end.
 
@@ -25,21 +25,21 @@ Definition applyRuleOnPiece {tc:TransformationConfiguration} (r: Rule) (tr: Tran
     (seq 0 (evalIterator r sm sp)).
 
 Definition applyTrOnPiece {tc:TransformationConfiguration} (tr: Transformation) (sm : SourceModel) (sp: InputPiece) : list TargetLinkType :=
-  flat_map (fun r => applyRuleOnPiece r tr sm sp) (matchingRules tr sm sp).
+  flat_map (fun r => applyRuleOnPiece r tr sm sp) (Semantics.matchingRules tr sm sp).
 
 Definition applyTrLkOnModel_old {tc:TransformationConfiguration} (tr: Transformation) (sm : SourceModel) 
   : list TargetLinkType
-  :=  flat_map (applyTrOnPiece tr sm) (allTuples tr sm).
+  :=  flat_map (applyTrOnPiece tr sm) (Semantics.allTuples tr sm).
 
 
 
 (** Equivalence between the old semantics for links and the current one. *)
 Lemma exploit_in_compute_trace {tc:TransformationConfiguration} tr sm :
   forall tlk,
-    In tlk (compute_trace tr sm) <-> 
+    In tlk (Semantics.compute_trace tr sm) <-> 
     exists r  opu, 
-    In (getSourcePiece tlk) (allTuples tr sm) 
-    /\ In r (matchingRules tr sm (getSourcePiece tlk))
+    In (getSourcePiece tlk) (Semantics.allTuples tr sm) 
+    /\ In r (Semantics.matchingRules tr sm (getSourcePiece tlk))
     /\ In (getIteration tlk) (seq 0 (evalIterator r sm (getSourcePiece tlk) )) 
     /\ In opu (r_outputPattern r) 
     /\ opu.(opu_element)  (getIteration tlk) sm (getSourcePiece tlk)  = return tlk.(produced)
@@ -48,17 +48,17 @@ Lemma exploit_in_compute_trace {tc:TransformationConfiguration} tr sm :
 Proof.
   intro ; split ; intro H.
 {  
-  unfold compute_trace.
+  unfold Semantics.compute_trace.
     apply in_flat_map in H. destruct H as (ip, (IN1, IN2)).
-  unfold traceTrOnPiece in IN2.
+  unfold Semantics.traceTrOnPiece in IN2.
   apply in_flat_map in IN2. destruct IN2 as (r, (IN2, IN3)).
-  unfold traceRuleOnPiece in IN3.
+  unfold Semantics.traceRuleOnPiece in IN3.
   apply in_flat_map in IN3.
   destruct IN3 as (i, (IN3,IN4)).
-  unfold traceIterationOnPiece in IN4.
+  unfold Semantics.traceIterationOnPiece in IN4.
   apply in_flat_map in IN4. destruct IN4 as (opu, (IN4,IN5)).
   apply in_optionToList in IN5.
-  unfold traceElementOnPiece in IN5.
+  unfold Semantics.traceElementOnPiece in IN5.
   monadInv IN5.
   unfold getSourcePiece. simpl.
   unfold evalOutputPatternUnit in IN5.
@@ -68,7 +68,7 @@ Proof.
 
   destruct H as (r, (opu, (H1, (H2, (H3, (H4, (H5, (H6, H7)))))))). 
   
-  unfold applyTrLkOnModel.  apply in_flat_map.
+  unfold Semantics.applyTrLkOnModel.  apply in_flat_map.
   exists (getSourcePiece tlk).
   split ; [ assumption|  ].
   unfold applyTrOnPiece.  apply in_flat_map.
@@ -80,7 +80,7 @@ Proof.
   unfold applyIterationOnPiece.  apply in_flat_map.
   exists opu.
   split ; [ assumption | ].
-  unfold traceElementOnPiece.
+  unfold Semantics.traceElementOnPiece.
   unfold evalOutputPatternUnit.
   rewrite H5.
   simpl.
@@ -95,18 +95,18 @@ Proof.
 }
 Qed.
 
-Lemma included_1 {tc:TransformationConfiguration} tr sm :
-  incl  (applyTrLkOnModel sm (compute_trace tr sm))  (applyTrLkOnModel_old tr sm).
+Lemma included_left {tc:TransformationConfiguration} tr sm :
+  incl  (Semantics.applyTrLkOnModel sm (Semantics.compute_trace tr sm))  (applyTrLkOnModel_old tr sm).
 Proof.
   intro link.
-  unfold applyTrLkOnModel.
+  unfold Semantics.applyTrLkOnModel.
   intro H.
   apply in_flat_map in H. destruct H as (trl, (IN1, IN2)).
 
   apply (exploit_in_compute_trace) in IN1. 
    destruct IN1 as  (r, (opu, (E1, (E2, (E3, (E4, (E5, (E6, E7)))))))).
 
-  unfold applyTrLkOnModel.  apply in_flat_map.
+  unfold Semantics.applyTrLkOnModel.  apply in_flat_map.
   exists (getSourcePiece trl).
   split ; [ assumption|  ].
   unfold applyTrOnPiece.  apply in_flat_map.
@@ -134,14 +134,14 @@ Proof.
   exact IN2.
 Qed.
 
-Lemma included_2 {tc:TransformationConfiguration} tr sm :
-  incl (applyTrLkOnModel_old tr sm) (applyTrLkOnModel sm (compute_trace tr sm)).
+Lemma included_right {tc:TransformationConfiguration} tr sm :
+  incl (applyTrLkOnModel_old tr sm) (Semantics.applyTrLkOnModel sm (Semantics.compute_trace tr sm)).
 Proof.
   intro link.
   intro H.
-  unfold applyTrLkOnModel.
+  unfold Semantics.applyTrLkOnModel.
   apply in_flat_map.
-  unfold applyTrLkOnModel in H.
+  unfold Semantics.applyTrLkOnModel in H.
   apply in_flat_map in H. destruct H as (ip, (H1,H2)).
   unfold applyTrOnPiece in H2.
   apply in_flat_map in H2. destruct H2 as (r, (H3,H4)).
@@ -167,23 +167,24 @@ Proof.
   repeat (split ; eauto ).
 Qed.
 
-Lemma included_3 {tc:TransformationConfiguration} tr sm :
-  forall lk, In lk (applyTrLkOnModel_old tr sm) <-> In lk (applyTrLkOnModel sm (compute_trace tr sm)).
+Lemma equiv {tc:TransformationConfiguration} tr sm :
+  forall lk, In lk (applyTrLkOnModel_old tr sm) <-> In lk (Semantics.applyTrLkOnModel sm (Semantics.compute_trace tr sm)).
 Proof.
   intro link.
   split.
-  apply included_2.
-  apply included_1.
+  apply included_right.
+  apply included_left.
 Qed.
 
 (** FIXME : move-me to Certification ? *)
+(* FIXME : never used *)
 Lemma in_applyUnitOnPiece {A B C D} :
   forall (tr:Transformation (tc:=Build_TransformationConfiguration A (Metamodel.Build_Metamodel B C D))) 
          a opu sm sp it,
   In a (applyUnitOnPiece opu tr sm sp it) ->
   exists g, 
     evalOutputPatternUnit opu sm sp it = Some g
-    /\ In a (evalOutputPatternLink sm sp g it (drop (compute_trace tr sm)) opu).
+    /\ In a (evalOutputPatternLink sm sp g it (drop (Semantics.compute_trace tr sm)) opu).
 Proof.  
   unfold applyUnitOnPiece.
   intros until it ; intro IN.
@@ -192,9 +193,3 @@ Proof.
 Qed.
 
 
-Ltac exploit_In_applyUnitOnPiece H NEWNAME :=
-  match type of H with
-    | In _ (applyUnitOnPiece _ _ _ _ _) =>
-        apply in_applyUnitOnPiece in H ;
-        destruct H as (? & (NEWNAME & H))
-end.
