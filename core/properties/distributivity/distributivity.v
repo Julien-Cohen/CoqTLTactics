@@ -18,17 +18,20 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
-Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_witness.
-Require Import core.properties.distributivity.sampleMoore_distributivity.
 
 (*************************************************************)
-(** * Distributivity of CoqTL                                *)
+(** * (non-) Distributivity of CoqTL                         *)
 (*************************************************************)
 
-Definition Distributivity (tr: Transformation) :=
+Definition Distributivity {tc:TransformationConfiguration} (tr: Transformation) :=
 forall (sm1 sm2 : SourceModel),
   execute tr (Model_app sm1 sm2) =
   Model_app (execute tr sm1) (execute tr sm2).
+
+Require Import transformations.Moore2Mealy.Moore2Mealy.
+Require core.properties.monotonicity.Moore2Mealy_monotonicity_witness.
+Require core.properties.distributivity.sampleMoore_distributivity.
+
 
 Theorem Not_Distributivity:
 exists (tr: Transformation) (m1 m2: SourceModel),
@@ -36,8 +39,8 @@ exists (tr: Transformation) (m1 m2: SourceModel),
     Model_app (execute tr m1) (execute tr m2) -> False.
 Proof.
   eexists Moore2Mealy.
-  eexists Moore_m1.
-  eexists Moore_m2. 
+  eexists sampleMoore_distributivity.Moore_m1.
+  eexists sampleMoore_distributivity.Moore_m2. 
   compute.
   intro ; discriminate. 
 Qed.
