@@ -33,7 +33,7 @@ intros.
 destruct  H.
 unfold Transformation_incl_rules'''.
 split. 
-* auto.
+* assumption.
 * intro.
   induction H0.
   + intros.
@@ -42,12 +42,12 @@ split.
     simpl in H1.
     simpl.
     destruct H1.
-    - left. crush.
-    - right. crush.
+    - left. assumption.
+    - right. auto 2.
   + intros.
     simpl.
     right.
-    auto.
+    auto 2.
 Qed.
 
 
@@ -80,8 +80,8 @@ Proof.
     exists r2.
     split.
     + apply filter_In.
-      split; auto.
-    + auto.
+      split; assumption.
+    + assumption.
 Qed.
 
 Theorem additivity_rules :

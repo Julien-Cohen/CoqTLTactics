@@ -9,7 +9,7 @@ Require Import core.Semantics.
 Require Import core.Syntax.
 Require Import core.Model.
 Require Import core.TransformationConfiguration.
-Require Import core.Certification.
+Require        core.Certification.
 Require Import core.utils.Utils.
 
 Require Import core.modeling.ConcreteSyntax.
@@ -33,7 +33,7 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
           In te (produced_elements (traceTrOnPiece tr sm sp))) ->
           In te (execute tr sm).(modelElements).
 Proof.
-    apply tr_execute_in_elements.
+    apply Certification.tr_execute_in_elements.
 Qed.
 
 (*
@@ -61,7 +61,7 @@ forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
           In tl (LegacySemantics.applyTrOnPiece tr sm sp)) -> 
           In tl (execute tr sm).(modelLinks) .
 Proof.
-    apply tr_execute_in_links_legacy.
+    apply Certification.tr_execute_in_links_legacy.
 Qed.
 
 (*

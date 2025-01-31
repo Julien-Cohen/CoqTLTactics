@@ -22,8 +22,8 @@ forall (tc: TransformationConfiguration)
      compose sem_t (execute adapter) = compose f (sem_s).
 Proof.
   intros.
-  exists T_t, (compose sem_t (execute adapter)), id.
-  crush.
+  exists T_t, (compose sem_t (execute adapter)), id. 
+  reflexivity.
 Qed.
 
 (* Trivial theorem, version for views *)
@@ -36,6 +36,6 @@ forall (tc: TransformationConfiguration)
 Proof.
   intros.
   exists id, id.
-  crush.
+  reflexivity.
 Qed.
 

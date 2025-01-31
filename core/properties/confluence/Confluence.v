@@ -18,9 +18,11 @@ Section Confluence.
 Context (tc: TransformationConfiguration).
 
 
-Definition well_form  {tc: TransformationConfiguration} tr :=
-  forall r1 r2 sm sp, 
-    In r1 tr /\ In r2 tr/\
+Definition well_form tr :=
+  forall r1 r2, 
+   In r1 tr ->
+   In r2 tr ->
+    forall sm sp, 
     matchRuleOnPattern r1 sm sp = true /\
     matchRuleOnPattern r2 sm sp = true ->
       r1 = r2.
@@ -28,14 +30,14 @@ Definition well_form  {tc: TransformationConfiguration} tr :=
 
 (* Set semantics: we think that the list of rules represents a set (we don't allow two rules to have the same name)*)
 
-Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
+Definition Transformation_equiv  (t1 t2: Transformation) := 
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
   set_eq (Transformation_getRules t1) (Transformation_getRules t2) /\
   well_form (Transformation_getRules t1) /\ 
   well_form (Transformation_getRules t2)
 .
 
-Definition TargetModel_equiv {tc: TransformationConfiguration} (m1 m2: TargetModel) :=
+Definition TargetModel_equiv (m1 m2: TargetModel) :=
   forall (e: TargetElementType) (l: TargetLinkType),
    (In e m1.(modelElements) <-> In e m2.(modelElements)) /\
     (In l m1.(modelLinks) <-> In l m2.(modelLinks)).
@@ -68,7 +70,7 @@ assert (find find_cond rs1 = find find_cond rs2).
   destruct (find find_cond rs1) eqn: find_ca1.
   destruct (find find_cond rs2) eqn: find_ca2.
   + apply List.find_some in find_ca1.
-  apply List.find_some in find_ca2.
+    apply List.find_some in find_ca2.
   f_equal.
   unfold Transformation_equiv in tr_eq.
   destruct tr_eq.
@@ -80,8 +82,7 @@ assert (find find_cond rs1 = find find_cond rs2).
   rewrite Heqfind_cond in H4.
   destruct H1.
   unfold well_form in H7.
-  specialize (H7 r r0 sm sp).
-  crush.
+  eapply (H7 r r0) ; crush.
   + apply List.find_some in find_ca1.
     specialize (List.find_none find_cond rs2 find_ca2).
     intro.
