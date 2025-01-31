@@ -17,10 +17,6 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
-Require Import transformations.Moore2Mealy.Moore.
-Require Import transformations.Moore2Mealy.Moore2Mealy.
-Require Import core.properties.injectivity.sampleMoore_injectivity.
-
 
 (*************************************************************)
 (** * Injectivity of CoqTL                                   *)
@@ -32,11 +28,17 @@ Definition SourceModel_elem_eq {tc: TransformationConfiguration}  (m1 m2: Source
 Definition TargetModel_elem_eq {tc: TransformationConfiguration}  (m1 m2: TargetModel) : Prop := 
   set_eq m1.(modelElements) m2.(modelElements). 
 
-Definition Injectivity 
+Definition Injectivity {tc: TransformationConfiguration}
    (tr: Transformation) :=
 forall sm1 sm2,
   TargetModel_elem_eq (execute tr sm1) (execute tr sm2) ->
     SourceModel_elem_eq sm1 sm2.  
+
+
+Require Import transformations.Moore2Mealy.Moore.
+Require Import transformations.Moore2Mealy.Moore2Mealy.
+Require Import core.properties.injectivity.sampleMoore_injectivity.
+
 
 Lemma Moore2Mealy_non_inj_contrapos:
 exists sm1 sm2 : SourceModel,
