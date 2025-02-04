@@ -1,4 +1,7 @@
-(** This module defines the behavior of the model transformation engine. *)
+(** This module specifies the behavior of the model transformation engine in an axiomatic way.
+    It is non-deterministic.
+
+    We also show here that the operational semantics it correct with respect to this axiomatic semantics. *)
 
 From core 
   Require
@@ -28,7 +31,6 @@ Context {tc: TransformationConfiguration}.
 
 (** * Pattern matching *)
 
-(* predicative *)
 Definition isTuple (sm : SourceModel) ip : Prop := 
   List.incl ip sm.(modelElements).
 
@@ -42,9 +44,6 @@ Proof.
 Qed. 
 
 
-
-
-(* predicative *)
 Definition matchingRule (tr: Transformation) (sm : SourceModel) (sp: InputPiece) r : Prop :=
     List.In r tr.(rules) /\ UserExpressions.guard_ok r sm sp.
 
@@ -70,7 +69,6 @@ Qed.
 (** * Building traces *)
 
 
-(* predicatif *)
 Inductive traceElementOnPiece_rel (o: OutputPatternUnit) (sm: SourceModel) (sp: InputPiece) (iter: nat)
   : TraceLink -> Prop :=
     | r1 : 
@@ -102,8 +100,6 @@ Proof.
 Qed.
 
 
-
-(* predicatif *)
 Inductive traceIterationOnPiece_rel (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) (tl:TraceLink) : Prop :=
    | r2: forall o, 
         List.In o r.(r_outputPattern) ->
@@ -128,7 +124,6 @@ Proof.
 Qed.
 
 
-(* predicatif *)
 Inductive traceRuleOnPiece_rel (r: Rule) (sm: SourceModel) (sp: InputPiece) (tlk:TraceLink) : Prop :=
   | r3 : 
     forall nb_it current_it, 
@@ -161,7 +156,6 @@ Proof.
 Qed.
 
 
-(* predicatif *)
 Inductive traceTrOnPiece_rel (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (tl: TraceLink) : Prop :=
   | r4 : forall r, 
     traceRuleOnPiece_rel r sm sp tl ->
@@ -182,7 +176,7 @@ Proof.
     econstructor ; eauto.
 Qed.
 
-(* predicatif *)
+
 Inductive in_trace (tr: Transformation) (sm : SourceModel) (tl:TraceLink) : Prop :=
   | r5 : forall sp,
      traceTrOnPiece_rel tr sm sp tl ->
@@ -225,7 +219,7 @@ Proof.
   tauto.
 Qed.
 
-(* Deux traces différentes (listes) représentent le même ensemble. *)
+(* Two traces (list) represent the same set. *)
 Remark is_trace_incl_right : forall tr sm tra1 tra2,
   is_trace tr sm tra1 -> is_trace tr sm tra2 -> incl tra1 tra2.
 Proof.
@@ -255,13 +249,12 @@ Qed.
 
 (** * Apply link part of the r.h.s of rules (uses traces) **)
 
- (* predicative *)
 Inductive apply_link_pattern_rel (tra:Trace) (sm:SourceModel) (tlk:TraceLink) (lk:TargetLinkType) : Prop := 
    | rr : 
     List.In lk (tlk.(linkPattern) (* fixme *) (drop tra) (getIteration tlk) sm (getSourcePiece tlk) tlk.(produced)) ->
       apply_link_pattern_rel tra sm tlk lk. 
   
-(* Dans la sémantique axiomatique il peut y avoir plusieurs traces. 
+(* FIXME Dans la sémantique axiomatique il peut y avoir plusieurs traces. 
     CErtaines relations prennent donc une trace en paramètre. Pour deux traces différentes, 
    [tlk.(linkPattern) (drop tra)] pourrait donner des résultats différents car rien ne contraint les expressions
     utilisateur.
@@ -295,11 +288,9 @@ Proof.
 Qed.
 
 
-
-(* predicative *)
 Inductive applyTrLkOnModel_rel tra (sm : SourceModel) (lk: TargetLinkType) : Prop :=
  | r6 : forall tlk,
- (*   is_trace tr sm tra ->*) (* à quel niveau est-il le plus pertinent de forcer ceci ? *)
+ (*   is_trace tr sm tra ->*) (* FIXME à quel niveau est-il le plus pertinent de forcer ceci ? *)
     List.In tlk tra -> 
     apply_link_pattern_rel tra sm tlk lk -> 
     applyTrLkOnModel_rel tra sm lk. 
@@ -332,7 +323,6 @@ Qed.
 
 
 
-(* predicative *)
 Inductive is_produced_element (tr:Transformation) sm : TargetElementType -> Prop :=
     | r7 : forall a b c, 
         in_trace tr sm {| source := a; produced := b; linkPattern := c |} ->
@@ -386,7 +376,7 @@ Proof.
     assumption.
 Qed.
 
-(* Attention : Distinguer 
+(* FIXME Attention : Distinguer 
    1) le résultat calculé est un résultat possible.
    2) le résultat calculé est inclus dans un résultat possible. 
         (Exemple: si le moteur renvoie un modèle vide, on ne veut pas que ce soit considéré comme correct.) 
