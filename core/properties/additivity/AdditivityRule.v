@@ -143,7 +143,7 @@ Proof.
  
 Qed.
 
-Lemma additivity_rules_general_second_proof :
+Corollary additivity_rules_general_second_proof :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
   (Transformation_incl_rules''' t1 t2 -> 
     incl  (execute t1 sm).(modelElements)  (execute t2 sm).(modelElements)).
