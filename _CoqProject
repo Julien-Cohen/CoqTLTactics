@@ -35,6 +35,7 @@ core/TransformationConfiguration.v
 core/PoorTraceLink.v
 core/TraceLink.v
 core/Syntax.v
+core/AxiomaticSemantics.v
 core/Semantics.v
 core/LegacySemantics.v
 core/Resolve.v
