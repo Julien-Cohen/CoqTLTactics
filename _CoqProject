@@ -175,6 +175,7 @@ core/properties/additivity/AdditivityRule.v
 ### prop - distributivity
 core/properties/distributivity/sampleMoore_distributivity.v
 core/properties/distributivity/distributivity.v
+core/properties/distributivity/distributivity_axiomatic.v
 
 core/properties/Adaptation.v
 
