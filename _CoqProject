@@ -147,6 +147,8 @@ transformations/Moore2MealyALT/MealyWF.v
 core/properties/monotonicity/Moore2Mealy_monotonicity_witness.v
 core/properties/monotonicity/sampleMoore_monotonicity.v
 core/properties/monotonicity/Monotonicity.v
+core/properties/monotonicity/Monotonicity_axiomatic.v
+
 
 ### prop - injective
 core/properties/injectivity/sampleMoore_injectivity.v

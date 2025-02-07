@@ -31,7 +31,7 @@ PROPS= core/properties/additivity/AdditivityRule.vo\
 core/properties/confluence/Confluence.vo\
 core/properties/distributivity/distributivity_axiomatic.vo\
 core/properties/injectivity/Injectivity.vo\
-core/properties/monotonicity/Monotonicity.vo\
+core/properties/monotonicity/Monotonicity_axiomatic.vo\
 core/properties/surjectivity/surjectivity.vo\
 core/properties/totality/totality.vo\
 core/properties/universality/Universality.vo
