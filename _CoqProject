@@ -170,6 +170,7 @@ core/properties/totality/totality.v
 
 ### prop - surjectivity
 core/properties/surjectivity/surjectivity.v
+core/properties/surjectivity/surjectivity_axiomatic.v
 
 ### prop - additivity
 core/properties/additivity/AdditivityRule.v
