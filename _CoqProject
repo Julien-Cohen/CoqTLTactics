@@ -163,6 +163,7 @@ core/properties/confluence/examples/moore2mealy_confluence.v
 
 ### prop - universality
 core/properties/universality/Universality.v
+core/properties/universality/Universality_axiomatic.v
 
 ### prop - totality
 core/properties/totality/totality.v
