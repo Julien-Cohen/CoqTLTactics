@@ -25,7 +25,18 @@ PAIRPROOFS= transformations/Class2Relational_TUPLES/theorems/Attribute_name_pres
 	    transformations/Class2Relational_TUPLES/theorems/Column_name_uniqueness.vo\
 	    transformations/Class2Relational_TUPLES/theorems/Elements.vo\
 	    transformations/Class2Relational_TUPLES/theorems/Relational_name_definedness_spec.vo\
-	    transformations/Class2Relational_TUPLES/theorems/Table_name_uniqueness.vo
+	    transformations/Class2Relational_TUPLES/theorems/Table_name_uniqueness.vo\
+
+PROPS= core/properties/additivity/AdditivityRule.vo\
+core/properties/confluence/Confluence.vo\
+core/properties/distributivity/distributivity_axiomatic.vo\
+core/properties/injectivity/Injectivity.vo\
+core/properties/monotonicity/Monotonicity_axiomatic.vo\
+core/properties/surjectivity/surjectivity_axiomatic.vo\
+core/properties/totality/totality.vo\
+core/properties/universality/Universality_axiomatic.vo
+
+
 
 TACTICTESTS= test_tactics/TestTacticsBW.vo\
 	     test_tactics/TestTacticsFW.vo\
@@ -33,8 +44,9 @@ TACTICTESTS= test_tactics/TestTacticsBW.vo\
 	     test_tactics/TestChoiceTools.vo\
 	     test_tactics/TestConcreteExpressionTools.vo
 
+properties: $(PROPS)
 
-proofs: $(M2MPROOFS) $(C2RPROOFS) $(PAIRPROOFS)
+proofs: $(M2MPROOFS) $(C2RPROOFS) $(PAIRPROOFS) 
 
 clean_tests:
 	rm -f $(M2MTESTS) $(C2RTESTS) $(TACTICTESTS)
@@ -65,4 +77,5 @@ grep_tactics_C2R:
 	find transformations/Class2Relational -name "*.v" -exec grep exploit_in_trace \{\} \; -print
 	find transformations/Class2Relational -name "*.v" -exec grep exploit_link_in_result \{\} \; -print
 	find transformations/Class2Relational -name "*.v" -exec grep exploit_element_in_result \{\} \; -print
+
 

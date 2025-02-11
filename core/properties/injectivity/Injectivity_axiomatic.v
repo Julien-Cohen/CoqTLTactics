@@ -1,0 +1,118 @@
+Require Import String.
+Require Import EqNat.
+Require Import List.
+Require Import PeanoNat.
+Require Import Lia.
+Require Import FunctionalExtensionality.
+
+Require Import core.Semantics.
+Require Import core.Syntax.
+Require Import core.Model.
+Require Import core.TransformationConfiguration.
+Require Import core.utils.Utils.
+
+Require Import core.modeling.ConcreteSyntax.
+Require Import core.modeling.ModelingSemantics.
+Require Import core.modeling.ModelingMetamodel.
+Require Import core.modeling.ConcreteExpressions.
+Require Import core.modeling.Parser.
+
+
+(*************************************************************)
+(** * Injectivity of CoqTL                                   *)
+(*************************************************************)
+
+(* Definition SourceModel_elem_eq {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
+  set_eq m1.(modelElements) m2.(modelElements). 
+
+Definition TargetModel_elem_eq {tc: TransformationConfiguration}  (m1 m2: TargetModel) : Prop := 
+  set_eq m1.(modelElements) m2.(modelElements). 
+
+Definition Injectivity {tc: TransformationConfiguration}
+   (tr: Transformation) :=
+forall sm1 sm2,
+  TargetModel_elem_eq (execute tr sm1) (execute tr sm2) ->
+    SourceModel_elem_eq sm1 sm2.  
+
+
+Require Import transformations.Moore2Mealy.Moore.
+Require Import transformations.Moore2Mealy.Moore2Mealy.
+Require Import core.properties.injectivity.sampleMoore_injectivity.
+
+
+Lemma Moore2Mealy_non_inj_contrapos:
+exists sm1 sm2 : SourceModel,
+  ~ SourceModel_elem_eq sm1 sm2 /\
+  TargetModel_elem_eq (execute Moore2Mealy sm1) (execute Moore2Mealy sm2).
+Proof.
+  eexists Moore_m1.
+  eexists Moore_m2.
+  split.
+  - unfold SourceModel_elem_eq.
+    simpl.
+    unfold set_eq.
+    crush.
+    remember (Moore.Build_State_t (Id.Id "S0") "1") as e1.
+    remember (Moore.Build_State_t (Id.Id "S0") "0") as e2.
+    unfold incl in H0.
+    apply incl_cons_inv in H0.
+    destruct H0.
+    destruct H.
+    + injection H.
+      crush.
+    + destruct H.
+  - unfold TargetModel_elem_eq.
+    simpl.
+    unfold set_eq.
+    split; crush.
+Qed.
+
+Theorem Moore2Mealy_non_injective :
+exists tr, Injectivity tr -> False.
+Proof.
+  eexists Moore2Mealy.
+  unfold Injectivity.
+  intro inj.
+  specialize (Moore2Mealy_non_inj_contrapos) as inj_contrapos.
+  crush.
+Qed. *)
+
+Require Import AxiomaticSemantics.
+
+Context {tc: TransformationConfiguration}.
+
+(** 
+ * FIXME refer to comment from surjectivity_axiomatic.v
+ *)
+Inductive TranOnPiece_rel (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (te: TargetElementType) : Prop :=
+  | TranOnPiece_rel_def : forall tl, 
+  traceTrOnPiece_rel tr sm sp tl ->
+    tl.(TraceLink.produced) = te ->
+        TranOnPiece_rel tr sm sp te.
+
+
+(** this does not hold if two different source patterns generate target patterns with a non-empty intersection*)
+Theorem Injectivity_elem :
+forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType) (sp1 sp2: InputPiece),
+  AxiomaticSemantics.is_produced_element tr sm te ->
+    isTuple sm sp1 -> 
+    isTuple sm sp2 -> 
+      TranOnPiece_rel tr sm sp1 te -> 
+      TranOnPiece_rel tr sm sp2 te -> 
+        sp1 = sp2.
+Proof.
+Abort.
+
+Definition is_produced_elems_eq tr sm sp1 sp2 : Prop :=
+  (forall te, TranOnPiece_rel tr sm sp1 te <-> TranOnPiece_rel tr sm sp2 te).
+
+(** this holds if two different source patterns generate target patterns with a non-empty intersection*)
+Theorem Injectivity_elem' :
+forall (tr: Transformation) (sm : SourceModel) (sp1 sp2: InputPiece),
+  isTuple sm sp1 -> 
+  isTuple sm sp2 -> 
+  is_produced_elems_eq tr sm sp1 sp2 ->
+    (* (produced_elements (traceTrOnPiece tr sm sp1)) = (produced_elements (traceTrOnPiece tr sm sp2)) ->  *)
+      sp1 = sp2.
+Proof.
+Abort.

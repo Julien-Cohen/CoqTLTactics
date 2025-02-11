@@ -147,6 +147,8 @@ transformations/Moore2MealyALT/MealyWF.v
 core/properties/monotonicity/Moore2Mealy_monotonicity_witness.v
 core/properties/monotonicity/sampleMoore_monotonicity.v
 core/properties/monotonicity/Monotonicity.v
+core/properties/monotonicity/Monotonicity_axiomatic.v
+
 
 ### prop - injective
 core/properties/injectivity/sampleMoore_injectivity.v
@@ -161,6 +163,7 @@ core/properties/confluence/examples/moore2mealy_confluence.v
 
 ### prop - universality
 core/properties/universality/Universality.v
+core/properties/universality/Universality_axiomatic.v
 
 ### prop - totality
 core/properties/totality/totality.v
@@ -168,6 +171,7 @@ core/properties/totality/totality.v
 
 ### prop - surjectivity
 core/properties/surjectivity/surjectivity.v
+core/properties/surjectivity/surjectivity_axiomatic.v
 
 ### prop - additivity
 core/properties/additivity/AdditivityRule.v
@@ -175,6 +179,7 @@ core/properties/additivity/AdditivityRule.v
 ### prop - distributivity
 core/properties/distributivity/sampleMoore_distributivity.v
 core/properties/distributivity/distributivity.v
+core/properties/distributivity/distributivity_axiomatic.v
 
 core/properties/Adaptation.v
 
