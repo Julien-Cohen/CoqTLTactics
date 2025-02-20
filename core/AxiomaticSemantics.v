@@ -34,6 +34,7 @@ Context {tc: TransformationConfiguration}.
 Definition isTuple (sm : SourceModel) ip : Prop := 
   List.incl ip sm.(modelElements).
 
+
 Lemma prop1 : forall tr sm ip,
   List.In ip (Semantics.allTuples tr sm) -> isTuple sm ip.
 Proof.
@@ -44,8 +45,10 @@ Proof.
 Qed. 
 
 
+
 Definition matchingRule (tr: Transformation) (sm : SourceModel) (sp: InputPiece) r : Prop :=
     List.In r tr.(rules) /\ UserExpressions.guard_ok r sm sp.
+
 
 (** Correct and complete *)
 Lemma prop2 :
@@ -64,10 +67,7 @@ Qed.
 
 
 
-
-
 (** * Building traces *)
-
 
 Inductive traceElementOnPiece_rel (o: OutputPatternUnit) (sm: SourceModel) (sp: InputPiece) (iter: nat)
   : TraceLink -> Prop :=
@@ -81,7 +81,8 @@ Inductive traceElementOnPiece_rel (o: OutputPatternUnit) (sm: SourceModel) (sp: 
             linkPattern := o.(opu_link) 
           |}.
 
-(** correct and complete *)
+
+(** Correct and complete *)
 Lemma prop3 : 
   forall o sm sp it tl,
   traceElementOnPiece_rel o sm sp it tl <-> Semantics.traceElementOnPiece o sm sp it = Some tl.
@@ -100,13 +101,15 @@ Proof.
 Qed.
 
 
+
 Inductive traceIterationOnPiece_rel (r: Rule) (sm: SourceModel) (sp: InputPiece) (iter: nat) (tl:TraceLink) : Prop :=
    | r2: forall o, 
         List.In o r.(r_outputPattern) ->
         traceElementOnPiece_rel o sm sp iter tl -> 
       traceIterationOnPiece_rel r sm sp iter tl.
 
-(** correct and complete *)
+
+(** Correct and complete *)
 Lemma prop4 : forall r sm sp it tlk, 
   traceIterationOnPiece_rel r sm sp it tlk <-> List.In tlk (Semantics.traceIterationOnPiece r sm sp it).
 Proof.
@@ -124,6 +127,7 @@ Proof.
 Qed.
 
 
+
 Inductive traceRuleOnPiece_rel (r: Rule) (sm: SourceModel) (sp: InputPiece) (tlk:TraceLink) : Prop :=
   | r3 : 
     forall nb_it current_it, 
@@ -132,7 +136,8 @@ Inductive traceRuleOnPiece_rel (r: Rule) (sm: SourceModel) (sp: InputPiece) (tlk
        traceIterationOnPiece_rel r sm sp current_it tlk ->
        traceRuleOnPiece_rel r sm sp tlk.
 
-(* correct and complete *)
+
+(* Correct and complete *)
 Lemma prop5 : forall r sm sp tlk, 
   traceRuleOnPiece_rel r sm sp tlk <-> List.In tlk (Semantics.traceRuleOnPiece r sm sp).
 Proof.
@@ -156,11 +161,13 @@ Proof.
 Qed.
 
 
+
 Inductive traceTrOnPiece_rel (tr: Transformation) (sm : SourceModel) (sp: InputPiece) (tl: TraceLink) : Prop :=
   | r4 : forall r, 
     traceRuleOnPiece_rel r sm sp tl ->
     matchingRule tr sm sp r ->
       traceTrOnPiece_rel tr sm sp tl.
+
 
 (** Correct and complete *)
 Lemma prop6 : forall tr sm sp tlk,
@@ -177,14 +184,16 @@ Proof.
 Qed.
 
 
+
 Inductive in_trace (tr: Transformation) (sm : SourceModel) (tl:TraceLink) : Prop :=
   | r5 : forall sp,
      traceTrOnPiece_rel tr sm sp tl ->
       isTuple sm sp ->
-      List.length sp <= tr.(arity) -> (* cohérence avec le moteur de référence *)
+      List.length sp <= tr.(arity) -> (* to be coherent with the reference engine *)
     in_trace tr sm tl .  
 
-(** correct and complete *)
+
+(** Correct and complete *)
 Lemma prop7 : forall tr sm tlk, 
   in_trace tr sm tlk <-> List.In tlk (Semantics.compute_trace tr sm).
 Proof.
@@ -208,9 +217,11 @@ Proof.
 Qed.
 
 
+
 Definition is_trace trans sm tra : Prop :=
   forall lk, List.In lk tra <-> in_trace trans sm lk.    
-(* On aurait pu définir ensemble en compréhension. *)
+(* We could also have used a set comprehension definition. *)
+
 
 Lemma prop8 : forall trans sm, is_trace trans sm (Semantics.compute_trace trans sm).
 Proof.
@@ -218,6 +229,7 @@ Proof.
   setoid_rewrite prop7.
   tauto.
 Qed.
+
 
 (* Two traces (list) represent the same set. *)
 Remark is_trace_incl_right : forall tr sm tra1 tra2,
@@ -232,6 +244,7 @@ Proof.
   assumption.
 Qed.
 
+
 Remark is_trace_incl_eq : forall tr sm tra1 tra2,
   is_trace tr sm tra1 -> is_trace tr sm tra2 -> (forall e, In e tra1 <-> In e tra2).
 Proof.
@@ -245,31 +258,30 @@ Qed.
 
 
 
-
-
 (** * Apply link part of the r.h.s of rules (uses traces) **)
 
 Inductive apply_link_pattern_rel (tra:Trace) (sm:SourceModel) (tlk:TraceLink) (lk:TargetLinkType) : Prop := 
    | rr : 
-    List.In lk (tlk.(linkPattern) (* fixme *) (drop tra) (getIteration tlk) sm (getSourcePiece tlk) tlk.(produced)) ->
+    List.In lk (tlk.(linkPattern) (drop tra) (getIteration tlk) sm (getSourcePiece tlk) tlk.(produced)) ->
       apply_link_pattern_rel tra sm tlk lk. 
   
-(* FIXME Dans la sémantique axiomatique il peut y avoir plusieurs traces. 
-    CErtaines relations prennent donc une trace en paramètre. Pour deux traces différentes, 
-   [tlk.(linkPattern) (drop tra)] pourrait donner des résultats différents car rien ne contraint les expressions
-    utilisateur.
-    Par conséquent, on ne peut attendre une équivalence entre la sémantique axiomatique, et l'application du moteur de transformation.
-  
-    Possibilités pour résoudre ce problème :
-      1) spécifier plus précisément les propriétés d'une traces pour forcer l'unicité.
+(* FIXME 
+  In the axiomatic semantics, several traces are possible (the order of tracelinks in not enforced).
 
-      2) ne pas rechercher une équivalence entre la sémantique axiomatique 
-    et la sémantique exécutable, seulement une correction (sans complétude).
+  For this reason, some relations are parameterized by a trace.
 
-      3) ajouter des hypothèses sur les fonctions utilisateurs permettant
-    de garantir l'équivalence. (resolve only)
+  For two different traces, [tlk.(linkPattern) (drop tra)] could give different results because the 
+  user expressions are not limited in their use of the trace. 
 
-      4) implémenter les traces par des ensembles au lieu de listes.
+  For this reason, we cannot get an equivalence between the axiomatic semantics and the operational semantics.
+  Therefore, some results below deal with correctness and completeness 
+  while other results only deal with correctness.
+
+  Other possibilites to think about to get completeness:
+    * Specify the order in traces in the axiomatic semantics.
+    * Use sets instead of lists in traces.
+    * Restrict the access of user to traces with accessor that do not take the order into account.
+
 *) 
 
 
@@ -288,12 +300,14 @@ Proof.
 Qed.
 
 
+
 Inductive applyTrLkOnModel_rel tra (sm : SourceModel) (lk: TargetLinkType) : Prop :=
  | r6 : forall tlk,
- (*   is_trace tr sm tra ->*) (* FIXME à quel niveau est-il le plus pertinent de forcer ceci ? *)
+ (*   is_trace tr sm tra ->*) (* FIXME What is the best level to enforce this ? *)
     List.In tlk tra -> 
     apply_link_pattern_rel tra sm tlk lk -> 
     applyTrLkOnModel_rel tra sm lk. 
+
 
 (** Correctness & completeness. *)
 Lemma prop10 : forall sm tra lk,
@@ -316,17 +330,15 @@ Qed.
 
 
 
-
 (** * Execute **)
 
 (** Main definition below. *)
-
-
 
 Inductive is_produced_element (tr:Transformation) sm : TargetElementType -> Prop :=
     | r7 : forall a b c, 
         in_trace tr sm {| source := a; produced := b; linkPattern := c |} ->
         is_produced_element tr sm b.
+
 
 (** Correctness & completeness *)
 Lemma prop11 : forall tr sm e,
@@ -351,15 +363,14 @@ Proof.
 Qed.
 
 
-
 Inductive is_produced_link tra sm (lk:TargetLinkType): Prop :=
     | r8 : (*forall tra,*)  
         (*is_trace tr sm tra ->*)
         applyTrLkOnModel_rel tra sm lk->
         is_produced_link tra sm lk.
 
-(** Correctness & completeness. *)
 
+(** Correctness & completeness. *)
 Lemma prop12 : forall tr sm lk,  
   In lk ( (Semantics.execute tr sm).(modelLinks)) <->
   is_produced_link (Semantics.compute_trace tr sm) sm lk .
@@ -376,16 +387,17 @@ Proof.
     assumption.
 Qed.
 
-(* FIXME Attention : Distinguer 
-   1) le résultat calculé est un résultat possible.
-   2) le résultat calculé est inclus dans un résultat possible. 
-        (Exemple: si le moteur renvoie un modèle vide, on ne veut pas que ce soit considéré comme correct.) 
-   3) le résultat calculé contient tous les résultats possibles.
-        (Exemple: on voudrait que le moteur renvoie les liens calculés pour une trace, pas pour toutes les traces possibles.) 
-
-  Question : un moteur peut-il utiliser plusieurs traces différentes (parallélisation) ?
-    
+(* FIXME Warning : make the difference between: 
+   1) The computed result is one possible result.
+   2) The computed result is included in a possible result.
+      Example: an empty model is always included in any correct result, 
+      but we generally don't accept it as a correct result.
+   3) The computed result is the union of several correct results.
+      In particular, an engine should consider a given trace, not all the possible traces.
+      Question: how would we consider a parallel version of an engine where each worker has 
+      a different correct trace ?
 *)
+
 
 Definition is_result (tr:Transformation) (sm:SourceModel) (tm:TargetModel): Prop :=
   (forall e, (List.In e tm.(modelElements) <-> is_produced_element tr sm e)) /\ 
