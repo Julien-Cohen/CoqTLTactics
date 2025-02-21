@@ -37,6 +37,8 @@ Qed. *)
 
 Require Import AxiomaticSemantics.
 
+Section Surjectivity.
+
 Context {tc: TransformationConfiguration}.
 
 (** 
@@ -51,7 +53,7 @@ Inductive TranOnPiece_rel (tr: Transformation) (sm : SourceModel) (sp: InputPiec
     tl.(TraceLink.produced) = te ->
         TranOnPiece_rel tr sm sp te.
 
-Theorem Surjectivity_elem {tc:TransformationConfiguration} :
+Theorem Surjectivity_elem :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
     AxiomaticSemantics.is_produced_element tr sm te ->
         (exists (sp : InputPiece), 
@@ -98,7 +100,7 @@ Inductive TranLkOnModel_rel (tr: Transformation) (sm : SourceModel) (sp: InputPi
     (TraceLink.getSourcePiece tlk) = sp ->
             TranLkOnModel_rel tr sm sp lk.
 
-Theorem Surjectivity_link {tc:TransformationConfiguration} :
+Theorem Surjectivity_link :
 forall (tr: Transformation) (sm : SourceModel) (lk : TargetLinkType),
     is_tr_produced_link tr sm lk ->
         (exists (sp : InputPiece), 
@@ -119,3 +121,5 @@ split.
   remember (TranLkOnModel_rel_def tr sm (TraceLink.getSourcePiece tlk) lk (Semantics.compute_trace tr sm) tlk ltr H0) as tranLkOnModel_rel_def.
   exact tranLkOnModel_rel_def.
 Qed.
+
+End Surjectivity.
