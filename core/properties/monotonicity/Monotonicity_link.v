@@ -20,7 +20,8 @@ Require Import core.modeling.Parser.
 
 
 (*************************************************************)
-(** * Monotonicity of CoqTL  (element)                       *)
+(** * Monotonicity of CoqTL  (link)                          *)
+(** * Using operational semantics                            *)
 (*************************************************************)
 
 

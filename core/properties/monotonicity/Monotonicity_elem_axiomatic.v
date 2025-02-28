@@ -16,7 +16,8 @@ Require Import core.utils.Utils.
 
 
 (*************************************************************)
-(** * Monotonicity of CoqTL                                  *)
+(** * Monotonicity of CoqTL  (element)                       *)
+(** * Using axiomatic semantics                              *)
 (*************************************************************)
 
 
