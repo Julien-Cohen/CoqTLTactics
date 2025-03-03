@@ -35,6 +35,11 @@ Proof.
     apply Certification.tr_execute_in_elements.
 Qed.
 
+Definition Surjectivity_fun {tc:TransformationConfiguration} :
+forall (tm: TargetModel) (tr:Transformation), exists (sm: SourceModel), (execute tr sm) = tm. 
+
+Definition Surjectivity_fun_tr {tc:TransformationConfiguration} (tr:Transformation) :
+forall (tm: TargetModel), exists (sm: SourceModel), (execute tr sm) = tm.
 
 (** Surjectivity on model links                              *)
 
