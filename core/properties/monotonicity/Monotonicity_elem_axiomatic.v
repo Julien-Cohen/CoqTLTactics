@@ -90,10 +90,10 @@ Lemma Moore2Mealy_non_mono_elem_witness:
       incl sm1.(modelElements) sm2.(modelElements) /\
       ~ (incl rm1.(modelElements) rm2.(modelElements)).
 Proof.
-  eexists Moore_m1.
-  eexists Moore_m2.
-  eexists (execute Moore2Mealy Moore_m1).
-  eexists (execute Moore2Mealy Moore_m2).
+  exists Moore_m1.
+  exists Moore_m2.
+  exists (execute Moore2Mealy Moore_m1).
+  exists (execute Moore2Mealy Moore_m2).
   split.
   - apply AxiomaticSemantics.prop13.
   - split. apply AxiomaticSemantics.prop13.
@@ -110,21 +110,21 @@ Proof.
   inversion H.
 Qed.
 
-Theorem Moore2Mealy_non_mono  :
-    exists tr, Monotonicity_elem tr -> False.
+Theorem Moore2Mealy_non_mono : ~ (Monotonicity_elem Moore2Mealy).
 Proof.
-  eexists Moore2Mealy.
   unfold Monotonicity_elem.
   intro.
-  specialize (Moore2Mealy_non_mono_elem_witness) as witness.
-  destruct witness.
-  destruct H0.
-  destruct H0.
-  destruct H0.
-  destruct H0.
-  destruct H1.
-  destruct H2.
-  specialize (H Moore2Mealy x x0 x1 x2 H0 H1 H2).
+  specialize Moore2Mealy_non_mono_elem_witness ; intro H2.
+  destruct H2 as (sm1 & sm2 & rm1 & rm2 & (H3 & H4 & H5 & H6)).
+  specialize (H Moore2Mealy sm1 sm2 rm1 rm2 H3 H4 H5).
   contradiction.
-Qed.  
+Qed.
+
+Theorem non_mono :
+    exists tr, ~ (Monotonicity_elem tr).
+Proof.
+  exists Moore2Mealy.
+  apply Moore2Mealy_non_mono.
+Qed.
+  
   
