@@ -16,7 +16,8 @@ Require Import core.utils.Utils.
 
 
 (*************************************************************)
-(** * Monotonicity of CoqTL                                  *)
+(** * Monotonicity of CoqTL  (element)                       *)
+(** * Using axiomatic semantics                              *)
 (*************************************************************)
 
 
@@ -79,10 +80,10 @@ forall tr sm1 sm2 rm1 rm2,
     incl sm1.(modelElements) sm2.(modelElements) ->
     incl rm1.(modelElements) rm2.(modelElements).
 
-Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_witness.
-Require Import core.properties.monotonicity.sampleMoore_monotonicity.
+Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_elem_witness.
+Require Import core.properties.monotonicity.sampleMoore_monotonicity_elem.
 
-Lemma Moore2Mealy_non_mono_witness:
+Lemma Moore2Mealy_non_mono_elem_witness:
     exists sm1 sm2 rm1 rm2,
     AxiomaticSemantics.is_result Moore2Mealy sm1 rm1 /\
     AxiomaticSemantics.is_result Moore2Mealy sm2 rm2 /\
@@ -115,7 +116,7 @@ Proof.
   eexists Moore2Mealy.
   unfold Monotonicity_elem.
   intro.
-  specialize (Moore2Mealy_non_mono_witness) as witness.
+  specialize (Moore2Mealy_non_mono_elem_witness) as witness.
   destruct witness.
   destruct H0.
   destruct H0.

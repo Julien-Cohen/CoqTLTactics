@@ -144,11 +144,14 @@ transformations/Moore2MealyALT/MealyWF.v
 # Theorems on engine
 
 ### prop - mono
-core/properties/monotonicity/Moore2Mealy_monotonicity_witness.v
-core/properties/monotonicity/sampleMoore_monotonicity.v
-core/properties/monotonicity/Monotonicity.v
-core/properties/monotonicity/Monotonicity_axiomatic.v
-
+core/properties/monotonicity/Moore2Mealy_monotonicity_elem_witness.v
+core/properties/monotonicity/sampleMoore_monotonicity_elem.v
+core/properties/monotonicity/Monotonicity_elem.v
+core/properties/monotonicity/Monotonicity_elem_axiomatic.v
+core/properties/monotonicity/Moore2Mealy_monotonicity_link_witness.v
+core/properties/monotonicity/sampleMoore_monotonicity_link.v
+core/properties/monotonicity/Monotonicity_link.v
+core/properties/monotonicity/Monotonicity_link_axiomatic.v
 
 ### prop - injective
 core/properties/injectivity/sampleMoore_injectivity.v

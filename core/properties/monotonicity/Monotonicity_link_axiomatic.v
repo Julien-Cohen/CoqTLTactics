@@ -12,19 +12,16 @@ Require Import core.Model.
 Require Import core.TransformationConfiguration.
 Require Import core.utils.Utils.
 
-Require Import core.modeling.ConcreteSyntax.
-Require Import core.modeling.ModelingSemantics.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.modeling.ConcreteExpressions.
-Require Import core.modeling.Parser.
+
 
 
 (*************************************************************)
-(** * Monotonicity of CoqTL                                  *)
+(** * Monotonicity of CoqTL  (link)                          *)
+(** * Using axiomatic semantics                              *)
 (*************************************************************)
 
 
-Definition SourceModel_elem_incl {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
+(* Definition SourceModel_elem_incl {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
   incl (modelElements m1) (modelElements m2). 
 
 Definition TargetModel_elem_incl {tc: TransformationConfiguration}  (m1 m2: TargetModel) : Prop := 
@@ -71,4 +68,61 @@ Proof.
   intro mono.
   specialize (Moore2Mealy_non_mono_contrapos) as mono_contrapos.
   crush.
+Qed. *)
+
+Require AxiomaticSemantics.
+
+Definition Monotonicity_link {tc: TransformationConfiguration} 
+   (tr: Transformation) :=
+forall tr sm1 sm2 rm1 rm2,
+  AxiomaticSemantics.is_result tr sm1 rm1 ->
+  AxiomaticSemantics.is_result tr sm2 rm2 ->
+    incl sm1.(modelLinks) sm2.(modelLinks) ->
+    incl rm1.(modelLinks) rm2.(modelLinks).
+
+Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_link_witness.
+Require Import core.properties.monotonicity.sampleMoore_monotonicity_link.
+
+Lemma Moore2Mealy_non_mono_link_witness:
+    exists sm1 sm2 rm1 rm2,
+    AxiomaticSemantics.is_result Moore2Mealy sm1 rm1 /\
+    AxiomaticSemantics.is_result Moore2Mealy sm2 rm2 /\
+      incl sm1.(modelLinks) sm2.(modelLinks) /\
+      ~ (incl rm1.(modelLinks) rm2.(modelLinks)).
+Proof.
+  eexists Moore_m1.
+  eexists Moore_m2.
+  eexists (execute Moore2Mealy Moore_m1).
+  eexists (execute Moore2Mealy Moore_m2).
+  split.
+  - apply AxiomaticSemantics.prop13.
+  - split. apply AxiomaticSemantics.prop13.
+    --  split. 
+        unfold incl.
+        simpl.
+        crush.
+  simpl.
+  unfold not.
+  intro.
+  apply incl_l_nil in H.
+  inversion H.
 Qed.
+
+Theorem Moore2Mealy_non_mono  :
+    exists tr, Monotonicity_link tr -> False.
+Proof.
+  eexists Moore2Mealy.
+  unfold Monotonicity_link.
+  intro.
+  specialize (Moore2Mealy_non_mono_link_witness) as witness.
+  destruct witness.
+  destruct H0.
+  destruct H0.
+  destruct H0.
+  destruct H0.
+  destruct H1.
+  destruct H2.
+  specialize (H Moore2Mealy x x0 x1 x2 H0 H1 H2).
+  contradiction.
+Qed.  
+  
