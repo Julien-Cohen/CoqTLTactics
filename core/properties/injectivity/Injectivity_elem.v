@@ -19,7 +19,7 @@ Require Import core.modeling.Parser.
 
 
 (*************************************************************)
-(** * Injectivity of CoqTL                                   *)
+(** * Injectivity of CoqTL (Element)                         *)
 (*************************************************************)
 
 Definition SourceModel_elem_eq {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
@@ -28,7 +28,7 @@ Definition SourceModel_elem_eq {tc: TransformationConfiguration}  (m1 m2: Source
 Definition TargetModel_elem_eq {tc: TransformationConfiguration}  (m1 m2: TargetModel) : Prop := 
   set_eq m1.(modelElements) m2.(modelElements). 
 
-Definition Injectivity {tc: TransformationConfiguration}
+Definition Injectivity_elem {tc: TransformationConfiguration}
    (tr: Transformation) :=
 forall sm1 sm2,
   TargetModel_elem_eq (execute tr sm1) (execute tr sm2) ->
@@ -37,16 +37,16 @@ forall sm1 sm2,
 
 Require Import transformations.Moore2Mealy.Moore.
 Require Import transformations.Moore2Mealy.Moore2Mealy.
-Require Import core.properties.injectivity.sampleMoore_injectivity.
+Require Import core.properties.injectivity.sampleMoore_injectivity_elem.
 
 
-Lemma Moore2Mealy_non_inj_contrapos:
+Lemma Moore2Mealy_non_inj_elem_contrapos:
 exists sm1 sm2 : SourceModel,
   ~ SourceModel_elem_eq sm1 sm2 /\
   TargetModel_elem_eq (execute Moore2Mealy sm1) (execute Moore2Mealy sm2).
 Proof.
-  eexists Moore_m1.
-  eexists Moore_m2.
+  exists Moore_m1.
+  exists Moore_m2.
   split.
   - unfold SourceModel_elem_eq.
     simpl.
@@ -67,12 +67,12 @@ Proof.
     split; crush.
 Qed.
 
-Theorem Moore2Mealy_non_injective :
-exists tr, Injectivity tr -> False.
+Theorem Moore2Mealy_non_injective_elem :
+exists tr, Injectivity_elem tr -> False.
 Proof.
-  eexists Moore2Mealy.
-  unfold Injectivity.
+  exists Moore2Mealy.
+  unfold Injectivity_elem.
   intro inj.
-  specialize (Moore2Mealy_non_inj_contrapos) as inj_contrapos.
+  specialize (Moore2Mealy_non_inj_elem_contrapos) as inj_contrapos.
   crush.
 Qed.

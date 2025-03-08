@@ -143,19 +143,33 @@ transformations/Moore2MealyALT/MealyWF.v
 
 # Theorems on engine
 
-### prop - mono
+### prop - mono - elem
 core/properties/monotonicity/Moore2Mealy_monotonicity_elem_witness.v
 core/properties/monotonicity/sampleMoore_monotonicity_elem.v
 core/properties/monotonicity/Monotonicity_elem.v
 core/properties/monotonicity/Monotonicity_elem_axiomatic.v
+
+### prop - mono - link
 core/properties/monotonicity/Moore2Mealy_monotonicity_link_witness.v
 core/properties/monotonicity/sampleMoore_monotonicity_link.v
 core/properties/monotonicity/Monotonicity_link.v
 core/properties/monotonicity/Monotonicity_link_axiomatic.v
 
-### prop - injective
-core/properties/injectivity/sampleMoore_injectivity.v
-core/properties/injectivity/Injectivity.v
+### prop - injective - elem
+core/properties/injectivity/sampleMoore_injectivity_elem.v
+core/properties/injectivity/Injectivity_elem.v
+
+### prop - injective - link
+core/properties/injectivity/Moore2Mealy_injectivity_link_witness.v
+core/properties/injectivity/sampleMoore_injectivity_link.v
+core/properties/injectivity/Injectivity_link.v
+
+### prop - injective - inputpiece
+core/properties/injectivity/Moore2Mealy_injectivity_inputpiece_witness.v
+core/properties/injectivity/sampleMoore_injectivity_inputpiece.v
+core/properties/injectivity/Injectivity_inputpiece.v
+
+sampleMoore_injectivity_inputpiece
 
 ### prop - confluence
 core/properties/confluence/basic/basicSyntax.v
