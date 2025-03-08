@@ -169,8 +169,6 @@ core/properties/injectivity/Moore2Mealy_injectivity_inputpiece_witness.v
 core/properties/injectivity/sampleMoore_injectivity_inputpiece.v
 core/properties/injectivity/Injectivity_inputpiece.v
 
-sampleMoore_injectivity_inputpiece
-
 ### prop - confluence
 core/properties/confluence/basic/basicSyntax.v
 core/properties/confluence/basic/basicExpressions.v
