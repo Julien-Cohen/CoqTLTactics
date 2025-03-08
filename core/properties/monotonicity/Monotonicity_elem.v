@@ -18,12 +18,13 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
+Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_elem_witness.
+Require Import core.properties.monotonicity.sampleMoore_monotonicity_elem.
 
 (*************************************************************)
 (** * Monotonicity of CoqTL  (element)                       *)
 (** * Using operational semantics                            *)
 (*************************************************************)
-
 
 Definition SourceModel_elem_incl {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
   incl (modelElements m1) (modelElements m2). 
@@ -31,22 +32,19 @@ Definition SourceModel_elem_incl {tc: TransformationConfiguration}  (m1 m2: Sour
 Definition TargetModel_elem_incl {tc: TransformationConfiguration}  (m1 m2: TargetModel) : Prop := 
   incl (modelElements m1) (modelElements m2). 
 
-Definition Monotonicity {tc: TransformationConfiguration} 
+Definition Monotonicity_elem {tc: TransformationConfiguration} 
    (tr: Transformation) :=
 forall sm1 sm2,
     SourceModel_elem_incl sm1 sm2 ->
     TargetModel_elem_incl (execute tr sm1) (execute tr sm2).  
-
-Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_witness.
-Require Import core.properties.monotonicity.sampleMoore_monotonicity.
 
 Lemma Moore2Mealy_non_mono_contrapos_elem:
   exists sm1 sm2 : SourceModel,
     SourceModel_elem_incl sm1 sm2 /\
       ~ TargetModel_elem_incl (execute Moore2Mealy sm1) (execute Moore2Mealy sm2).
 Proof.
-  eexists Moore_m1.
-  eexists Moore_m2.
+  exists Moore_m1.
+  exists Moore_m2.
   split.
   - unfold SourceModel_elem_incl.
     simpl.
@@ -64,12 +62,17 @@ Proof.
     crush.
 Qed.
 
-Theorem Moore2Mealy_non_mono_elem  :
-    exists tr, Monotonicity tr -> False.
+Theorem Moore2Mealy_non_mono_elem : ~ (Monotonicity_elem Moore2Mealy).
 Proof.
-  eexists Moore2Mealy.
-  unfold Monotonicity.
-  intro mono.
-  specialize (Moore2Mealy_non_mono_contrapos_elem) as mono_contrapos.
+  unfold Monotonicity_elem.
+  intro.
+  specialize Moore2Mealy_non_mono_contrapos_elem ; intro H2.
   crush.
+Qed.
+
+Theorem non_mono_elem  :
+    exists tr, ~ (Monotonicity_elem tr).
+Proof.
+  exists Moore2Mealy.
+  apply Moore2Mealy_non_mono_elem.
 Qed.

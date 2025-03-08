@@ -18,12 +18,13 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
+Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_link_witness.
+Require Import core.properties.monotonicity.sampleMoore_monotonicity_link.
 
 (*************************************************************)
 (** * Monotonicity of CoqTL  (link)                          *)
 (** * Using operational semantics                            *)
 (*************************************************************)
-
 
 Definition SourceModel_link_incl {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
   incl (modelLinks m1) (modelLinks m2). 
@@ -37,16 +38,13 @@ forall sm1 sm2,
 SourceModel_link_incl sm1 sm2 ->
 TargetModel_link_incl (execute tr sm1) (execute tr sm2).  
 
-Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_link_witness.
-Require Import core.properties.monotonicity.sampleMoore_monotonicity_link.
-
 Lemma Moore2Mealy_non_mono_contrapos_link:
   exists sm1 sm2 : SourceModel,
   SourceModel_link_incl sm1 sm2 /\
       ~ TargetModel_link_incl (execute Moore2Mealy sm1) (execute Moore2Mealy sm2).
 Proof.
-  eexists Moore_m1.
-  eexists Moore_m2.
+  exists Moore_m1.
+  exists Moore_m2.
   split.
   - unfold SourceModel_link_incl.
     simpl.
@@ -76,13 +74,20 @@ Proof.
 Qed.
 
 
-
-Theorem Moore2Mealy_non_mono_link  :
-    exists tr, Monotonicity_link tr -> False.
+Theorem Moore2Mealy_non_mono_link : ~ (Monotonicity_link Moore2Mealy).
 Proof.
-  eexists Moore2Mealy.
   unfold Monotonicity_link.
-  intro mono.
-  specialize (Moore2Mealy_non_mono_contrapos_link) as mono_contrapos.
+  intro.
+  specialize Moore2Mealy_non_mono_contrapos_link ; intro H2.
   crush.
 Qed.
+
+Theorem non_mono_link  :
+  exists tr, ~ (Monotonicity_link tr).
+Proof.
+  exists Moore2Mealy.
+  apply Moore2Mealy_non_mono_link.
+Qed.
+
+
+
