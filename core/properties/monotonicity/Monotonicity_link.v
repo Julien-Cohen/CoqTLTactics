@@ -74,7 +74,7 @@ Proof.
 Qed.
 
 
-Theorem Moore2Mealy_non_mono_link : ~ (Monotonicity_link Moore2Mealy).
+Lemma Moore2Mealy_non_mono_link : ~ (Monotonicity_link Moore2Mealy).
 Proof.
   unfold Monotonicity_link.
   intro.

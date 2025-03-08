@@ -56,7 +56,7 @@ Proof.
   inversion H.
 Qed.
 
-Theorem Moore2Mealy_non_mono_elem : ~ (Monotonicity_elem Moore2Mealy).
+Lemma Moore2Mealy_non_mono_elem : ~ (Monotonicity_elem Moore2Mealy).
 Proof.
   unfold Monotonicity_elem.
   intro.
