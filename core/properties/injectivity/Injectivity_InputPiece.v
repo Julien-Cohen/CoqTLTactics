@@ -16,11 +16,15 @@ Require Import core.modeling.ModelingSemantics.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
+Require Import core.AxiomaticSemantics.
 
-Require Import AxiomaticSemantics.
+Require Import transformations.Moore2Mealy.Moore.
+Require Import core.properties.injectivity.Moore2Mealy_injectivity_inputpiece_witness.
+Require Import core.properties.injectivity.sampleMoore_injectivity_inputpiece.
 
 (*************************************************************)
 (** * Injectivity of CoqTL (InputPiece)                      *)
+(** * Using Axiomatic semantics                              *)
 (*************************************************************)
 
 (** M.T. this does not hold if two different source patterns generate target patterns with a non-empty intersection*)
@@ -57,7 +61,7 @@ Proof.
     apply def; destruct H; assumption.
 Qed.
 
-Definition Injectivity_elem_axiomatic {tc: TransformationConfiguration} (tr: Transformation) :=
+Definition Injectivity_inputpiece_axiomatic {tc: TransformationConfiguration} (tr: Transformation) :=
 forall (sm : SourceModel) (te : TargetElementType) (sp1 sp2: InputPiece),
   AxiomaticSemantics.is_produced_element tr sm te ->
     isTuple sm sp1 -> 
@@ -65,10 +69,6 @@ forall (sm : SourceModel) (te : TargetElementType) (sp1 sp2: InputPiece),
       TranOnPiece_rel tr sm sp1 te -> 
       TranOnPiece_rel tr sm sp2 te -> 
         sp1 = sp2.
-
-Require Import transformations.Moore2Mealy.Moore.
-Require Import core.properties.injectivity.Moore2Mealy_injectivity_inputpiece_witness.
-Require Import core.properties.injectivity.sampleMoore_injectivity_inputpiece.
 
 Lemma Moore2Mealy_non_inj_elem_contrapos_axiomatic:
 exists (sm : SourceModel) (te : TargetElementType)  (sp1 sp2: InputPiece),
@@ -95,7 +95,7 @@ Proof.
     left.
     reflexivity.
     simpl. reflexivity.
-  - (* FIXME same as last goal, we could refactored here. *)
+  - (* FIXME same as last goal, we could refactor here. *)
     apply prop14.
     eexists.
     split.
@@ -107,12 +107,9 @@ Proof.
   - crush.
 Qed.
 
-
-Theorem Moore2Mealy_non_injective_elem  :
-  exists tr, Injectivity_elem_axiomatic tr -> False.
+Lemma Moore2Mealy_non_injective_inputpiece : ~ (Injectivity_inputpiece_axiomatic Moore2Mealy).
 Proof.
-  exists Moore2Mealy.
-  unfold Injectivity_elem_axiomatic.
+  unfold Injectivity_inputpiece_axiomatic.
   intro inj.
   specialize (Moore2Mealy_non_inj_elem_contrapos_axiomatic) as inj_contrapos.
   (* FIXME contradiction is not directly crushed. we could consider refactor Moore2Mealy_non_inj_elem_contrapos_axiomatic.*)
@@ -121,8 +118,18 @@ Proof.
   contradiction.
 Qed.
 
+Theorem non_injective_inputpiece :
+  exists tr, ~ (Injectivity_inputpiece_axiomatic tr).
+Proof.
+  exists Moore2Mealy.
+  apply Moore2Mealy_non_injective_inputpiece.
+Qed.
 
 
+(*************************************************************)
+(** * Injectivity of CoqTL (InputPiece)                      *)
+(** * FIXME Another Case                                     *)
+(*************************************************************)
 
 Definition is_produced_elems_eq tr sm sp1 sp2 : Prop :=
   (forall te, TranOnPiece_rel tr sm sp1 te <-> TranOnPiece_rel tr sm sp2 te).

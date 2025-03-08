@@ -17,9 +17,13 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
+Require Import transformations.Moore2Mealy.Moore.
+Require Import transformations.Moore2Mealy.Moore2Mealy.
+Require Import core.properties.injectivity.sampleMoore_injectivity_elem.
 
 (*************************************************************)
 (** * Injectivity of CoqTL (Element)                         *)
+(** * Using operational semantics                            *)
 (*************************************************************)
 
 Definition SourceModel_elem_eq {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
@@ -33,12 +37,6 @@ Definition Injectivity_elem {tc: TransformationConfiguration}
 forall sm1 sm2,
   TargetModel_elem_eq (execute tr sm1) (execute tr sm2) ->
     SourceModel_elem_eq sm1 sm2.  
-
-
-Require Import transformations.Moore2Mealy.Moore.
-Require Import transformations.Moore2Mealy.Moore2Mealy.
-Require Import core.properties.injectivity.sampleMoore_injectivity_elem.
-
 
 Lemma Moore2Mealy_non_inj_elem_contrapos:
 exists sm1 sm2 : SourceModel,
@@ -67,12 +65,17 @@ Proof.
     split; crush.
 Qed.
 
-Theorem Moore2Mealy_non_injective_elem :
-exists tr, Injectivity_elem tr -> False.
+Lemma Moore2Mealy_non_injective_elem : ~ (Injectivity_elem Moore2Mealy).
 Proof.
-  exists Moore2Mealy.
   unfold Injectivity_elem.
   intro inj.
   specialize (Moore2Mealy_non_inj_elem_contrapos) as inj_contrapos.
   crush.
+Qed.
+
+Theorem non_injective_elem :
+    exists tr, ~ (Injectivity_elem tr).
+Proof.
+  exists Moore2Mealy.
+  apply Moore2Mealy_non_injective_elem.
 Qed.

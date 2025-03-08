@@ -17,9 +17,13 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
+Require Import transformations.Moore2Mealy.Moore.
+Require Import core.properties.injectivity.Moore2Mealy_injectivity_link_witness.
+Require Import core.properties.injectivity.sampleMoore_injectivity_link.
 
 (*************************************************************)
 (** * Injectivity of CoqTL (Link)                            *)
+(** * Using operational semantics                            *)
 (*************************************************************)
 
 Definition SourceModel_link_eq {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
@@ -33,12 +37,6 @@ Definition Injectivity_link {tc: TransformationConfiguration}
 forall sm1 sm2,
   TargetModel_link_eq (execute tr sm1) (execute tr sm2) ->
     SourceModel_link_eq sm1 sm2.  
-
-
-Require Import transformations.Moore2Mealy.Moore.
-Require Import core.properties.injectivity.Moore2Mealy_injectivity_link_witness.
-Require Import core.properties.injectivity.sampleMoore_injectivity_link.
-
 
 Lemma Moore2Mealy_non_inj_link_contrapos:
 exists sm1 sm2 : SourceModel,
@@ -68,12 +66,19 @@ Proof.
     split; crush.
 Qed.
 
-Theorem Moore2Mealy_non_injective_link :
-exists tr, Injectivity_link tr -> False.
+Lemma Moore2Mealy_non_injective_link : ~ (Injectivity_link Moore2Mealy).
 Proof.
-  exists Moore2Mealy.
   unfold Injectivity_link.
   intro inj.
   specialize (Moore2Mealy_non_inj_link_contrapos) as inj_contrapos.
   crush.
 Qed.
+
+Theorem non_injective_link :
+    exists tr, ~ (Injectivity_link tr).
+Proof.
+  exists Moore2Mealy.
+  apply Moore2Mealy_non_injective_link.
+Qed.
+
+
