@@ -82,9 +82,10 @@ Proof.
   crush.
 Qed.
 
-Theorem non_mono_link  :
-  exists tr, ~ (Monotonicity_link tr).
+Lemma non_Monotonicity_link {tc: TransformationConfiguration} :
+~ (forall (tr: Transformation) , Monotonicity_link tr). 
 Proof.
+  simpl.
   exists Moore2Mealy.
   apply Moore2Mealy_non_mono_link.
 Qed.

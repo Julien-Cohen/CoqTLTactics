@@ -25,7 +25,10 @@ Require Import core.modeling.Parser.
 
 (** Surjectivity on model elements                           *)
 
-Theorem Surjectivity_elem {tc:TransformationConfiguration} :
+(** intuitively: I do not create from scratch target elements, a.k.a.
+                 it does not exist a situation where a target element is not connected to any source pattern*)
+
+Theorem Backward_Traceability_elem {tc:TransformationConfiguration} :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
       In te (execute tr sm).(modelElements) ->
       (exists (sp : InputPiece),
@@ -35,7 +38,7 @@ Proof.
     apply Certification.tr_execute_in_elements.
 Qed.
 
-
+    
 
 (** Surjectivity on model links                              *)
 

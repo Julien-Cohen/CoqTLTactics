@@ -26,7 +26,10 @@ Require Import core.modeling.Parser.
 
 (** Totality on model elements                               *)
 
-Theorem Totality_elem {tc:TransformationConfiguration} :
+(** intuitively: I do not miss source elements, a.k.a. 
+                 it does not exist a situation where a (transformed) source pattern is not connected to any target element*)
+
+Theorem Forward_Traceability_elem {tc:TransformationConfiguration} :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
       (exists (sp : InputPiece),
           In sp (allTuples tr sm) /\
@@ -34,6 +37,21 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
           In te (execute tr sm).(modelElements).
 Proof.
     apply Certification.tr_execute_in_elements.
+Qed.
+
+Theorem Forward_Traceability_elem' {tc:TransformationConfiguration} :
+forall (tr: Transformation) (sm : SourceModel) (sp : InputPiece),
+      In sp (allTuples tr sm) ->
+      (forall (te : TargetElementType),
+        In te (produced_elements (traceTrOnPiece tr sm sp)) -> 
+        In te (execute tr sm).(modelElements)).
+Proof.
+    intros.
+    apply Certification.tr_execute_in_elements.
+    exists sp.
+    split.
+    auto.
+    auto.
 Qed.
 
 (*
