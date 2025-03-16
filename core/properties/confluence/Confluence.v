@@ -32,24 +32,26 @@ Definition disjoint_rules tr : Prop :=
 
 Definition Transformation_equiv  (t1 t2: Transformation) := 
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
-  set_eq (Transformation_getRules t1) (Transformation_getRules t2) /\
-  disjoint_rules (Transformation_getRules t1) /\ 
-  disjoint_rules (Transformation_getRules t2)
-.
+  set_eq (Transformation_getRules t1) (Transformation_getRules t2).
 
 Definition TargetModel_equiv (m1 m2: TargetModel) :=
   forall (e: TargetElementType) (l: TargetLinkType),
    (In e m1.(modelElements) <-> In e m2.(modelElements)) /\
     (In l m1.(modelLinks) <-> In l m2.(modelLinks)).
 
+Definition Confluence (t1 t2: Transformation) :=
+  forall (sm: SourceModel),
+    Transformation_equiv t1 t2 -> TargetModel_equiv (execute t1 sm) (execute t2 sm).
 
 
 Lemma resolveIter_eq :
-forall  t1 t2,
+forall (t1 t2: Transformation),
+disjoint_rules (Transformation_getRules t1)  ->
+disjoint_rules (Transformation_getRules t2)  ->
  Transformation_equiv t1 t2 ->
    resolveIter t1 = resolveIter t2.
 Proof.
-intros t1 t2 tr_eq.
+intros t1 t2 disjoint_rules_t1 disjoint_rules_t2 tr_eq.
 unfold resolveIter.
 apply functional_extensionality. intro.
 apply functional_extensionality. intro.
@@ -75,14 +77,14 @@ assert (find find_cond rs1 = find find_cond rs2).
   unfold Transformation_equiv in tr_eq.
   destruct tr_eq.
   destruct H0.
-  assert (In r rs2). { unfold set_eq in H0. destruct H0. unfold incl in H0. crush. }
+  assert (In r rs2). {  unfold incl in H0. crush. }
   destruct find_ca2.
   destruct find_ca1.
   rewrite Heqfind_cond in H6.
   rewrite Heqfind_cond in H4.
-  destruct H1.
-  unfold disjoint_rules in H7.
-  eapply (H7 r r0) ; crush.
+  unfold disjoint_rules in disjoint_rules_t2.
+  specialize (disjoint_rules_t2 r r0 H2 H3 sm sp H6 H4) as witness.
+  exact witness.
   + apply List.find_some in find_ca1.
     specialize (List.find_none find_cond rs2 find_ca2).
     intro.
@@ -106,13 +108,17 @@ rewrite H.
 reflexivity.
 Qed.
 
-Theorem confluence :
-forall  (t1 t2: Transformation) (sm: SourceModel),
-  Transformation_equiv t1 t2 -> TargetModel_equiv (execute t1 sm) (execute t2 sm).
+Theorem forall_Confluence :
+forall (t1 t2: Transformation),
+  disjoint_rules (Transformation_getRules t1)  ->
+  disjoint_rules (Transformation_getRules t2)  ->
+  Confluence t1 t2.
 Proof.
+  unfold Confluence.
   unfold TargetModel_equiv.
   unfold Transformation_equiv.
   simpl.
+  intros t1 t2 disjoint_rules_t1 disjoint_rules_t2.
   intros.
   destruct H.
   split.
@@ -187,7 +193,7 @@ Proof.
               ** assumption.
               ** unfold applyElementOnPattern in *. 
 assert (resolveIter t1 = resolveIter t2).
-{ apply resolveIter_eq. unfold Transformation_equiv. crush. }
+{ apply resolveIter_eq. assumption. assumption. unfold Transformation_equiv. crush. }
 destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
 *** rewrite H7 in H6.
     auto.
@@ -224,11 +230,11 @@ destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
               ** assumption.
               ** unfold applyElementOnPattern in *. 
 assert ((resolveIter t1 = (resolveIter t2))).
-{ apply resolveIter_eq. unfold Transformation_equiv. crush. }
+{ apply resolveIter_eq. assumption. assumption. unfold Transformation_equiv. crush. }
 destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
 *** rewrite <- H7 in H6.
     auto.
-*** auto.
+*** auto. 
 Qed.
 
 End Confluence.
