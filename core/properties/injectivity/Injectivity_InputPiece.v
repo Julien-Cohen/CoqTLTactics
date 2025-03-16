@@ -118,13 +118,23 @@ Proof.
   contradiction.
 Qed.
 
-Theorem non_injective_inputpiece :
+Lemma exists_non_injective_inputpiece :
   exists tr, ~ (Injectivity_inputpiece_axiomatic tr).
 Proof.
   exists Moore2Mealy.
   apply Moore2Mealy_non_injective_inputpiece.
 Qed.
 
+Theorem non_injective_inputpiece  :
+   ~ (forall tr, (Injectivity_inputpiece_axiomatic tr)).
+Proof.
+  intro.
+  specialize (exists_non_injective_inputpiece).
+  intro.
+  destruct H0.
+  specialize (H x).
+  contradiction.
+Qed.
 
 (*************************************************************)
 (** * Injectivity of CoqTL (InputPiece)                      *)

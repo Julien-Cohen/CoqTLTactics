@@ -74,7 +74,7 @@ Proof.
   crush.
 Qed.
 
-Theorem non_injective_link :
+Theorem exists_non_injective_link :
     exists tr, ~ (Injectivity_link tr).
 Proof.
   exists Moore2Mealy.
@@ -82,3 +82,13 @@ Proof.
 Qed.
 
 
+Theorem non_injective_link  :
+   ~ (forall tr, (Injectivity_link tr)).
+Proof.
+  intro.
+  specialize (exists_non_injective_link).
+  intro.
+  destruct H0.
+  specialize (H x).
+  contradiction.
+Qed.

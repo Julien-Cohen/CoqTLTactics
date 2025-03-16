@@ -73,9 +73,20 @@ Proof.
   crush.
 Qed.
 
-Theorem non_injective_elem :
+Lemma exists_non_injective_elem :
     exists tr, ~ (Injectivity_elem tr).
 Proof.
   exists Moore2Mealy.
   apply Moore2Mealy_non_injective_elem.
+Qed.
+
+Theorem non_injective_elem  :
+   ~ (forall tr, (Injectivity_elem tr)).
+Proof.
+  intro.
+  specialize (exists_non_injective_elem).
+  intro.
+  destruct H0.
+  specialize (H x).
+  contradiction.
 Qed.
