@@ -9,7 +9,7 @@ Require Import core.utils.Utils.
 Require Import PeanoNat.
 Require Import Lia.
 Require Import FunctionalExtensionality.
-
+Require Import AxiomaticSemantics.
 
 (*************************************************************)
 (** * Universality                                           *)
@@ -26,15 +26,17 @@ Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel ->
       ])
   ]).
 
-Require Import AxiomaticSemantics.
-
-Theorem universality :
-forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel),
+Definition Universality_axoimatic {tc: TransformationConfiguration} (f: SourceModel -> TargetModel) :=
   (forall (sm: SourceModel), Model_wellFormed sm -> Model_wellFormed (f sm)) ->
   exists (t: Transformation), 
     forall (sm: SourceModel), Model_wellFormed sm -> 
     AxiomaticSemantics.is_result t sm (f sm).
+
+Theorem forall_Universality_axiomatic :
+forall {tc: TransformationConfiguration} 
+  (f: SourceModel -> TargetModel), Universality_axoimatic f.
 Proof.
+  unfold Universality_axoimatic.
   intros.
   exists (toTransformation tc f).
   intros.

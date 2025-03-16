@@ -181,6 +181,10 @@ core/properties/backward_traceability/backward_traceability_link_axiomatic.v
 core/properties/forward_traceability/Forward_traceability_elem.v
 core/properties/forward_traceability/Forward_traceability_link.v
 
+### prop - universality
+core/properties/universality/Universality.v
+core/properties/universality/Universality_axiomatic.v
+
 ### prop - surjectivity TODO
 core/properties/surjectivity/surjectivity.v
 
@@ -192,9 +196,7 @@ core/properties/confluence/basic/basicSemantics.v
 core/properties/confluence/Confluence.v
 core/properties/confluence/examples/moore2mealy_confluence.v
 
-### prop - universality
-core/properties/universality/Universality.v
-core/properties/universality/Universality_axiomatic.v
+
 
 
 
