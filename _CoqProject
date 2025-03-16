@@ -185,6 +185,12 @@ core/properties/forward_traceability/Forward_traceability_link.v
 core/properties/universality/Universality.v
 core/properties/universality/Universality_axiomatic.v
 
+### prop - distributivity
+core/properties/distributivity/sampleMoore_Distributivity.v
+core/properties/distributivity/Distributivity.v
+core/properties/distributivity/Distributivity_axiomatic.v
+
+
 ### prop - surjectivity TODO
 core/properties/surjectivity/surjectivity.v
 
@@ -196,20 +202,10 @@ core/properties/confluence/basic/basicSemantics.v
 core/properties/confluence/Confluence.v
 core/properties/confluence/examples/moore2mealy_confluence.v
 
-
-
-
-
-
-
-
 ### prop - additivity
 core/properties/additivity/AdditivityRule.v
 
-### prop - distributivity
-core/properties/distributivity/sampleMoore_distributivity.v
-core/properties/distributivity/distributivity.v
-core/properties/distributivity/distributivity_axiomatic.v
+
 
 core/properties/Adaptation.v
 

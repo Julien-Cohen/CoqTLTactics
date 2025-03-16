@@ -29,7 +29,6 @@ PAIRPROOFS= transformations/Class2Relational_TUPLES/theorems/Attribute_name_pres
 
 PROPS= core/properties/additivity/AdditivityRule.vo\
 core/properties/confluence/Confluence.vo\
-core/properties/distributivity/distributivity_axiomatic.vo\
 core/properties/universality/Universality_axiomatic.vo\
 core/properties/monotonicity/Monotonicity_elem.vo\
 core/properties/monotonicity/Monotonicity_elem_axiomatic.vo\
@@ -43,7 +42,10 @@ core/properties/backward_traceability/backward_traceability_elem_axiomatic.vo\
 core/properties/backward_traceability/backward_traceability_link.vo\
 core/properties/backward_traceability/backward_traceability_link_axiomatic.vo\
 core/properties/forward_traceability/Forward_traceability_elem.vo\
-core/properties/forward_traceability/Forward_traceability_link.vo
+core/properties/forward_traceability/Forward_traceability_link.vo\
+core/properties/distributivity/Distributivity.vo\
+core/properties/distributivity/Distributivity_axiomatic.vo
+
 
 TACTICTESTS= test_tactics/TestTacticsBW.vo\
 	     test_tactics/TestTacticsFW.vo\

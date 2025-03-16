@@ -21,6 +21,17 @@ Require Import core.modeling.Parser.
 
 Require Import transformations.Moore2Mealy.Moore2Mealy.
 
+(*************************************************************)
+(** * Distributivity of CoqTL (Elem)                         *)
+(** * Using axiomatic semantics                              *)
+(*************************************************************)
+
+
+(*************************************************************)
+(** * This file is presented as proof of concept to          *)
+(** * demonstrate how to define Distributivity axiomatically *)
+(** * and how to use it to prove Monotonicity(ifDistrThenMon)*)
+(*************************************************************)
 
 Definition Model_elem_incl {MM : Metamodel} (m1 m2: Model MM) : Prop := 
   incl m1.(modelElements) m2.(modelElements). 

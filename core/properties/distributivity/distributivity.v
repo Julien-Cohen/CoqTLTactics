@@ -18,9 +18,14 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
+Require Import transformations.Moore2Mealy.Moore2Mealy.
+Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_witness.
+Require Import core.properties.distributivity.sampleMoore_distributivity.
+
 
 (*************************************************************)
-(** * (non-) Distributivity of CoqTL                         *)
+(** * Distributivity of CoqTL (Model)                        *)
+(** * Using operational semantics                            *)
 (*************************************************************)
 
 Definition Distributivity {tc:TransformationConfiguration} (tr: Transformation) :=
@@ -28,38 +33,41 @@ forall (sm1 sm2 : SourceModel),
   execute tr (Model_app sm1 sm2) =
   Model_app (execute tr sm1) (execute tr sm2).
 
-Require Import transformations.Moore2Mealy.Moore2Mealy.
-Require core.properties.monotonicity.Moore2Mealy_monotonicity_witness.
-Require core.properties.distributivity.sampleMoore_distributivity.
-
-
-Theorem Not_Distributivity:
-exists (tr: Transformation) (m1 m2: SourceModel),
-  execute tr (Model_app m1 m2) = 
-    Model_app (execute tr m1) (execute tr m2) -> False.
+Lemma Moore2Mealy_non_distributive_contrapos:
+  exists sm1 sm2 : SourceModel,
+    ~ (execute Moore2Mealy (Model_app sm1 sm2) =
+      Model_app (execute Moore2Mealy sm1) (execute Moore2Mealy sm2)).
 Proof.
-  eexists Moore2Mealy.
-  eexists sampleMoore_distributivity.Moore_m1.
-  eexists sampleMoore_distributivity.Moore_m2. 
-  compute.
-  intro ; discriminate. 
+exists sampleMoore_distributivity.Moore_m1.
+exists sampleMoore_distributivity.Moore_m2.
+compute.
+discriminate.
 Qed.
 
-(*Theorem ifDistrThenMon (tr: Transformation) :
-  Distributivity tr -> Monotonicity tr.
+Lemma Moore2Mealy_non_distributive : ~ (Distributivity Moore2Mealy).
 Proof.
-    - ... ->
+unfold Distributivity.
+intro.
+specialize Moore2Mealy_non_distributive_contrapos ; intro H2.
+crush.
+Qed.
 
-    H1: SourceModel_elem_incl sm1 sm3 -> exists sm2, sm3 = (Model_app sm1 sm2)
+Lemma exists_non_distributive  :
+    exists tr, ~ (Distributivity tr).
+Proof.
+  exists Moore2Mealy.
+  apply Moore2Mealy_non_distributive.
+Qed.
 
-    - apply H1 ->
 
-    G: TargetModel_elem_incl (execute tr sm1) (execute tr (Model_app sm1 sm2)) 
+Theorem Non_Distributivity:
+  ~ (forall tr, (Distributivity tr)).
+Proof.
+  intro.
+  specialize (exists_non_distributive).
+  intro.
+  destruct H0.
+  specialize (H x).
+  contradiction.
+Qed.
 
-    - apply Distributivity ->
-
-    G: TargetModel_elem_incl (execute tr sm1) (Model_app (execute tr sm1) (execute tr sm2))) 
-
-    - apply incl a (a ++ b) ->
-
-    G: True*)
