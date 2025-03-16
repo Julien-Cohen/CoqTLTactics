@@ -178,7 +178,8 @@ core/properties/backward_traceability/backward_traceability_link.v
 core/properties/backward_traceability/backward_traceability_link_axiomatic.v
 
 ### prop - forward_traceability
-core/properties/forward_traceability/totality.v
+core/properties/forward_traceability/Forward_traceability_elem.v
+core/properties/forward_traceability/Forward_traceability_link.v
 
 ### prop - surjectivity TODO
 core/properties/surjectivity/surjectivity.v

@@ -21,24 +21,50 @@ Require Import core.modeling.Parser.
 
 
 (*************************************************************)
-(** * Totality of CoqTL                                      *)
+(** * Forward_Traceability of CoqTL (Elem)                   *)
+(** * Using operational semantics                            *)
 (*************************************************************)
-
-(** Totality on model elements                               *)
 
 (** intuitively: I do not miss source elements, a.k.a. 
                  it does not exist a situation where a (transformed) source pattern is not connected to any target element*)
 
-Theorem Forward_Traceability_elem {tc:TransformationConfiguration} :
-forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
-      (exists (sp : InputPiece),
-          In sp (allTuples tr sm) /\
-          In te (produced_elements (traceTrOnPiece tr sm sp))) ->
-          In te (execute tr sm).(modelElements).
+
+Definition Forward_Traceability_elem {tc: TransformationConfiguration} (tr: Transformation) :=
+    forall (sm : SourceModel) (te : TargetElementType),
+    (exists (sp : InputPiece),
+        In sp (allTuples tr sm) /\
+        In te (produced_elements (traceTrOnPiece tr sm sp))) ->
+        In te (execute tr sm).(modelElements).
+
+Theorem forall_Forward_Traceability_elem {tc:TransformationConfiguration} :
+    forall (tr: Transformation), Forward_Traceability_elem tr.
 Proof.
+    unfold Forward_Traceability_elem.
     apply Certification.tr_execute_in_elements.
 Qed.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(*
+
+(** FIXME M.T. different ways to write Forward_Traceability *)
+(**            we want to choose the one that is duality of *)
+(**            Backward_Traceability.  *)
 Theorem Forward_Traceability_elem' {tc:TransformationConfiguration} :
 forall (tr: Transformation) (sm : SourceModel) (sp : InputPiece),
       In sp (allTuples tr sm) ->
@@ -54,7 +80,6 @@ Proof.
     auto.
 Qed.
 
-(*
 Theorem Totality_elem:
 forall (tr: Transformation) (sm : SourceModel) (sp : InputPiece) (te : TargetElementType),
 In sp (allTuples tr sm) -> 
@@ -70,29 +95,3 @@ Qed.
 *)
 
 
-(** Totality on model links                                  *)
-
-Theorem Totality_links {tc:TransformationConfiguration} :
-forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
-      (exists (sp : InputPiece),
-          In sp (allTuples tr sm) /\
-          In tl (LegacySemantics.applyTrOnPiece tr sm sp)) -> 
-          In tl (execute tr sm).(modelLinks) .
-Proof.
-    apply Certification.tr_execute_in_links_legacy.
-Qed.
-
-(*
-Theorem Totality_link:
-forall (tr: Transformation) (sm : SourceModel) (sp : InputPiece) (tl : TargetLinkType),
-In sp (allTuples tr sm) -> 
-In tl (applyOnPiece tr sm sp) ->
-In tl (allModelLinks (execute tr sm)).
-Proof.
-    intros.
-    apply tr_execute_in_links.
-    eexists sp. 
-    auto.
-Qed.
-
-*)
