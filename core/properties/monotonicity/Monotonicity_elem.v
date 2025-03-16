@@ -70,9 +70,20 @@ Proof.
   crush.
 Qed.
 
-Theorem non_mono_elem  :
+Lemma exists_non_mono_elem  :
     exists tr, ~ (Monotonicity_elem tr).
 Proof.
   exists Moore2Mealy.
   apply Moore2Mealy_non_mono_elem.
+Qed.
+
+Theorem non_mono_elem  :
+   ~ (forall tr, (Monotonicity_elem tr)).
+Proof.
+  intro.
+  specialize (exists_non_mono_elem).
+  intro.
+  destruct H0.
+  specialize (H x).
+  contradiction.
 Qed.
