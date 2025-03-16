@@ -1,3 +1,4 @@
+
 Require Import String.
 Require Import EqNat.
 Require Import List.
@@ -18,36 +19,9 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
+(** FIXME counterexample: a transformation that produce no links, and we can't ask it to produce any link *)
+Definition Surjectivity_fun {tc:TransformationConfiguration} :=
+forall (tm: TargetModel) (tr:Transformation), exists (sm: SourceModel), (execute tr sm) = tm. 
 
-(*************************************************************)
-(** * Surjectivity of CoqTL                                  *)
-(*************************************************************)
-
-(** Surjectivity on model elements                           *)
-
-(** intuitively: I do not create from scratch target elements, a.k.a.
-                 it does not exist a situation where a target element is not connected to any source pattern*)
-
-Theorem Backward_Traceability_elem {tc:TransformationConfiguration} :
-forall (tr: Transformation) (sm : SourceModel) (te : TargetElementType),
-      In te (execute tr sm).(modelElements) ->
-      (exists (sp : InputPiece),
-          In sp (allTuples tr sm) /\
-          In te (produced_elements (traceTrOnPiece tr sm sp))).
-Proof.
-    apply Certification.tr_execute_in_elements.
-Qed.
-
-    
-
-(** Surjectivity on model links                              *)
-
-Theorem Surjectivity_links {tc:TransformationConfiguration} :
-forall (tr: Transformation) (sm : SourceModel) (tl : TargetLinkType),
-      In tl (execute tr sm).(modelLinks) ->
-      (exists (sp : InputPiece),
-          In sp (allTuples tr sm) /\
-          In tl (LegacySemantics.applyTrOnPiece tr sm sp)).
-Proof.
-    apply Certification.tr_execute_in_links_legacy.
-Qed.
+Definition Surjectivity_fun_tr {tc:TransformationConfiguration} (tr:Transformation) :=
+forall (tm: TargetModel), exists (sm: SourceModel), (execute tr sm) = tm.

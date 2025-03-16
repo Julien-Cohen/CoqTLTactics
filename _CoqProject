@@ -169,6 +169,21 @@ core/properties/injectivity/Moore2Mealy_injectivity_inputpiece_witness.v
 core/properties/injectivity/sampleMoore_injectivity_inputpiece.v
 core/properties/injectivity/Injectivity_inputpiece.v
 
+### prop - backward_traceability - elem
+core/properties/backward_traceability/backward_traceability_elem.v
+core/properties/backward_traceability/backward_traceability_elem_axiomatic.v
+
+### prop - backward_traceability - link
+core/properties/backward_traceability/backward_traceability_link.v
+core/properties/backward_traceability/backward_traceability_link_axiomatic.v
+
+### prop - forward_traceability
+core/properties/forward_traceability/totality.v
+
+### prop - surjectivity TODO
+core/properties/surjectivity/surjectivity.v
+
+
 ### prop - confluence
 core/properties/confluence/basic/basicSyntax.v
 core/properties/confluence/basic/basicExpressions.v
@@ -180,13 +195,10 @@ core/properties/confluence/examples/moore2mealy_confluence.v
 core/properties/universality/Universality.v
 core/properties/universality/Universality_axiomatic.v
 
-### prop - totality
-core/properties/totality/totality.v
 
 
-### prop - surjectivity
-core/properties/surjectivity/surjectivity.v
-core/properties/surjectivity/surjectivity_axiomatic.v
+
+
 
 ### prop - additivity
 core/properties/additivity/AdditivityRule.v

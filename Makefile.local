@@ -34,12 +34,16 @@ core/properties/surjectivity/surjectivity_axiomatic.vo\
 core/properties/totality/totality.vo\
 core/properties/universality/Universality_axiomatic.vo\
 core/properties/monotonicity/Monotonicity_elem.vo\
-core/properties/monotonicity/Monotonicity_link.vo\
 core/properties/monotonicity/Monotonicity_elem_axiomatic.vo\
+core/properties/monotonicity/Monotonicity_link.vo\
 core/properties/monotonicity/Monotonicity_link_axiomatic.vo\
 core/properties/injectivity/Injectivity_elem.vo\
 core/properties/injectivity/Injectivity_link.vo\
-core/properties/injectivity/Injectivity_inputpiece.vo
+core/properties/injectivity/Injectivity_inputpiece.vo\
+core/properties/backward_traceability/backward_traceability_elem.vo\
+core/properties/backward_traceability/backward_traceability_elem_axiomatic.vo\
+core/properties/backward_traceability/backward_traceability_link.vo\
+core/properties/backward_traceability/backward_traceability_link_axiomatic.vo
 
 
 TACTICTESTS= test_tactics/TestTacticsBW.vo\
