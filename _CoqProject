@@ -197,13 +197,15 @@ core/properties/confluence/basic/basicSemantics.v
 core/properties/confluence/Confluence.v
 # core/properties/confluence/examples/moore2mealy_confluence.v 
 
-### prop - surjectivity TODO
+### prop - surjectivity 
 core/properties/surjectivity/Surjectivity.v
 core/properties/surjectivity/Moore2Mealy_surjectivity_model_witness.v
 core/properties/surjectivity/sampleMealy_surjectivity_model.v
 
 ### prop - additivity
-core/properties/additivity/AdditivityRule.v
+core/properties/additivity/Additivity_elem.v
+core/properties/additivity/Additivity_elem_axiomatic.v
+core/properties/additivity/Additivity_link.v
 
 
 

@@ -27,7 +27,9 @@ PAIRPROOFS= transformations/Class2Relational_TUPLES/theorems/Attribute_name_pres
 	    transformations/Class2Relational_TUPLES/theorems/Relational_name_definedness_spec.vo\
 	    transformations/Class2Relational_TUPLES/theorems/Table_name_uniqueness.vo\
 
-PROPS= core/properties/additivity/AdditivityRule.vo\
+PROPS= core/properties/additivity/Additivity_elem.vo\
+core/properties/additivity/Additivity_link.vo\
+core/properties/additivity/Additivity_elem_axiomatic.vo\
 core/properties/monotonicity/Monotonicity_elem.vo\
 core/properties/monotonicity/Monotonicity_elem_axiomatic.vo\
 core/properties/monotonicity/Monotonicity_link.vo\
