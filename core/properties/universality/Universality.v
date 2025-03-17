@@ -12,7 +12,8 @@ Require Import FunctionalExtensionality.
 
 
 (*************************************************************)
-(** * Universality                                           *)
+(** * Universality of CoqTL (Model)                          *)
+(** * Using operational semantics                            *)
 (*************************************************************)
 
 Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel -> TargetModel) := 

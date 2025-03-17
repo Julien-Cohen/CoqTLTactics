@@ -14,9 +14,15 @@ Require Import core.properties.confluence.basic.basicSemantics.
 Require Import core.properties.confluence.basic.basicSyntax.
 Require Import core.utils.Utils.
 
+
+(*************************************************************)
+(** * Confluence of CoqTL  (Model)                           *)
+(** * Using operational semantics                            *)
+(*************************************************************)
+
+
 Section Confluence.
 Context (tc: TransformationConfiguration).
-
 
 Definition disjoint_rules tr : Prop :=
   forall r1 r2, 
