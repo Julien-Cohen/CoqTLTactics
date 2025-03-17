@@ -198,7 +198,9 @@ core/properties/confluence/Confluence.v
 # core/properties/confluence/examples/moore2mealy_confluence.v 
 
 ### prop - surjectivity TODO
-core/properties/surjectivity/surjectivity.v
+core/properties/surjectivity/Surjectivity.v
+core/properties/surjectivity/Moore2Mealy_surjectivity_model_witness.v
+core/properties/surjectivity/sampleMealy_surjectivity_model.v
 
 ### prop - additivity
 core/properties/additivity/AdditivityRule.v

@@ -45,7 +45,8 @@ core/properties/distributivity/Distributivity.vo\
 core/properties/distributivity/Distributivity_axiomatic.vo\
 core/properties/confluence/Confluence.vo\
 core/properties/universality/Universality.vo\
-core/properties/universality/Universality_axiomatic.vo
+core/properties/universality/Universality_axiomatic.vo\
+core/properties/surjectivity/Surjectivity.vo
 
 TACTICTESTS= test_tactics/TestTacticsBW.vo\
 	     test_tactics/TestTacticsFW.vo\

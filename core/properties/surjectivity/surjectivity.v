@@ -19,9 +19,76 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
-(** FIXME counterexample: a transformation that produce no links, and we can't ask it to produce any link *)
-Definition Surjectivity_fun {tc:TransformationConfiguration} :=
-forall (tm: TargetModel) (tr:Transformation), exists (sm: SourceModel), (execute tr sm) = tm. 
+Require Import core.properties.surjectivity.Moore2Mealy_surjectivity_model_witness.
+Require Import core.properties.surjectivity.sampleMealy_surjectivity_model.
 
-Definition Surjectivity_fun_tr {tc:TransformationConfiguration} (tr:Transformation) :=
-forall (tm: TargetModel), exists (sm: SourceModel), (execute tr sm) = tm.
+(*************************************************************)
+(** * Surjectivity of CoqTL (Model)                          *)
+(** * Using operational semantics                            *)
+(*************************************************************)
+
+Definition Surjectivity {tc:TransformationConfiguration} (tr:Transformation) :=
+    forall (tm: TargetModel), exists (sm: SourceModel), (execute tr sm) = tm.
+
+Lemma Moore2Mealy_non_surj_contrapos : 
+    exists (tm: TargetModel), forall (sm: SourceModel), ~ ((execute Moore2Mealy sm) = tm).
+Proof.
+exists Mealy_model.
+intros.
+destruct sm as (models & links).
+induction models.
++ (* modelElements = nil *)
+  unfold Moore2Mealy.
+  unfold execute.
+  simpl.
+  unfold Mealy_model.
+  crush.
++ (* modelElements <> nil *)
+  destruct a.
+  ++ (* element is a State *)
+     unfold Moore2Mealy.
+     unfold execute.
+     simpl.
+     unfold Mealy_model.
+     unfold convert_state.
+     crush.
+  ++ (* element is a Transition *)
+     unfold Moore2Mealy.
+     unfold execute.
+     simpl.
+     unfold Mealy_model.
+     unfold convert_state.
+     crush.
+Qed.
+
+Lemma Moore2Mealy_not_Surjectivity : ~ (Surjectivity Moore2Mealy).
+Proof.
+    unfold Surjectivity.
+    intro.
+    specialize Moore2Mealy_non_surj_contrapos.
+    intro.
+    destruct H0.
+    specialize (H x).
+    destruct H.
+    specialize (H0 x0).
+    crush.
+Qed.
+
+Lemma exists_not_Surjectivity : 
+   exists (tr:Transformation), ~ Surjectivity tr.
+Proof.
+exists Moore2Mealy.
+apply Moore2Mealy_not_Surjectivity.
+Qed.
+
+
+Theorem not_forall_Surjectivity :
+    ~ (forall (tr:Transformation), Surjectivity tr).
+Proof.
+intro.
+specialize (exists_not_Surjectivity).
+intro.
+destruct H0.
+specialize (H x).
+contradiction.
+Qed.  
