@@ -27,15 +27,12 @@ Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel ->
       ])
   ]).
 
-Definition Universality {tc: TransformationConfiguration}  :=
-( forall (f: SourceModel -> TargetModel),
+Theorem Universality : 
+( forall {tc: TransformationConfiguration} (f: SourceModel -> TargetModel),
   (forall (sm: SourceModel), Model_wellFormed sm -> Model_wellFormed (f sm)) ->
     exists  (t: Transformation), 
       forall (sm: SourceModel), Model_wellFormed sm -> execute t sm = f sm).
-
-Theorem forall_Universality {tc: TransformationConfiguration}  : Universality.
 Proof.
-  unfold Universality.
   intros.
   exists (toTransformation tc f).
   intros.
