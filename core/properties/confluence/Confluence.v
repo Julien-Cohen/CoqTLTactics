@@ -33,10 +33,9 @@ Definition disjoint_rules tr : Prop :=
     matchRuleOnPattern r2 sm sp = true ->
       r1 = r2.
 
-
 (* Set semantics: we think that the list of rules represents a set (we don't allow two rules to have the same name)*)
 
-Definition Transformation_equiv  (t1 t2: Transformation) := 
+Definition Transformation_permutation  (t1 t2: Transformation) := 
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
   set_eq (Transformation_getRules t1) (Transformation_getRules t2).
 
@@ -45,16 +44,41 @@ Definition TargetModel_equiv (m1 m2: TargetModel) :=
    (In e m1.(modelElements) <-> In e m2.(modelElements)) /\
     (In l m1.(modelLinks) <-> In l m2.(modelLinks)).
 
-Definition Confluence (t1 t2: Transformation) :=
-  forall (sm: SourceModel),
-    Transformation_equiv t1 t2 -> TargetModel_equiv (execute t1 sm) (execute t2 sm).
+Definition Confluence (t1: Transformation) :=
+    forall (sm: SourceModel) (t2:Transformation),
+    Transformation_permutation t1 t2 -> 
+    TargetModel_equiv (execute t1 sm) (execute t2 sm).
 
+Definition WeakConfluence :=
+   forall (t: Transformation),
+    disjoint_rules (Transformation_getRules t)  ->
+      Confluence t.
+
+Lemma disjoint_rules_of_transformation_permutation :
+  forall (t1 t2: Transformation),
+    disjoint_rules (Transformation_getRules t1)  ->
+    Transformation_permutation t1 t2 ->
+    disjoint_rules (Transformation_getRules t2).
+Proof.
+  intros.
+  unfold disjoint_rules in *.
+  intros.
+  unfold Transformation_permutation in H0.
+  destruct H0.
+  unfold set_eq in H5.
+  destruct H5.
+  unfold incl in H6.
+  assert (include_r1 := H6 r1 H1).
+  assert (include_r2 := H6 r2 H2).
+  specialize (H r1 r2 include_r1 include_r2 sm sp H3 H4).
+  assumption.
+Qed.
 
 Lemma resolveIter_eq :
 forall (t1 t2: Transformation),
 disjoint_rules (Transformation_getRules t1)  ->
 disjoint_rules (Transformation_getRules t2)  ->
- Transformation_equiv t1 t2 ->
+Transformation_permutation t1 t2 ->
    resolveIter t1 = resolveIter t2.
 Proof.
 intros t1 t2 disjoint_rules_t1 disjoint_rules_t2 tr_eq.
@@ -80,7 +104,7 @@ assert (find find_cond rs1 = find find_cond rs2).
   + apply List.find_some in find_ca1.
     apply List.find_some in find_ca2.
   f_equal.
-  unfold Transformation_equiv in tr_eq.
+  unfold Transformation_permutation in tr_eq.
   destruct tr_eq.
   destruct H0.
   assert (In r rs2). {  unfold incl in H0. crush. }
@@ -94,7 +118,7 @@ assert (find find_cond rs1 = find find_cond rs2).
   + apply List.find_some in find_ca1.
     specialize (List.find_none find_cond rs2 find_ca2).
     intro.
-    unfold Transformation_equiv in tr_eq.
+    unfold Transformation_permutation in tr_eq.
     destruct tr_eq.
     destruct H0.
     assert (In r rs2). { unfold set_eq in H1. destruct H1. unfold incl in H0. crush. }
@@ -103,7 +127,7 @@ assert (find find_cond rs1 = find find_cond rs2).
   ++ apply List.find_some in find_ca2.
      specialize (List.find_none find_cond rs1 find_ca1).
      intro.
-     unfold Transformation_equiv in tr_eq.
+     unfold Transformation_permutation in tr_eq.
      destruct tr_eq.
      destruct H0.
      assert (In r rs1). { unfold set_eq in H1. destruct H1. unfold incl in H0. crush. }
@@ -114,17 +138,18 @@ rewrite H.
 reflexivity.
 Qed.
 
-Theorem forall_Confluence :
-forall (t1 t2: Transformation),
-  disjoint_rules (Transformation_getRules t1)  ->
-  disjoint_rules (Transformation_getRules t2)  ->
-  Confluence t1 t2.
+Theorem forall_WeakConfluence : WeakConfluence.
 Proof.
+  unfold WeakConfluence.
+  intro t1.
   unfold Confluence.
+  intro disjoint_rules_t1.
+  intros sm t2.
+  intro.
+  specialize (disjoint_rules_of_transformation_permutation t1 t2 disjoint_rules_t1 H).
+  intro disjoint_rules_t2.
   unfold TargetModel_equiv.
-  unfold Transformation_equiv.
   simpl.
-  intros t1 t2 disjoint_rules_t1 disjoint_rules_t2.
   intros.
   destruct H.
   split.
@@ -199,7 +224,7 @@ Proof.
               ** assumption.
               ** unfold applyElementOnPattern in *. 
 assert (resolveIter t1 = resolveIter t2).
-{ apply resolveIter_eq. assumption. assumption. unfold Transformation_equiv. crush. }
+{ apply resolveIter_eq. assumption. assumption. unfold Transformation_permutation . crush. }
 destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
 *** rewrite H7 in H6.
     auto.
@@ -236,11 +261,18 @@ destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
               ** assumption.
               ** unfold applyElementOnPattern in *. 
 assert ((resolveIter t1 = (resolveIter t2))).
-{ apply resolveIter_eq. assumption. assumption. unfold Transformation_equiv. crush. }
+{ apply resolveIter_eq. assumption. assumption. unfold Transformation_permutation . crush. }
 destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
 *** rewrite <- H7 in H6.
     auto.
 *** auto. 
 Qed.
+
+
+(** M.T. Idea on define confluencec *)
+(* Definition Confluence'' (t1: Transformation) :=
+    forall (sm: SourceModel) (o o1: Order),
+    TargetModel_equiv (execute t sm o) (execute t sm o1). *)
+
 
 End Confluence.
