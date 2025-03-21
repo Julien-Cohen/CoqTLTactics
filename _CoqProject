@@ -205,7 +205,10 @@ core/properties/surjectivity/sampleMealy_surjectivity_model.v
 ### prop - additivity
 core/properties/additivity/Additivity_elem.v
 core/properties/additivity/Additivity_elem_axiomatic.v
+core/properties/additivity/Moore2Mealy_Additivity_link_witness.v
+core/properties/additivity/sampleMoore_additivity_link.v
 core/properties/additivity/Additivity_link.v
+
 
 
 
