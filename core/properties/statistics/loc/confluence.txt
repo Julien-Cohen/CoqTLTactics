@@ -1,0 +1,6 @@
+     spec    proof comments
+       29        0       15 ./confluence/basicExpressions.v
+       63        0        3 ./confluence/basicSemantics.v
+       67        0       18 ./confluence/basicSyntax.v
+       50      198        7 ./confluence/Confluence.v
+      209      198       43 total

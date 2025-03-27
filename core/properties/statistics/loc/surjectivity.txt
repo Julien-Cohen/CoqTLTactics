@@ -1,0 +1,5 @@
+     spec    proof comments
+       45        0        1 ./surjectivity/Moore2Mealy_surjectivity_model_witness.v
+       12        0        1 ./surjectivity/sampleMealy_surjectivity_model.v
+       28       51        6 ./surjectivity/Surjectivity.v
+       85       51        8 total

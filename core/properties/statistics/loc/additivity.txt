@@ -1,0 +1,6 @@
+     spec    proof comments
+       19       28       40 ./additivity/Additivity_elem.v
+       30       36        2 ./additivity/Additivity_link.v
+       88        0        0 ./additivity/Moore2Mealy_Additivity_link_witness.v
+       20        0        1 ./additivity/sampleMoore_additivity_link.v
+      157       64       43 total

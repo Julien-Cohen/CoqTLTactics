@@ -1,0 +1,7 @@
+     spec    proof comments
+       37       40        2 ./injectivity/Injectivity_elem.v
+       37       40        2 ./injectivity/Injectivity_link.v
+       64        0        1 ./injectivity/Moore2Mealy_injectivity_link_witness.v
+       19        0        1 ./injectivity/sampleMoore_injectivity_elem.v
+       34        0        1 ./injectivity/sampleMoore_injectivity_link.v
+      191       80        7 total

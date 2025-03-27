@@ -1,0 +1,4 @@
+     spec    proof comments
+       25        4        5 ./backward_traceability/backward_traceability_elem.v
+       25        4        4 ./backward_traceability/backward_traceability_link.v
+       50        8        9 total

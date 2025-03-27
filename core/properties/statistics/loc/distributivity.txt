@@ -1,0 +1,4 @@
+     spec    proof comments
+       32       24        2 ./distributivity/Distributivity.v
+       31        0        1 ./distributivity/sampleMoore_Distributivity.v
+       63       24        3 total

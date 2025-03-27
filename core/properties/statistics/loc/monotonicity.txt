@@ -1,0 +1,8 @@
+     spec    proof comments
+       36       36        2 ./monotonicity/Monotonicity_elem.v
+       36       48        2 ./monotonicity/Monotonicity_link.v
+       39        0        1 ./monotonicity/Moore2Mealy_monotonicity_elem_witness.v
+       75        0        0 ./monotonicity/Moore2Mealy_monotonicity_link_witness.v
+       32        0        1 ./monotonicity/sampleMoore_monotonicity_elem.v
+       37        0        3 ./monotonicity/sampleMoore_monotonicity_link.v
+      255       84        9 total
