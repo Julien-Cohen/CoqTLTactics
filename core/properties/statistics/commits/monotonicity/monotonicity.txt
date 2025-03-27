@@ -1,0 +1,35 @@
+624f4e3 add script for statistics (loc)
+f9ec153 classify and adapt properties directory
+8ec3ec5 works on refactor monotonicity
+5ad022e work on monotonicity (link)
+88a85c7 adapt Monotonicity on axiomatic semantics
+8171596 adapt distributivity on axiomatic semantics
+ece8e69 Recover distributivity property from deletion.
+df8c0cf Clean.
+b77a5fa Fix : monotonicity property was necessary for a proof in C2R.
+41b01a5 Deletion of properties on the core engine that were not related to the "user tactics". Those properties are still accessible on the "upstream repository".
+3decf48 added two targets in the MAkefile : proofs, to compute only the proofs of the main transformations, and tests, to trigger the two main transformations on example models ans see the output.
+b06a38d Clean.
+8f587e9 Deletion of files that are not maintained and not in the topic.
+10b3614 Add a variation of the Class2Relational example without identifiers.
+509ea8a Monotonicity of class2relational proved.
+e523fbd adding user theorems to CoqProject
+5241a2c Work on Distributivity
+16904ad add stats
+9f55700 update prop mono
+3efee72 remove witness from transformation folder
+f020d1a update distri prop
+8ac0a3f Update _CoqProject
+a555d97 finish distributivity
+ce565aa update mono
+6d5ccdf add comments
+6ff6e8e work on mono
+a066843 refactor prop mono_elem
+f9efcd0 refactor mono_lift_elem
+630b2ea work on mono_links
+f1ec168 mono_lift_elem
+d31763e TransformationProperties -> Monotonicity
+8edfd89 starting with Monotonicity lifting
+4e438a6 splitted properties in files
+b8161f7 monotonicity for elements in Class2Relational
+d345f6d Some properties theorems

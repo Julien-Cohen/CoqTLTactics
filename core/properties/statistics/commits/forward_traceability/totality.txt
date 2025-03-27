@@ -1,0 +1,11 @@
+3c8b10d adapt Forward-traceability
+d13f54c adapt backward-traceability
+8171596 adapt distributivity on axiomatic semantics
+bcb761c Recover surjectivity property from deletion.
+41b01a5 Deletion of properties on the core engine that were not related to the "user tactics". Those properties are still accessible on the "upstream repository".
+b06a38d Clean.
+8f587e9 Deletion of files that are not maintained and not in the topic.
+5146a37 totality
+16904ad add stats
+8ac0a3f Update _CoqProject
+84db86f add totality

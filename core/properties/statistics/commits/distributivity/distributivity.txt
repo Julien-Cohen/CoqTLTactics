@@ -1,0 +1,15 @@
+624f4e3 add script for statistics (loc)
+f9ec153 classify and adapt properties directory
+9cb0097 adapt Distributivity
+8171596 adapt distributivity on axiomatic semantics
+9340c9b Clean.
+69fe119 Recover injectivity property from deletion.
+ece8e69 Recover distributivity property from deletion.
+41b01a5 Deletion of properties on the core engine that were not related to the "user tactics". Those properties are still accessible on the "upstream repository".
+b06a38d Clean.
+8f587e9 Deletion of files that are not maintained and not in the topic.
+16904ad add stats
+3efee72 remove witness from transformation folder
+f020d1a update distri prop
+8ac0a3f Update _CoqProject
+a555d97 finish distributivity

@@ -1,0 +1,42 @@
+624f4e3 add script for statistics (loc)
+f9ec153 classify and adapt properties directory
+4165e82 adapt Additivity (link)
+79f9d54 refactor
+f9a564e Some work on additivity link (not finished)
+4e1e32b adapt Additivity (elem)
+8171596 adapt distributivity on axiomatic semantics
+b9eebc1 Proof of additivity now relies on the axiomatic semantics. Additivity of the operational semantics becomes a corollary.
+2cd2d76 Recover confluence property for deletion.
+c962a89 Recover additivity property from deletion.
+87d252a -
+41b01a5 Deletion of properties on the core engine that were not related to the "user tactics". Those properties are still accessible on the "upstream repository".
+f60f1c8 Added specific Make targets in the README.
+8f587e9 Deletion of files that are not maintained and not in the topic.
+9aa2430 Clean.
+538d3ab (2) supression de fichier plus maintenus contenant des Admitted + création d'un nouveau module pour des lemmes importants pour les tactiques.
+e072089 Déplacement de tactiques.
+16904ad add stats
+8ac0a3f Update _CoqProject
+139e5e3 refactors
+9440780 Create ModelingAdditivityRule_ext.v
+561c6ce adding input for metamodel choice in xmi2v
+8a4f333 tidy up a bit
+8233198 Update ModelingAdditivityRule.v
+85b7005 Create AdditivityGuard.v
+885cacc stating additivity for modeling rules
+8f3fec3 Consistent proof
+62bf188 adding additivity files to coqproject
+2f62524 Update Additivity_elem.v
+0c2efe1 Update Additivity_rule.v
+46c347b Create Additivity_rule.v
+4da2a77 Create Additivity_elem.v
+239a9b2 splitting additivity_rules from additivity_elements
+b33cb93 trying a more precise version of version of Transformation_incl_elements
+65edc7b gathering additivity proofs
+0cf7b6e Create PropAdditive.v
+f8605c2 removing old version of additivity_links
+ee01cae better version of Transformation_incl_links
+319e7d1 adding additivity for OutputPatternElement context
+d345f6d Some properties theorems
+7eacc7f adding some theorems to typeclass
+f629a56 Interface documentation in Engine

@@ -1,0 +1,19 @@
+624f4e3 add script for statistics (loc)
+b6e3254 adapt Surjectivity
+3c8b10d adapt Forward-traceability
+d13f54c adapt backward-traceability
+94fb40d adapt Injectivity on axiomatic semantics (only def)
+49f1c88 adapt Surjectivity on axiomatic semantics
+8171596 adapt distributivity on axiomatic semantics
+ce04541 Recover surjectivity property from deletion.
+41b01a5 Deletion of properties on the core engine that were not related to the "user tactics". Those properties are still accessible on the "upstream repository".
+8f587e9 Deletion of files that are not maintained and not in the topic.
+8ff8ecb Create moore2mealy.v
+16904ad add stats
+8ac0a3f Update _CoqProject
+ed7ccba work on surjectivity
+f763c10 cleanup and example of syntax
+b0522b0 removing incomplete theorems, to prepare for merging
+4f330e9 Revert "remove theorems"
+acf9f82 remove theorems
+248e99c init

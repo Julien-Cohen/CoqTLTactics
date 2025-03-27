@@ -1,0 +1,14 @@
+624f4e3 add script for statistics (loc)
+f9ec153 classify and adapt properties directory
+704ced5 adapt Confluence
+b3edf79 adapt Universality
+b123841 adapt universality on axiomatic semantics
+8171596 adapt distributivity on axiomatic semantics
+20481fa Recover universality property from deletion.
+41b01a5 Deletion of properties on the core engine that were not related to the "user tactics". Those properties are still accessible on the "upstream repository".
+8f587e9 Deletion of files that are not maintained and not in the topic.
+33ebea5 [FIX] probleme de majuscule dans les noms de fichier, sous linux (pas sous mac).
+16904ad add stats
+8ac0a3f Update _CoqProject
+4e438a6 splitted properties in files
+d345f6d Some properties theorems

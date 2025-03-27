@@ -1,0 +1,20 @@
+624f4e3 add script for statistics (loc)
+37716b3 Rewrite definition and proof of Confluence
+704ced5 adapt Confluence
+8171596 adapt distributivity on axiomatic semantics
+2cd2d76 Recover confluence property for deletion.
+41b01a5 Deletion of properties on the core engine that were not related to the "user tactics". Those properties are still accessible on the "upstream repository".
+8f587e9 Deletion of files that are not maintained and not in the topic.
+33ebea5 [FIX] probleme de majuscule dans les noms de fichier, sous linux (pas sous mac).
+99ac9d3 confluence example
+16904ad add stats
+8ac0a3f Update _CoqProject
+767f30e reorganize confluence
+26e18b7 removing test and basic folders
+a28e9a5 add basic engine
+a93de71 work on confluence
+c3d9392 some work on confluence
+52ae202 try confluence
+c2d9757 Delete PropConfluence.v
+88c2eab some work on confluence
+d345f6d Some properties theorems
