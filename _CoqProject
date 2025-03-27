@@ -147,13 +147,13 @@ transformations/Moore2MealyALT/MealyWF.v
 core/properties/monotonicity/Moore2Mealy_monotonicity_elem_witness.v
 core/properties/monotonicity/sampleMoore_monotonicity_elem.v
 core/properties/monotonicity/Monotonicity_elem.v
-core/properties/monotonicity/Monotonicity_elem_axiomatic.v
+#core/properties/axiomatic/Monotonicity_elem_axiomatic.v
 
 ### prop - mono - link
 core/properties/monotonicity/Moore2Mealy_monotonicity_link_witness.v
 core/properties/monotonicity/sampleMoore_monotonicity_link.v
 core/properties/monotonicity/Monotonicity_link.v
-core/properties/monotonicity/Monotonicity_link_axiomatic.v
+#core/properties/axiomatic/Monotonicity_link_axiomatic.v
 
 ### prop - injective - elem
 core/properties/injectivity/sampleMoore_injectivity_elem.v
@@ -165,17 +165,17 @@ core/properties/injectivity/sampleMoore_injectivity_link.v
 core/properties/injectivity/Injectivity_link.v
 
 ### prop - injective - inputpiece
-core/properties/injectivity/Moore2Mealy_injectivity_inputpiece_witness.v
-core/properties/injectivity/sampleMoore_injectivity_inputpiece.v
-core/properties/injectivity/Injectivity_inputpiece.v
+#core/properties/unclassified/Moore2Mealy_injectivity_inputpiece_witness.v
+#core/properties/unclassified/sampleMoore_injectivity_inputpiece.v
+#core/properties/unclassified/Injectivity_inputpiece.v
 
 ### prop - backward_traceability - elem
 core/properties/backward_traceability/backward_traceability_elem.v
-core/properties/backward_traceability/backward_traceability_elem_axiomatic.v
+#core/properties/axiomatic/backward_traceability_elem_axiomatic.v
 
 ### prop - backward_traceability - link
 core/properties/backward_traceability/backward_traceability_link.v
-core/properties/backward_traceability/backward_traceability_link_axiomatic.v
+#core/properties/axiomatic/backward_traceability_link_axiomatic.v
 
 ### prop - forward_traceability
 core/properties/forward_traceability/Forward_traceability_elem.v
@@ -183,17 +183,17 @@ core/properties/forward_traceability/Forward_traceability_link.v
 
 ### prop - universality
 core/properties/universality/Universality.v
-core/properties/universality/Universality_axiomatic.v
+#core/properties/axiomatic/Universality_axiomatic.v
 
 ### prop - distributivity
 core/properties/distributivity/sampleMoore_Distributivity.v
 core/properties/distributivity/Distributivity.v
-core/properties/distributivity/Distributivity_axiomatic.v
+#core/properties/axiomatic/Distributivity_axiomatic.v
 
 ### prop - confluence
-core/properties/confluence/basic/basicSyntax.v
-core/properties/confluence/basic/basicExpressions.v
-core/properties/confluence/basic/basicSemantics.v
+core/properties/confluence/basicSyntax.v
+core/properties/confluence/basicExpressions.v
+core/properties/confluence/basicSemantics.v
 core/properties/confluence/Confluence.v
 # core/properties/confluence/examples/moore2mealy_confluence.v 
 
@@ -204,15 +204,14 @@ core/properties/surjectivity/sampleMealy_surjectivity_model.v
 
 ### prop - additivity
 core/properties/additivity/Additivity_elem.v
-core/properties/additivity/Additivity_elem_axiomatic.v
 core/properties/additivity/Moore2Mealy_Additivity_link_witness.v
 core/properties/additivity/sampleMoore_additivity_link.v
 core/properties/additivity/Additivity_link.v
+#core/properties/axiomatic/Additivity_elem_axiomatic.v
 
 
 
-
-core/properties/Adaptation.v
+core/properties/unclassified/Adaptation.v
 
 # User proofs
 

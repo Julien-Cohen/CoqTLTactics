@@ -29,26 +29,28 @@ PAIRPROOFS= transformations/Class2Relational_TUPLES/theorems/Attribute_name_pres
 
 PROPS= core/properties/additivity/Additivity_elem.vo\
 core/properties/additivity/Additivity_link.vo\
-core/properties/additivity/Additivity_elem_axiomatic.vo\
 core/properties/monotonicity/Monotonicity_elem.vo\
-core/properties/monotonicity/Monotonicity_elem_axiomatic.vo\
 core/properties/monotonicity/Monotonicity_link.vo\
-core/properties/monotonicity/Monotonicity_link_axiomatic.vo\
 core/properties/injectivity/Injectivity_elem.vo\
 core/properties/injectivity/Injectivity_link.vo\
-core/properties/injectivity/Injectivity_inputpiece.vo\
 core/properties/backward_traceability/backward_traceability_elem.vo\
-core/properties/backward_traceability/backward_traceability_elem_axiomatic.vo\
 core/properties/backward_traceability/backward_traceability_link.vo\
-core/properties/backward_traceability/backward_traceability_link_axiomatic.vo\
 core/properties/forward_traceability/Forward_traceability_elem.vo\
 core/properties/forward_traceability/Forward_traceability_link.vo\
 core/properties/distributivity/Distributivity.vo\
-core/properties/distributivity/Distributivity_axiomatic.vo\
 core/properties/confluence/Confluence.vo\
 core/properties/universality/Universality.vo\
-core/properties/universality/Universality_axiomatic.vo\
 core/properties/surjectivity/Surjectivity.vo
+
+PROPS_AXIOMATIC= core/properties/additivity/Additivity_elem_axiomatic.vo\
+core/properties/monotonicity/Monotonicity_elem_axiomatic.vo\
+core/properties/monotonicity/Monotonicity_link_axiomatic.vo\
+core/properties/injectivity/Injectivity_inputpiece.vo\
+core/properties/backward_traceability/backward_traceability_elem_axiomatic.vo\
+core/properties/backward_traceability/backward_traceability_link_axiomatic.vo\
+core/properties/distributivity/Distributivity_axiomatic.vo\
+core/properties/universality/Universality_axiomatic.vo
+
 
 TACTICTESTS= test_tactics/TestTacticsBW.vo\
 	     test_tactics/TestTacticsFW.vo\
