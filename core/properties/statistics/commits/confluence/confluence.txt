@@ -1,4 +1,3 @@
-624f4e3 add script for statistics (loc)
 37716b3 Rewrite definition and proof of Confluence
 704ced5 adapt Confluence
 8171596 adapt distributivity on axiomatic semantics

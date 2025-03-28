@@ -1,5 +1,3 @@
-624f4e3 add script for statistics (loc)
-f9ec153 classify and adapt properties directory
 704ced5 adapt Confluence
 b3edf79 adapt Universality
 b123841 adapt universality on axiomatic semantics

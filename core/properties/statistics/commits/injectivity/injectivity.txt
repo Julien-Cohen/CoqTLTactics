@@ -1,5 +1,3 @@
-624f4e3 add script for statistics (loc)
-f9ec153 classify and adapt properties directory
 4165e82 adapt Additivity (link)
 b6e3254 adapt Surjectivity
 43ea036 fix typo in coqproject

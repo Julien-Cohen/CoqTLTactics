@@ -1,3 +1,1 @@
-624f4e3 add script for statistics (loc)
-f9ec153 classify and adapt properties directory
 d13f54c adapt backward-traceability

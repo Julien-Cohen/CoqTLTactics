@@ -22,7 +22,7 @@ def exec(folderName, alias):
 
     output = f"{directory}/{alias}.txt"
     myoutput = open(output, 'w')
-    subprocess.run(["git", "log", "-S", arg, "--oneline"], stdout=myoutput) 
+    subprocess.run(["git", "log", "-S", arg, "--oneline", "--until='March 25 2025'"], stdout=myoutput) 
     return read(output)
 
 

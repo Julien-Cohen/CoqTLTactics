@@ -1,4 +1,3 @@
-624f4e3 add script for statistics (loc)
 b6e3254 adapt Surjectivity
 3c8b10d adapt Forward-traceability
 d13f54c adapt backward-traceability

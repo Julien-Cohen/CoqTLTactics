@@ -1,5 +1,3 @@
-624f4e3 add script for statistics (loc)
-f9ec153 classify and adapt properties directory
 4165e82 adapt Additivity (link)
 79f9d54 refactor
 f9a564e Some work on additivity link (not finished)

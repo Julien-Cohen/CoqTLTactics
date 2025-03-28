@@ -1,5 +1,3 @@
-624f4e3 add script for statistics (loc)
-f9ec153 classify and adapt properties directory
 9cb0097 adapt Distributivity
 8171596 adapt distributivity on axiomatic semantics
 9340c9b Clean.

@@ -1,3 +1,2 @@
-624f4e3 add script for statistics (loc)
 3c8b10d adapt Forward-traceability
 d13f54c adapt backward-traceability

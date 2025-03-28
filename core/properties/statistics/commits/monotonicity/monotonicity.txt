@@ -1,5 +1,3 @@
-624f4e3 add script for statistics (loc)
-f9ec153 classify and adapt properties directory
 8ec3ec5 works on refactor monotonicity
 5ad022e work on monotonicity (link)
 88a85c7 adapt Monotonicity on axiomatic semantics
