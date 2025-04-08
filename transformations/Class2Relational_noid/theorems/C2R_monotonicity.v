@@ -6,7 +6,7 @@ Require Import core.Semantics.
 Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
-Require Import core.properties.monotonicity.Monotonicity.
+Require Import core.properties.monotonicity.Monotonicity_elem.
 
 From transformations.Class2Relational_noid
   Require Import 
@@ -21,12 +21,12 @@ From transformations.Class2Relational_noid.theorems
   Require Elements.
 
 Theorem All_classes_instantiate_impl :
-  Monotonicity Class2Relational.
+  Monotonicity_elem Class2Relational.
 Proof.
   (* In this proof I use the same script an in other proofs, but I need to use some lemmas, that I don't need in the two first proofs. Why ? *)
   
 
-  unfold Monotonicity.
+  unfold Monotonicity_elem.
   unfold TargetModel_elem_incl. unfold SourceModel_elem_incl.
   unfold incl.
   intros sm1 sm2 INC a IN.

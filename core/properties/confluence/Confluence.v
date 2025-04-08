@@ -35,30 +35,30 @@ Definition disjoint_rules tr : Prop :=
 
 (* Set semantics: we think that the list of rules represents a set (we don't allow two rules to have the same name)*)
 
-Definition Transformation_permutation  (t1 t2: basic.basicSyntax.Transformation) := 
-  (basic.basicSyntax.Transformation_getArity t1 = basic.basicSyntax.Transformation_getArity t2) /\ 
-  set_eq (basic.basicSyntax.Transformation_getRules t1) (basic.basicSyntax.Transformation_getRules t2).
+Definition Transformation_permutation  (t1 t2: basicSyntax.Transformation) := 
+  (basicSyntax.Transformation_getArity t1 = basicSyntax.Transformation_getArity t2) /\ 
+  set_eq (basicSyntax.Transformation_getRules t1) (basicSyntax.Transformation_getRules t2).
 
 Definition TargetModel_equiv (m1 m2: TargetModel) :=
   forall (e: TargetElementType) (l: TargetLinkType),
    (In e m1.(modelElements) <-> In e m2.(modelElements)) /\
     (In l m1.(modelLinks) <-> In l m2.(modelLinks)).
 
-Definition Confluence (t1: basic.basicSyntax.Transformation) :=
-    forall (sm: SourceModel) (t2:basic.basicSyntax.Transformation),
+Definition Confluence (t1: basicSyntax.Transformation) :=
+    forall (sm: SourceModel) (t2:basicSyntax.Transformation),
     Transformation_permutation t1 t2 -> 
     TargetModel_equiv (execute t1 sm) (execute t2 sm).
 
 Definition WeakConfluence :=
-   forall (t: basic.basicSyntax.Transformation),
-    disjoint_rules (basic.basicSyntax.Transformation_getRules t)  ->
+   forall (t: basicSyntax.Transformation),
+    disjoint_rules (basicSyntax.Transformation_getRules t)  ->
       Confluence t.
 
 Lemma disjoint_rules_of_transformation_permutation :
-  forall (t1 t2: basic.basicSyntax.Transformation),
-    disjoint_rules (basic.basicSyntax.Transformation_getRules t1)  ->
+  forall (t1 t2: basicSyntax.Transformation),
+    disjoint_rules (basicSyntax.Transformation_getRules t1)  ->
     Transformation_permutation t1 t2 ->
-    disjoint_rules (basic.basicSyntax.Transformation_getRules t2).
+    disjoint_rules (basicSyntax.Transformation_getRules t2).
 Proof.
   intros.
   unfold disjoint_rules in *.
@@ -75,9 +75,9 @@ Proof.
 Qed.
 
 Lemma resolveIter_eq :
-forall (t1 t2: basic.basicSyntax.Transformation),
-disjoint_rules (basic.basicSyntax.Transformation_getRules t1)  ->
-disjoint_rules (basic.basicSyntax.Transformation_getRules t2)  ->
+forall (t1 t2: basicSyntax.Transformation),
+disjoint_rules (basicSyntax.Transformation_getRules t1)  ->
+disjoint_rules (basicSyntax.Transformation_getRules t2)  ->
 Transformation_permutation t1 t2 ->
    resolveIter t1 = resolveIter t2.
 Proof.
@@ -92,10 +92,10 @@ rename x1 into sp.
 rename x2 into iter.
 rename x0 into opname.
 
-remember (fun r : basic.basicSyntax.Rule =>
+remember (fun r : basicSyntax.Rule =>
 matchRuleOnPattern r sm sp) as find_cond.
-remember (basic.basicSyntax.Transformation_getRules t1) as rs1.
-remember (basic.basicSyntax.Transformation_getRules t2) as rs2.
+remember (basicSyntax.Transformation_getRules t1) as rs1.
+remember (basicSyntax.Transformation_getRules t2) as rs2.
 
 assert (find find_cond rs1 = find find_cond rs2).
 {
@@ -223,13 +223,13 @@ Proof.
               split.
               ** assumption.
               ** unfold applyElementOnPattern in *. 
-assert (resolveIter t1 = resolveIter t2).
-{ apply resolveIter_eq. assumption. assumption. unfold Transformation_permutation . crush. }
-destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
-*** rewrite H7 in H6.
-    auto.
-*** rewrite H7 in H6.
-exact H6.
+                 assert (resolveIter t1 = resolveIter t2).
+                  { apply resolveIter_eq. assumption. assumption. unfold Transformation_permutation . crush. }
+                 destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
+                 *** rewrite H7 in H6.
+                      auto.
+                 *** (*rewrite H7 in H6.*)
+                     exact H6.
 
 + unfold applyPattern.
       unfold matchPattern.
@@ -266,7 +266,7 @@ assert ((resolveIter t1 = (resolveIter t2))).
 destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
 *** rewrite <- H7 in H6.
     auto.
-*** rewrite <- H7 in H6.
+*** (*rewrite <- H7 in H6.*)
 auto.
 Qed.
 

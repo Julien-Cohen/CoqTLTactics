@@ -19,7 +19,7 @@ Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
 Require Import transformations.Moore2Mealy.Moore2Mealy.
-Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_witness.
+Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_elem_witness.
 Require Import core.properties.distributivity.sampleMoore_distributivity.
 
 
