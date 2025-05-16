@@ -30,6 +30,8 @@ Require Import core.properties.surjectivity.sampleMealy_surjectivity_model.
 Definition Surjectivity {tc:TransformationConfiguration} (tr:Transformation) :=
     forall (tm: TargetModel), exists (sm: SourceModel), (execute tr sm) = tm.
 
+
+
 Lemma Moore2Mealy_non_surj_contrapos : 
     exists (tm: TargetModel), forall (sm: SourceModel), ~ ((execute Moore2Mealy sm) = tm).
 Proof.
@@ -92,3 +94,27 @@ destruct H0.
 specialize (H x).
 contradiction.
 Qed.  
+
+
+(** Alternate definition of surjectivity based on Model_equiv *)
+
+Definition Surjectivity_alt {tc:TransformationConfiguration} (tr:Transformation) :=
+    forall (tm: TargetModel), exists (sm: SourceModel), Model_equiv (execute tr sm) tm.
+
+(** The alternate definition is weaker than the inital one. *)
+Lemma surjectivity_order : 
+  forall tc t, Surjectivity (tc:=tc) t -> Surjectivity_alt t.
+Proof.
+ unfold Surjectivity, Surjectivity_alt ; intros.
+ specialize (H tm).
+ destruct H.
+  exists x. rewrite H. auto. apply Model_equiv_refl.
+Qed.
+
+Lemma surjectivity_contrap : 
+  forall tc t, ~Surjectivity_alt (tc:=tc) t -> ~Surjectivity t.
+Proof.
+    intros.
+    contradict H.
+    apply surjectivity_order. assumption.
+Qed.
