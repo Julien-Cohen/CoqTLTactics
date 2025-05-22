@@ -209,7 +209,8 @@ core/properties/additivity/sampleMoore_additivity_link.v
 core/properties/additivity/Additivity_link.v
 #core/properties/axiomatic/Additivity_elem_axiomatic.v
 
-
+### prop - functionality
+core/properties/functionality/Functionality.v
 
 core/properties/unclassified/Adaptation.v
 
