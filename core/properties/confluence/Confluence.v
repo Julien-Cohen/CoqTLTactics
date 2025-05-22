@@ -39,15 +39,40 @@ Definition Transformation_permutation  (t1 t2: basicSyntax.Transformation) :=
   (basicSyntax.Transformation_getArity t1 = basicSyntax.Transformation_getArity t2) /\ 
   set_eq (basicSyntax.Transformation_getRules t1) (basicSyntax.Transformation_getRules t2).
 
+(** Deprecated (use Model_equiv, see equiv_equiv below)*)
 Definition TargetModel_equiv (m1 m2: TargetModel) :=
-  forall (e: TargetElementType) (l: TargetLinkType),
-   (In e m1.(modelElements) <-> In e m2.(modelElements)) /\
-    (In l m1.(modelLinks) <-> In l m2.(modelLinks)).
+  (forall (e: TargetElementType) ,
+   (In e m1.(modelElements) <-> In e m2.(modelElements))) /\
+ (forall (l: TargetLinkType),
+    (In l m1.(modelLinks) <-> In l m2.(modelLinks))).
+
+
+Lemma equiv_equiv : forall m1 m2, TargetModel_equiv m1 m2 <-> Model_equiv m1 m2.
+Proof.
+  unfold TargetModel_equiv, Model_equiv.
+  unfold Model_incl.
+  intros.
+  split ; intro H.
+  + destruct H. split.
+    - split ; intros.
+      * specialize (H e).
+        apply H ; auto.
+      * specialize (H0 l). apply H0 ; auto.
+    - split ; intros.
+      * specialize (H e).
+        apply H ; auto.
+      * specialize (H0 l). apply H0 ; auto.
+  + destruct H. 
+    destruct H.
+    destruct H0.
+      split ; intro ; split ; intro ; auto.
+Qed.
 
 Definition Confluent (t1: basicSyntax.Transformation) :=
     forall (sm: SourceModel) (t2:basicSyntax.Transformation),
     Transformation_permutation t1 t2 -> 
-    TargetModel_equiv (execute t1 sm) (execute t2 sm).
+    Model_equiv (execute t1 sm) (execute t2 sm).
+
 
 (* General definition but not holding for CoqTL *)
 Definition Confluence := 
@@ -151,6 +176,7 @@ Proof.
   intro disjoint_rules_t1.
   intros sm t2.
   intro.
+  apply equiv_equiv.
   specialize (disjoint_rules_of_transformation_permutation t1 t2 disjoint_rules_t1 H).
   intro disjoint_rules_t2.
   unfold TargetModel_equiv.
