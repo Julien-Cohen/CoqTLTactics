@@ -44,15 +44,20 @@ Definition TargetModel_equiv (m1 m2: TargetModel) :=
    (In e m1.(modelElements) <-> In e m2.(modelElements)) /\
     (In l m1.(modelLinks) <-> In l m2.(modelLinks)).
 
-Definition Confluence (t1: basicSyntax.Transformation) :=
+Definition Confluent (t1: basicSyntax.Transformation) :=
     forall (sm: SourceModel) (t2:basicSyntax.Transformation),
     Transformation_permutation t1 t2 -> 
     TargetModel_equiv (execute t1 sm) (execute t2 sm).
 
+(* General definition but not holding for CoqTL *)
+Definition Confluence := 
+  forall (t: basicSyntax.Transformation),
+    Confluent t. 
+
 Definition WeakConfluence :=
    forall (t: basicSyntax.Transformation),
     disjoint_rules (basicSyntax.Transformation_getRules t)  ->
-      Confluence t.
+      Confluent t.
 
 Lemma disjoint_rules_of_transformation_permutation :
   forall (t1 t2: basicSyntax.Transformation),
@@ -142,7 +147,7 @@ Theorem forall_WeakConfluence : WeakConfluence.
 Proof.
   unfold WeakConfluence.
   intro t1.
-  unfold Confluence.
+  unfold Confluent.
   intro disjoint_rules_t1.
   intros sm t2.
   intro.
