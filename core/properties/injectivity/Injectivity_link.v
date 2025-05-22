@@ -20,17 +20,13 @@ Require Import core.modeling.Parser.
 Require Import transformations.Moore2Mealy.Moore.
 Require Import core.properties.injectivity.Moore2Mealy_injectivity_link_witness.
 Require Import core.properties.injectivity.sampleMoore_injectivity_link.
+Require Import core.properties.injectivity.Utils.
 
 (*************************************************************)
 (** * Injectivity of CoqTL (Link)                            *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 
-Definition SourceModel_link_eq {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
-  set_eq m1.(modelLinks) m2.(modelLinks). 
-
-Definition TargetModel_link_eq {tc: TransformationConfiguration}  (m1 m2: TargetModel) : Prop := 
-  set_eq m1.(modelLinks) m2.(modelLinks). 
 
 Definition Injectivity_link {tc: TransformationConfiguration}
    (tr: Transformation) :=

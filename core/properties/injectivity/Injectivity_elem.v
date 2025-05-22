@@ -20,17 +20,12 @@ Require Import core.modeling.Parser.
 Require Import transformations.Moore2Mealy.Moore.
 Require Import transformations.Moore2Mealy.Moore2Mealy.
 Require Import core.properties.injectivity.sampleMoore_injectivity_elem.
+Require Import core.properties.injectivity.Utils.
 
 (*************************************************************)
 (** * Injectivity of CoqTL (Element)                         *)
 (** * Using operational semantics                            *)
 (*************************************************************)
-
-Definition SourceModel_elem_eq {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
-  set_eq m1.(modelElements) m2.(modelElements). 
-
-Definition TargetModel_elem_eq {tc: TransformationConfiguration}  (m1 m2: TargetModel) : Prop := 
-  set_eq m1.(modelElements) m2.(modelElements). 
 
 Definition Injectivity_elem {tc: TransformationConfiguration}
    (tr: Transformation) :=

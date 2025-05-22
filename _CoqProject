@@ -164,6 +164,9 @@ core/properties/injectivity/Moore2Mealy_injectivity_link_witness.v
 core/properties/injectivity/sampleMoore_injectivity_link.v
 core/properties/injectivity/Injectivity_link.v
 
+core/properties/injectivity/Utils.v
+core/properties/injectivity/Injectivity.v
+
 ### prop - injective - inputpiece
 #core/properties/unclassified/Moore2Mealy_injectivity_inputpiece_witness.v
 #core/properties/unclassified/sampleMoore_injectivity_inputpiece.v
