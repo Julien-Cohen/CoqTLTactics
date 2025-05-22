@@ -37,36 +37,8 @@ Definition disjoint_rules tr : Prop :=
 
 Definition Transformation_permutation  (t1 t2: basicSyntax.Transformation) := 
   (basicSyntax.Transformation_getArity t1 = basicSyntax.Transformation_getArity t2) /\ 
-  set_eq (basicSyntax.Transformation_getRules t1) (basicSyntax.Transformation_getRules t2).
+  ListUtils.set_eq (basicSyntax.Transformation_getRules t1) (basicSyntax.Transformation_getRules t2).
 
-(** Deprecated (use Model_equiv, see equiv_equiv below)*)
-Definition TargetModel_equiv (m1 m2: TargetModel) :=
-  (forall (e: TargetElementType) ,
-   (In e m1.(modelElements) <-> In e m2.(modelElements))) /\
- (forall (l: TargetLinkType),
-    (In l m1.(modelLinks) <-> In l m2.(modelLinks))).
-
-
-Lemma equiv_equiv : forall m1 m2, TargetModel_equiv m1 m2 <-> Model_equiv m1 m2.
-Proof.
-  unfold TargetModel_equiv, Model_equiv.
-  unfold Model_incl.
-  intros.
-  split ; intro H.
-  + destruct H. split.
-    - split ; intros.
-      * specialize (H e).
-        apply H ; auto.
-      * specialize (H0 l). apply H0 ; auto.
-    - split ; intros.
-      * specialize (H e).
-        apply H ; auto.
-      * specialize (H0 l). apply H0 ; auto.
-  + destruct H. 
-    destruct H.
-    destruct H0.
-      split ; intro ; split ; intro ; auto.
-Qed.
 
 Definition Confluent (t1: basicSyntax.Transformation) :=
     forall (sm: SourceModel) (t2:basicSyntax.Transformation),
@@ -172,30 +144,35 @@ Theorem forall_WeakConfluence : WeakConfluence.
 Proof.
   unfold WeakConfluence.
   intro t1.
-  unfold Confluent.
   intro disjoint_rules_t1.
+  unfold Confluent.
   intros sm t2.
-  intro.
-  apply equiv_equiv.
+  intro H.
+  
   specialize (disjoint_rules_of_transformation_permutation t1 t2 disjoint_rules_t1 H).
   intro disjoint_rules_t2.
-  unfold TargetModel_equiv.
-  simpl.
+  
+  unfold Model_equiv. 
+
+  unfold execute ; unfold modelElements, modelLinks. 
   intros.
   destruct H.
-  split.
-  - split.
-    + unfold instantiatePattern.
+  split ; split.
+
+  + (* left -> right / elements *) 
+      unfold instantiatePattern.
       unfold matchPattern.
-      intros.
-      apply in_flat_map in H1. repeat destruct H1.
-      apply in_flat_map in H2. repeat destruct H2.
+     
+      intros e H1.
+
+      apply in_flat_map in H1. destruct H1 as (x & (H1 & H2)).
+      apply in_flat_map in H2. destruct H2 as (x0 & (H2 & H3)).
       apply filter_In in H2. destruct H2.
       apply in_flat_map. exists x. split.
       * unfold allTuples.
         unfold maxArity.
         rewrite <- H.
-        assumption.
+        exact H1.
       * apply in_flat_map.
         exists x0.
         split.
@@ -204,27 +181,10 @@ Proof.
            apply H0. assumption.
            assumption.
         -- assumption.
-    +  unfold instantiatePattern.
-      unfold matchPattern.
-      intros.
-      apply in_flat_map in H1. repeat destruct H1.
-      apply in_flat_map in H2. repeat destruct H2.
-      apply filter_In in H2. destruct H2.
-      apply in_flat_map. exists x. split.
-      * unfold allTuples.
-        unfold maxArity.
-        rewrite H.
-        assumption.
-      * apply in_flat_map.
-        exists x0.
-        split.
-        -- apply filter_In.
-           split.
-           apply H0. assumption.
-           assumption.
-        -- assumption.
-  - split.
-    + unfold applyPattern.
+
+  + (* left -> right / links *) 
+      unfold modelLinks.
+      unfold applyPattern.
       unfold matchPattern.
       intros.
       apply in_flat_map in H1. repeat destruct H1.
@@ -262,7 +222,32 @@ Proof.
                  *** (*rewrite H7 in H6.*)
                      exact H6.
 
-+ unfold applyPattern.
+
+  + (* right -> left / elements*) 
+      unfold modelElements.  
+      unfold instantiatePattern.
+      unfold matchPattern.
+
+      intros l H1.
+      apply in_flat_map in H1. destruct H1 as (x & (H1 & H2)).
+      apply in_flat_map in H2. destruct H2 as (x0 & (H2 & H3)).
+      apply filter_In in H2. destruct H2.
+      apply in_flat_map. exists x. split.
+      * unfold allTuples.
+        unfold maxArity.
+        rewrite H. 
+        exact H1.
+      * apply in_flat_map.
+        exists x0.
+        split.
+        -- apply filter_In.
+           split.
+           apply H0. assumption.
+           assumption.
+        -- assumption.
+
+
+   + (* right -> left / links *) unfold modelLinks. unfold applyPattern.
       unfold matchPattern.
       intros.
       apply in_flat_map in H1. repeat destruct H1.
@@ -292,13 +277,17 @@ Proof.
               split.
               ** assumption.
               ** unfold applyElementOnPattern in *. 
-assert ((resolveIter t1 = (resolveIter t2))).
-{ apply resolveIter_eq. assumption. assumption. unfold Transformation_permutation . crush. }
-destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
-*** rewrite <- H7 in H6.
-    auto.
-*** (*rewrite <- H7 in H6.*)
-auto.
+
+                assert ((resolveIter t1 = (resolveIter t2))).
+                { 
+                  apply resolveIter_eq. assumption. assumption.
+                  unfold Transformation_permutation . crush. 
+                }
+                destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
+                *** rewrite <- H7 in H6.
+                    auto.
+                *** (*rewrite <- H7 in H6.*)
+                    auto.
 Qed.
 
 
