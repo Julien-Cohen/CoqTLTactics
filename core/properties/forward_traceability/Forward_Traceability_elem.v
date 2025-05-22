@@ -32,8 +32,8 @@ Require Import core.modeling.Parser.
 Definition Forward_Traceability_elem {tc: TransformationConfiguration} (tr: Transformation) :=
     forall (sm : SourceModel) (te : TargetElementType),
     (exists (sp : InputPiece),
-        In sp (allTuples tr sm) /\
-        In te (produced_elements (traceTrOnPiece tr sm sp))) ->
+        (In sp (allTuples tr sm) /\
+        In te (produced_elements (traceTrOnPiece tr sm sp)))) ->
         In te (execute tr sm).(modelElements).
 
 Theorem forall_Forward_Traceability_elem {tc:TransformationConfiguration} :
