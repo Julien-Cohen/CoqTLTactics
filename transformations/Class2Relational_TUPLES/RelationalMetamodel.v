@@ -1,9 +1,9 @@
-Require Import String.
-Require Import List.      (* sequence *)
-Require Import Multiset.  (* bag *)
-Require Import ListSet.   (* set *)
-Require Import PeanoNat.
-Require Import EqNat.
+From Stdlib Require Import String.
+From Stdlib Require Import List.      (* sequence *)
+From Stdlib Require Import Multiset.  (* bag *)
+From Stdlib Require Import ListSet.   (* set *)
+From Stdlib Require Import PeanoNat.
+From Stdlib Require Import EqNat.
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.

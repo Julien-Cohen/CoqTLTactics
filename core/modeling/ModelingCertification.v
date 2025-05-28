@@ -1,5 +1,5 @@
-Require Import String.
-Require Import Bool.
+From Stdlib Require Import String.
+From Stdlib Require Import Bool.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
@@ -223,7 +223,7 @@ Instance mtc : ModelingTransformationConfiguration tc := {
   tmm := mtmm;
 }.
 
-Instance ModelingCoqTLEngine : @ModelingTransformationEngine _ _ _ CoqTLEngine.
+Instance ModelingStdlib.LEngine : @ModelingTransformationEngine _ _ _ CoqTLEngine.
 Proof.
 eexists.
 exact tr_resolveAllIter_in.

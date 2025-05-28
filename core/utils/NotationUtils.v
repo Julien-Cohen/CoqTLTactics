@@ -1,4 +1,4 @@
-Require Export List.
+From Stdlib Require Export List.
 
 (* if e1 is successfully evaluated to x, then evaluate e2, otherwise stop *)
 Notation "x <- e1 ; e2" :=

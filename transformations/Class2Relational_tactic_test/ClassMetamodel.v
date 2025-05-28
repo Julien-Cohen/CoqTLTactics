@@ -1,9 +1,9 @@
-Require Import String.
-Require Import Bool.
-Require Import List.      (* sequence *)
-Require Import PeanoNat.
-Require Import EqNat.
-Require Import Coq.Logic.Eqdep_dec.
+From Stdlib Require Import String.
+From Stdlib Require Import Bool.
+From Stdlib Require Import List.      (* sequence *)
+From Stdlib Require Import PeanoNat.
+From Stdlib Require Import EqNat.
+From Stdlib Require Import Logic.Eqdep_dec.
 
 
 Require Import core.utils.Utils.

@@ -1,8 +1,8 @@
-(** For reference. A proof of correctness of a Moore to Mealy transformation that does not involve CoqTL. *)
+(** For reference. A proof of correctness of a Moore to Mealy transformation that does not involve Stdlib.L. *)
 
-Require Import List.
-Require Import Coq.Arith.EqNat.
-Require Import Bool.
+From Stdlib Require Import List.
+Require Import Stdlib.Arith.EqNat.
+From Stdlib Require Import Bool.
 
 Require PropUtils.
 

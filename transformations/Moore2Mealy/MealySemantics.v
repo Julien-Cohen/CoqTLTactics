@@ -1,6 +1,6 @@
 (** Semantics of Mealy machines. *)
 
-Require Import 
+From Stdlib Require Import 
           String List.
 
 From core 

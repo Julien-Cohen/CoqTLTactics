@@ -1,5 +1,5 @@
 
-Require Import String.
+From Stdlib Require Import String.
 
 Require Import core.utils.Utils.
 

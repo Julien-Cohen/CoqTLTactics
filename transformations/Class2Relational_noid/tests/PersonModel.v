@@ -1,5 +1,5 @@
-Require Import List.
-Require Import String.
+From Stdlib Require Import List.
+From Stdlib Require Import String.
 
 Require Import core.Model.
 

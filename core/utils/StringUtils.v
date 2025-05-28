@@ -1,4 +1,4 @@
-Require Import String List.
+From Stdlib Require Import String List.
 
 Definition beq_string : string -> string -> bool := eqb.
 

@@ -22,11 +22,11 @@
 (** * Type Class for relational Transformation Engines   *)
 (*********************************************************)
 
-Require Import String.
-Require Import List.
-Require Import Multiset.
-Require Import ListSet.
-Require Import Bool.
+From Stdlib Require Import String.
+From Stdlib Require Import List.
+From Stdlib Require Import Multiset.
+From Stdlib Require Import ListSet.
+From Stdlib Require Import Bool.
 
 Require Import core.utils.Utils.
 Require Import core.modeling.ModelingMetamodel.

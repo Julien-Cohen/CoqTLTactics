@@ -1,9 +1,9 @@
-Require Import String.
-Require Import EqNat.
-Require Import List.
-Require Import PeanoNat.
-Require Import Lia.
-Require Import FunctionalExtensionality.
+From Stdlib Require Import String.
+From Stdlib Require Import EqNat.
+From Stdlib Require Import List.
+From Stdlib Require Import PeanoNat.
+From Stdlib Require Import Lia.
+From Stdlib Require Import FunctionalExtensionality.
 
 Require Import core.Semantics.
 Require Import core.Syntax.
@@ -23,7 +23,7 @@ Require Import core.properties.injectivity.Moore2Mealy_injectivity_inputpiece_wi
 Require Import core.properties.injectivity.sampleMoore_injectivity_inputpiece.
 
 (*************************************************************)
-(** * Injectivity of CoqTL (InputPiece)                      *)
+(** * Injectivity of Stdlib.L (InputPiece)                      *)
 (** * Using Axiomatic semantics                              *)
 (*************************************************************)
 
@@ -137,7 +137,7 @@ Proof.
 Qed.
 
 (*************************************************************)
-(** * Injectivity of CoqTL (InputPiece)                      *)
+(** * Injectivity of Stdlib.L (InputPiece)                      *)
 (** * FIXME Another Case                                     *)
 (*************************************************************)
 

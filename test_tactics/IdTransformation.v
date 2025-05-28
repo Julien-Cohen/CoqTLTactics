@@ -1,6 +1,6 @@
 (** Graph Identity transformation. *)
 
-Require Import String List.
+From Stdlib Require Import String List.
 
 
 From core 

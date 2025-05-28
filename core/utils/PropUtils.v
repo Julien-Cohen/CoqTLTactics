@@ -1,5 +1,5 @@
 
-Require Eqdep.
+From Stdlib Require Eqdep.
 
 (** * Logic *)
 

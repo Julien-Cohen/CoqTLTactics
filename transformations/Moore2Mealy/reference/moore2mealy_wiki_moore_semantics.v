@@ -1,4 +1,4 @@
-(** For reference only, no CoqTL inside. *)
+(** For reference only, no Stdlib.L inside. *)
 
 (*
  * In this file, I try a different fix for moore semantics.
@@ -17,10 +17,10 @@
  *)
 
 
-Require Import List.
-Require Import Coq.Arith.EqNat.
-Require Import Bool.
-Require Import Psatz.
+From Stdlib Require Import List.
+Require Import Stdlib.Arith.EqNat.
+From Stdlib Require Import Bool.
+From Stdlib Require Import Psatz.
 
 (** * Moore machine *)
 

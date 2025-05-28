@@ -1,14 +1,14 @@
 (**
- CoqTL user theorem: Column_name_uniqueness
+ Stdlib.L user theorem: Column_name_uniqueness
  Def: if all attributes have unique names,
       then the generated columns have unique names.
  **)
 
-Require Import Coq.Logic.Eqdep_dec.
+Require Import Stdlib.Logic.Eqdep_dec.
 
-Require Import Coq.Arith.EqNat.
-Require Import List.
-Require Import String.
+Require Import Stdlib.Arith.EqNat.
+From Stdlib Require Import List.
+From Stdlib Require Import String.
 Require Import core.utils.Utils.
 
 

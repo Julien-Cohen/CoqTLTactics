@@ -1,9 +1,9 @@
-Require Import String.
-Require Import Coq.Logic.Eqdep_dec.
-Require Import Arith.
+From Stdlib Require Import String.
+Require Import Stdlib.Logic.Eqdep_dec.
+From Stdlib Require Import Arith.
 
-Require Import Coq.Arith.EqNat.
-Require Import List.
+Require Import Stdlib.Arith.EqNat.
+From Stdlib Require Import List.
 Open Scope string_scope.
 
 From core 

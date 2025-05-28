@@ -1,9 +1,9 @@
 (** Moore Machines *)
 
 (** Imports Native *)
-Require Import String Bool List PeanoNat EqNat.
+From Stdlib Require Import String Bool List PeanoNat EqNat.
 
-(** Imports CoqTL *)
+(** Imports Stdlib.L *)
 From core 
   Require Import utils.Utils Metamodel modeling.ModelingMetamodel Model.
 

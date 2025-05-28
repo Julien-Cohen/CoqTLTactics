@@ -1,16 +1,16 @@
 (**
- CoqTL user theorem: Relational_name_definedness
+ Stdlib.L user theorem: Relational_name_definedness
  Def: if all objects in the source model have name defined,
       then the target objects generated in the target model
       have name defined. 
  **)
 
-Require Import String.
-Require Import Coq.Logic.Eqdep_dec.
-Require Import Arith.
+From Stdlib Require Import String.
+Require Import Stdlib.Logic.Eqdep_dec.
+From Stdlib Require Import Arith.
 
-Require Import Coq.Arith.EqNat.
-Require Import List.
+Require Import Stdlib.Arith.EqNat.
+From Stdlib Require Import List.
 
 Require Import core.utils.Utils.
 Require Import core.SyntaxCertification.

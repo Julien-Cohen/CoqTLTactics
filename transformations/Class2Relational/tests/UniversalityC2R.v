@@ -32,7 +32,7 @@ Require Import Class2Relational.RelationalMetamodel.
 
 
 (*************************************************************)
-(** * Universality of CoqTL (Model) on CR2 configuration     *)
+(** * Universality of Stdlib.L (Model) on CR2 configuration     *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 

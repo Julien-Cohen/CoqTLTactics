@@ -1,6 +1,6 @@
 
 
-Require Import String List.
+From Stdlib Require Import String List.
 
 
 From core 
@@ -38,7 +38,7 @@ Open Scope coqtl.
 
     The transformation takes a graph and duplicates the edges, except that a duplicated edge is the opposite as the inital one. 
         
-     Ideally, it would be a small variation on the identity tansformation, but double output-patterns are not supported by the notation shortcuts for concrete syntax of CoqTL, so we use the Coq data-type instead.
+     Ideally, it would be a small variation on the identity tansformation, but double output-patterns are not supported by the notation shortcuts for concrete syntax of Stdlib.L, so we use the Coq data-type instead.
  
  *)
 

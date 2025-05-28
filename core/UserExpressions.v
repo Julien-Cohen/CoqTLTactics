@@ -1,13 +1,13 @@
-Require Import String.
+From Stdlib Require Import String.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.Syntax.
-Require Import Bool.
-Require Import Arith.
+From Stdlib Require Import Bool.
+From Stdlib Require Import Arith.
 Require Import TransformationConfiguration.
 
-(** Transformation rules are defined by the user. They are made of expressions (patterns/guards, number of iterations, output elements, output links) which are here encoded by Gallina/Coq functions (higher-order abstract syntax, see the module [Syntax]). 
+(** Transformation rules are defined by the user. They are made of expressions (patterns/guards, number of iterations, output elements, output links) which are here encoded by Gallina/Stdlib.functions (higher-order abstract syntax, see the module [Syntax]). 
 
 In this module we deal with application of those functions (or instantiation of user expressions). *)
 

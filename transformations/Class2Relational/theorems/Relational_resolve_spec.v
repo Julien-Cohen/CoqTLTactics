@@ -1,8 +1,8 @@
-Require Import String.
-Require Import Coq.Logic.Eqdep_dec.
-Require Import Arith.
-Require Import Coq.Arith.EqNat.
-Require Import List.
+From Stdlib Require Import String.
+Require Import Stdlib.Logic.Eqdep_dec.
+From Stdlib Require Import Arith.
+Require Import Stdlib.Arith.EqNat.
+From Stdlib Require Import List.
 
 Require Import core.utils.Utils.
 Require Import core.Engine.

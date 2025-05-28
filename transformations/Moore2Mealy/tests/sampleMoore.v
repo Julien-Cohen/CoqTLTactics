@@ -1,6 +1,6 @@
-Require Import List.
+From Stdlib Require Import List.
 Require Import core.Model.
-Require Import String.
+From Stdlib Require Import String.
 Require Import transformations.Moore2Mealy.Moore.
 Open Scope string_scope.
 

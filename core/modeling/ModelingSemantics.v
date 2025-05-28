@@ -1,4 +1,4 @@
-Require Import String.
+From Stdlib Require Import String.
 
 Require Import core.utils.Utils.
 Require Import core.modeling.ModelingMetamodel.
@@ -8,8 +8,8 @@ Require Import core.Syntax.
 Require Import core.Semantics.
 Require        core.Resolve. 
 Require Import core.modeling.Parser.
-Require Import Bool.
-Require Import Arith.
+From Stdlib Require Import Bool.
+From Stdlib Require Import Arith.
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
 Scheme Equality for list.

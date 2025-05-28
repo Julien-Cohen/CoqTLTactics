@@ -1,4 +1,4 @@
-(** Intermediate result for proof of preservation of semantics for the CoqTL Moore to Mealy transformation. *) 
+(** Intermediate result for proof of preservation of semantics for the Stdlib.L Moore to Mealy transformation. *) 
 
 From transformations.Moore2Mealy
   Require MooreSemantics MealySemantics Moore2Mealy MooreWF MealyWF.

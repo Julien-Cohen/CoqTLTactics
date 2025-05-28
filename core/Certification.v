@@ -1,9 +1,9 @@
-Require Import String.
+From Stdlib Require Import String.
 
-Require Import Lia.
-Require Import Nat.
-Require Import EqNat.
-Require Import Bool.
+From Stdlib Require Import Lia.
+From Stdlib Require Import Nat.
+From Stdlib Require Import EqNat.
+From Stdlib Require Import Bool.
 
 Require Import core.utils.Utils.
 Require Import core.Model.

@@ -1,5 +1,5 @@
-Require Import String.
-Require Import List.
+From Stdlib Require Import String.
+From Stdlib Require Import List.
 
 Require Import transformations.Moore2MealyALT.Mealy.
 Require Import core.Model.

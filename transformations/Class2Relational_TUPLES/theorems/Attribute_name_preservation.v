@@ -1,11 +1,11 @@
 (**
-CoqTL user theorem: Attribute_name_preservation
+Stdlib.L user theorem: Attribute_name_preservation
 Def: all non-derived attributes in the source model will create 
     a column in the target model with the same name
 **)
 
-Require Import String.
-Require Import Lia.
+From Stdlib Require Import String.
+From Stdlib Require Import Lia.
 Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.Semantics.

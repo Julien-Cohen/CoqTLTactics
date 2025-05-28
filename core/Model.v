@@ -1,7 +1,7 @@
 Set Implicit Arguments.
-Require Import List.
+From Stdlib Require Import List.
 
-Require Import ListUtils.
+ Require Import ListUtils.
 
 Require Import Metamodel.
 

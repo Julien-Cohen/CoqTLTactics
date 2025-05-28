@@ -1,11 +1,11 @@
 
 
-Require Import String.
-Require Import EqNat.
-Require Import List.
-Require Import PeanoNat.
-Require Import Lia.
-Require Import FunctionalExtensionality.
+From Stdlib Require Import String.
+From Stdlib Require Import EqNat.
+From Stdlib Require Import List.
+From Stdlib Require Import PeanoNat.
+From Stdlib Require Import Lia.
+From Stdlib Require Import FunctionalExtensionality.
 
 Require Import core.Model.
 Require Import core.TransformationConfiguration.
@@ -16,7 +16,7 @@ Require Import core.utils.Utils.
 
 
 (*************************************************************)
-(** * Confluence of CoqTL  (Model)                           *)
+(** * Confluence of Stdlib.L  (Model)                           *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 
@@ -46,7 +46,7 @@ Definition Confluent (t1: basicSyntax.Transformation) :=
     Model_equiv (execute t1 sm) (execute t2 sm).
 
 
-(* General definition but not holding for CoqTL *)
+(* General definition but not holding for Stdlib.L *)
 Definition Confluence := 
   forall (t: basicSyntax.Transformation),
     Confluent t. 

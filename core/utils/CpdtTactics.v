@@ -7,7 +7,7 @@
  *   http://creativecommons.org/licenses/by-nc-nd/3.0/
  *)
 
-Require Import Eqdep List Lia.
+From Stdlib Require Import Eqdep List Lia.
 
 Set Implicit Arguments.
 
@@ -163,7 +163,7 @@ Ltac un_done :=
            | [ H : done _ |- _ ] => clear H
          end.
 
-Require Import JMeq.
+From Stdlib Require Import JMeq.
 
 (** A more parameterized version of the famous [crush].  Extra arguments are:
    * - A tuple-list of lemmas we try [inster]-ing 
@@ -204,7 +204,7 @@ Ltac crush := crush' false fail.
 
 (** * Wrap Program's [dependent destruction] in a slightly more pleasant form *)
 
-Require Import Program.Equality.
+From Stdlib Require Import Program.Equality.
 
 (** Run [dependent destruction] on [E] and look for opportunities to simplify the result.
    The weird introduction of [x] helps get around limitations of [dependent destruction], in terms of which sorts of arguments it will accept (e.g., variables bound to hypotheses within Ltac [match]es). *)

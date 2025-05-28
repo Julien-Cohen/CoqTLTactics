@@ -2,15 +2,15 @@ Require Import core.Semantics.
 Require Import core.Syntax.
 Require Import core.Model.
 Require Import core.TransformationConfiguration.
-Require Import String.
-Require Import EqNat.
-Require Import List.
+From Stdlib Require Import String.
+From Stdlib Require Import EqNat.
+From Stdlib Require Import List.
 Require Import UserExpressions.
 Require Import core.utils.Utils.
-Require Import PeanoNat.
-Require Import Lia.
-Require Import FunctionalExtensionality.
-Require Import Coq.Program.Basics.
+From Stdlib Require Import PeanoNat.
+From Stdlib Require Import Lia.
+From Stdlib Require Import FunctionalExtensionality.
+From Stdlib Require Import Program.Basics.
 
 (* Trivial theorem if we are free to choose anything *)
 

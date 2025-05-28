@@ -1,11 +1,11 @@
 (** Imports Native *)
-Require Import String.
-Require Import Bool.
-Require Import List.
-Require Import Nat.
-Require Import EqNat.
+From Stdlib Require Import String.
+From Stdlib Require Import Bool.
+From Stdlib Require Import List.
+From Stdlib Require Import Nat.
+From Stdlib Require Import EqNat.
 
-(** Imports CoqTL *)
+(** Imports Stdlib.L *)
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.

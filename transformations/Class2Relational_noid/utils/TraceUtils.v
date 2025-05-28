@@ -1,8 +1,8 @@
-Require Import String.
+From Stdlib Require Import String.
 
 
-Require Import Coq.Arith.EqNat.
-Require Import List.
+Require Import Stdlib.Arith.EqNat.
+From Stdlib Require Import List.
 
 Open Scope string_scope.
 

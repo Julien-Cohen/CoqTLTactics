@@ -1,5 +1,5 @@
-Require Import String.
-Require Import List.
+From Stdlib Require Import String.
+From Stdlib Require Import List.
 Open Scope string_scope.
 
 Require Import core.utils.Utils.

@@ -1,4 +1,4 @@
-Require Export List.
+From Stdlib Require Export List.
 Require Export core.utils.PropUtils.
 Require Export core.utils.ArithUtils.
 Require Export core.utils.ListUtils.

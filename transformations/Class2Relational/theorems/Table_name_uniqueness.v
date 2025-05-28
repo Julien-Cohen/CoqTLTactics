@@ -1,14 +1,14 @@
 (**
- CoqTL user theorem: Table_name_uniqueness
+ Stdlib.L user theorem: Table_name_uniqueness
  Def: if all classes in the source model have unique name,
       then the target tables generated in the target model
       have unique name.
  **)
 
 
-Require Import Coq.Arith.EqNat.
-Require Import List.
-Require Import String.
+Require Import Stdlib.Arith.EqNat.
+From Stdlib Require Import List.
+From Stdlib Require Import String.
 Require Import core.utils.Utils.
 
 Require Import core.Semantics.

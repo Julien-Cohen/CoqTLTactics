@@ -1,10 +1,10 @@
 
-Require Import String.
-Require Import EqNat.
-Require Import List.
-Require Import PeanoNat.
-Require Import Lia.
-Require Import FunctionalExtensionality.
+From Stdlib Require Import String.
+From Stdlib Require Import EqNat.
+From Stdlib Require Import List.
+From Stdlib Require Import PeanoNat.
+From Stdlib Require Import Lia.
+From Stdlib Require Import FunctionalExtensionality.
 
 Require Import core.Semantics.
 Require Import core.Syntax.
@@ -22,7 +22,7 @@ Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_elem_witnes
 Require Import core.properties.monotonicity.sampleMoore_monotonicity_elem.
 
 (*************************************************************)
-(** * Monotonicity of CoqTL  (element)                       *)
+(** * Monotonicity of Stdlib.L  (element)                       *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 

@@ -1,7 +1,7 @@
-Require Import List.
-Require Import EqNat.
+From Stdlib Require Import List.
+From Stdlib Require Import EqNat.
 Require Import core.utils.CpdtTactics.
-Require Import Lia.
+From Stdlib Require Import Lia.
 
 Require PropUtils BoolUtils OptionUtils.
 

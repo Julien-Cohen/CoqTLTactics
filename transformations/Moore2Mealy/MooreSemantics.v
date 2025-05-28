@@ -1,6 +1,6 @@
 (** Semantics of Moore machines. *)
 
-Require Import String List.
+From Stdlib Require Import String List.
 
 From transformations.Moore2Mealy 
   Require Import Moore.

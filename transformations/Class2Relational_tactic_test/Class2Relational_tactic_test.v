@@ -1,5 +1,5 @@
-Require Import String.
-Require Import List.
+From Stdlib Require Import String.
+From Stdlib Require Import List.
 
 Require Import core.utils.Utils.
 Require Import core.modeling.ConcreteSyntax.

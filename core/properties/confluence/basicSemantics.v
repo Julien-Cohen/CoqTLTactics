@@ -1,10 +1,10 @@
-Require Import String.
+From Stdlib Require Import String.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.properties.confluence.basicSyntax.
-Require Import Bool.
-Require Import Arith.
+From Stdlib Require Import Bool.
+From Stdlib Require Import Arith.
 Require Import TransformationConfiguration.
 Require Import core.properties.confluence.basicExpressions.
 Scheme Equality for list.

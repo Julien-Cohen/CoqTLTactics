@@ -1,4 +1,4 @@
-Require Import List.
+From Stdlib Require Import List.
 Require Import utils.ListUtils.
 Require Import utils.OptionListUtils.
 

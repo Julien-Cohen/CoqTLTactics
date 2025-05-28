@@ -1,4 +1,4 @@
-(** Proof of preservation of semantics of the CoqTL Moore to Mealy transformation. 
+(** Proof of preservation of semantics of the Stdlib.L Moore to Mealy transformation. 
     Relies on intermediate results. *)
 
 From transformations.Moore2Mealy

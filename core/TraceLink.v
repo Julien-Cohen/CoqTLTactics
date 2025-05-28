@@ -1,4 +1,4 @@
-Require Import String.
+From Stdlib Require Import String.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
@@ -8,7 +8,7 @@ Require Syntax.
 
 (** * Syntax
 
-      In this section, we introduce _one possible_ abstract syntax of the CoqTL transformation engine.  
+      In this section, we introduce _one possible_ abstract syntax of the Stdlib.L transformation engine.  
       ---- *)
 
 Section TraceLink.

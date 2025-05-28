@@ -1,6 +1,6 @@
-Require Import String.
-Require Import Nat.
-Require Import Coq.Strings.Ascii.
+From Stdlib Require Import String.
+From Stdlib Require Import Nat.
+From Stdlib Require Import Strings.Ascii.
 
 Definition natToDigit (n : nat) : ascii :=
   match n with

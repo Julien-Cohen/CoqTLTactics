@@ -1,9 +1,9 @@
-Require Import String.
-Require Import EqNat.
-Require Import List.
-Require Import PeanoNat.
-Require Import Lia.
-Require Import FunctionalExtensionality.
+From Stdlib Require Import String.
+From Stdlib Require Import EqNat.
+From Stdlib Require Import List.
+From Stdlib Require Import PeanoNat.
+From Stdlib Require Import Lia.
+From Stdlib Require Import FunctionalExtensionality.
 
 Require Import core.Semantics.
 Require Import core.Syntax.
@@ -24,7 +24,7 @@ Require Import core.properties.injectivity.Injectivity_link.
 Require Import core.properties.injectivity.Utils.
 
 (*************************************************************)
-(** * Injectivity of CoqTL                                   *)
+(** * Injectivity of Stdlib.L                                   *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 

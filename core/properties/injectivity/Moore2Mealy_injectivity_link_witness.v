@@ -1,7 +1,7 @@
-Require Import String.
-Require Import List.
-Require Import Multiset.
-Require Import ListSet.
+From Stdlib Require Import String.
+From Stdlib Require Import List.
+From Stdlib Require Import Multiset.
+From Stdlib Require Import ListSet.
 
 Require Import core.utils.Utils.
 
