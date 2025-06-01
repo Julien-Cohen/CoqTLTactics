@@ -24,7 +24,7 @@ Require Import core.properties.distributivity.sampleMoore_distributivity.
 
 
 (*************************************************************)
-(** * Distributivity of Stdlib.L (Model)                        *)
+(** * Distributivity of  CoqTL (Model)                        *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 

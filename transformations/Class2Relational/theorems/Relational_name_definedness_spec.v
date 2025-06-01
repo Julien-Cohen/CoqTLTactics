@@ -1,5 +1,5 @@
 (**
- Stdlib.L user theorem: Relational_name_definedness
+  CoqTL user theorem: Relational_name_definedness
  Def: if all objects in the source model have name defined,
       then the target objects generated in the target model
       have name defined. 

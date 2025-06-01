@@ -23,7 +23,7 @@ Require Import core.properties.surjectivity.Moore2Mealy_surjectivity_model_witne
 Require Import core.properties.surjectivity.sampleMealy_surjectivity_model.
 
 (*************************************************************)
-(** * Surjectivity of Stdlib.L (Model)                          *)
+(** * Surjectivity of  CoqTL (Model)                          *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 

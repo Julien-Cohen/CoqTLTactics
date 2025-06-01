@@ -10,7 +10,7 @@
  Require Import transformations.Moore2Mealy.Moore.
  Open Scope string_scope.
  
-(* Moore models as counterexample to prove injectivity of Stdlib.L *)
+(* Moore models as counterexample to prove injectivity of  CoqTL *)
 
  
 Definition Moore_m1 : Model Moore.MM :=

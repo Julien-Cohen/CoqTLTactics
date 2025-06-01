@@ -20,7 +20,7 @@ Require Import core.modeling.Parser.
 Require Import AxiomaticSemantics.
 
 (*************************************************************)
-(** * Injectivity of Stdlib.L                                   *)
+(** * Injectivity of  CoqTL                                   *)
 (*************************************************************)
 
 (** FIXME refer to comment from surjectivity_axiomatic.v *)

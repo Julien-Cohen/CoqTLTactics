@@ -20,7 +20,7 @@ Require Import core.modeling.Parser.
 
 
 (*************************************************************)
-(** * Backward_Traceability of Stdlib.L (Element)               *)
+(** * Backward_Traceability of  CoqTL (Element)               *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 

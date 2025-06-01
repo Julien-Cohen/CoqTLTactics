@@ -12,7 +12,7 @@ From Stdlib Require Import FunctionalExtensionality.
 
 
 (*************************************************************)
-(** * Universality of Stdlib.L (Model)                          *)
+(** * Universality of  CoqTL (Model)                          *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 

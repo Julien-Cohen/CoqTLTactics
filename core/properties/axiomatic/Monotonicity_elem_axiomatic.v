@@ -17,7 +17,7 @@ Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_elem_witnes
 Require Import core.properties.monotonicity.sampleMoore_monotonicity_elem.
 
 (*************************************************************)
-(** * Monotonicity of Stdlib.L  (element)                       *)
+(** * Monotonicity of  CoqTL  (element)                       *)
 (** * Using axiomatic semantics                              *)
 (*************************************************************)
 

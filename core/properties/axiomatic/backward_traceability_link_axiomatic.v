@@ -20,7 +20,7 @@ Require Import core.modeling.Parser.
 
 
 (*************************************************************)
-(** * Backward_Traceability of Stdlib.L (Link)                  *)
+(** * Backward_Traceability of  CoqTL (Link)                  *)
 (** * Using axiomatic semantics                              *)
 (*************************************************************)
 

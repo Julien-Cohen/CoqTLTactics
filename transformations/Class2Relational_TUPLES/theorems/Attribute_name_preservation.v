@@ -1,5 +1,5 @@
 (**
-Stdlib.L user theorem: Attribute_name_preservation
+ CoqTL user theorem: Attribute_name_preservation
 Def: all non-derived attributes in the source model will create 
     a column in the target model with the same name
 **)

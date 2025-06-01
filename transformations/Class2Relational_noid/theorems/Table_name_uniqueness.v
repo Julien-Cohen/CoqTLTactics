@@ -1,5 +1,5 @@
 (**
- Stdlib.L user theorem: Table_name_uniqueness
+  CoqTL user theorem: Table_name_uniqueness
  Def: if all classes in the source model have unique name,
       then the target tables generated in the target model
       have unique name.

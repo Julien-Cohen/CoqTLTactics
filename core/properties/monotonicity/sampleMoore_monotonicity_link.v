@@ -12,7 +12,7 @@ From Stdlib  Require Import String.
  
 Import Glue.
 
-(* Moore models as counterexample to prove monotonicity of Stdlib.L *)
+(* Moore models as counterexample to prove monotonicity of  CoqTL *)
 
 (* all tran's src and trg are in m.modelElements *)
 Definition Moore_m1 : Model Moore.MM :=

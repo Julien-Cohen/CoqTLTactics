@@ -23,7 +23,7 @@ Require Import core.properties.injectivity.sampleMoore_injectivity_link.
 Require Import core.properties.injectivity.Utils.
 
 (*************************************************************)
-(** * Injectivity of Stdlib.L (Link)                            *)
+(** * Injectivity of  CoqTL (Link)                            *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 
