@@ -215,7 +215,13 @@ core/properties/additivity/Additivity_link.v
 ### prop - functionality
 core/properties/functionality/Functionality.v
 
+### prop - invertibility
+core/properties/invertibility/invertibility.v
+
+### prop - adaptation
 core/properties/unclassified/Adaptation.v
+
+
 
 # User proofs
 

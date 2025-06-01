@@ -23,3 +23,8 @@ Class TransformationConfiguration := {
 
 
 Notation InputPiece := (list SourceElementType).
+
+Definition InverseTC tc := {| 
+    SourceMetamodel := tc.(TargetMetamodel) ;
+    TargetMetamodel := tc.(SourceMetamodel) 
+  |}.

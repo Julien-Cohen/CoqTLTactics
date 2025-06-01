@@ -1,10 +1,5 @@
 
-Require Import String.
-Require Import EqNat.
-Require Import List.
-Require Import PeanoNat.
-Require Import Lia.
-Require Import FunctionalExtensionality.
+From Stdlib Require Import String EqNat List PeanoNat Lia FunctionalExtensionality.
 
 Require Import core.Semantics.
 Require Import core.Syntax.
@@ -28,10 +23,11 @@ Require Import core.properties.surjectivity.sampleMealy_surjectivity_model.
 (*************************************************************)
 
 Definition Right_Invertibility {tc:TransformationConfiguration} (tr:Transformation) :=
-    exists (tr_inv: Transformation), forall (sm:SourceModel) (tm:TargetModel),
+    exists (tr_inv: Transformation (tc:= InverseTC tc)), forall (sm:SourceModel) (tm:TargetModel),
       (execute tr sm) = tm -> (execute tr_inv tm) = sm.
 
 Definition Left_Invertibility {tc:TransformationConfiguration} (tr:Transformation) :=
-    exists (tr_inv: Transformation), forall (sm:SourceModel) (tm:TargetModel),
+    exists (tr_inv: Transformation (tc:= InverseTC tc)), forall (sm:SourceModel) (tm:TargetModel),
       (execute tr_inv tm) = sm -> (execute tr sm) = tm.
+
 
