@@ -22,12 +22,38 @@ Require Import core.properties.surjectivity.sampleMealy_surjectivity_model.
 (** * Using operational semantics                            *)
 (*************************************************************)
 
-Definition Right_Invertibility {tc:TransformationConfiguration} (tr:Transformation) :=
+Definition Left_Invertible {tc:TransformationConfiguration} (tr:Transformation) :=
     exists (tr_inv: Transformation (tc:= InverseTC tc)), forall (sm:SourceModel) (tm:TargetModel),
       (execute tr sm) = tm -> (execute tr_inv tm) = sm.
 
-Definition Left_Invertibility {tc:TransformationConfiguration} (tr:Transformation) :=
+Definition Right_Invertible {tc:TransformationConfiguration} (tr:Transformation) :=
     exists (tr_inv: Transformation (tc:= InverseTC tc)), forall (sm:SourceModel) (tm:TargetModel),
       (execute tr_inv tm) = sm -> (execute tr sm) = tm.
 
+Require Import Injectivity.
 
+Lemma left_invertible_injective {tc:TransformationConfiguration} : 
+  forall tr, Left_Invertible tr -> Injective_alt tr.
+Proof.
+  unfold Left_Invertible, Injective_alt.
+  intros.
+  destruct H as (tr_inv & H).
+
+  assert (HSM1 : forall tm : TargetModel, execute tr sm1 = tm -> execute tr_inv tm = sm1) ; [ apply H | ].
+
+  assert (HSM2 : forall tm : TargetModel, execute tr sm2 = tm -> execute tr_inv tm = sm2) ; [ apply H | ]. 
+  
+
+  specialize (HSM1 (execute tr sm1)).
+  specialize (HSM2 (execute tr sm1)).
+  rewrite <- HSM1 ; [ | reflexivity].
+  apply HSM2 ; auto.
+
+Qed.
+
+Corollary not_injective_not_invertible :
+   forall (tc:TransformationConfiguration) tr, 
+      (~ Injective_alt tr) -> ~ Left_Invertible tr.
+Proof.
+  intros tc tr H ; contradict H ; apply left_invertible_injective ; assumption.
+Qed.
