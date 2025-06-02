@@ -1,18 +1,11 @@
+From Stdlib 
+  Require Import String EqNat List PeanoNat Lia FunctionalExtensionality.
 
+From core 
+  Require Import Model TransformationConfiguration utils.Utils.
 
-From Stdlib Require Import String.
-From Stdlib Require Import EqNat.
-From Stdlib Require Import List.
-From Stdlib Require Import PeanoNat.
-From Stdlib Require Import Lia.
-From Stdlib Require Import FunctionalExtensionality.
-
-Require Import core.Model.
-Require Import core.TransformationConfiguration.
-Require Import core.properties.confluence.basicExpressions.
-Require Import core.properties.confluence.basicSemantics.
-Require Import core.properties.confluence.basicSyntax.
-Require Import core.utils.Utils.
+From core.properties.confluence
+  Require Import basicExpressions basicSemantics basicSyntax.
 
 
 (*************************************************************)

@@ -1,25 +1,14 @@
+From Stdlib 
+  Require Import String EqNat List PeanoNat Lia FunctionalExtensionality.
 
-From Stdlib Require Import String.
-From Stdlib Require Import EqNat.
-From Stdlib Require Import List.
-From Stdlib Require Import PeanoNat.
-From Stdlib Require Import Lia.
-From Stdlib Require Import FunctionalExtensionality.
+From core 
+  Require Import Semantics Syntax Model TransformationConfiguration Certification utils.Utils.
 
-Require Import core.Semantics.
-Require Import core.Syntax.
-Require Import core.Model.
-Require Import core.TransformationConfiguration.
-Require Import core.utils.Utils.
+From core.modeling 
+  Require Import ConcreteSyntax ModelingSemantics ModelingMetamodel ConcreteExpressions Parser.
 
-Require Import core.modeling.ConcreteSyntax.
-Require Import core.modeling.ModelingSemantics.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.modeling.ConcreteExpressions.
-Require Import core.modeling.Parser.
-
-Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_elem_witness.
-Require Import core.properties.monotonicity.sampleMoore_monotonicity_elem.
+From core.properties.monotonicity
+  Require Import Moore2Mealy_monotonicity_elem_witness sampleMoore_monotonicity_elem.
 
 (*************************************************************)
 (** * Monotonicity of CoqTL  (element)                       *)

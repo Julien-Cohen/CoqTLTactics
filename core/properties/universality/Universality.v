@@ -1,14 +1,8 @@
-Require Import core.Semantics.
-Require Import core.Syntax.
-Require Import core.Model.
-Require Import core.TransformationConfiguration.
-From Stdlib Require Import String.
-From Stdlib Require Import EqNat.
-From Stdlib Require Import List.
-Require Import core.utils.Utils.
-From Stdlib Require Import PeanoNat.
-From Stdlib Require Import Lia.
-From Stdlib Require Import FunctionalExtensionality.
+From core
+   Require Import Semantics Syntax Model TransformationConfiguration utils.Utils.
+
+From Stdlib 
+  Require Import String EqNat List PeanoNat Lia FunctionalExtensionality.
 
 
 (*************************************************************)

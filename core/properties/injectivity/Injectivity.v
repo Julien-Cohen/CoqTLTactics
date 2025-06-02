@@ -1,27 +1,18 @@
-From Stdlib Require Import String.
-From Stdlib Require Import EqNat.
-From Stdlib Require Import List.
-From Stdlib Require Import PeanoNat.
-From Stdlib Require Import Lia.
-From Stdlib Require Import FunctionalExtensionality.
+From Stdlib 
+  Require Import String EqNat List PeanoNat Lia FunctionalExtensionality.
 
-Require Import core.Semantics.
-Require Import core.Syntax.
-Require Import core.Model.
-Require Import core.TransformationConfiguration.
-Require Import core.utils.Utils.
+From core 
+  Require Import Semantics Syntax Model TransformationConfiguration utils.Utils.
 
-Require Import core.modeling.ConcreteSyntax.
-Require Import core.modeling.ModelingSemantics.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.modeling.ConcreteExpressions.
-Require Import core.modeling.Parser.
+From core.modeling 
+  Require Import ConcreteSyntax ModelingSemantics ModelingMetamodel ConcreteExpressions Parser.
 
-Require Import transformations.Moore2Mealy.Moore.
-Require Import transformations.Moore2Mealy.Moore2Mealy.
-Require Import core.properties.injectivity.Injectivity_elem.
-Require Import core.properties.injectivity.Injectivity_link.
-Require Import core.properties.injectivity.Utils.
+From transformations.Moore2Mealy
+  Require Import Moore Moore2Mealy.
+
+From core.properties.injectivity
+  Require Import Injectivity_elem Injectivity_link Utils.
+
 
 (*************************************************************)
 (** * Injectivity of CoqTL                                   *)
@@ -29,8 +20,7 @@ Require Import core.properties.injectivity.Utils.
 (*************************************************************)
 
 
-
-(** Injectivity *)
+(** Injectivity (two definitions) *)
 
 Definition Injective {tc: TransformationConfiguration} (tr: Transformation) :=
  forall sm1 sm2,
@@ -42,7 +32,9 @@ Definition Injective_alt {tc: TransformationConfiguration} (tr: Transformation) 
   (execute tr sm1) = (execute tr sm2) ->
      sm1  = sm2.  
 
-Lemma union_elem_link {tc: TransformationConfiguration} : 
+
+
+Remark union_elem_link {tc: TransformationConfiguration} : 
   forall tr, 
     Injectivity_elem tr ->
     Injectivity_link tr ->

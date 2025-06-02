@@ -1,26 +1,14 @@
+From Stdlib 
+  Require Import String EqNat List PeanoNat Lia FunctionalExtensionality.
 
-From Stdlib Require Import String.
-From Stdlib Require Import EqNat.
-From Stdlib Require Import List.
-From Stdlib Require Import PeanoNat.
-From Stdlib Require Import Lia.
-From Stdlib Require Import FunctionalExtensionality.
+From core 
+  Require Import Semantics Syntax Model TransformationConfiguration utils.Utils.
 
-Require Import core.Semantics.
-Require Import core.Syntax.
-Require Import core.Model.
-Require Import core.TransformationConfiguration.
-Require        core.Certification.
-Require Import core.utils.Utils.
+From core.modeling 
+  Require Import ConcreteSyntax ModelingSemantics ModelingMetamodel ConcreteExpressions Parser.
 
-Require Import core.modeling.ConcreteSyntax.
-Require Import core.modeling.ModelingSemantics.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.modeling.ConcreteExpressions.
-Require Import core.modeling.Parser.
-
-Require Import core.properties.surjectivity.Moore2Mealy_surjectivity_model_witness.
-Require Import core.properties.surjectivity.sampleMealy_surjectivity_model.
+From core.properties.surjectivity
+  Require Import Moore2Mealy_surjectivity_model_witness sampleMealy_surjectivity_model.
 
 (*************************************************************)
 (** * Surjectivity of CoqTL (Model)                          *)

@@ -1,26 +1,17 @@
-From Stdlib Require Import String.
-From Stdlib Require Import EqNat.
-From Stdlib Require Import List.
-From Stdlib Require Import PeanoNat.
-From Stdlib Require Import Lia.
-From Stdlib Require Import FunctionalExtensionality.
+From Stdlib 
+  Require Import String EqNat List PeanoNat Lia FunctionalExtensionality.
 
-Require Import core.Semantics.
-Require Import core.Syntax.
-Require Import core.Model.
-Require Import core.TransformationConfiguration.
-Require Import core.utils.Utils.
+From core 
+  Require Import Semantics Syntax Model TransformationConfiguration utils.Utils.
 
-Require Import core.modeling.ConcreteSyntax.
-Require Import core.modeling.ModelingSemantics.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.modeling.ConcreteExpressions.
-Require Import core.modeling.Parser.
+From core.modeling 
+  Require Import ConcreteSyntax ModelingSemantics ModelingMetamodel ConcreteExpressions Parser.
 
-Require Import transformations.Moore2Mealy.Moore.
-Require Import transformations.Moore2Mealy.Moore2Mealy.
-Require Import core.properties.injectivity.sampleMoore_injectivity_elem.
-Require Import core.properties.injectivity.Utils.
+From transformations.Moore2Mealy
+  Require Import Moore Moore2Mealy.
+
+From core.properties.injectivity 
+  Require Import sampleMoore_injectivity_elem Utils.
 
 (*************************************************************)
 (** * Injectivity of CoqTL (Element)                         *)
