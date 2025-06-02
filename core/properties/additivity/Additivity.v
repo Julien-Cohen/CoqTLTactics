@@ -1,5 +1,5 @@
 From core.properties.additivity 
-  Require Import RuleIncl Additivity_elem Additivity_link.
+  Require Import RuleIncl Additivity_link.
 
 
 Import TransformationConfiguration Syntax Semantics Model.

@@ -29,6 +29,7 @@ Definition Rule_Additivity_Link {tc: TransformationConfiguration} :=
       (RuleIncl.Transformation_incl_rules t1 t2 -> 
           incl (execute t1 sm).(modelLinks) (execute t2 sm).(modelLinks)). 
 
+
 Lemma Moore2Mealy_non_additivity_link_contrapos:
   exists sm : SourceModel,
   ~
@@ -63,6 +64,7 @@ Proof.
   ++ crush.
   ++ assumption.
 Qed.
+
 
 Lemma not_additivity_link : ~ (Rule_Additivity_Link).
 Proof.
