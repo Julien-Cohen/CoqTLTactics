@@ -23,20 +23,17 @@ Require Import core.properties.additivity.sampleMoore_additivity_link.
 
 From Stdlib Require Import Logic.Classical_Pred_Type.
 
-
-Definition Transformation_incl_rules {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
-  (t1.(arity) = t2.(arity)) /\ 
-  forall r: Rule, In r t1.(rules) -> In r t2.(rules).
+Require RuleIncl.
 
 Definition Rule_Additivity_Link {tc: TransformationConfiguration} :=
   forall (t1 t2: Transformation) (sm: SourceModel),
-      (Transformation_incl_rules t1 t2 -> 
+      (RuleIncl.Transformation_incl_rules t1 t2 -> 
           incl (execute t1 sm).(modelLinks) (execute t2 sm).(modelLinks)). 
 
 Lemma Moore2Mealy_non_additivity_link_contrapos:
   exists sm : SourceModel,
   ~
-  (Transformation_incl_rules Moore2Mealy_t1
+  (RuleIncl.Transformation_incl_rules Moore2Mealy_t1
     Moore2Mealy_t2 ->
   incl (modelLinks (execute Moore2Mealy_t1 sm))
     (modelLinks (execute Moore2Mealy_t2 sm))).
@@ -44,10 +41,10 @@ Proof.
   exists Moore_m.
   unfold not.
   intro.
-  assert (Transformation_incl_rules Moore2Mealy_t1 Moore2Mealy_t2).
+  assert (RuleIncl.Transformation_incl_rules Moore2Mealy_t1 Moore2Mealy_t2).
   {
     unfold Moore2Mealy_t1. unfold Moore2Mealy_t2.
-    unfold Transformation_incl_rules.
+    unfold RuleIncl.Transformation_incl_rules.
     simpl.
     crush.
   }

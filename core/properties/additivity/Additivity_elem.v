@@ -10,6 +10,7 @@ From Stdlib Require Import PeanoNat.
 From Stdlib Require Import Lia.
 From Stdlib Require Import FunctionalExtensionality.
 
+Require RuleIncl.
 
 (*************************************************************)
 (** * Additivity in Rule context (Elem)                      *)
@@ -18,16 +19,13 @@ From Stdlib Require Import FunctionalExtensionality.
 
 
 
-Definition Transformation_incl_rules {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
-  (t1.(arity) = t2.(arity)) /\ 
-  forall r: Rule, In r t1.(rules) -> In r t2.(rules).
-
 Definition Rule_Additivity_Elem {tc: TransformationConfiguration} :=
   forall (t1 t2: Transformation) (sm: SourceModel),
-      (Transformation_incl_rules t1 t2 -> 
+      (RuleIncl.Transformation_incl_rules t1 t2 -> 
           incl (execute t1 sm).(modelElements) (execute t2 sm).(modelElements)). 
 
-Theorem forall_Additivity_Rules_Elem {tc: TransformationConfiguration} : Rule_Additivity_Elem.
+Theorem forall_Additivity_Rules_Elem {tc: TransformationConfiguration} :
+ Rule_Additivity_Elem.
 Proof.
   unfold Rule_Additivity_Elem.
   simpl.
