@@ -8,7 +8,7 @@
  
 Import Glue.
 
-(* Moore models as counterexample to disprove injectivity of CoqTL *)
+(* Moore models as counterexample to disprove additivity of CoqTL *)
 
 
  Definition Moore_m : Model Moore.MM :=

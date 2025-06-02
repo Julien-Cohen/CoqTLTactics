@@ -57,3 +57,26 @@ Corollary not_injective_not_invertible :
 Proof.
   intros tc tr H ; contradict H ; apply left_invertible_injective ; assumption.
 Qed.
+
+From core.properties.surjectivity Require Import surjectivity.
+
+Lemma right_invertible_surjective {tc:TransformationConfiguration} : 
+  forall tr, Right_Invertible tr -> Surjectivity tr.
+Proof.
+ intro tr.
+ unfold Right_Invertible.
+ intros (tr_inv & H).
+ unfold Surjectivity.
+ intro tm.
+ exists (execute tr_inv tm).
+ apply H.
+ reflexivity. 
+Qed.
+
+Corollary not_surjective_not_invertible :
+   forall (tc:TransformationConfiguration) tr, 
+      (~ Surjectivity tr) -> ~ Right_Invertible tr.
+Proof.
+  intros tc tr H ; contradict H ; apply right_invertible_surjective ; assumption.
+Qed.
+
