@@ -57,7 +57,6 @@ Lemma prop2 :
 Proof.
   unfold Semantics.matchingRules.
   unfold matchingRule.
-  Search (In _ (filter _ _)).
   setoid_rewrite filter_In.
   unfold guard_ok.
   unfold evalGuard.
@@ -114,9 +113,7 @@ Lemma prop4 : forall r sm sp it tlk,
   traceIterationOnPiece_rel r sm sp it tlk <-> List.In tlk (Semantics.traceIterationOnPiece r sm sp it).
 Proof.
   unfold Semantics.traceIterationOnPiece.
-  Search (In _ (flat_map _ _)).
   setoid_rewrite in_flat_map.
-  Search (In _ (optionToList _)).
   setoid_rewrite in_optionToList.
   setoid_rewrite <- prop3.
   intros ; split ; intro H. 
@@ -149,7 +146,6 @@ Proof.
     apply UserExpressions.p1 in H1.
     rewrite H1.
     exists current_it ; split ; [ | auto].
-    Search (In _ (seq _ _)).
     apply in_seq.
     simpl.
     Lia.lia.
@@ -204,7 +200,6 @@ Proof.
   + inversion_clear H.
     exists sp ; split ; [ | assumption].
     unfold Semantics.allTuples.
-    Search (In _ (TupleUtils.tuples_up_to_n _ _)).
     apply TupleUtils.tuples_up_to_n_incl_length.
     unfold isTuple in H1.
     auto.
@@ -212,7 +207,6 @@ Proof.
     econstructor ; [ eassumption | | ].
     - eapply prop1 ; eassumption.
     - unfold Semantics.allTuples in H1.
-      Search (In _ (TupleUtils.tuples_up_to_n _ _)).
       eapply TupleUtils.tuple_length ; eassumption.
 Qed.
 
@@ -349,7 +343,6 @@ Proof.
   simpl modelElements.
   unfold Semantics.produced_elements.
   intros.
-  Search (In _ (map _ _)).
   setoid_rewrite in_map_iff.
   split ; intro.
   + destruct H as (k & H1 & H2).  

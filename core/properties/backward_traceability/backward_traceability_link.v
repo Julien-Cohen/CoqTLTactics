@@ -20,12 +20,12 @@ Require Import core.modeling.Parser.
 
 
 (*************************************************************)
-(** * Backward_Traceability of  CoqTL (Link)                  *)
+(** * Backward_Traceability of CoqTL (Link)                  *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 
 (** intuitively: I do not create from scratch target elements, a.k.a.
-                 it does not exist a situation where a target element is not connected to any source pattern*)
+                 it does not exist a situation where a target element is not connected to any source pattern *)
 
 Definition Backward_Traceability_link {tc: TransformationConfiguration}  (tr: Transformation) : Prop := 
     forall (sm : SourceModel) (tl : TargetLinkType),

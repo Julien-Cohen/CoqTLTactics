@@ -20,7 +20,7 @@ Require Import core.modeling.Parser.
 
 
 (*************************************************************)
-(** * Backward_Traceability of  CoqTL (Element)               *)
+(** * Backward_Traceability of CoqTL (Element)               *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 
@@ -34,7 +34,7 @@ Definition Backward_Traceability_elem {tc: TransformationConfiguration}  (tr: Tr
         In sp (allTuples tr sm) /\
         In te (produced_elements (traceTrOnPiece tr sm sp))).
 
-(* FIXME could consider to use prop in AxiomaticSemantics *)
+
 Theorem forall_Backward_Traceability_elem {tc:TransformationConfiguration} :
 forall (tr: Transformation), Backward_Traceability_elem tr.
 Proof.
@@ -42,5 +42,6 @@ Proof.
     apply Certification.tr_execute_in_elements.
 Qed.
 
+(* Future Work : consider to use prop in AxiomaticSemantics *)
     
 
