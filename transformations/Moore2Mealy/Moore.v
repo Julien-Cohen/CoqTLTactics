@@ -3,7 +3,7 @@
 (** Imports Native *)
 From Stdlib Require Import String Bool List PeanoNat EqNat.
 
-(** Imports  CoqTL *)
+(** Imports CoqTL *)
 From core 
   Require Import utils.Utils Metamodel modeling.ModelingMetamodel Model.
 

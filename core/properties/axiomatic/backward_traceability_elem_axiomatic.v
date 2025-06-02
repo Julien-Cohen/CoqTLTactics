@@ -20,7 +20,7 @@ Require Import core.modeling.Parser.
 
 
 (*************************************************************)
-(** * Backward_Traceability of  CoqTL (Elem)                  *)
+(** * Backward_Traceability of CoqTL (Elem)                  *)
 (** * Using axiomatic semantics                              *)
 (*************************************************************)
 

@@ -8,7 +8,7 @@ From Stdlib Require Import PeanoNat.
 
 (** * Syntax
 
-      In this section, we introduce _one possible_ abstract syntax of the  CoqTL transformation engine.  
+      In this section, we introduce _one possible_ abstract syntax of the CoqTL transformation engine.  
       ---- *)
 
 Section TraceLink.

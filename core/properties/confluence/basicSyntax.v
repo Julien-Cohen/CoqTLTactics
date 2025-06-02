@@ -7,7 +7,7 @@ Require Export core.PoorTraceLink.
 
 (** * Syntax
 
-      In this section, we introduce _one possible_ abstract syntax of the  CoqTL transformation engine.  
+      In this section, we introduce _one possible_ abstract syntax of the CoqTL transformation engine.  
       ---- *)
 
 Section Syntax.
@@ -16,7 +16,7 @@ Context {tc: TransformationConfiguration}.
 
 (** ** Syntactic Elements
 
-        Next, we model syntactic elements of any transformation specification that supported by the  CoqTL engine. *)
+        Next, we model syntactic elements of any transformation specification that supported by the CoqTL engine. *)
 
 (** *** OutputPatternElement *)
 

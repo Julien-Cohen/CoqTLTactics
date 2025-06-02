@@ -16,7 +16,7 @@ Require Import core.utils.Utils.
 
 
 (*************************************************************)
-(** * Confluence of  CoqTL  (Model)                           *)
+(** * Confluence of CoqTL  (Model)                           *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 
@@ -46,7 +46,7 @@ Definition Confluent (t1: basicSyntax.Transformation) :=
     Model_equiv (execute t1 sm) (execute t2 sm).
 
 
-(* General definition but not holding for  CoqTL *)
+(* General definition but not holding for CoqTL *)
 Definition Confluence := 
   forall (t: basicSyntax.Transformation),
     Confluent t. 

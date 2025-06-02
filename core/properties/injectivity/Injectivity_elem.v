@@ -23,7 +23,7 @@ Require Import core.properties.injectivity.sampleMoore_injectivity_elem.
 Require Import core.properties.injectivity.Utils.
 
 (*************************************************************)
-(** * Injectivity of  CoqTL (Element)                         *)
+(** * Injectivity of CoqTL (Element)                         *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 

@@ -5,7 +5,7 @@ From Stdlib Require Import List.
 From Stdlib Require Import Nat.
 From Stdlib Require Import EqNat.
 
-(** Imports  CoqTL *)
+(** Imports CoqTL *)
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.

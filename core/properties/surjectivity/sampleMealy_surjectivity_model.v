@@ -10,7 +10,7 @@
  Require Import transformations.Moore2Mealy.Mealy.
  Open Scope string_scope.
  
-(* Moore models as counterexample to prove injectivity of  CoqTL *)
+(* Moore models as counterexample to prove injectivity of CoqTL *)
 
  
 Definition Mealy_model : Model Mealy.MM :=

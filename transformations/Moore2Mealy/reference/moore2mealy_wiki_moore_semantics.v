@@ -1,4 +1,4 @@
-(** For reference only, no  CoqTL inside. *)
+(** For reference only, no CoqTL inside. *)
 
 (*
  * In this file, I try a different fix for moore semantics.

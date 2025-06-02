@@ -22,7 +22,7 @@ Require Import core.modeling.Parser.
 Require Import transformations.Moore2Mealy.Moore2Mealy.
 
 (*************************************************************)
-(** * Distributivity of  CoqTL (Elem)                         *)
+(** * Distributivity of CoqTL (Elem)                         *)
 (** * Using axiomatic semantics                              *)
 (*************************************************************)
 

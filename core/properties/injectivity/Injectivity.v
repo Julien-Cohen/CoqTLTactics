@@ -24,7 +24,7 @@ Require Import core.properties.injectivity.Injectivity_link.
 Require Import core.properties.injectivity.Utils.
 
 (*************************************************************)
-(** * Injectivity of  CoqTL                                   *)
+(** * Injectivity of CoqTL                                   *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 

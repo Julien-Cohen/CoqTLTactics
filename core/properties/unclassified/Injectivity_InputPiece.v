@@ -23,7 +23,7 @@ Require Import core.properties.injectivity.Moore2Mealy_injectivity_inputpiece_wi
 Require Import core.properties.injectivity.sampleMoore_injectivity_inputpiece.
 
 (*************************************************************)
-(** * Injectivity of  CoqTL (InputPiece)                      *)
+(** * Injectivity of CoqTL (InputPiece)                      *)
 (** * Using Axiomatic semantics                              *)
 (*************************************************************)
 
@@ -137,7 +137,7 @@ Proof.
 Qed.
 
 (*************************************************************)
-(** * Injectivity of  CoqTL (InputPiece)                      *)
+(** * Injectivity of CoqTL (InputPiece)                      *)
 (** * FIXME Another Case                                     *)
 (*************************************************************)
 

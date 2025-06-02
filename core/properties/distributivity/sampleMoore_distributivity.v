@@ -11,7 +11,7 @@ Require Import transformations.Moore2Mealy.Moore.
 Open Scope string_scope.
 Import Glue. 
 
-(* Moore models as counterexample to prove distributivity of  CoqTL *)
+(* Moore models as counterexample to prove distributivity of CoqTL *)
 
  
 

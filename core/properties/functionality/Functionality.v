@@ -22,7 +22,7 @@ Require Import core.modeling.Parser.
 
 
 (*************************************************************)
-(** * Functionality (or determinism) of  CoqTL                *)
+(** * Functionality (or determinism) of CoqTL                *)
 (** * Using operational semantics                            *)
 (*************************************************************)
 

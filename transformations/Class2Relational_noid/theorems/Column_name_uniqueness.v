@@ -1,5 +1,5 @@
 (**
-  CoqTL user theorem: Column_name_uniqueness
+ CoqTL user theorem: Column_name_uniqueness
  Def: if all attributes have unique names,
       then the generated columns have unique names.
  **)
