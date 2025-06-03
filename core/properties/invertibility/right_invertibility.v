@@ -43,3 +43,13 @@ Proof.
   intros tc tr H ; contradict H ; apply right_invertible_surjective ; assumption.
 Qed.
 
+Theorem not_invertible: 
+  exists (tc:TransformationConfiguration) tr, ~ Right_Invertible tr.
+Proof.
+  specialize (exists_not_Surjectivity).
+  intros (tr & H).
+  eexists ; exists tr.
+  apply not_surjective_not_invertible.
+  assumption.
+Qed.
+

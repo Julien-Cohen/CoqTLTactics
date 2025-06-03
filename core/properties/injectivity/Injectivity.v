@@ -32,21 +32,7 @@ Definition Injective_alt {tc: TransformationConfiguration} (tr: Transformation) 
   (execute tr sm1) = (execute tr sm2) ->
      sm1  = sm2.  
 
-
-(** Not used *)
-Remark union_elem_link {tc: TransformationConfiguration} : 
-  forall tr, 
-    Injectivity_elem tr ->
-    Injectivity_link tr ->
-    Injective tr.
-Proof.  
-  unfold Injectivity_elem, Injectivity_link, Injective.
-  intros.
-   apply set_eq_Model_equiv.
-    + apply H.  apply Model_equiv_set_eq_elem. assumption.
-    + apply H0. apply Model_equiv_set_eq_link. assumption.  
-Qed.
-
+(** Proof that CoqTL is not injective (Injective_alt) *)
 
 From transformations.Moore2Mealy
   Require Import Moore Moore2Mealy.

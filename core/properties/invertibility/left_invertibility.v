@@ -48,7 +48,7 @@ Proof.
 Qed.
 
 
-Corollary not_invertible: 
+Theorem not_invertible: 
   exists (tc:TransformationConfiguration) tr, ~ Left_Invertible tr.
 Proof.
   exists   Moore2Mealy.Moore2MealyTransformationConfiguration.
