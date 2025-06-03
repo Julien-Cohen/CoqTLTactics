@@ -23,9 +23,9 @@ Definition Left_Invertible {tc:TransformationConfiguration} (tr:Transformation) 
 
 
 Lemma left_invertible_injective {tc:TransformationConfiguration} : 
-  forall tr, Left_Invertible tr -> Injective_alt tr.
+  forall tr, Left_Invertible tr -> Injective tr.
 Proof.
-  unfold Left_Invertible, Injective_alt.
+  unfold Left_Invertible, Injective.
   intros.
   destruct H as (tr_inv & H).
 
@@ -42,7 +42,7 @@ Qed.
 
 Corollary not_injective_not_invertible :
    forall (tc:TransformationConfiguration) tr, 
-      (~ Injective_alt tr) -> ~ Left_Invertible tr.
+      (~ Injective tr) -> ~ Left_Invertible tr.
 Proof.
   intros tc tr H ; contradict H ; apply left_invertible_injective ; assumption.
 Qed.
@@ -52,7 +52,7 @@ Theorem not_invertible:
   exists (tc:TransformationConfiguration) tr, ~ Left_Invertible tr.
 Proof.
   exists   Moore2Mealy.Moore2MealyTransformationConfiguration.
-  specialize Injectivity.exists_non_injective_alt.
+  specialize Injectivity.exists_non_injective.
   intros (tr & H).
   exists tr.
   apply not_injective_not_invertible ; assumption.
