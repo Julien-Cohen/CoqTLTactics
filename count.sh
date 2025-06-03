@@ -46,6 +46,9 @@ echo ""
 coqwc $DISTRIBUTIVITY
 
 echo ""
-echo "Total"
+echo "Properties Total"
 coqwc $BACKWARD $FORWARD $CONFLUENCE $ADDITIVITY $UNIVERSALITY $INJECTIVITY $SURJECTIVITY $L_INVERTIBILITY $R_INVERTIBILITY $MONOTONICITY $DISTRIBUTIVITY
 
+echo ""
+echo "CoqTL Total"
+coqwc core/*.v core/*/*.v core/*/*/*.v core/*/*/*/*.v usertools/*.v
