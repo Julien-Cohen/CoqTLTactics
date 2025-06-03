@@ -1,294 +1,153 @@
-From Stdlib 
-  Require Import String EqNat List PeanoNat Lia FunctionalExtensionality.
+From Stdlib Require Import String List.
 
 From core 
-  Require Import Model TransformationConfiguration utils.Utils.
+  Require Import utils.Utils TransformationConfiguration Syntax Model Semantics.
 
-From core.properties.confluence
-  Require Import basicExpressions basicSemantics basicSyntax.
+From core.modeling 
+  Require Import 
+  ConcreteSyntax ModelingSemantics ConcreteExpressions Parser ModelingTransformationConfiguration.
 
+From transformations.Moore2Mealy
+  Require 
+  Moore Mealy.
 
-(*************************************************************)
-(** * Confluence of CoqTL  (Model)                           *)
-(** * Using operational semantics                            *)
-(**   WARNING : specific semantics                           *)
-(*************************************************************)
+Import Id Glue.
 
-
-Section Confluence.
-Context (tc: TransformationConfiguration).
-
-Definition disjoint_rules tr : Prop :=
-  forall r1 r2, 
-   In r1 tr ->
-   In r2 tr ->
-    forall sm sp, 
-    matchRuleOnPattern r1 sm sp = true ->
-    matchRuleOnPattern r2 sm sp = true ->
-      r1 = r2.
-
-(* Set semantics: we think that the list of rules represents a set (we don't allow two rules to have the same name)*)
-
-Definition Transformation_permutation  (t1 t2: basicSyntax.Transformation) := 
-  (basicSyntax.Transformation_getArity t1 = basicSyntax.Transformation_getArity t2) /\ 
-  ListUtils.set_eq (basicSyntax.Transformation_getRules t1) (basicSyntax.Transformation_getRules t2).
+Open Scope coqtl.
 
 
-Definition Confluent (t1: basicSyntax.Transformation) :=
-    forall (sm: SourceModel) (t2:basicSyntax.Transformation),
-    Transformation_permutation t1 t2 -> 
-    Model_equiv (execute t1 sm) (execute t2 sm).
+(** Definition of the Confluence *) 
 
 
-(* General definition but not holding for CoqTL *)
-Definition Confluence := 
-  forall (t: basicSyntax.Transformation),
-    Confluent t. 
+Definition Transformation_permutation  {tc:TransformationConfiguration} (t1 t2: Transformation) := 
+  t1.(arity) = t2.(arity) /\ 
+  ListUtils.set_eq t1.(rules) t2.(rules).
 
-Definition WeakConfluence :=
-   forall (t: basicSyntax.Transformation),
-    disjoint_rules (basicSyntax.Transformation_getRules t)  ->
-      Confluent t.
+Definition Confluence {tc:TransformationConfiguration} :=
+  forall (t1 t2: Transformation) (sm: SourceModel),
+    Transformation_permutation t1 t2 -> Model_equiv (execute t1 sm) (execute t2 sm).
 
-Lemma disjoint_rules_of_transformation_permutation :
-  forall (t1 t2: basicSyntax.Transformation),
-    disjoint_rules (basicSyntax.Transformation_getRules t1)  ->
-    Transformation_permutation t1 t2 ->
-    disjoint_rules (basicSyntax.Transformation_getRules t2).
+
+(** Confluence of CoqTL : we build a counter example. *)
+
+#[export]
+Instance Moore2MealyTransformationConfiguration : TransformationConfiguration := 
+  Build_TransformationConfiguration Moore.MM Mealy.MM.
+
+#[export]  
+Instance Moore2MealyModelingTransformationConfiguration : ModelingTransformationConfiguration Moore2MealyTransformationConfiguration :=
+ Build_ModelingTransformationConfiguration Moore2MealyTransformationConfiguration Moore.MMM Mealy.MMM.
+
+Import Moore. (* For readability, we import Moore but not Mealy. *)
+
+Definition convert_transition m (t : Transition_t) : option Mealy.Transition_t :=
+  s <- getTransition_target m t ;
+  return {| 
+       Mealy.Transition_id :=  t.(Transition_id) ;
+       Mealy.Transition_input := t.(Transition_input) ;
+       Mealy.Transition_output := s.(State_output) 
+     |}
+.
+
+Definition Moore2Mealy' :=
+    transformation
+    [
+      rule "state"
+      from [State_K]
+      to [
+        ELEM "s" ::: Mealy.State_K  
+           fun _ _ s => return {| Mealy.State_id := s.(State_id) |} 
+      ];
+
+      rule "state0"
+      from [State_K]
+      to [
+        ELEM "s" ::: Mealy.State_K  
+           fun _ _ s => return {| Mealy.State_id := Id "S0" |}
+      ];
+
+      rule "transition"
+      from [Transition_K]
+      to [
+        ELEM "t" ::: Mealy.Transition_K
+           fun _ m t => convert_transition m t  
+          
+        LINK ::: Mealy.Transition_source_K 
+           fun tls _ m moore_tr mealy_tr =>
+             t_source <- Transition_getSourceObject moore_tr m ;
+             res <- resolve tls "s" Mealy.State_K (singleton t_source) ;
+             do_glue mealy_tr with res 
+      ]
+].
+
+Definition Moore2Mealy'' :=
+    transformation
+    [
+      rule "state0"
+      from [State_K]
+      to [
+        ELEM "s" ::: Mealy.State_K  
+           fun _ _ s => return {| Mealy.State_id := Id "S0" |}
+      ];
+
+      rule "state"
+      from [State_K]
+      to [
+        ELEM "s" ::: Mealy.State_K  
+           fun _ _ s => return {| Mealy.State_id := s.(State_id) |} 
+      ];
+
+      rule "transition"
+      from [Transition_K]
+      to [
+        ELEM "t" ::: Mealy.Transition_K
+           fun _ m t => convert_transition m t  
+          
+        LINK ::: Mealy.Transition_source_K 
+           fun tls _ m moore_tr mealy_tr =>
+             t_source <- Transition_getSourceObject moore_tr m ;
+             res <- resolve tls "s" Mealy.State_K (singleton t_source) ;
+             do_glue mealy_tr with res 
+      ]
+].
+
+Definition Moore_m1 : Model Moore.MM :=
+    (Build_Model Moore.MM
+        (
+            (Transition (Build_Transition_t 0 "0000")) :: 
+            (State (Build_State_t  (Id.Id "S0000") "1111")) :: 
+            (State (Build_State_t  (Id.Id "S1111") "0000")) ::  
+            nil
+        )
+        (
+            (TransitionSource (Build_Glue _ _ (Build_Transition_t 0 "0000") (Build_State_t  (Id.Id "S1111") "0000"))) ::
+            (TransitionTarget (Build_Glue _ _ (Build_Transition_t 0 "0000") (Build_State_t  (Id.Id "S0000") "1111"))) ::
+            nil
+        )
+).
+
+
+Theorem notConfluence : 
+  ~ Confluence.
 Proof.
-  intros.
-  unfold disjoint_rules in *.
-  intros.
-  unfold Transformation_permutation in H0.
-  destruct H0.
-  unfold set_eq in H5.
-  destruct H5.
-  unfold incl in H6.
-  assert (include_r1 := H6 r1 H1).
-  assert (include_r2 := H6 r2 H2).
-  specialize (H r1 r2 include_r1 include_r2 sm sp H3 H4).
-  assumption.
+  intro.
+  specialize (H (parse Moore2Mealy') (parse Moore2Mealy'') Moore_m1).
+  assert (Transformation_permutation (parse Moore2Mealy') (parse Moore2Mealy'')). {
+    unfold parse,Transformation_permutation,set_eq. crush.
+  }
+  apply H in H0.
+  unfold execute, applyTrLkOnModel in H0.
+  simpl in H0.
+  unfold Model_equiv in H0. destruct H0. clear H0.
+  unfold Model_incl in H1. destruct H1. clear H0.
+  simpl in H1.
+  specialize (H1 (Mealy.TransitionSource (glue {|
+    Mealy.Transition_id := 0;
+    Mealy.Transition_input := "0000";
+    Mealy.Transition_output := "1111"
+    |} with {| Mealy.State_id := Id "S0" |}))). 
+  crush.
 Qed.
 
-Lemma resolveIter_eq :
-forall (t1 t2: basicSyntax.Transformation),
-disjoint_rules (basicSyntax.Transformation_getRules t1)  ->
-disjoint_rules (basicSyntax.Transformation_getRules t2)  ->
-Transformation_permutation t1 t2 ->
-   resolveIter t1 = resolveIter t2.
-Proof.
-intros t1 t2 disjoint_rules_t1 disjoint_rules_t2 tr_eq.
-unfold resolveIter.
-apply functional_extensionality. intro.
-apply functional_extensionality. intro.
-apply functional_extensionality. intro.
-apply functional_extensionality. intro.
-rename x into sm.
-rename x1 into sp.
-rename x2 into iter.
-rename x0 into opname.
+Close Scope coqtl.
 
-remember (fun r : basicSyntax.Rule =>
-matchRuleOnPattern r sm sp) as find_cond.
-remember (basicSyntax.Transformation_getRules t1) as rs1.
-remember (basicSyntax.Transformation_getRules t2) as rs2.
-
-assert (find find_cond rs1 = find find_cond rs2).
-{
-  destruct (find find_cond rs1) eqn: find_ca1.
-  destruct (find find_cond rs2) eqn: find_ca2.
-  + apply List.find_some in find_ca1.
-    apply List.find_some in find_ca2.
-  f_equal.
-  unfold Transformation_permutation in tr_eq.
-  destruct tr_eq.
-  destruct H0.
-  assert (In r rs2). {  unfold incl in H0. crush. }
-  destruct find_ca2.
-  destruct find_ca1.
-  rewrite Heqfind_cond in H6.
-  rewrite Heqfind_cond in H4.
-  unfold disjoint_rules in disjoint_rules_t2.
-  specialize (disjoint_rules_t2 r r0 H2 H3 sm sp H6 H4) as witness.
-  exact witness.
-  + apply List.find_some in find_ca1.
-    specialize (List.find_none find_cond rs2 find_ca2).
-    intro.
-    unfold Transformation_permutation in tr_eq.
-    destruct tr_eq.
-    destruct H0.
-    assert (In r rs2). { unfold set_eq in H1. destruct H1. unfold incl in H0. crush. }
-    specialize (H r H0). crush.
-  + destruct (find find_cond rs2) eqn: find_ca2.
-  ++ apply List.find_some in find_ca2.
-     specialize (List.find_none find_cond rs1 find_ca1).
-     intro.
-     unfold Transformation_permutation in tr_eq.
-     destruct tr_eq.
-     destruct H0.
-     assert (In r rs1). { unfold set_eq in H1. destruct H1. unfold incl in H0. crush. }
-     specialize (H r H0). crush.
-  ++ auto.
-}
-rewrite H.
-reflexivity.
-Qed.
-
-Theorem forall_WeakConfluence : WeakConfluence.
-Proof.
-  unfold WeakConfluence.
-  intro t1.
-  intro disjoint_rules_t1.
-  unfold Confluent.
-  intros sm t2.
-  intro H.
-  
-  specialize (disjoint_rules_of_transformation_permutation t1 t2 disjoint_rules_t1 H).
-  intro disjoint_rules_t2.
-  
-  unfold Model_equiv. 
-
-  unfold execute ; unfold modelElements, modelLinks. 
-  intros.
-  destruct H.
-  split ; split.
-
-  + (* left -> right / elements *) 
-      unfold instantiatePattern.
-      unfold matchPattern.
-     
-      intros e H1.
-
-      apply in_flat_map in H1. destruct H1 as (x & (H1 & H2)).
-      apply in_flat_map in H2. destruct H2 as (x0 & (H2 & H3)).
-      apply filter_In in H2. destruct H2.
-      apply in_flat_map. exists x. split.
-      * unfold allTuples.
-        unfold maxArity.
-        rewrite <- H.
-        exact H1.
-      * apply in_flat_map.
-        exists x0.
-        split.
-        -- apply filter_In.
-           split.
-           apply H0. assumption.
-           assumption.
-        -- assumption.
-
-  + (* left -> right / links *) 
-      unfold modelLinks.
-      unfold applyPattern.
-      unfold matchPattern.
-      intros.
-      apply in_flat_map in H1. repeat destruct H1.
-      apply in_flat_map in H2. repeat destruct H2.
-      apply filter_In in H2. destruct H2.
-      apply in_flat_map. exists x. split.
-      * unfold allTuples.
-        unfold maxArity.
-        rewrite <- H.
-        assumption.
-      * apply in_flat_map.
-        exists x0.
-        split.
-        -- apply filter_In.
-           split.
-           apply H0. assumption.
-           assumption.
-        -- unfold applyRuleOnPattern, applyIterationOnPattern in *.
-           apply in_flat_map in H3. repeat destruct H3.
-           apply in_flat_map.
-           exists x1.
-           split.
-           ++ assumption.
-           ++ apply in_flat_map in H5. repeat destruct H5.
-              apply in_flat_map.
-              exists x2.
-              split.
-              ** assumption.
-              ** unfold applyElementOnPattern in *. 
-                 assert (resolveIter t1 = resolveIter t2).
-                  { apply resolveIter_eq. assumption. assumption. unfold Transformation_permutation . crush. }
-                 destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
-                 *** rewrite H7 in H6.
-                      auto.
-                 *** (*rewrite H7 in H6.*)
-                     exact H6.
-
-
-  + (* right -> left / elements*) 
-      unfold modelElements.  
-      unfold instantiatePattern.
-      unfold matchPattern.
-
-      intros l H1.
-      apply in_flat_map in H1. destruct H1 as (x & (H1 & H2)).
-      apply in_flat_map in H2. destruct H2 as (x0 & (H2 & H3)).
-      apply filter_In in H2. destruct H2.
-      apply in_flat_map. exists x. split.
-      * unfold allTuples.
-        unfold maxArity.
-        rewrite H. 
-        exact H1.
-      * apply in_flat_map.
-        exists x0.
-        split.
-        -- apply filter_In.
-           split.
-           apply H0. assumption.
-           assumption.
-        -- assumption.
-
-
-   + (* right -> left / links *) unfold modelLinks. unfold applyPattern.
-      unfold matchPattern.
-      intros.
-      apply in_flat_map in H1. repeat destruct H1.
-      apply in_flat_map in H2. repeat destruct H2.
-      apply filter_In in H2. destruct H2.
-      apply in_flat_map. exists x. split.
-      * unfold allTuples.
-        unfold maxArity.
-        rewrite H.
-        assumption.
-      * apply in_flat_map.
-        exists x0.
-        split.
-        -- apply filter_In.
-           split.
-           apply H0. assumption.
-           assumption.
-        -- unfold applyRuleOnPattern, applyIterationOnPattern in *.
-           apply in_flat_map in H3. repeat destruct H3.
-           apply in_flat_map.
-           exists x1.
-           split.
-           ++ assumption.
-           ++ apply in_flat_map in H5. repeat destruct H5.
-              apply in_flat_map.
-              exists x2.
-              split.
-              ** assumption.
-              ** unfold applyElementOnPattern in *. 
-
-                assert ((resolveIter t1 = (resolveIter t2))).
-                { 
-                  apply resolveIter_eq. assumption. assumption.
-                  unfold Transformation_permutation . crush. 
-                }
-                destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
-                *** rewrite <- H7 in H6.
-                    auto.
-                *** (*rewrite <- H7 in H6.*)
-                    auto.
-Qed.
-
-
-(** M.T. Idea on define confluencec *)
-(* Definition Confluence'' (t1: Transformation) :=
-    forall (sm: SourceModel) (o o1: Order),
-    TargetModel_equiv (execute t sm o) (execute t sm o1). *)
-
-
-End Confluence.

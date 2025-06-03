@@ -202,7 +202,7 @@ core/properties/confluence/basicSyntax.v
 core/properties/confluence/basicExpressions.v
 core/properties/confluence/basicSemantics.v
 core/properties/confluence/Confluence.v
-core/properties/confluence/ConfluenceNew.v
+core/properties/confluence/ConfluenceAlt.v
 # core/properties/confluence/examples/moore2mealy_confluence.v 
 
 ### prop - surjectivity 
