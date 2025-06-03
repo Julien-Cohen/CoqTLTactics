@@ -48,4 +48,13 @@ Proof.
 Qed.
 
 
+Corollary not_invertible: 
+  exists (tc:TransformationConfiguration) tr, ~ Left_Invertible tr.
+Proof.
+  exists   Moore2Mealy.Moore2MealyTransformationConfiguration.
+  specialize Injectivity.exists_non_injective_alt.
+  intros (tr & H).
+  exists tr.
+  apply not_injective_not_invertible ; assumption.
+Qed.
 
