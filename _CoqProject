@@ -223,7 +223,8 @@ core/properties/additivity/Additivity.v
 core/properties/functionality/Functionality.v
 
 ### prop - invertibility
-core/properties/invertibility/invertibility.v
+core/properties/invertibility/left_invertibility.v
+core/properties/invertibility/right_invertibility.v
 
 ### prop - adaptation
 core/properties/unclassified/Adaptation.v
