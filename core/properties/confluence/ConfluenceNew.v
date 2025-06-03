@@ -1,7 +1,4 @@
-(** Moore to Mealy transformation. *)
-
 From Stdlib Require Import String List.
-
 
 From core 
   Require Import utils.Utils TransformationConfiguration Syntax Model Semantics.
@@ -16,6 +13,22 @@ From transformations.Moore2Mealy
 
 Import Id Glue.
 
+Open Scope coqtl.
+
+
+(** Definition of the Confluence *) 
+
+
+Definition Transformation_permutation  {tc:TransformationConfiguration} (t1 t2: Transformation) := 
+  t1.(arity) = t2.(arity) /\ 
+  ListUtils.set_eq t1.(rules) t2.(rules).
+
+Definition Confluence {tc:TransformationConfiguration} :=
+  forall (t1 t2: Transformation) (sm: SourceModel),
+    Transformation_permutation t1 t2 -> Model_equiv (execute t1 sm) (execute t2 sm).
+
+
+(** Confluence of CoqTL : we build a counter example. *)
 
 #[export]
 Instance Moore2MealyTransformationConfiguration : TransformationConfiguration := 
@@ -24,9 +37,6 @@ Instance Moore2MealyTransformationConfiguration : TransformationConfiguration :=
 #[export]  
 Instance Moore2MealyModelingTransformationConfiguration : ModelingTransformationConfiguration Moore2MealyTransformationConfiguration :=
  Build_ModelingTransformationConfiguration Moore2MealyTransformationConfiguration Moore.MMM Mealy.MMM.
-
-Open Scope coqtl.
-
 
 Import Moore. (* For readability, we import Moore but not Mealy. *)
 
@@ -101,7 +111,7 @@ Definition Moore2Mealy'' :=
       ]
 ].
 
- Definition Moore_m1 : Model Moore.MM :=
+Definition Moore_m1 : Model Moore.MM :=
     (Build_Model Moore.MM
         (
             (Transition (Build_Transition_t 0 "0000")) :: 
@@ -116,13 +126,6 @@ Definition Moore2Mealy'' :=
         )
 ).
 
-Definition Transformation_permutation  (t1 t2: Transformation) := 
-  t1.(arity) = t2.(arity) /\ 
-  ListUtils.set_eq t1.(rules) t2.(rules).
-
-Definition Confluence  :=
-  forall (t1 t2: Transformation) (sm: SourceModel),
-    Transformation_permutation t1 t2 -> Model_equiv (execute t1 sm) (execute t2 sm).
 
 Theorem notConfluence : 
   ~ Confluence.

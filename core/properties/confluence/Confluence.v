@@ -11,6 +11,7 @@ From core.properties.confluence
 (*************************************************************)
 (** * Confluence of CoqTL  (Model)                           *)
 (** * Using operational semantics                            *)
+(**   WARNING : specific semantics                           *)
 (*************************************************************)
 
 
