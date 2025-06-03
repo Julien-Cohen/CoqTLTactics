@@ -76,3 +76,54 @@ Proof.
   specialize (H x).
   contradiction.
 Qed.
+
+
+(** Other definition,
+   based on = (eq) instead of equiv (TargetModel_elem_eq, SourceModel_elem_eq or Model_eq) *)
+
+Definition Injectivity_elem_alt {tc: TransformationConfiguration}
+   (tr: Transformation) :=
+forall sm1 sm2,
+   (execute tr sm1).(modelElements) = (execute tr sm2).(modelElements) ->
+    sm1.(modelElements) = sm2.(modelElements).  
+
+Lemma Moore2Mealy_non_inj_elem_contrapos_alt:
+exists sm1 sm2 : SourceModel,
+  ~  sm1.(modelElements) = sm2.(modelElements) /\
+   (execute Moore2Mealy sm1).(modelElements) = (execute Moore2Mealy sm2).(modelElements).
+Proof.
+  exists Moore_m1.
+  exists Moore_m2.
+  split.
+  - simpl.
+    congruence.
+  - reflexivity.
+Qed.
+
+Lemma Moore2Mealy_non_injective_elem_alt : ~ (Injectivity_elem_alt Moore2Mealy).
+Proof.
+  unfold Injectivity_elem_alt.
+  intro inj.
+  specialize (Moore2Mealy_non_inj_elem_contrapos_alt) as inj_contrapos.
+  crush.
+Qed.
+
+Lemma exists_non_injective_elem_alt :
+    exists tr, ~ (Injectivity_elem_alt tr).
+Proof.
+  exists Moore2Mealy.
+  apply Moore2Mealy_non_injective_elem_alt.
+Qed.
+
+Theorem non_injective_elem_alt  :
+   ~ (forall tr, (Injectivity_elem_alt tr)).
+Proof.
+  intro.
+  specialize (exists_non_injective_elem_alt).
+  intro.
+  destruct H0.
+  specialize (H x).
+  contradiction.
+Qed.
+
+
